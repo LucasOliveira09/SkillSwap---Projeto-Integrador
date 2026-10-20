@@ -48,3 +48,8 @@ Thumbs.db
 !.env.example
 *.pem
 *.key
+
+# Java / dados locais
+backend/target/
+*.log
+.runtime/
