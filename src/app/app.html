@@ -1,0 +1,29 @@
+<button class="pular-conteudo" type="button" (click)="conteudo.focus()">
+  Pular para o conteúdo
+</button>
+<header class="cabecalho">
+  <div class="barra">
+    <a class="marca" routerLink="/anuncios" aria-label="SkillSwap - início"
+      >Skill<span>Swap</span><span class="ponto">.</span></a
+    >
+    <nav aria-label="Navegação principal">
+      <a
+        mat-button
+        routerLink="/anuncios"
+        routerLinkActive="ativo"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        >Explorar</a
+      >
+      <a
+        mat-button
+        routerLink="/anuncios/novo"
+        routerLinkActive="ativo"
+        ariaCurrentWhenActive="page"
+        >Criar anúncio</a
+      >
+    </nav>
+  </div>
+</header>
+<main #conteudo id="conteudo" tabindex="-1"><router-outlet /></main>
+<footer class="rodape">SkillSwap · Projeto Integrador · Grupo Saptura</footer>

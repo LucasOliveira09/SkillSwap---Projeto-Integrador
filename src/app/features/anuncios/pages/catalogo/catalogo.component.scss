@@ -1,0 +1,73 @@
+.cabecalho-catalogo {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.resumo {
+  max-width: 42ch;
+  margin-bottom: 0;
+}
+.titulo-lista {
+  margin: 2.5rem 0 1rem;
+}
+.titulo-lista span {
+  font-weight: 400;
+  color: var(--mat-sys-on-surface-variant);
+}
+.lista-anuncios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+mat-card {
+  min-width: 0;
+}
+mat-card h3 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+.descricao {
+  white-space: pre-wrap;
+}
+.negociacao {
+  color: var(--mat-sys-primary);
+  font-weight: 600;
+}
+.vazio {
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+.vazio h3 {
+  margin: 1rem 0 0;
+}
+.vazio p {
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 1.5rem;
+}
+.marca-vazio {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  border-radius: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .lista-anuncios {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .lista-anuncios {
+    grid-template-columns: 1fr;
+  }
+}

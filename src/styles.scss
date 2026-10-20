@@ -1,0 +1,83 @@
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Arial,
+      density: 0,
+    )
+  );
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+a {
+  color: var(--mat-sys-primary);
+}
+:focus-visible {
+  outline: 3px solid var(--mat-sys-primary);
+  outline-offset: 4px;
+}
+main {
+  outline: none;
+}
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+h1 {
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+p {
+  line-height: 1.65;
+}
+.pagina {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+.sobretitulo {
+  color: var(--mat-sys-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.aviso {
+  padding: 1rem 1.25rem;
+  background: var(--mat-sys-surface-container);
+  border-left: 3px solid var(--mat-sys-primary);
+  border-radius: 0 0.5rem 0.5rem 0;
+  line-height: 1.6;
+}
+.aviso h2 {
+  margin-top: 0;
+}
+.aviso p {
+  margin-bottom: 0;
+}
+@media (max-width: 480px) {
+  .pagina {
+    padding: 2rem 1rem;
+  }
+}
