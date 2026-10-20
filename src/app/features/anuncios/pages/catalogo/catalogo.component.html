@@ -1,0 +1,53 @@
+<section class="pagina" aria-labelledby="titulo-pagina">
+  <div class="cabecalho-catalogo">
+    <div>
+      <p class="sobretitulo">FLORIANÓPOLIS E REGIÃO</p>
+      <h1 id="titulo-pagina">Talentos locais.<br />Novas possibilidades.</h1>
+      <p class="resumo">Serviços, aulas e troca de habilidades em um só lugar.</p>
+    </div>
+    <a mat-flat-button routerLink="/anuncios/novo">Criar anúncio de demonstração</a>
+  </div>
+  <div class="aviso">
+    <strong>Você está em uma demonstração.</strong>
+    Os anúncios são fictícios, ficam nesta sessão e desaparecem ao recarregar a página.
+  </div>
+
+  <h2 class="titulo-lista">
+    Serviços e aulas <span>({{ anuncios().length }})</span>
+  </h2>
+  @if (anuncios().length) {
+    <div class="lista-anuncios">
+      @for (anuncio of anuncios(); track anuncio.id) {
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-subtitle
+              >{{ categoria(anuncio.categoria) }} · {{ anuncio.cidade }}</mat-card-subtitle
+            >
+            <mat-card-title
+              ><h3>{{ anuncio.titulo }}</h3></mat-card-title
+            >
+          </mat-card-header>
+          <mat-card-content>
+            <p class="descricao">{{ anuncio.descricao }}</p>
+            @if (anuncio.modalidade === 'venda') {
+              <p class="negociacao">
+                Venda · {{ anuncio.preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </p>
+            } @else {
+              <p class="negociacao">Troca por {{ anuncio.habilidadeDesejada }}</p>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else {
+    <mat-card appearance="outlined" class="vazio">
+      <mat-card-content>
+        <span class="marca-vazio" aria-hidden="true">S</span>
+        <h3>Nenhum anúncio nesta sessão</h3>
+        <p>Experimente cadastrar um serviço ou uma aula para conhecer o fluxo.</p>
+        <a mat-stroked-button routerLink="/anuncios/novo">Experimentar o cadastro</a>
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

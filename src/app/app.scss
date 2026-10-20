@@ -1,0 +1,54 @@
+.cabecalho {
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+}
+.barra {
+  max-width: 1120px;
+  margin: auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.marca {
+  color: var(--mat-sys-on-surface);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.05em;
+}
+.marca > span:first-child,
+.ponto {
+  color: var(--mat-sys-primary);
+}
+nav {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.ativo {
+  background: var(--mat-sys-secondary-container);
+}
+.rodape {
+  max-width: 1120px;
+  padding: 1.5rem;
+  margin: 2rem auto 0;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+.pular-conteudo {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  transform: translateY(-200%);
+  z-index: 10;
+  padding: 1rem;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+.pular-conteudo:focus {
+  transform: translateY(0);
+}
