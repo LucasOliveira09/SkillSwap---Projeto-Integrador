@@ -30,6 +30,8 @@ Esta decomposição organiza o documento em seis capacidades para planejamento. 
 - Validação de obrigatórios e espaços, venda com preço positivo e troca com habilidade desejada; limpar reinicia campos e feedback.
 - Testes de regras, cadastro e navegação; build e conferência em navegador.
 
+Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” e “Aulas e instrução”; título de até 100 caracteres, descrição de até 1500, cidade de até 80 e habilidade desejada de até 120. São escolhas desta base, não limites prescritos pelo PDF; rever com a equipe antes da API definitiva.
+
 ## Funcionalidades futuras
 
 O PDF propõe gateway PIX/cartão e retenção/liberação de valores, destaque pago, publicidade, galeria antes/depois, fotos em avaliações, geolocalização precisa, verificação documental e app/PWA. Permanecem fora desta inicialização. Pagamentos e verificação de identidade exigem decisões próprias de integração e operação; não serão simulados como garantias existentes.

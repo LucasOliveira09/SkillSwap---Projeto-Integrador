@@ -1,6 +1,6 @@
 # Diretrizes do SkillSwap
 
-Referências incorporadas em 19/10/2026 a pedido do usuário. Consulte o [índice dos PDFs](referencias/README.md) para acessar os originais.
+Referências incorporadas em 19/10/2026 a pedido do usuário. Consulte o [índice dos PDFs](referencias/README.md) para acessar os originais. O novo documento do grupo Saptura define o domínio; a síntese está em [escopo do MVP](escopo-mvp.md).
 
 ## Como aplicar os materiais
 
@@ -37,7 +37,7 @@ Fonte: **Angular Arquitetura**, páginas 3 e 5 a 18; adaptação standalone no *
 - Organizar telas e serviços por domínio funcional, com responsabilidades claras.
 - Separar template HTML, estilos e comportamento TypeScript dos componentes.
 - Planejar rotas para as telas e carregamento sob demanda nas funcionalidades em que fizer sentido.
-- O modelo didático principal usa NgModules, módulo raiz, módulos de funcionalidade e rotas internas. A escolha entre NgModules e standalone deve ser registrada antes da criação da aplicação.
+- O modelo didático principal usa NgModules, módulo raiz, módulos de funcionalidade e rotas internas. Nesta aplicação, o usuário escolheu standalone; a [ADR-001](decisions/001-angular-standalone.md) registra como preservar a organização por domínio e adaptar os imports.
 - Em NgModules, declarar cada componente não standalone em um único módulo. Importar e exportar os recursos necessários no escopo consumidor.
 - Em standalone, importar as dependências do template no próprio componente e preservar esse modelo; não colocar o componente em `declarations`.
 - Na implementação da navegação interna, verificar os mecanismos do Angular Router na documentação da versão adotada; os esquemas visuais dos slides não substituem a configuração real.
@@ -70,25 +70,25 @@ Fontes: **Guia de Angular Material**, páginas 1 a 7; **Integração Angular Mat
 
 ### Critérios de aceite da primeira tela
 
-- [ ] Aplicação compila e abre a rota de cadastro sem erros.
-- [ ] Tema aplicado; cartão, campos com rótulos e botões visíveis e legíveis.
-- [ ] Valores dos campos e eventos refletem o comportamento esperado.
-- [ ] Campos obrigatórios inválidos ou apenas com espaços impedem o envio, conforme as regras do domínio.
-- [ ] Cadastro válido aciona o serviço e confirma apenas após persistência, ou informa claramente a simulação.
-- [ ] Limpar reinicia os campos e o feedback.
-- [ ] Tela utilizável em janela estreita e navegação existente preservada.
-- [ ] Equipe consegue explicar imports, bindings e fluxo do cadastro.
-- [ ] Verificações realizadas e alterações registradas em commits.
+- [x] Aplicação compila e abre a rota de cadastro sem erros.
+- [x] Tema aplicado; cartão, campos com rótulos e botões visíveis e legíveis.
+- [x] Valores dos campos e eventos refletem o comportamento esperado.
+- [x] Campos obrigatórios inválidos ou apenas com espaços impedem o envio, conforme as regras do domínio.
+- [x] Cadastro válido aciona serviço em memória e informa claramente a simulação.
+- [x] Limpar reinicia os campos e o feedback.
+- [x] Tela utilizável em janela estreita e navegação existente preservada.
+- [ ] Equipe consegue explicar imports, bindings e fluxo do cadastro (validar em apresentação).
+- [x] Verificações técnicas realizadas e alterações registradas em commits.
 
 ## Sequência de continuidade
 
 | Etapa | Entrega esperada | Situação |
 | --- | --- | --- |
 | 1. Referências | PDFs preservados e orientações consolidadas | Concluída nesta adoção |
-| 2. Definição do SkillSwap | Problema, público, objetivo, diferencial e 4 a 6 funcionalidades | Pendente |
+| 2. Definição do SkillSwap | Problema, público, objetivo, diferencial e 4 a 6 funcionalidades | Consolidada a partir do PDF Saptura; regras detalhadas pendentes |
 | 3. Proposta e protótipos | Roteiro de 8 a 12 slides e fluxos compreensíveis | Pendente |
-| 4. Base técnica | Versões, decisão NgModules/standalone, aplicação inicial e rotas | Pendente |
-| 5. Cadastro com Material | Tela do domínio atendendo aos critérios acima | Pendente |
+| 4. Base técnica | Versões, decisão standalone, aplicação inicial e rotas | Implementada e validada |
+| 5. Cadastro com Material | Tela de anúncio atendendo aos critérios acima | Demonstração em memória implementada; apresentação da equipe pendente |
 | 6. Persistência e evolução | Serviços, armazenamento e demais funcionalidades definidas | Pendente |
 
-Ainda não há código de aplicação nem configuração de build ou testes neste repositório. Backend, banco de dados, autenticação, entidades e regras de troca permanecem em aberto; os PDFs não estabelecem essas decisões para o SkillSwap.
+A aplicação já possui comandos de build, tipos e testes, catálogo e cadastro de anúncio demonstrativos. Backend, banco, autenticação e detalhes das regras de negociação continuam pendentes. Consulte o [README](../README.md) para executar a base e o [escopo do MVP](escopo-mvp.md) para acompanhar as próximas decisões.

@@ -15,6 +15,7 @@ O material do professor ensina separação por domínio, componentes e rotas com
 - `FormsModule`/`ngModel` no cadastro para acompanhar o guia do professor. Material importado somente nos componentes consumidores.
 - Serviços específicos permanecem no domínio; recursos compartilhados serão extraídos apenas quando houver reutilização real. Sem store global ou camada genérica de repositórios nesta etapa.
 - Testes Jasmine/Karma gerados pela CLI, executados com ChromeHeadless; lockfile versionado e instalação reproduzível com `npm ci`.
+- O componente raiz mantém os nomes concisos `app.ts`, `app.html` e `app.scss` gerados pela CLI 20. Nas páginas, usar `--type=component` para explicitar o papel dos arquivos, como nos exemplos de aula.
 - Backend, autenticação e persistência ficam para uma entrega posterior. O serviço demonstrativo em memória terá nome e mensagens explícitos de simulação.
 
 ## Consequências
