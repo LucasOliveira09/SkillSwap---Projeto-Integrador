@@ -1,0 +1,36 @@
+<section class="colecao" [attr.aria-label]="titulo()">
+  <h2 class="titulo-secao">{{ titulo() }}</h2>
+  <div #linha class="linha" [class]="'linha ' + formato()">
+    @for (item of itens(); track item.titulo) {
+      <a
+        routerLink="/anuncios"
+        [queryParams]="item.parametros"
+        [attr.aria-label]="'Buscar ' + item.titulo"
+      >
+        <img [src]="item.imagem" [alt]="formato() === 'banner' ? item.titulo : ''" loading="lazy" />
+        @if (formato() !== 'banner') {
+          <span>{{ item.titulo }}</span>
+        }
+      </a>
+    }
+  </div>
+  @if (formato() !== 'circulo') {
+    <div class="paginacao">
+      <button
+        type="button"
+        [attr.aria-label]="'Anteriores em ' + titulo()"
+        (click)="rolar(linha, -1)"
+      >
+        <app-icone nome="esquerda" /></button
+      ><span class="ponto ativo" aria-hidden="true"></span
+      ><span class="ponto" aria-hidden="true"></span
+      ><button
+        type="button"
+        [attr.aria-label]="'Próximos em ' + titulo()"
+        (click)="rolar(linha, 1)"
+      >
+        <app-icone nome="direita" />
+      </button>
+    </div>
+  }
+</section>

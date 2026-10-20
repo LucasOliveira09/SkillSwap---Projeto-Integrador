@@ -1,0 +1,57 @@
+<mat-card class="anuncio-card" [attr.data-origem]="anuncio().exemplo ? 'exemplo' : 'sessao'">
+  <div class="foto">
+    @if (anuncio().imagem) {
+      <img [src]="anuncio().imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" />
+    } @else {
+      <div class="sem-foto"><app-icone nome="troca" /><span>Seu anúncio</span></div>
+    }
+    <span class="categoria">{{ anuncio().categoria }}</span>
+    <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Nesta sessão' }}</span>
+  </div>
+  <div class="corpo">
+    <div class="titulo-preco">
+      <h3>{{ anuncio().titulo }}</h3>
+      @if (anuncio().preco !== null) {
+        <p class="preco">
+          {{ anuncio().preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'
+          }}<small>{{ anuncio().unidade }}</small>
+        </p>
+      } @else {
+        <p class="preco">Troca</p>
+      }
+    </div>
+    <p class="troca">
+      <app-icone nome="troca" /> <span>Troco por: {{ anuncio().trocaPor }}</span>
+    </p>
+    <ul class="detalhes">
+      @for (detalhe of anuncio().detalhes; track $index) {
+        <li>
+          <app-icone [nome]="$index === 0 ? 'relogio' : 'pessoas'" /><span>{{ detalhe }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+  <div class="perfil">
+    @if (anuncio().avatar) {
+      <img [src]="anuncio().avatar" alt="" width="28" height="28" loading="lazy" />
+    } @else {
+      <span class="avatar"><app-icone nome="usuario" /></span>
+    }
+    <div class="autor">
+      <strong>{{ anuncio().autor }}</strong>
+      @if (anuncio().estrelas !== null) {
+        <span
+          class="estrelas"
+          [attr.aria-label]="'Avaliação ilustrativa: ' + anuncio().estrelas + ' de 5'"
+          >{{ estrelas(anuncio().estrelas!) }}</span
+        >
+      } @else {
+        <small>Sem avaliação</small>
+      }
+    </div>
+    <div class="local">
+      <span><app-icone nome="relogio" /> {{ anuncio().quando }}</span
+      ><span><app-icone nome="local" /> {{ anuncio().cidade }}</span>
+    </div>
+  </div>
+</mat-card>

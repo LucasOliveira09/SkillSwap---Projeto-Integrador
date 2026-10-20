@@ -1,73 +1,72 @@
-.cabecalho-catalogo {
+.catalogo {
+  padding-top: 22px;
+}
+.linha-titulo {
   display: flex;
   justify-content: space-between;
-  align-items: end;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  align-items: center;
+  gap: 12px;
 }
-
-.resumo {
-  max-width: 42ch;
-  margin-bottom: 0;
+.nota-demo {
+  font-size: 11px;
+  color: var(--ss-muted);
+  margin: 12px 0;
 }
-.titulo-lista {
-  margin: 2.5rem 0 1rem;
+.barra-lista {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
 }
-.titulo-lista span {
-  font-weight: 400;
-  color: var(--mat-sys-on-surface-variant);
+.sessao {
+  font-size: 11px;
+  color: var(--ss-muted);
+  margin: 0;
 }
-.lista-anuncios {
+.vitrine-anuncios {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-mat-card {
-  min-width: 0;
-}
-mat-card h3 {
-  font-size: 1.25rem;
-  line-height: 1.4;
-  margin: 0.5rem 0;
-}
-.descricao {
-  white-space: pre-wrap;
-}
-.negociacao {
-  color: var(--mat-sys-primary);
-  font-weight: 600;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
 }
 .vazio {
   text-align: center;
-  padding: 2.5rem 1rem;
+  padding: 48px 16px;
+  border: 1px solid var(--ss-line);
+  border-radius: 16px;
 }
-.vazio h3 {
-  margin: 1rem 0 0;
+.vazio > app-icone {
+  font-size: 32px;
+  color: var(--ss-blue);
 }
 .vazio p {
-  color: var(--mat-sys-on-surface-variant);
-  margin-bottom: 1.5rem;
+  color: var(--ss-muted);
 }
-.marca-vazio {
-  display: inline-grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  background: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
-  border-radius: 0.75rem;
-  font-size: 1.5rem;
-  font-weight: 700;
+.nota-colecao {
+  font-size: 10px;
+  color: var(--ss-muted);
+  margin: 8px 10px;
 }
-
-@media (max-width: 1000px) {
-  .lista-anuncios {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 1200px) {
+  .vitrine-anuncios {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-@media (max-width: 600px) {
-  .lista-anuncios {
-    grid-template-columns: 1fr;
+@media (max-width: 800px) {
+  .vitrine-anuncios {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .barra-lista {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .paginacao {
+    align-self: end;
+  }
+}
+@media (max-width: 480px) {
+  .vitrine-anuncios {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

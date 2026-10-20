@@ -1,53 +1,74 @@
-<section class="pagina" aria-labelledby="titulo-pagina">
-  <div class="cabecalho-catalogo">
-    <div>
-      <p class="sobretitulo">FLORIANÓPOLIS E REGIÃO</p>
-      <h1 id="titulo-pagina">Talentos locais.<br />Novas possibilidades.</h1>
-      <p class="resumo">Serviços, aulas e troca de habilidades em um só lugar.</p>
-    </div>
-    <a mat-flat-button routerLink="/anuncios/novo">Criar anúncio de demonstração</a>
-  </div>
-  <div class="aviso">
-    <strong>Você está em uma demonstração.</strong>
-    Os anúncios são fictícios, ficam nesta sessão e desaparecem ao recarregar a página.
-  </div>
-
-  <h2 class="titulo-lista">
-    Serviços e aulas <span>({{ anuncios().length }})</span>
-  </h2>
-  @if (anuncios().length) {
-    <div class="lista-anuncios">
-      @for (anuncio of anuncios(); track anuncio.id) {
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <mat-card-subtitle
-              >{{ categoria(anuncio.categoria) }} · {{ anuncio.cidade }}</mat-card-subtitle
-            >
-            <mat-card-title
-              ><h3>{{ anuncio.titulo }}</h3></mat-card-title
-            >
-          </mat-card-header>
-          <mat-card-content>
-            <p class="descricao">{{ anuncio.descricao }}</p>
-            @if (anuncio.modalidade === 'venda') {
-              <p class="negociacao">
-                Venda · {{ anuncio.preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
-              </p>
-            } @else {
-              <p class="negociacao">Troca por {{ anuncio.habilidadeDesejada }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
+<app-banner-destaques />
+<div class="pagina catalogo">
+  <section aria-labelledby="ultimos-titulo" id="lista-anuncios">
+    <div class="linha-titulo">
+      <h2 class="titulo-secao" id="ultimos-titulo">
+        {{ temFiltro() ? 'Resultados da busca' : 'Últimos postados...' }}
+      </h2>
+      @if (temFiltro()) {
+        <a mat-button routerLink="/anuncios">Limpar filtros</a>
       }
     </div>
-  } @else {
-    <mat-card appearance="outlined" class="vazio">
-      <mat-card-content>
-        <span class="marca-vazio" aria-hidden="true">S</span>
-        <h3>Nenhum anúncio nesta sessão</h3>
-        <p>Experimente cadastrar um serviço ou uma aula para conhecer o fluxo.</p>
-        <a mat-stroked-button routerLink="/anuncios/novo">Experimentar o cadastro</a>
-      </mat-card-content>
-    </mat-card>
-  }
-</section>
+    <p class="nota-demo">
+      Exemplos ilustrativos do protótipo. Perfis, notas e ofertas não representam contratações
+      reais.
+    </p>
+    <div class="barra-lista">
+      <p class="sessao">
+        @if (!anuncios().length) {
+          Nenhum anúncio nesta sessão. <a routerLink="/anuncios/novo">Experimente o cadastro</a>
+        } @else {
+          {{ anuncios().length }} anúncio(s) criado(s) nesta sessão.
+        }
+      </p>
+      <div class="paginacao" aria-label="Paginação de anúncios">
+        <button
+          type="button"
+          aria-label="Anúncios anteriores"
+          (click)="mover(-1)"
+          [disabled]="paginaAtual() === 0"
+        >
+          <app-icone nome="esquerda" />
+        </button>
+        @for (indice of paginas(); track indice) {
+          <button
+            type="button"
+            class="ponto"
+            [class.ativo]="paginaAtual() === indice"
+            [attr.aria-label]="'Página ' + (indice + 1)"
+            [attr.aria-pressed]="paginaAtual() === indice"
+            (click)="pagina.set(indice)"
+          ></button>
+        }
+        <button
+          type="button"
+          aria-label="Próximos anúncios"
+          (click)="mover(1)"
+          [disabled]="paginaAtual() === paginas().length - 1"
+        >
+          <app-icone nome="direita" />
+        </button>
+      </div>
+    </div>
+    @if (visiveis().length) {
+      <div class="vitrine-anuncios">
+        @for (anuncio of visiveis(); track anuncio.id) {
+          <app-anuncio-card [anuncio]="anuncio" />
+        }
+      </div>
+    } @else {
+      <div class="vazio" role="status">
+        <app-icone nome="busca" />
+        <h3>Nenhum resultado encontrado</h3>
+        <p>Tente outro termo ou escolha uma categoria diferente.</p>
+        <a mat-stroked-button routerLink="/anuncios">Ver todos os anúncios</a>
+      </div>
+    }
+  </section>
+  <app-colecao-visual titulo="Talvez você esteja procurando..." [itens]="categorias" />
+  <app-colecao-visual titulo="Produtos mais pesquisados..." [itens]="destaques" formato="banner" />
+  <p class="nota-colecao">
+    Seleção visual do projeto antigo, sem dados de popularidade em tempo real.
+  </p>
+  <app-colecao-visual titulo="Serviços mais procurados..." [itens]="servicos" formato="servico" />
+</div>

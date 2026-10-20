@@ -1,0 +1,204 @@
+:host {
+  display: block;
+}
+.banner {
+  position: relative;
+  max-width: 1200px;
+  padding: 0 32px;
+  margin: 48px auto 88px;
+}
+.bilhete {
+  position: relative;
+  min-height: 210px;
+  background: var(--ss-blue);
+  border-radius: 18px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 10px 20px #00000026;
+}
+.bilhete::before,
+.bilhete::after {
+  content: '';
+  width: 64px;
+  height: 64px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  position: absolute;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.bilhete::before {
+  left: -32px;
+}
+.bilhete::after {
+  right: -32px;
+}
+.chamada {
+  white-space: pre-line;
+  position: relative;
+  margin: 28px 40px 0;
+  font:
+    400 18px/1.05 Arial,
+    sans-serif;
+  z-index: 1;
+}
+h1 {
+  position: relative;
+  margin: -10px 0 0 252px;
+  font:
+    400 44px/0.88 'Angkor',
+    Georgia,
+    serif;
+  letter-spacing: 0.5px;
+  white-space: pre-line;
+  z-index: 1;
+}
+.subtitulo {
+  position: relative;
+  white-space: pre-line;
+  font:
+    400 18px/1.25 Arial,
+    sans-serif;
+  text-align: center;
+  max-width: 290px;
+  margin: -1px 0 25px 280px;
+  z-index: 1;
+}
+.circulo {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--ss-green);
+  border: 2px solid #ffffffd9;
+  box-shadow:
+    0 0 0 6px var(--ss-blue),
+    0 0 0 8px #ffffffa6;
+}
+.grande {
+  width: 275px;
+  height: 275px;
+  right: 48px;
+  top: -130px;
+}
+.pequeno {
+  width: 205px;
+  height: 205px;
+  right: 260px;
+  bottom: -115px;
+}
+.seta {
+  position: absolute;
+  width: 36px;
+  height: 48px;
+  background: white;
+  color: var(--ss-blue);
+  border: 0;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 3;
+}
+.anterior {
+  left: 16px;
+}
+.proximo {
+  right: 16px;
+}
+.indicadores {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  left: 72px;
+  bottom: 25px;
+  z-index: 3;
+}
+.indicadores::before,
+.indicadores::after {
+  content: '';
+  height: 1px;
+  width: 20px;
+  background: white;
+}
+.indicadores button {
+  padding: 0;
+  width: 5px;
+  height: 5px;
+  background: #ffffff80;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.indicadores button.ativo {
+  background: white;
+}
+.indicadores button::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: -7px;
+}
+@media (max-width: 900px) {
+  .grande {
+    right: -110px;
+  }
+  .pequeno {
+    right: 30px;
+  }
+  h1 {
+    margin-left: 210px;
+  }
+  .subtitulo {
+    margin-left: 210px;
+    max-width: 250px;
+  }
+}
+@media (max-width: 600px) {
+  .banner {
+    margin: 24px auto 48px;
+    padding: 0 16px;
+  }
+  .bilhete {
+    min-height: 300px;
+  }
+  .chamada {
+    margin: 28px 34px 0;
+    font-size: 14px;
+  }
+  h1 {
+    margin: 22px 34px 0;
+    font-size: 40px;
+  }
+  .subtitulo {
+    margin: 14px 34px 48px;
+    font-size: 14px;
+    text-align: left;
+    max-width: 210px;
+  }
+  .grande {
+    width: 190px;
+    height: 190px;
+    right: -60px;
+    top: -110px;
+  }
+  .pequeno {
+    width: 140px;
+    height: 140px;
+    right: -50px;
+    bottom: -60px;
+  }
+  .anterior {
+    left: 0;
+  }
+  .proximo {
+    right: 0;
+  }
+  .indicadores {
+    left: 50px;
+    bottom: 20px;
+  }
+}
