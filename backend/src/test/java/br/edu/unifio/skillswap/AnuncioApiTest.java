@@ -84,4 +84,9 @@ class AnuncioApiTest {
         mvc.perform(get("/api/anuncios/999999")).andExpect(status().isNotFound())
             .andExpect(jsonPath("$.codigo").value("NAO_ENCONTRADO"));
     }
+
+    @Test void preservaStatusDeRotaEMetodoInexistentes() throws Exception {
+        mvc.perform(get("/api/inexistente")).andExpect(status().isNotFound());
+        mvc.perform(delete("/api/anuncios/1")).andExpect(status().isMethodNotAllowed());
+    }
 }

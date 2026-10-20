@@ -39,6 +39,11 @@ public class ErroControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<Erro> inesperado(Exception ex) {
+        if (ex instanceof org.springframework.web.ErrorResponse erroHttp) {
+            String codigo = erroHttp.getStatusCode().value() == 404 ? "NAO_ENCONTRADO" : "HTTP_INVALIDO";
+            return ResponseEntity.status(erroHttp.getStatusCode()).headers(erroHttp.getHeaders())
+                .body(new Erro(codigo, "Requisição não atendida.", Map.of()));
+        }
         org.slf4j.LoggerFactory.getLogger(getClass()).error("Falha ao processar requisição: {}", ex.getClass().getSimpleName());
         return ResponseEntity.internalServerError().body(new Erro("ERRO_INTERNO", "Não foi possível concluir a operação.", Map.of()));
     }
