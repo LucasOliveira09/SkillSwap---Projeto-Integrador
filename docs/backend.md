@@ -8,6 +8,16 @@ Entregas: base compilável; listagem/cadastro persistentes com testes; carga ini
 
 O banco é MySQL 8.4. O backend usa `ddl-auto=update` para desenvolvimento, preservando os registros, em vez de `create`/`import.sql` a cada reinício. A carga ilustrativa possui chave estável e não duplica nem substitui dados existentes. Credenciais vêm do ambiente. Antes de produção, adotar migrações versionadas, autenticação e autorização; esta entrega é uma aplicação acadêmica local, vinculada a loopback, sem contas nem operações de edição/exclusão.
 
+## Convenções REST
+
+Diretriz reforçada pelo usuário em 20/10/2026 para as próximas alterações:
+
+- Modelar recursos nas URLs, usando substantivos e nomes plurais nas coleções, como `/api/anuncios` e `/api/categorias`. `/api/vitrine` representa uma composição de leitura. Evitar rotas com verbos, como `/cadastrarAnuncio`.
+- Usar GET para leitura sem modificar dados, POST para criação, PUT para substituição completa, PATCH para alteração parcial e DELETE para remoção, quando essas operações forem implementadas e autorizadas. Preservar a idempotência de PUT e DELETE.
+- Retornar os códigos HTTP correspondentes ao resultado: 200 em consultas, 201 com `Location` na criação e 204 sem corpo quando aplicável. Preservar 400, 404, 405 e demais erros adequados, sem devolver 200 para uma falha.
+- Validar DTOs de entrada no servidor, separar entidades da representação pública e manter o formato de erros consistente. Usar parâmetros de consulta para busca, filtros e paginação, com limites definidos.
+- Manter o contrato e os testes atualizados ao alterar o comportamento da API. As convenções não autorizam acrescentar edição/exclusão sem autenticação e autorização por usuário.
+
 ## Contrato HTTP
 
 Base `/api`; Angular usa proxy local, sem configurar CORS permissivo.
