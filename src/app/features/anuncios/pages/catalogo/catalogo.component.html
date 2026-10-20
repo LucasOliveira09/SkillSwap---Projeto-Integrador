@@ -15,18 +15,15 @@
     </p>
     <div class="barra-lista">
       <p class="sessao">
-        @if (!anuncios().length) {
-          Nenhum anúncio nesta sessão. <a routerLink="/anuncios/novo">Experimente o cadastro</a>
-        } @else {
-          {{ anuncios().length }} anúncio(s) criado(s) nesta sessão.
-        }
+        {{ estado().dados.totalItens }} anúncio(s) encontrado(s).
+        <a routerLink="/anuncios/novo">Criar anúncio</a>
       </p>
       <div class="paginacao" aria-label="Paginação de anúncios">
         <button
           type="button"
           aria-label="Anúncios anteriores"
           (click)="mover(-1)"
-          [disabled]="paginaAtual() === 0"
+          [disabled]="estado().carregando || paginaAtual() === 0"
         >
           <app-icone nome="esquerda" />
         </button>
@@ -37,20 +34,31 @@
             [class.ativo]="paginaAtual() === indice"
             [attr.aria-label]="'Página ' + (indice + 1)"
             [attr.aria-pressed]="paginaAtual() === indice"
-            (click)="pagina.set(indice)"
+            (click)="irPara(indice)"
+            [disabled]="estado().carregando"
           ></button>
         }
         <button
           type="button"
           aria-label="Próximos anúncios"
           (click)="mover(1)"
-          [disabled]="paginaAtual() === paginas().length - 1"
+          [disabled]="estado().carregando || paginaAtual() >= totalPaginas() - 1"
         >
           <app-icone nome="direita" />
         </button>
       </div>
     </div>
-    @if (visiveis().length) {
+    @if (estado().carregando) {
+      <p class="vazio" role="status">Carregando anúncios...</p>
+    } @else if (estado().erro) {
+      <div class="vazio" role="alert">
+        <h3>Não foi possível carregar os anúncios.</h3>
+        <p>Verifique a conexão e tente novamente.</p>
+        <button mat-stroked-button type="button" data-testid="recarregar" (click)="recarregar()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (visiveis().length) {
       <div class="vitrine-anuncios">
         @for (anuncio of visiveis(); track anuncio.id) {
           <app-anuncio-card [anuncio]="anuncio" />
@@ -65,10 +73,25 @@
       </div>
     }
   </section>
-  <app-colecao-visual titulo="Talvez você esteja procurando..." [itens]="categorias" />
-  <app-colecao-visual titulo="Produtos mais pesquisados..." [itens]="destaques" formato="banner" />
-  <p class="nota-colecao">
-    Seleção visual do projeto antigo, sem dados de popularidade em tempo real.
-  </p>
-  <app-colecao-visual titulo="Serviços mais procurados..." [itens]="servicos" formato="servico" />
+  @if (vitrine().dados; as colecoes) {
+    <app-colecao-visual titulo="Talvez você esteja procurando..." [itens]="colecoes.categorias" />
+    <app-colecao-visual
+      titulo="Produtos mais pesquisados..."
+      [itens]="colecoes.destaques"
+      formato="banner"
+    />
+    <p class="nota-colecao">
+      Seleção visual do projeto antigo, sem dados de popularidade em tempo real.
+    </p>
+    <app-colecao-visual
+      titulo="Serviços mais procurados..."
+      [itens]="colecoes.servicos"
+      formato="servico"
+    />
+  } @else if (vitrine().erro) {
+    <p role="alert">
+      Não foi possível carregar as coleções.
+      <button mat-button type="button" (click)="recarregar()">Tentar novamente</button>
+    </p>
+  }
 </div>

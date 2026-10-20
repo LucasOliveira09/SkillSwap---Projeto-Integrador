@@ -7,7 +7,9 @@ describe('AnunciosApiService', () => {
   let http: HttpTestingController;
   let api: AnunciosApiService;
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     http = TestBed.inject(HttpTestingController);
     api = TestBed.inject(AnunciosApiService);
   });
@@ -15,7 +17,7 @@ describe('AnunciosApiService', () => {
 
   it('envia busca, categoria e página para o backend', () => {
     api.listar({ busca: 'violão', categoria: 'aulas', pagina: 2 }).subscribe();
-    const req = http.expectOne(r => r.url === '/api/anuncios');
+    const req = http.expectOne((r) => r.url === '/api/anuncios');
     expect(req.request.params.get('busca')).toBe('violão');
     expect(req.request.params.get('categoria')).toBe('aulas');
     expect(req.request.params.get('pagina')).toBe('2');
@@ -25,10 +27,20 @@ describe('AnunciosApiService', () => {
   it('aguarda a gravação e propaga a falha sem simular sucesso local', () => {
     let concluido = false;
     let falhou = false;
-    api.criar({ titulo: 'Aula', descricao: 'Violão', categoria: 'aulas', cidade: 'Ourinhos',
-      modalidade: 'venda', preco: 90, habilidadeDesejada: '' }).subscribe({
-      next: () => concluido = true, error: () => falhou = true,
-    });
+    api
+      .criar({
+        titulo: 'Aula',
+        descricao: 'Violão',
+        categoria: 'aulas',
+        cidade: 'Ourinhos',
+        modalidade: 'venda',
+        preco: 90,
+        habilidadeDesejada: '',
+      })
+      .subscribe({
+        next: () => (concluido = true),
+        error: () => (falhou = true),
+      });
     expect(concluido).toBeFalse();
     const req = http.expectOne('/api/anuncios');
     expect(req.request.method).toBe('POST');

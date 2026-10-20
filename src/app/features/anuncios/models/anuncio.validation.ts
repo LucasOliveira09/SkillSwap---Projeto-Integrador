@@ -1,6 +1,9 @@
-import { CATEGORIAS_ANUNCIO, DadosAnuncio } from './anuncio.model';
+import { DadosAnuncio } from './anuncio.model';
 
-export function validarAnuncio(dados: DadosAnuncio): string | null {
+export function validarAnuncio(
+  dados: DadosAnuncio,
+  categorias: readonly { valor: string }[],
+): string | null {
   const campos = [
     { valor: dados.titulo, nome: 'Título', limite: 100 },
     { valor: dados.descricao, nome: 'Descrição', limite: 1500 },
@@ -14,12 +17,20 @@ export function validarAnuncio(dados: DadosAnuncio): string | null {
     }
   }
 
-  if (!CATEGORIAS_ANUNCIO.some((categoria) => categoria.valor === dados.categoria)) {
+  if (!categorias.some((categoria) => categoria.valor === dados.categoria)) {
     return 'Selecione uma categoria válida.';
   }
   if (dados.modalidade === 'venda') {
-    if (dados.preco === null || !Number.isFinite(dados.preco) || dados.preco <= 0) {
+    if (
+      dados.preco === null ||
+      !Number.isFinite(dados.preco) ||
+      dados.preco <= 0 ||
+      dados.preco > 99999999.99
+    ) {
       return 'Informe um preço de venda maior que zero.';
+    }
+    if (Math.abs(dados.preco * 100 - Math.round(dados.preco * 100)) > 0.000001) {
+      return 'Use até duas casas decimais no preço.';
     }
   } else if (dados.modalidade === 'troca') {
     if (!dados.habilidadeDesejada.trim() || dados.habilidadeDesejada.length > 120) {

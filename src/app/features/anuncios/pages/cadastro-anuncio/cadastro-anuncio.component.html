@@ -11,7 +11,8 @@
   </div>
   <div>
     <app-icone nome="usuario" /><span
-      ><strong>Cadastro demonstrativo</strong><small>Dados apenas nesta sessão</small></span
+      ><strong>Cadastro no banco de dados</strong
+      ><small>Dados mantidos após recarregar</small></span
     >
   </div>
 </div>
@@ -29,6 +30,7 @@
           type="button"
           [class.ativo]="dados.modalidade === 'venda'"
           [attr.aria-pressed]="dados.modalidade === 'venda'"
+          [disabled]="salvando"
           (click)="dados.modalidade = 'venda'"
         >
           Serviço ou aula
@@ -37,6 +39,7 @@
           type="button"
           [class.ativo]="dados.modalidade === 'troca'"
           [attr.aria-pressed]="dados.modalidade === 'troca'"
+          [disabled]="salvando"
           (click)="dados.modalidade = 'troca'"
         >
           Somente troca
@@ -47,13 +50,25 @@
           <mat-card-title>Dados do anúncio</mat-card-title>
           <mat-card-subtitle>Todos os campos exibidos são obrigatórios.</mat-card-subtitle>
         </mat-card-header>
-        <form #form="ngForm" (ngSubmit)="salvar(form)">
+        @if (carregandoCategorias) {
+          <p role="status">Carregando categorias...</p>
+        }
+        @if (erroCategorias) {
+          <p role="alert">
+            Não foi possível carregar as categorias.
+            <button mat-button type="button" (click)="carregarCategorias()">
+              Tentar novamente
+            </button>
+          </p>
+        }
+        <form #form="ngForm" [attr.aria-busy]="salvando" (ngSubmit)="salvar(form)">
           <mat-card-content>
             <mat-form-field appearance="outline">
               <mat-label>Título do anúncio</mat-label>
               <input
                 matInput
                 name="titulo"
+                [disabled]="salvando || carregandoCategorias"
                 [(ngModel)]="dados.titulo"
                 required
                 maxlength="100"
@@ -66,6 +81,7 @@
               <textarea
                 matInput
                 name="descricao"
+                [disabled]="salvando || carregandoCategorias"
                 [(ngModel)]="dados.descricao"
                 required
                 maxlength="1500"
@@ -76,8 +92,13 @@
             <div class="campos-em-linha">
               <mat-form-field appearance="outline">
                 <mat-label>Categoria</mat-label>
-                <mat-select name="categoria" [(ngModel)]="dados.categoria" required>
-                  @for (categoria of categorias; track categoria.valor) {
+                <mat-select
+                  name="categoria"
+                  [disabled]="salvando || carregandoCategorias"
+                  [(ngModel)]="dados.categoria"
+                  required
+                >
+                  @for (categoria of categorias(); track categoria.valor) {
                     <mat-option [value]="categoria.valor">{{ categoria.rotulo }}</mat-option>
                   }
                 </mat-select>
@@ -87,6 +108,7 @@
                 <input
                   matInput
                   name="cidade"
+                  [disabled]="salvando || carregandoCategorias"
                   [(ngModel)]="dados.cidade"
                   required
                   maxlength="80"
@@ -97,7 +119,12 @@
             </div>
             <mat-form-field appearance="outline">
               <mat-label>Como deseja negociar?</mat-label>
-              <mat-select name="modalidade" [(ngModel)]="dados.modalidade" required>
+              <mat-select
+                name="modalidade"
+                [disabled]="salvando || carregandoCategorias"
+                [(ngModel)]="dados.modalidade"
+                required
+              >
                 <mat-option value="venda">Venda de serviço ou aula</mat-option>
                 <mat-option value="troca">Troca por outra habilidade</mat-option>
               </mat-select>
@@ -109,6 +136,7 @@
                   matInput
                   name="preco"
                   type="number"
+                  [disabled]="salvando || carregandoCategorias"
                   [(ngModel)]="dados.preco"
                   required
                   min="0.01"
@@ -122,6 +150,7 @@
                 <input
                   matInput
                   name="habilidadeDesejada"
+                  [disabled]="salvando || carregandoCategorias"
                   [(ngModel)]="dados.habilidadeDesejada"
                   required
                   maxlength="120"
@@ -131,8 +160,11 @@
               </mat-form-field>
             }
             <p class="orientacao" id="orientacao" aria-live="polite">
-              {{ erroValidacao || 'Dados prontos para simular o cadastro.' }}
+              {{ erroValidacao || 'Dados prontos para salvar.' }}
             </p>
+            @if (erro) {
+              <p role="alert">{{ erro }}</p>
+            }
             @if (mensagem) {
               <p class="confirmacao" role="status">
                 {{ mensagem }} <a routerLink="/anuncios">Ver catálogo</a>
@@ -140,16 +172,29 @@
             }
           </mat-card-content>
           <mat-card-actions align="end">
-            <button mat-button type="button" data-testid="limpar" (click)="limpar(form)">
+            <button
+              mat-button
+              type="button"
+              data-testid="limpar"
+              [disabled]="salvando"
+              (click)="limpar(form)"
+            >
               Limpar
             </button>
             <button
               mat-flat-button
               type="submit"
-              [disabled]="form.invalid || !!erroValidacao"
+              [disabled]="
+                form.invalid ||
+                !!erroValidacao ||
+                salvando ||
+                carregandoCategorias ||
+                erroCategorias ||
+                !!mensagem
+              "
               aria-describedby="orientacao"
             >
-              Simular cadastro
+              {{ salvando ? 'Salvando...' : 'Salvar anúncio' }}
             </button>
           </mat-card-actions>
         </form>
@@ -193,8 +238,8 @@
         </ul>
       </div>
       <p class="simulacao">
-        Simulação: o anúncio fica apenas nesta sessão e desaparece ao recarregar. Nenhuma publicação
-        ou contratação real é realizada.
+        O anúncio é salvo no banco de dados e permanece após recarregar. Esta versão acadêmica ainda
+        não possui contas, contratação ou pagamentos.
       </p>
     </aside>
   </div>

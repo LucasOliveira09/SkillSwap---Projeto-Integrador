@@ -52,7 +52,7 @@
           menu.close();
           informar(
             'Ajuda',
-            'Esta é uma demonstração acadêmica do SkillSwap. Os exemplos não estão disponíveis para contratação, e os anúncios criados ficam apenas nesta sessão.'
+            'Esta é uma versão acadêmica do SkillSwap. Os exemplos não estão disponíveis para contratação. Os anúncios cadastrados são salvos e permanecem após recarregar.'
           )
         "
       >
@@ -83,6 +83,7 @@
           <input
             #busca
             type="search"
+            maxlength="100"
             aria-label="Buscar serviços e aulas"
             placeholder="Procure..."
             [value]="parametros().get('busca') || ''"
@@ -149,7 +150,7 @@
             (click)="
               informar(
                 'Perguntas frequentes',
-                'O SkillSwap conecta quem oferece e quem procura serviços e aulas. Esta versão permite explorar exemplos e simular o cadastro; os dados da sessão desaparecem ao recarregar.'
+                'O SkillSwap conecta quem oferece e quem procura serviços e aulas. Esta versão permite explorar exemplos e cadastrar anúncios. Os dados cadastrados permanecem após recarregar.'
               )
             "
           >
@@ -169,7 +170,7 @@
             (click)="
               informar(
                 'Política de privacidade',
-                'Os anúncios de teste permanecem somente na memória desta sessão. Não informe dados sensíveis. A política de privacidade será definida antes da integração com contas e armazenamento permanente.'
+                'Os anúncios cadastrados são armazenados no servidor e ficam visíveis no catálogo desta aplicação acadêmica. Não informe dados sensíveis. A política de privacidade será definida antes da disponibilização pública.'
               )
             "
           >

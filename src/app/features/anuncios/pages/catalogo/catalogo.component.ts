@@ -1,28 +1,24 @@
-import { Component, computed, inject, linkedSignal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { AnunciosDemoService } from '../../data-access/anuncios-demo.service';
-import { CATEGORIAS_ANUNCIO } from '../../models/anuncio.model';
-import {
-  CATEGORIAS_VISUAIS,
-  DESTAQUES_VISUAIS,
-  EXEMPLOS_VITRINE,
-  SERVICOS_VISUAIS,
-} from '../../data-access/vitrine-exemplos';
+import { BehaviorSubject, catchError, combineLatest, map, of, startWith, switchMap } from 'rxjs';
+import { AnunciosApiService } from '../../data-access/anuncios-api.service';
+import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
 import { BannerDestaquesComponent } from '../../ui/banner-destaques/banner-destaques.component';
 import { AnuncioCardComponent } from '../../ui/anuncio-card/anuncio-card.component';
 import { ColecaoVisualComponent } from '../../ui/colecao-visual/colecao-visual.component';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { CartaoAnuncio } from '../../ui/vitrine.model';
 
-function normalizar(texto: string): string {
-  return texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
+const paginaVazia: PaginaAnuncios = {
+  itens: [],
+  pagina: 0,
+  tamanho: 5,
+  totalItens: 0,
+  totalPaginas: 0,
+};
+const carregando = { carregando: true, erro: false, dados: paginaVazia };
 
 @Component({
   selector: 'app-catalogo',
@@ -40,69 +36,87 @@ function normalizar(texto: string): string {
 })
 export class CatalogoComponent {
   private readonly route = inject(ActivatedRoute);
-  protected readonly anuncios = inject(AnunciosDemoService).anuncios;
+  private readonly router = inject(Router);
+  private readonly api = inject(AnunciosApiService);
+  private readonly repetir = new BehaviorSubject(0);
   protected readonly parametros = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
   });
-  protected readonly pagina = linkedSignal({ source: this.parametros, computation: () => 0 });
-  protected readonly categorias = CATEGORIAS_VISUAIS;
-  protected readonly destaques = DESTAQUES_VISUAIS;
-  protected readonly servicos = SERVICOS_VISUAIS;
   protected readonly temFiltro = computed(
     () => !!(this.parametros().get('busca') || this.parametros().get('categoria')),
   );
-  protected readonly cartoes = computed<readonly CartaoAnuncio[]>(() => [
-    ...this.anuncios().map(
-      (anuncio): CartaoAnuncio => ({
-        id: anuncio.id,
-        titulo: anuncio.titulo,
-        categoria: CATEGORIAS_ANUNCIO.find((categoria) => categoria.valor === anuncio.categoria)!
-          .rotulo,
-        filtros: [anuncio.categoria],
-        preco: anuncio.preco,
-        unidade: '',
-        trocaPor: anuncio.habilidadeDesejada,
-        detalhes: [anuncio.descricao],
-        autor: 'Seu anúncio',
-        estrelas: null,
-        quando: 'nesta sessão',
-        cidade: anuncio.cidade,
-        exemplo: false,
+  protected readonly estado = toSignal(
+    combineLatest([this.route.queryParamMap, this.repetir]).pipe(
+      switchMap(([parametros]) => {
+        const pagina = Number(parametros.get('pagina') || 0);
+        return this.api
+          .listar({
+            busca: parametros.get('busca') || '',
+            categoria: parametros.get('categoria') || '',
+            pagina: Number.isSafeInteger(pagina) && pagina >= 0 && pagina <= 1000000 ? pagina : 0,
+          })
+          .pipe(
+            map((dados) => ({ carregando: false, erro: false, dados })),
+            catchError(() => of({ carregando: false, erro: true, dados: paginaVazia })),
+            startWith(carregando),
+          );
       }),
     ),
-    ...EXEMPLOS_VITRINE,
-  ]);
-  protected readonly filtrados = computed(() => {
-    const busca = normalizar(this.parametros().get('busca') || '');
-    const categoria = this.parametros().get('categoria');
-    return this.cartoes().filter(
-      (item) =>
-        (!categoria || item.filtros.includes(categoria)) &&
-        normalizar(
-          [
-            item.titulo,
-            item.categoria,
-            item.cidade,
-            item.autor,
-            item.trocaPor,
-            ...item.detalhes,
-          ].join(' '),
-        ).includes(busca),
-    );
-  });
-  protected readonly paginas = computed(() =>
-    Array.from(
-      { length: Math.max(1, Math.ceil(this.filtrados().length / 5)) },
-      (_, indice) => indice,
+    { initialValue: carregando },
+  );
+  protected readonly vitrine = toSignal(
+    this.repetir.pipe(
+      switchMap(() =>
+        this.api.vitrine().pipe(
+          map((dados) => ({ dados, erro: false })),
+          catchError(() => of({ dados: null, erro: true })),
+        ),
+      ),
     ),
+    { initialValue: { dados: null, erro: false } },
   );
-  protected readonly paginaAtual = computed(() =>
-    Math.min(this.pagina(), this.paginas().length - 1),
-  );
-  protected readonly visiveis = computed(() =>
-    this.filtrados().slice(this.paginaAtual() * 5, this.paginaAtual() * 5 + 5),
-  );
+  protected readonly paginaAtual = computed(() => this.estado().dados.pagina);
+  protected readonly totalPaginas = computed(() => this.estado().dados.totalPaginas);
+  protected readonly paginas = computed(() => {
+    const total = this.totalPaginas();
+    const inicio = Math.max(0, Math.min(this.paginaAtual() - 2, total - 5));
+    return Array.from({ length: Math.min(5, total) }, (_, i) => inicio + i);
+  });
+  protected readonly visiveis = computed(() => this.estado().dados.itens.map(this.cartao));
+
+  protected recarregar(): void {
+    this.repetir.next(this.repetir.value + 1);
+  }
+  protected irPara(pagina: number): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { pagina },
+      queryParamsHandling: 'merge',
+    });
+  }
   protected mover(direcao: number): void {
-    this.pagina.set(Math.max(0, Math.min(this.paginas().length - 1, this.paginaAtual() + direcao)));
+    this.irPara(Math.max(0, Math.min(this.totalPaginas() - 1, this.paginaAtual() + direcao)));
+  }
+
+  private cartao(anuncio: AnuncioApi): CartaoAnuncio {
+    return {
+      id: String(anuncio.id),
+      titulo: anuncio.titulo,
+      categoria: anuncio.categoriaRotulo,
+      filtros: [anuncio.categoria],
+      imagem: anuncio.imagem || undefined,
+      preco: anuncio.preco,
+      unidade: anuncio.unidade,
+      trocaPor: anuncio.habilidadeDesejada,
+      detalhes: anuncio.descricao.split('\n'),
+      autor: anuncio.autor || 'Anunciante',
+      avatar: anuncio.avatar || undefined,
+      estrelas: anuncio.estrelas,
+      quando: anuncio.exemplo
+        ? 'Ilustrativo'
+        : new Date(anuncio.criadoEm).toLocaleDateString('pt-BR'),
+      cidade: anuncio.cidade,
+      exemplo: anuncio.exemplo,
+    };
   }
 }

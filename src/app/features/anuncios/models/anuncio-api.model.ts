@@ -1,7 +1,10 @@
 import { DadosAnuncio } from './anuncio.model';
 import { ItemColecao } from '../ui/vitrine.model';
 
-export interface CategoriaApi { valor: string; rotulo: string }
+export interface CategoriaApi {
+  valor: string;
+  rotulo: string;
+}
 
 export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   id: number;
@@ -30,4 +33,8 @@ export interface VitrineApi {
   servicos: readonly ItemColecao[];
 }
 
-export interface FiltrosAnuncios { busca: string; categoria: string; pagina: number }
+export interface FiltrosAnuncios {
+  busca: string;
+  categoria: string;
+  pagina: number;
+}

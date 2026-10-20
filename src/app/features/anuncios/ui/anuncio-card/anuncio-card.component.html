@@ -6,7 +6,7 @@
       <div class="sem-foto"><app-icone nome="troca" /><span>Seu anúncio</span></div>
     }
     <span class="categoria">{{ anuncio().categoria }}</span>
-    <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Nesta sessão' }}</span>
+    <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Cadastrado' }}</span>
   </div>
   <div class="corpo">
     <div class="titulo-preco">
@@ -20,9 +20,11 @@
         <p class="preco">Troca</p>
       }
     </div>
-    <p class="troca">
-      <app-icone nome="troca" /> <span>Troco por: {{ anuncio().trocaPor }}</span>
-    </p>
+    @if (anuncio().trocaPor) {
+      <p class="troca">
+        <app-icone nome="troca" /> <span>Troco por: {{ anuncio().trocaPor }}</span>
+      </p>
+    }
     <ul class="detalhes">
       @for (detalhe of anuncio().detalhes; track $index) {
         <li>

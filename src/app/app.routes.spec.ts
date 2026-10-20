@@ -2,21 +2,41 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Navegação do SkillSwap', () => {
-  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter(routes)] }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+    }),
+  );
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+  function carregarCatalogo() {
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/vitrine').flush({ categorias: [], destaques: [], servicos: [] });
+    http
+      .expectOne((r) => r.url === '/api/anuncios')
+      .flush({ itens: [], pagina: 0, tamanho: 5, totalItens: 0, totalPaginas: 0 });
+  }
 
   it('abre o catálogo a partir da raiz e permite navegar até o cadastro', async () => {
     const harness = await RouterTestingHarness.create('/');
     expect(TestBed.inject(Router).url).toBe('/anuncios');
-    expect(harness.routeNativeElement?.textContent).toContain('Nenhum anúncio nesta sessão');
+    carregarCatalogo();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Nenhum resultado encontrado');
     await harness.navigateByUrl('/anuncios/novo');
     expect(harness.routeNativeElement?.querySelector('form')).not.toBeNull();
-    expect(harness.routeNativeElement?.textContent).toContain('Cadastro demonstrativo');
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/categorias')
+      .flush([{ valor: 'aulas', rotulo: 'Aulas' }]);
+    expect(harness.routeNativeElement?.textContent).toContain('Cadastro no banco de dados');
   });
 
   it('retorna ao catálogo para um endereço desconhecido', async () => {
     await RouterTestingHarness.create('/endereco-inexistente');
+    carregarCatalogo();
     expect(TestBed.inject(Router).url).toBe('/anuncios');
   });
 });
