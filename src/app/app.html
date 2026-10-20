@@ -1,29 +1,184 @@
 <button class="pular-conteudo" type="button" (click)="conteudo.focus()">
   Pular para o conteúdo
 </button>
-<header class="cabecalho">
-  <div class="barra">
-    <a class="marca" routerLink="/anuncios" aria-label="SkillSwap - início"
-      >Skill<span>Swap</span><span class="ponto">.</span></a
-    >
+<mat-sidenav-container>
+  <mat-sidenav
+    #menu
+    mode="over"
+    fixedInViewport
+    role="navigation"
+    aria-label="Menu principal"
+    class="menu-lateral"
+  >
+    <div class="menu-topo">
+      <img src="images/legado/logo-skill-swap.png" alt="Skill Swap" width="126" /><button
+        mat-icon-button
+        (click)="menu.close()"
+        aria-label="Fechar menu"
+      >
+        <app-icone nome="fechar" />
+      </button>
+    </div>
+    <p class="menu-saudacao">Bem-vindo ao SkillSwap</p>
+    <p class="menu-descricao">Encontre talentos. Compartilhe os seus.</p>
     <nav aria-label="Navegação principal">
       <a
         mat-button
         routerLink="/anuncios"
+        (click)="menu.close()"
         routerLinkActive="ativo"
         [routerLinkActiveOptions]="{ exact: true }"
         ariaCurrentWhenActive="page"
-        >Explorar</a
+        >Explorar catálogo</a
       >
-      <a
-        mat-button
-        routerLink="/anuncios/novo"
-        routerLinkActive="ativo"
-        ariaCurrentWhenActive="page"
+      <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo" (click)="menu.close()"
         >Criar anúncio</a
       >
+      <button
+        mat-button
+        (click)="
+          menu.close();
+          informar(
+            'Minha conta',
+            'O acesso às contas estará disponível em uma próxima etapa. Você pode explorar o catálogo e experimentar o cadastro de anúncios.'
+          )
+        "
+      >
+        Minha conta
+      </button>
+      <button
+        mat-button
+        (click)="
+          menu.close();
+          informar(
+            'Ajuda',
+            'Esta é uma demonstração acadêmica do SkillSwap. Os exemplos não estão disponíveis para contratação, e os anúncios criados ficam apenas nesta sessão.'
+          )
+        "
+      >
+        Ajuda e informações
+      </button>
     </nav>
-  </div>
-</header>
-<main #conteudo id="conteudo" tabindex="-1"><router-outlet /></main>
-<footer class="rodape">SkillSwap · Projeto Integrador · Grupo Saptura</footer>
+    <small>Projeto Integrador · Grupo Saptura</small>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <header class="cabecalho">
+      <div class="barra">
+        <div class="marca-area">
+          <button
+            mat-icon-button
+            class="botao-menu"
+            (click)="menu.open()"
+            aria-label="Abrir menu"
+            [attr.aria-expanded]="menu.opened"
+          >
+            <app-icone nome="menu" />
+          </button>
+          <a class="marca" routerLink="/anuncios" aria-label="SkillSwap - início"
+            ><img src="images/legado/logo-skill-swap.png" alt="Skill Swap" width="140" height="58"
+          /></a>
+        </div>
+        <form class="busca" role="search" (submit)="pesquisar($event, busca.value)">
+          <button type="submit" aria-label="Pesquisar"><app-icone nome="busca" /></button>
+          <input
+            #busca
+            type="search"
+            aria-label="Buscar serviços e aulas"
+            placeholder="Procure..."
+            [value]="parametros().get('busca') || ''"
+          />
+        </form>
+        <div class="acoes-cabecalho">
+          <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo">Anunciar</a>
+          <button
+            mat-button
+            class="carrinho"
+            (click)="
+              informar(
+                'Carrinho',
+                'O carrinho ainda não está disponível nesta demonstração. Explore os anúncios ou experimente criar o seu.'
+              )
+            "
+          >
+            <app-icone nome="carrinho" /> Carrinho
+          </button>
+          <button
+            mat-stroked-button
+            class="conta"
+            (click)="
+              informar(
+                'Entrar / Registrar-se',
+                'O acesso às contas estará disponível em uma próxima etapa. Por enquanto, você pode testar o cadastro de anúncios sem criar uma conta.'
+              )
+            "
+          >
+            <app-icone nome="usuario" /><span>Entrar/Registrar-se</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main #conteudo id="conteudo" tabindex="-1"><router-outlet /></main>
+    <footer class="rodape">
+      <div class="rodape-interno">
+        <div class="rodape-marca">
+          <p class="marca-escrita">SKILL<br />SWAP</p>
+          <p><strong>Conectando talentos</strong><br />Serviços, aulas e novas possibilidades.</p>
+          <p class="rodape-contato">
+            Projeto Integrador · Grupo Saptura<br />Florianópolis e região
+          </p>
+          <p class="download-titulo">Aplicativo em breve</p>
+          <div class="lojas">
+            <img
+              src="images/legado/app-store.png"
+              alt="App Store — aplicativo ainda indisponível"
+              width="144"
+              height="44"
+              loading="lazy"
+            /><img
+              src="images/legado/google-play.png"
+              alt="Google Play — aplicativo ainda indisponível"
+              width="144"
+              height="44"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div class="rodape-sobre">
+          <h2>Sobre</h2>
+          <button
+            (click)="
+              informar(
+                'Perguntas frequentes',
+                'O SkillSwap conecta quem oferece e quem procura serviços e aulas. Esta versão permite explorar exemplos e simular o cadastro; os dados da sessão desaparecem ao recarregar.'
+              )
+            "
+          >
+            FAQ
+          </button>
+          <button
+            (click)="
+              informar(
+                'Termos de uso',
+                'Esta demonstração acadêmica não realiza contratações nem pagamentos. Os termos de uso serão definidos antes da disponibilização pública dos serviços.'
+              )
+            "
+          >
+            Termos de uso
+          </button>
+          <button
+            (click)="
+              informar(
+                'Política de privacidade',
+                'Os anúncios de teste permanecem somente na memória desta sessão. Não informe dados sensíveis. A política de privacidade será definida antes da integração com contas e armazenamento permanente.'
+              )
+            "
+          >
+            Política de privacidade
+          </button>
+          <p>© 2026 SkillSwap · Projeto acadêmico.<br />Demonstração sem contratação real.</p>
+        </div>
+      </div>
+      <span class="circulo-rodape" aria-hidden="true"></span>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>
