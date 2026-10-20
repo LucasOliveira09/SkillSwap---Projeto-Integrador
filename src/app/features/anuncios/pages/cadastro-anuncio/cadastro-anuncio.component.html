@@ -1,126 +1,201 @@
-<section class="pagina cadastro" aria-labelledby="titulo-pagina">
-  <div class="introducao">
-    <a mat-button routerLink="/anuncios">Voltar ao catálogo</a>
-    <p class="sobretitulo">SEU CONHECIMENTO TEM VALOR</p>
-    <h1 id="titulo-pagina">Ofereça um serviço ou uma aula.</h1>
-    <p>Conte o que você faz, onde atende e como deseja negociar.</p>
-    <aside class="aviso">
-      <h2>Cadastro demonstrativo</h2>
-      <p>
-        Os anúncios ficam apenas nesta sessão e são apagados ao recarregar a página. Nenhum serviço
-        é publicado ou contratado de verdade.
+<div class="confianca" aria-label="Informações do cadastro">
+  <div>
+    <app-icone nome="estrela" /><span
+      ><strong>Seu talento em destaque</strong><small>Serviços e aulas no mesmo lugar</small></span
+    >
+  </div>
+  <div>
+    <app-icone nome="troca" /><span
+      ><strong>Venda ou troca</strong><small>Escolha como deseja negociar</small></span
+    >
+  </div>
+  <div>
+    <app-icone nome="usuario" /><span
+      ><strong>Cadastro demonstrativo</strong><small>Dados apenas nesta sessão</small></span
+    >
+  </div>
+</div>
+<section class="area-cadastro" aria-labelledby="titulo-pagina">
+  <div class="cadastro-layout">
+    <div class="editor">
+      <a mat-button class="voltar" routerLink="/anuncios">Início / Novo anúncio</a>
+      <h1 id="titulo-pagina">Crie seu anúncio</h1>
+      <p class="introducao">Conte o que você oferece e conecte-se a novas possibilidades.</p>
+      <div class="etapa">
+        <span>1</span> Dados do anúncio <small>Preencha para visualizar sua oferta</small>
+      </div>
+      <div class="modos" aria-label="Modalidade do anúncio">
+        <button
+          type="button"
+          [class.ativo]="dados.modalidade === 'venda'"
+          [attr.aria-pressed]="dados.modalidade === 'venda'"
+          (click)="dados.modalidade = 'venda'"
+        >
+          Serviço ou aula
+        </button>
+        <button
+          type="button"
+          [class.ativo]="dados.modalidade === 'troca'"
+          [attr.aria-pressed]="dados.modalidade === 'troca'"
+          (click)="dados.modalidade = 'troca'"
+        >
+          Somente troca
+        </button>
+      </div>
+      <mat-card appearance="outlined" class="formulario-card">
+        <mat-card-header>
+          <mat-card-title>Dados do anúncio</mat-card-title>
+          <mat-card-subtitle>Todos os campos exibidos são obrigatórios.</mat-card-subtitle>
+        </mat-card-header>
+        <form #form="ngForm" (ngSubmit)="salvar(form)">
+          <mat-card-content>
+            <mat-form-field appearance="outline">
+              <mat-label>Título do anúncio</mat-label>
+              <input
+                matInput
+                name="titulo"
+                [(ngModel)]="dados.titulo"
+                required
+                maxlength="100"
+                pattern=".*\S.*"
+              />
+              <mat-error>Informe um título com até 100 caracteres.</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Descrição do serviço ou aula</mat-label>
+              <textarea
+                matInput
+                name="descricao"
+                [(ngModel)]="dados.descricao"
+                required
+                maxlength="1500"
+                rows="4"
+              ></textarea>
+              <mat-error>Descreva o que você oferece.</mat-error>
+            </mat-form-field>
+            <div class="campos-em-linha">
+              <mat-form-field appearance="outline">
+                <mat-label>Categoria</mat-label>
+                <mat-select name="categoria" [(ngModel)]="dados.categoria" required>
+                  @for (categoria of categorias; track categoria.valor) {
+                    <mat-option [value]="categoria.valor">{{ categoria.rotulo }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Cidade de atendimento</mat-label>
+                <input
+                  matInput
+                  name="cidade"
+                  [(ngModel)]="dados.cidade"
+                  required
+                  maxlength="80"
+                  pattern=".*\S.*"
+                />
+                <mat-error>Informe a cidade em que você atende.</mat-error>
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline">
+              <mat-label>Como deseja negociar?</mat-label>
+              <mat-select name="modalidade" [(ngModel)]="dados.modalidade" required>
+                <mat-option value="venda">Venda de serviço ou aula</mat-option>
+                <mat-option value="troca">Troca por outra habilidade</mat-option>
+              </mat-select>
+            </mat-form-field>
+            @if (dados.modalidade === 'venda') {
+              <mat-form-field appearance="outline">
+                <mat-label>Preço em reais</mat-label>
+                <input
+                  matInput
+                  name="preco"
+                  type="number"
+                  [(ngModel)]="dados.preco"
+                  required
+                  min="0.01"
+                  step="0.01"
+                />
+                <mat-error>Informe um preço maior que zero.</mat-error>
+              </mat-form-field>
+            } @else {
+              <mat-form-field appearance="outline">
+                <mat-label>Qual habilidade deseja receber?</mat-label>
+                <input
+                  matInput
+                  name="habilidadeDesejada"
+                  [(ngModel)]="dados.habilidadeDesejada"
+                  required
+                  maxlength="120"
+                  pattern=".*\S.*"
+                />
+                <mat-error>Informe a habilidade que você procura.</mat-error>
+              </mat-form-field>
+            }
+            <p class="orientacao" id="orientacao" aria-live="polite">
+              {{ erroValidacao || 'Dados prontos para simular o cadastro.' }}
+            </p>
+            @if (mensagem) {
+              <p class="confirmacao" role="status">
+                {{ mensagem }} <a routerLink="/anuncios">Ver catálogo</a>
+              </p>
+            }
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-button type="button" data-testid="limpar" (click)="limpar(form)">
+              Limpar
+            </button>
+            <button
+              mat-flat-button
+              type="submit"
+              [disabled]="form.invalid || !!erroValidacao"
+              aria-describedby="orientacao"
+            >
+              Simular cadastro
+            </button>
+          </mat-card-actions>
+        </form>
+      </mat-card>
+    </div>
+    <aside class="previa" aria-label="Prévia do anúncio">
+      <div class="previa-titulo">
+        <h2>Prévia do anúncio</h2>
+        <p>Assim seu card aparece no catálogo.</p>
+      </div>
+      <div class="previa-conteudo">
+        <div class="capa"><app-icone nome="troca" /><span>CAPA DO ANÚNCIO</span></div>
+        <div class="previa-nome">
+          <h3>{{ dados.titulo.trim() || 'Título do anúncio' }}</h3>
+          <span>{{ dados.modalidade === 'venda' ? 'Serviço' : 'Troca' }}</span>
+        </div>
+        <p class="previa-descricao">
+          {{
+            dados.descricao.trim() || 'Uma boa descrição ajuda a mostrar o valor do que você faz.'
+          }}
+        </p>
+        <p class="previa-categoria">{{ categoriaSelecionada }}</p>
+        <div class="previa-preco">
+          <strong>{{
+            dados.modalidade === 'venda'
+              ? (dados.preco || 0 | currency: 'BRL')
+              : 'Troca de habilidades'
+          }}</strong
+          ><span>{{ dados.cidade.trim() || 'Cidade de atendimento' }}</span>
+        </div>
+        @if (dados.modalidade === 'troca' && dados.habilidadeDesejada.trim()) {
+          <p class="previa-troca"><app-icone nome="troca" /> {{ dados.habilidadeDesejada }}</p>
+        }
+      </div>
+      <div class="dicas">
+        <h3>Dicas rápidas</h3>
+        <ul>
+          <li>Use um título objetivo.</li>
+          <li>Descreva o serviço e seus diferenciais.</li>
+          <li>Informe onde você pode atender.</li>
+        </ul>
+      </div>
+      <p class="simulacao">
+        Simulação: o anúncio fica apenas nesta sessão e desaparece ao recarregar. Nenhuma publicação
+        ou contratação real é realizada.
       </p>
     </aside>
   </div>
-
-  <mat-card appearance="outlined">
-    <mat-card-header>
-      <mat-card-title>Dados do anúncio</mat-card-title>
-      <mat-card-subtitle>Todos os campos exibidos são obrigatórios.</mat-card-subtitle>
-    </mat-card-header>
-    <form #form="ngForm" (ngSubmit)="salvar(form)">
-      <mat-card-content>
-        <mat-form-field appearance="outline">
-          <mat-label>Título do anúncio</mat-label>
-          <input
-            matInput
-            name="titulo"
-            [(ngModel)]="dados.titulo"
-            required
-            maxlength="100"
-            pattern=".*\S.*"
-          />
-          <mat-error>Informe um título com até 100 caracteres.</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Descrição do serviço ou aula</mat-label>
-          <textarea
-            matInput
-            name="descricao"
-            [(ngModel)]="dados.descricao"
-            required
-            maxlength="1500"
-            rows="4"
-          ></textarea>
-          <mat-error>Descreva o que você oferece.</mat-error>
-        </mat-form-field>
-        <div class="campos-em-linha">
-          <mat-form-field appearance="outline">
-            <mat-label>Categoria</mat-label>
-            <mat-select name="categoria" [(ngModel)]="dados.categoria" required>
-              @for (categoria of categorias; track categoria.valor) {
-                <mat-option [value]="categoria.valor">{{ categoria.rotulo }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Cidade de atendimento</mat-label>
-            <input
-              matInput
-              name="cidade"
-              [(ngModel)]="dados.cidade"
-              required
-              maxlength="80"
-              pattern=".*\S.*"
-            />
-            <mat-error>Informe a cidade em que você atende.</mat-error>
-          </mat-form-field>
-        </div>
-        <mat-form-field appearance="outline">
-          <mat-label>Como deseja negociar?</mat-label>
-          <mat-select name="modalidade" [(ngModel)]="dados.modalidade" required>
-            <mat-option value="venda">Venda de serviço ou aula</mat-option>
-            <mat-option value="troca">Troca por outra habilidade</mat-option>
-          </mat-select>
-        </mat-form-field>
-        @if (dados.modalidade === 'venda') {
-          <mat-form-field appearance="outline">
-            <mat-label>Preço em reais</mat-label>
-            <input
-              matInput
-              name="preco"
-              type="number"
-              [(ngModel)]="dados.preco"
-              required
-              min="0.01"
-              step="0.01"
-            />
-            <mat-error>Informe um preço maior que zero.</mat-error>
-          </mat-form-field>
-        } @else {
-          <mat-form-field appearance="outline">
-            <mat-label>Qual habilidade deseja receber?</mat-label>
-            <input
-              matInput
-              name="habilidadeDesejada"
-              [(ngModel)]="dados.habilidadeDesejada"
-              required
-              maxlength="120"
-              pattern=".*\S.*"
-            />
-            <mat-error>Informe a habilidade que você procura.</mat-error>
-          </mat-form-field>
-        }
-        <p class="orientacao" id="orientacao" aria-live="polite">
-          {{ erroValidacao || 'Dados prontos para simular o cadastro.' }}
-        </p>
-        @if (mensagem) {
-          <p class="confirmacao" role="status">
-            {{ mensagem }} <a routerLink="/anuncios">Ver catálogo</a>
-          </p>
-        }
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <button mat-button type="button" data-testid="limpar" (click)="limpar(form)">Limpar</button>
-        <button
-          mat-flat-button
-          type="submit"
-          [disabled]="form.invalid || !!erroValidacao"
-          aria-describedby="orientacao"
-        >
-          Simular cadastro
-        </button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
 </section>

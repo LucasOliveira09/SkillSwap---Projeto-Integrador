@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AnunciosDemoService } from '../../data-access/anuncios-demo.service';
 import { CATEGORIAS_ANUNCIO, DadosAnuncio } from '../../models/anuncio.model';
 import { validarAnuncio } from '../../models/anuncio.validation';
+import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 
 @Component({
   selector: 'app-cadastro-anuncio',
@@ -21,6 +23,8 @@ import { validarAnuncio } from '../../models/anuncio.validation';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    CurrencyPipe,
+    IconeComponent,
   ],
   templateUrl: './cadastro-anuncio.component.html',
   styleUrl: './cadastro-anuncio.component.scss',
@@ -33,6 +37,10 @@ export class CadastroAnuncioComponent {
 
   protected get erroValidacao(): string | null {
     return validarAnuncio(this.dados);
+  }
+
+  protected get categoriaSelecionada(): string {
+    return this.categorias.find((categoria) => categoria.valor === this.dados.categoria)!.rotulo;
   }
 
   protected salvar(form: NgForm): void {
