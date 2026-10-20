@@ -9,3 +9,12 @@
 - [x] Revisar alterações e criar commits, deixando o repositório sem pendências.
 
 O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo-mvp.md); não fazem parte da conclusão desta inicialização.
+
+## Adaptação do layout antigo
+
+- [x] Inspecionar o repositório indicado e comparar catálogo/cadastro no navegador.
+- [x] Incorporar identidade, imagens otimizadas, fontes locais e licenças.
+- [x] Adaptar cabeçalho, menu, rodapé, banner, cards e coleções em componentes standalone.
+- [x] Manter exemplos identificados, implementar busca/filtros e preservar anúncios da sessão.
+- [x] Aplicar identidade ao cadastro e incluir prévia sem alterar as regras do serviço.
+- [x] Conferir testes, build, tipos, responsividade, teclado e acessibilidade; atualizar documentação e registrar commits.

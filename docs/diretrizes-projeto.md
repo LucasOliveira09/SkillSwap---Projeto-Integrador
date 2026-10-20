@@ -91,4 +91,4 @@ Fontes: **Guia de Angular Material**, páginas 1 a 7; **Integração Angular Mat
 | 5. Cadastro com Material | Tela de anúncio atendendo aos critérios acima | Demonstração em memória implementada; apresentação da equipe pendente |
 | 6. Persistência e evolução | Serviços, armazenamento e demais funcionalidades definidas | Pendente |
 
-A aplicação já possui comandos de build, tipos e testes, catálogo e cadastro de anúncio demonstrativos. Backend, banco, autenticação e detalhes das regras de negociação continuam pendentes. Consulte o [README](../README.md) para executar a base e o [escopo do MVP](escopo-mvp.md) para acompanhar as próximas decisões.
+A aplicação já possui comandos de build, tipos e testes, catálogo e cadastro de anúncio demonstrativos. A stack foi confirmada como Angular 20, Java com Spring Boot e MySQL na [ADR-002](decisions/002-stack-backend-banco.md). A implementação do backend, banco, autenticação e detalhes das regras de negociação continuam pendentes. Consulte o [README](../README.md) para executar a base e o [escopo do MVP](escopo-mvp.md) para acompanhar as próximas decisões.

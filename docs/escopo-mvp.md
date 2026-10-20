@@ -25,7 +25,7 @@ Esta decomposição organiza o documento em seis capacidades para planejamento. 
 
 - Workspace Angular standalone, modo estrito, roteamento e arquivos HTML/SCSS/TypeScript separados.
 - Angular Material compatível, tema único e imports locais nos componentes.
-- Catálogo inicialmente vazio e cadastro de anúncio demonstrativo, sem upload, autenticação ou backend.
+- Cadastro de anúncio demonstrativo, sem upload, autenticação ou backend. A inicialização começou com catálogo vazio; na adaptação do layout antigo, foram acrescentados exemplos visuais identificados e filtros no catálogo, separados dos dados da sessão.
 - Anúncios de demonstração mantidos somente em memória durante a sessão da aplicação, perdidos ao recarregar. Nenhuma promessa de publicação real.
 - Validação de obrigatórios e espaços, venda com preço positivo e troca com habilidade desejada; limpar reinicia campos e feedback.
 - Testes de regras, cadastro e navegação; build e conferência em navegador.
@@ -40,7 +40,7 @@ O trecho do PDF que chama o MVP de “disponível na aplicação” descreve o e
 
 ## O que definir antes das próximas entregas
 
-1. Backend e banco: linguagem exigida na disciplina, ambiente de hospedagem e contrato da API.
+1. Backend e banco: Java com Spring Boot e MySQL confirmados pelo usuário, mantendo Angular 20 no frontend ([ADR-002](decisions/002-stack-backend-banco.md)). Definir versões, ferramenta de build, ambiente e contrato da API.
 2. Contas: método de acesso, dados mínimos, recuperação de conta e autorização de edição.
 3. Anúncios: categorias definitivas, cidade/bairro, limites, regras de imagens e moderação.
 4. Acordos: proposta, aceite, cancelamento, conclusão e resolução de divergências em vendas e trocas.
