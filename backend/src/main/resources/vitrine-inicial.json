@@ -1,0 +1,271 @@
+{
+  "anuncios": [
+    {
+      "id": "exemplo-futebol",
+      "titulo": "Aula de Futebol",
+      "categoria": "Esportes",
+      "filtros": [
+        "aulas",
+        "esportes"
+      ],
+      "imagem": "images/legado/aula-futebol.jpg",
+      "preco": 100,
+      "unidade": "/mês",
+      "trocaPor": "",
+      "detalhes": [
+        "Ter/Qui · 18h–19h",
+        "Turma reduzida"
+      ],
+      "autor": "Vini Jr.",
+      "avatar": "images/legado/perfil-vini.png",
+      "estrelas": 5,
+      "quando": "há 1 hora",
+      "cidade": "Madrid / ES",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-jiu",
+      "titulo": "Aula de Jiu-jitsu",
+      "categoria": "Esportes",
+      "filtros": [
+        "aulas",
+        "esportes"
+      ],
+      "imagem": "images/legado/aula-jiu-jitsu.jpg",
+      "preco": 80,
+      "unidade": "/VIP",
+      "trocaPor": "",
+      "detalhes": [
+        "Seg/Sex · 14h–16h",
+        "Aula individual"
+      ],
+      "autor": "Charles Oliveira",
+      "avatar": "images/legado/perfil-charles.jpg",
+      "estrelas": 5,
+      "quando": "há 4 min",
+      "cidade": "Guarulhos / SP",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-faxina",
+      "titulo": "Faxina Completa",
+      "categoria": "Limpeza",
+      "filtros": [
+        "manutencao",
+        "limpeza"
+      ],
+      "imagem": "images/legado/faxina.jpg",
+      "preco": 210,
+      "unidade": "/dia",
+      "trocaPor": "",
+      "detalhes": [
+        "Limpeza de janelas",
+        "Limpeza de carpetes"
+      ],
+      "autor": "Lucas Leite",
+      "avatar": "images/legado/avatar-lucas.jpg",
+      "estrelas": 3,
+      "quando": "há 4 horas",
+      "cidade": "Fartura / PR",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-capinador",
+      "titulo": "Capinador Terreno",
+      "categoria": "Serviço",
+      "filtros": [
+        "manutencao",
+        "jardinagem"
+      ],
+      "imagem": "images/legado/capinador.gif",
+      "preco": 100,
+      "unidade": "/dia",
+      "trocaPor": "",
+      "detalhes": [
+        "Limpeza de terrenos",
+        "Manutenção de jardins"
+      ],
+      "autor": "Emerson Vinicius",
+      "avatar": "images/legado/avatar-emerson.jpg",
+      "estrelas": 1,
+      "quando": "há 8 horas",
+      "cidade": "Ribeirão do Sul / SP",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-carona",
+      "titulo": "Carona Unifio",
+      "categoria": "Corrida",
+      "filtros": [
+        "transporte"
+      ],
+      "imagem": "images/legado/carona.webp",
+      "preco": 2,
+      "unidade": "/km",
+      "trocaPor": "",
+      "detalhes": [
+        "Seg/Qui · 19h",
+        "Máximo 3 pessoas"
+      ],
+      "autor": "Matheus Souza",
+      "avatar": "images/legado/avatar-matheus.jpg",
+      "estrelas": 4,
+      "quando": "há 3 horas",
+      "cidade": "Ourinhos / SP",
+      "exemplo": true
+    }
+  ],
+  "categorias": [
+    {
+      "titulo": "Eletrônicos",
+      "imagem": "images/legado/categoria-eletronicos.png",
+      "parametros": {
+        "categoria": "eletronicos"
+      }
+    },
+    {
+      "titulo": "Serviços",
+      "imagem": "images/legado/categoria-servicos.png",
+      "parametros": {
+        "categoria": "manutencao"
+      }
+    },
+    {
+      "titulo": "Móveis",
+      "imagem": "images/legado/categoria-moveis.png",
+      "parametros": {
+        "categoria": "moveis"
+      }
+    },
+    {
+      "titulo": "Eletrodomésticos",
+      "imagem": "images/legado/categoria-eletrodomesticos.webp",
+      "parametros": {
+        "categoria": "eletrodomesticos"
+      }
+    },
+    {
+      "titulo": "Inglês",
+      "imagem": "images/legado/categoria-ingles.png",
+      "parametros": {
+        "busca": "inglês"
+      }
+    },
+    {
+      "titulo": "Esportes Paralímpicos",
+      "imagem": "images/legado/categoria-paralimpicos.png",
+      "parametros": {
+        "busca": "paralímpicos"
+      }
+    },
+    {
+      "titulo": "Perfumes",
+      "imagem": "images/legado/categoria-perfumes.png",
+      "parametros": {
+        "categoria": "perfumes"
+      }
+    },
+    {
+      "titulo": "Relógios",
+      "imagem": "images/legado/categoria-relogios.png",
+      "parametros": {
+        "categoria": "relogios"
+      }
+    },
+    {
+      "titulo": "Serviços Braçais",
+      "imagem": "images/legado/categoria-bracais.png",
+      "parametros": {
+        "categoria": "manutencao"
+      }
+    }
+  ],
+  "destaques": [
+    {
+      "titulo": "iPhone",
+      "imagem": "images/legado/destaque-iphone.png",
+      "parametros": {
+        "busca": "iPhone"
+      }
+    },
+    {
+      "titulo": "Samsung",
+      "imagem": "images/legado/destaque-samsung.png",
+      "parametros": {
+        "busca": "Samsung"
+      }
+    },
+    {
+      "titulo": "Eletricista",
+      "imagem": "images/legado/destaque-eletricista.png",
+      "parametros": {
+        "busca": "eletricista"
+      }
+    },
+    {
+      "titulo": "Perfumes",
+      "imagem": "images/legado/destaque-perfume.png",
+      "parametros": {
+        "busca": "perfume"
+      }
+    },
+    {
+      "titulo": "Relógios",
+      "imagem": "images/legado/destaque-relogio.png",
+      "parametros": {
+        "busca": "relógio"
+      }
+    },
+    {
+      "titulo": "PlayStation",
+      "imagem": "images/legado/destaque-ps5.png",
+      "parametros": {
+        "busca": "PlayStation"
+      }
+    }
+  ],
+  "servicos": [
+    {
+      "titulo": "Eletricista",
+      "imagem": "images/legado/servico-eletricista.webp",
+      "parametros": {
+        "busca": "eletricista"
+      }
+    },
+    {
+      "titulo": "Professor",
+      "imagem": "images/legado/servico-professor.png",
+      "parametros": {
+        "categoria": "aulas"
+      }
+    },
+    {
+      "titulo": "Encanador",
+      "imagem": "images/legado/servico-encanador.png",
+      "parametros": {
+        "busca": "encanador"
+      }
+    },
+    {
+      "titulo": "Capinador",
+      "imagem": "images/legado/capinador.gif",
+      "parametros": {
+        "busca": "capinador"
+      }
+    },
+    {
+      "titulo": "Pintor de Obras",
+      "imagem": "images/legado/servico-pintor.jpg",
+      "parametros": {
+        "busca": "pintor"
+      }
+    },
+    {
+      "titulo": "Agricultor",
+      "imagem": "images/legado/servico-agricultor.jpg",
+      "parametros": {
+        "busca": "agricultor"
+      }
+    }
+  ]
+}

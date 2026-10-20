@@ -36,4 +36,10 @@ public class ErroControllerAdvice {
     ResponseEntity<Erro> banco(DataAccessException ex) {
         return ResponseEntity.status(503).body(new Erro("INDISPONIVEL", "Não foi possível acessar os dados. Tente novamente.", Map.of()));
     }
+
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<Erro> inesperado(Exception ex) {
+        org.slf4j.LoggerFactory.getLogger(getClass()).error("Falha ao processar requisição: {}", ex.getClass().getSimpleName());
+        return ResponseEntity.internalServerError().body(new Erro("ERRO_INTERNO", "Não foi possível concluir a operação.", Map.of()));
+    }
 }
