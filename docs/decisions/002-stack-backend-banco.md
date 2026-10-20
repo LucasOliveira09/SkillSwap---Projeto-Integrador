@@ -2,6 +2,8 @@
 
 Status: aceita por definição do usuário em 19/10/2026.
 
+Atualização de 20/10/2026: versões e implementação inicial concretizadas na [ADR-003](003-backend-padroes-eventos.md). As consequências abaixo registram o momento desta decisão.
+
 ## Decisão
 
 - Frontend: Angular 20, mantendo a base standalone e Angular Material existentes.

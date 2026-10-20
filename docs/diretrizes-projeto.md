@@ -88,7 +88,7 @@ Fontes: **Guia de Angular Material**, páginas 1 a 7; **Integração Angular Mat
 | 2. Definição do SkillSwap | Problema, público, objetivo, diferencial e 4 a 6 funcionalidades | Consolidada a partir do PDF Saptura; regras detalhadas pendentes |
 | 3. Proposta e protótipos | Roteiro de 8 a 12 slides e fluxos compreensíveis | Pendente |
 | 4. Base técnica | Versões, decisão standalone, aplicação inicial e rotas | Implementada e validada |
-| 5. Cadastro com Material | Tela de anúncio atendendo aos critérios acima | Demonstração em memória implementada; apresentação da equipe pendente |
-| 6. Persistência e evolução | Serviços, armazenamento e demais funcionalidades definidas | Pendente |
+| 5. Cadastro com Material | Tela de anúncio atendendo aos critérios acima | Integrado ao backend; apresentação da equipe pendente |
+| 6. Persistência e evolução | Serviços, armazenamento e demais funcionalidades definidas | Anúncios, categorias e vitrine no MySQL; demais capacidades pendentes |
 
-A aplicação já possui comandos de build, tipos e testes, catálogo e cadastro de anúncio demonstrativos. A stack foi confirmada como Angular 20, Java com Spring Boot e MySQL na [ADR-002](decisions/002-stack-backend-banco.md). A implementação do backend, banco, autenticação e detalhes das regras de negociação continuam pendentes. Consulte o [README](../README.md) para executar a base e o [escopo do MVP](escopo-mvp.md) para acompanhar as próximas decisões.
+A aplicação já possui comandos de build, tipos e testes, catálogo e cadastro com persistência no backend Java com Spring Boot e MySQL. A [ADR-003](decisions/003-backend-padroes-eventos.md) e o [contrato HTTP](backend.md) registram a integração de 20/10/2026. Autenticação e detalhes das regras de negociação continuam pendentes. Consulte o [README](../README.md) para executar a base e o [escopo do MVP](escopo-mvp.md) para acompanhar as próximas decisões.

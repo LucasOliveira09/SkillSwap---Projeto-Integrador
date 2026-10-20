@@ -1,5 +1,7 @@
 # Layout do projeto antigo
 
+Atualização de 20/10/2026: o layout abaixo foi mantido e os dados migraram para a API Spring Boot com MySQL. Exemplos, categorias e coleções são persistidos pelo backend; o Angular não usa mais o serviço em memória. Consulte [backend.md](backend.md). As conferências abaixo registram a entrega visual original.
+
 Pedido do usuário: manter o layout do [Skillswap antigo](https://github.com/LucasOliveira09/Skillswap) na aplicação Angular standalone. Referência inspecionada no commit `0714cb747cdf5dc546f3137a47b985872da5a1bd`.
 
 ## Referência e escopo

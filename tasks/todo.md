@@ -18,3 +18,12 @@ O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo
 - [x] Manter exemplos identificados, implementar busca/filtros e preservar anúncios da sessão.
 - [x] Aplicar identidade ao cadastro e incluir prévia sem alterar as regras do serviço.
 - [x] Conferir testes, build, tipos, responsividade, teclado e acessibilidade; atualizar documentação e registrar commits.
+
+## Backend e persistência
+
+- [x] Inspecionar a referência local de eventos e registrar contrato/padrões.
+- [x] Criar base Java 21, Spring Boot 4.1.1, Maven Wrapper e MySQL com credenciais fora do Git.
+- [x] Criar entidades, repositórios, serviços, DTOs e controllers de catálogo/cadastro com validação e paginação.
+- [x] Mover anúncios ilustrativos e coleções para carga inicial idempotente no banco.
+- [x] Integrar Angular à API, remover estado em memória e tratar carregamento/falha/repetição.
+- [x] Concluir persistência após reinício, revisão final, documentação e commits.
