@@ -39,6 +39,7 @@ describe('CadastroAnuncioComponent', () => {
     await preencher('cidade', 'Florianópolis');
     await preencher('preco', '90');
     fixture.detectChanges();
+    await fixture.whenStable();
     const button = fixture.nativeElement.querySelector(
       'button[type="submit"]',
     ) as HTMLButtonElement;
