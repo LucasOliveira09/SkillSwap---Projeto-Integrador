@@ -1,0 +1,42 @@
+# Atualiza apenas API/web do site existente. MySQL e redes permanecem externos.
+# Usar projeto skillswap-integrador e --no-deps; nunca --remove-orphans.
+services:
+  api:
+    image: skillswap-api:${IMAGE_TAG:?Defina a versao validada}
+    container_name: skillswap-api
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:?Preserve a conexao do banco ativo}
+      DB_USER: ${DB_USER:?Preserve o usuario do banco ativo}
+      DB_PASSWORD: ${DB_PASSWORD:?Preserve a senha do banco ativo}
+      JWT_SECRET: ${JWT_SECRET:?Configure a chave JWT fora do Git}
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      SEED_ENABLED: ${SEED_ENABLED:-true}
+    networks: [banco, proxy]
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD-SHELL, "wget -qO- http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+  web:
+    image: skillswap-web:${IMAGE_TAG:?Defina a versao validada}
+    container_name: skillswap-web
+    restart: unless-stopped
+    volumes:
+      - ./nginx-publico.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [proxy]
+    mem_limit: 128m
+    healthcheck:
+      test: [CMD-SHELL, "wget -qO- http://127.0.0.1/ > /dev/null || exit 1"]
+      interval: 10s
+      retries: 5
+networks:
+  banco:
+    external: true
+    name: skillswap-integrador_skillswap-internal
+  proxy:
+    external: true
+    name: oracle_default
