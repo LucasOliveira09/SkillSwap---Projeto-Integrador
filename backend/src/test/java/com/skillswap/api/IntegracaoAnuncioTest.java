@@ -20,6 +20,9 @@ class IntegracaoAnuncioTest {
     @Autowired com.skillswap.api.domain.usuario.UsuarioService usuarios;
     @Autowired com.skillswap.api.infra.security.JwtService jwt;
     String token;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+    @Autowired com.skillswap.api.domain.anuncio.IndiceAnunciosInicial indice;
+    @Autowired jakarta.persistence.EntityManager entidades;
     @org.junit.jupiter.api.BeforeEach void autenticar() {
         usuarios.register(new com.skillswap.api.domain.usuario.dto.RegisterDTO("Teste", "teste@skillswap.invalid", "senha-teste-123"));
         token = jwt.generateToken("teste@skillswap.invalid");
@@ -123,5 +126,17 @@ class IntegracaoAnuncioTest {
             {"nome":"Nova conta","email":"nova@skillswap.invalid","senha":"senha-valida-123"}
             """)).andExpect(status().isCreated()).andExpect(header().exists("Location"))
             .andExpect(jsonPath("$.tipo").value("Bearer"));
+    }
+
+    @Test @org.junit.jupiter.api.Timeout(30)
+    void preservaAnuncioAnteriorAoPreencherIndiceNovo() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+            .contentType("application/json").content(venda("Violão anterior", "90"))).andExpect(status().isCreated());
+        jdbc.update("UPDATE anuncios SET texto_busca = NULL");
+        entidades.clear();
+        indice.run();
+        mvc.perform(get("/api/anuncios").param("busca","VIOLAO"))
+            .andExpect(jsonPath("$.totalItens").value(1))
+            .andExpect(jsonPath("$.itens[0].titulo").value("Violão anterior"));
     }
 }

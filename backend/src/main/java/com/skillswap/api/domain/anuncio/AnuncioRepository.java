@@ -32,6 +32,8 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
     boolean existsByCodigoLegado(String codigo);
 
+    java.util.List<Anuncio> findTop100ByTextoBuscaIsNull();
+
     @EntityGraph(attributePaths = {"usuario"})
     @Query("SELECT a FROM Anuncio a WHERE a.status = :status " +
            "AND (:categoria IS NULL OR a.categoria = :categoria) " +
