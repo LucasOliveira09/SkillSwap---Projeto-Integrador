@@ -4,6 +4,8 @@ Plataforma de serviços e aulas locais, com venda direta ou troca de habilidades
 
 Stack definida pela equipe: **Angular 20 + Java com Spring Boot + MySQL**. O frontend está integrado ao backend adotado do GitHub para catálogo, criação de conta, login e cadastro autenticado de anúncios. A [ADR-004](docs/decisions/004-integra-backend-github.md) registra a integração de 21/10/2026, preservando o layout antigo.
 
+Site: [skillswap.vizihub.com.br](https://skillswap.vizihub.com.br), atualizado em 21/10/2026 com o layout do primeiro SkillSwap e dados persistidos. A publicação preserva o MySQL ativo; operação e reversão estão em [backend.md](docs/backend.md#site-público).
+
 ## Executar localmente
 
 Pré-requisitos: PowerShell 7, Docker Desktop ativo, JDK 21 e Node.js 20.19+, 22.12+ ou 24.x (ambiente validado: 24.13.1); npm (validado: 11.8.0). Os testes precisam de Google Chrome instalado ou de `CHROME_BIN` apontando para Chromium compatível.
@@ -28,7 +30,7 @@ Abrir [http://localhost:4200](http://localhost:4200). A raiz redireciona para `/
 
 - Angular 20.3.34, CLI 20.3.40 e Material/CDK 20.2.14, com versões exatas no lockfile.
 - Componentes standalone, SCSS, TypeScript e templates estritos, rotas por domínio com lazy loading.
-- Catálogo com o layout do projeto antigo, exemplos ilustrativos vindos do banco, busca por URL, filtros, banner e paginação no servidor. Cadastro de serviços/aulas com prévia, validação no cliente e servidor, venda ou troca e ação Limpar.
+- Catálogo com o layout do primeiro SkillSwap, exemplos ilustrativos vindos do banco, busca por URL, filtros, banner e paginação no servidor. Carga idempotente com 13 exemplos, incluindo oito novos serviços/aulas em SC, de venda ou troca e sem notas fictícias nos novos perfis. Cadastro com prévia, validação no cliente e servidor e ação Limpar.
 - Backend Java 21, Spring Boot 4.0.8, Maven Wrapper 3.10.0, JPA/Lombok e JWT. MySQL local 8.4; a prévia na VPS mantém 8.0 em uma base restaurada separada. Anúncios persistem após recarregar e reiniciar. A sessão fica apenas em memória e precisa de novo login após recarga. Categorias e coleções vêm da API; não há fallback em memória. Upload e pagamentos não estão disponíveis; módulos de negociações, mensagens e avaliações ainda precisam de telas e validação integral.
 - Interface em português, preços em reais, navegação por teclado e layout responsivo. Fontes Poppins e Angkor locais com licenças OFL; ícones SVG locais, sem CDNs.
 
@@ -101,6 +103,6 @@ O instalador criou o tema com `mat.theme`. Na adaptação do layout antigo, esse
 
 O backend fica em `backend/src/main/java/com/skillswap/api/`, organizado por domínio em `domain`, com controllers, services, repositories, entidades e DTOs; `infra` concentra segurança e exceções. Essa organização substituiu a primeira aplicação conforme a escolha do usuário de adotar o backend novo do GitHub.
 
-Próximo passo: implementar as telas dos módulos de negociação e aprofundar seus testes. A base atual possui contas, JWT e autorização de anúncios por proprietário. Antes de promoção pública, validar os demais domínios e adotar migrações versionadas. Consulte [backend.md](docs/backend.md) para contrato, execução e preservação da VPS.
+Próximo passo: implementar as telas dos módulos de negociação, aprofundar seus testes e adotar migrações versionadas nas próximas entregas. A base atual possui contas, JWT e autorização de anúncios por proprietário. Consulte [backend.md](docs/backend.md) para contrato, execução e operação na VPS.
 
 Criar commits por objetivo, revisar o diff e executar as verificações pertinentes antes de cada commit. Nunca versionar segredos, dependências instaladas, cache ou build.

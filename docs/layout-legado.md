@@ -1,5 +1,13 @@
 # Layout do projeto antigo
 
+## Restauração solicitada em 21/10/2026
+
+O usuário reforçou que a referência é o primeiro SkillSwap, sem redesenho. O HTML/CSS de `pagina-servicos.html` foi servido isoladamente para comparação visual com o Angular. Foram restaurados o tamanho e a tipografia dos cards, o espaçamento do corpo e do perfil, os rótulos das coleções e as bordas azuis dos círculos do banner. A tela de acesso recebeu a logo central de 320 px e a composição vertical do login original, preservando os campos Material e o fluxo JWT existente.
+
+O catálogo mantém cabeçalho, banner recortado, cinco cards por linha no desktop, categorias circulares, faixas de imagens e rodapé azul. A faixa de negociação dos cards informa venda ou a habilidade realmente desejada na troca; não atribui intenção de troca aos anúncios de venda. Avisos de exemplos, indisponibilidade de contratação e identificação do grupo substituem afirmações fictícias do protótipo.
+
+Build, tipos e 28 testes Angular aprovados. Catálogo, conta e cadastro conferidos em 320, 768, 1024 e 1440 px, sem transbordamento; axe sem violações automatizadas nas telas verificadas. O backend recebeu oito exemplos adicionais em Santa Catarina, sem substituir os cinco exemplos antigos ou anúncios dos usuários; consulte [backend.md](backend.md).
+
 Atualização de 20/10/2026: o layout abaixo foi mantido e os dados migraram para a API Spring Boot com MySQL. Exemplos, categorias e coleções são persistidos pelo backend; o Angular não usa mais o serviço em memória. Consulte [backend.md](backend.md). As conferências abaixo registram a entrega visual original.
 
 Pedido do usuário: manter o layout do [Skillswap antigo](https://github.com/LucasOliveira09/Skillswap) na aplicação Angular standalone. Referência inspecionada no commit `0714cb747cdf5dc546f3137a47b985872da5a1bd`.

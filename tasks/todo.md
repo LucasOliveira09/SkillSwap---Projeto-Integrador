@@ -39,3 +39,11 @@ O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
 - [ ] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
 - [ ] Adotar migrações versionadas e preparar sincronização dos dados antes de eventual promoção pública.
+
+## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos
+
+- [x] Comparar o HTML/CSS original no navegador e restaurar detalhes visuais dos cards, banner, coleções e acesso.
+- [x] Acrescentar oito exemplos via backend, com modalidades, valores, localidades e identificação de demonstração coerentes.
+- [x] Manter carga idempotente e preservar anúncios existentes.
+- [x] Validar 28 testes Angular, 14 testes Java, build, tipos e responsividade.
+- [x] Publicar no domínio indicado pelo usuário, preservando banco ativo, proxy e registros existentes, com backup e reversão.

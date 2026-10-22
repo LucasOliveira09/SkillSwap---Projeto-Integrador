@@ -36,6 +36,12 @@ Erro JSON: `{codigo,mensagem,campos}`. 400 para entrada inválida; 401 para cred
 
 Busca ignora acentos/caixa e trata %/_ literalmente. Um inicializador preenche o índice novo dos anúncios antigos sem mudar seus dados ou proprietários. No MySQL, outro inicializador amplia o enum antigo conhecido para incluir TRANSPORTE antes da carga; não altera enums desconhecidos. A vitrine é idempotente, identificada como ilustrativa e não substitui dados existentes.
 
+### Dados demonstrativos
+
+A carga de `vitrine-inicial.json` contém 13 anúncios ilustrativos: os cinco originais e oito exemplos adicionais de elétrica, encanamento, pintura, inglês, reforço escolar, informática, hortas e jardinagem. Os novos exemplos ficam em Florianópolis, São José, Palhoça e Biguaçu/SC; cinco são de venda com preço/unidade e três são de troca, com habilidade desejada e preço nulo. Seus perfis são identificados como ilustrativos e não possuem notas inventadas.
+
+Os inserts ocorrem pela aplicação/JPA no MySQL, com chave estável `codigoLegado`: reiniciar não duplica nem sobrescreve anúncios existentes. Não é necessário executar SQL manual ou criar um proprietário fictício para anúncios reais. `SEED_ENABLED=false` impede novas inserções. As coleções visuais originais permanecem preservadas como referência do layout; não são estatísticas de popularidade nem comprovam disponibilidade de produtos.
+
 ## Contas no Angular
 
 A tela `/conta` permite registrar, entrar e sair; `/anuncios/novo` solicita login antes de salvar. O JWT fica somente em memória e é enviado apenas à API relativa da própria origem. Não há armazenamento em localStorage/sessionStorage. Recarregar encerra a sessão, mas não apaga anúncios; um 401 encerra a sessão local e a tela trata a falha.
@@ -76,19 +82,39 @@ Na pasta backend, com JAVA_HOME apontando para JDK 21: `./mvnw.cmd test` ou `./m
 
 Verificação da integração em 21/10/2026: 28 testes Angular, build e typecheck aprovados; 13 testes do backend com Spring/MockMvc/JPA para contrato, autenticação, propriedade, validação, paginação, busca, carga inicial e índice dos registros antigos.
 
+Na restauração visual e ampliação da carga, o backend passou a 14 testes aprovados, incluindo a coerência das modalidades e localidades dos novos exemplos. Os 28 testes Angular, build e tipos continuaram aprovados.
+
+Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
+
 Na VPS, Chrome/Playwright validou criação de conta (201/Location), login, venda e troca (201/Location), busca e persistência após recarga e reinício da API com MySQL 8.0. Um POST sem JWT retornou 401. A sessão foi encerrada após recarga, como previsto. Catálogo, conta e formulário passaram nas larguras 320, 768, 1024 e 1440 sem transbordamento; axe não encontrou violações WCAG A/AA nessas telas. Não houve erros JavaScript, respostas HTTP de erro ou imagens quebradas no carregamento normal do catálogo. A conta e os dois anúncios criados para a verificação foram removidos da base isolada ao concluir. Isso não substitui avaliação manual completa de acessibilidade nem testes dos demais domínios.
 
 ## VPS e preservação
 
 O repositório anterior permanece em /home/ubuntu/skillswap-integrador. A integração usa um worktree separado em /home/ubuntu/skillswap-integracao na branch codex/sincroniza-github-vps, para preservar o serviço que ficou ativo durante o trabalho.
 
-Histórico e arquivos foram preservados em /home/ubuntu/backups/skillswap-sync-20261022T005155Z, com backup SQL transacional de permissões restritas. A stack skillswap-integracao usa um volume separado restaurado desse backup. O original skillswap-integrador_skillswap-mysql-data não é alterado. A cópia mantém MySQL 8.0, sem upgrade do diretório original.
+Histórico e arquivos foram preservados em /home/ubuntu/backups/skillswap-sync-20261022T005155Z, com backup SQL transacional de permissões restritas. A stack skillswap-integracao usa um volume separado restaurado desse backup. A prévia não usa o volume skillswap-integrador_skillswap-mysql-data, que continua sendo o banco ativo do site público. A cópia mantém MySQL 8.0, sem upgrade do diretório original.
 
 A configuração é `docker compose -p skillswap-integracao -f compose.yaml -f compose.vps.yaml --profile app`. MYSQL_VPS_VOLUME aponta para o volume restaurado e WEB_BIND para o IP Tailscale. Não há porta de banco publicada na VPS nem alteração do proxy público dos demais projetos.
 
 Prévia: [http://100.97.254.9:8088](http://100.97.254.9:8088), acessível com a rede Tailscale conectada. Web, API e MySQL passaram nos healthchecks. O volume da prévia é skillswap-integracao_mysql-20261021; os segredos ficam apenas no .env restrito do worktree.
 
-A prévia é uma fotografia da base na data do backup. Promover para o endereço público exige nova sincronização dos dados e validação do serviço atual; não substituir o banco original por uma fotografia antiga.
+A prévia é uma fotografia da base na data do backup. Nunca substituir o banco público por essa fotografia. A publicação descrita abaixo atualizou as imagens da aplicação diretamente sobre o banco ativo, preservando os dados atuais.
+
+## Site público
+
+Em 21/10/2026, o usuário esclareceu que o destino do retorno ao layout original era [skillswap.vizihub.com.br](https://skillswap.vizihub.com.br). O domínio ainda servia o primeiro frontend demonstrativo em memória. Foram publicados o Angular com o layout antigo e a API compatível, validados antes na prévia. O Caddy, o container MySQL, seu volume e suas credenciais permaneceram preservados.
+
+O Compose ativo de API/web fica em `/home/ubuntu/skillswap-publicacao/compose.yaml`, baseado em `compose.publico.yaml`. O `.env` restrito reutiliza a conexão real do banco e configura um JWT_SECRET aleatório fora do Git. As imagens são `skillswap-api:3a01b4c` e `skillswap-web:3a01b4c`, compiladas para ARM na própria VPS. Não há portas adicionais publicadas. O Nginx usa o nome explícito skillswap-api para evitar colisão com serviços de outros projetos na rede do proxy.
+
+```bash
+docker compose -p skillswap-integrador -f /home/ubuntu/skillswap-publicacao/compose.yaml up -d --no-deps --wait api web
+```
+
+Essa configuração administra somente API e web; o MySQL existente aparece como órfão para o Compose e deve permanecer ativo. Não usar `--remove-orphans` nem executar `down` no conjunto original. O repositório `/home/ubuntu/skillswap-integrador` e suas configurações anteriores foram preservados para reversão; executá-los novamente repõe a versão antiga da aplicação.
+
+Backup transacional da base ativa e configurações anteriores: `/home/ubuntu/backups/skillswap-publico-20261022T014719Z`, com permissões restritas. O script `reverter.sh` nesse diretório repõe as imagens/configurações anteriores de API/web, sem apagar ou restaurar o banco. A comparação dos campos preexistentes confirmou a preservação dos dois usuários, um anúncio, uma proposta, um acordo, uma mensagem e uma avaliação existentes. A carga acrescentou 13 exemplos identificados, sem substituir esses registros.
+
+Validação pelo domínio público em Chrome: catálogo, busca, paginação, menu, estado vazio, conta, login, venda, troca, recarga e 401 sem JWT. Criações retornaram 201 com Location relativa válida na origem HTTPS. As três telas passaram nas quatro larguras e no axe, sem erros de JavaScript. `npm audit --omit=dev` não apontou vulnerabilidades no lockfile validado. Contas e anúncios criados exclusivamente para os testes foram removidos; todos os registros anteriores foram novamente conferidos e preservados.
 
 ## Fontes
 
