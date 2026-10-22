@@ -113,6 +113,182 @@
       "quando": "há 3 horas",
       "cidade": "Ourinhos / SP",
       "exemplo": true
+    },
+    {
+      "id": "exemplo-eletricista",
+      "titulo": "Eletricista residencial",
+      "categoria": "Elétrica",
+      "filtros": [
+        "manutencao"
+      ],
+      "imagem": "images/legado/servico-eletricista.webp",
+      "preco": 120,
+      "unidade": "/hora",
+      "trocaPor": "",
+      "detalhes": [
+        "Troca de tomadas e instalação de luminárias",
+        "Atendimento com horário combinado"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Florianópolis / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-encanador",
+      "titulo": "Encanador para pequenos reparos",
+      "categoria": "Encanamento",
+      "filtros": [
+        "manutencao"
+      ],
+      "imagem": "images/legado/servico-encanador.png",
+      "preco": 180,
+      "unidade": "/visita",
+      "trocaPor": "",
+      "detalhes": [
+        "Reparo de torneiras e vazamentos aparentes",
+        "Materiais combinados separadamente"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "São José / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-pintor",
+      "titulo": "Pintura de paredes internas",
+      "categoria": "Pintura",
+      "filtros": [
+        "manutencao"
+      ],
+      "imagem": "images/legado/servico-pintor.jpg",
+      "preco": 250,
+      "unidade": "/diária",
+      "trocaPor": "",
+      "detalhes": [
+        "Preparação e pintura de paredes",
+        "Tintas e materiais não incluídos"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Palhoça / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-ingles",
+      "titulo": "Aulas de inglês para iniciantes",
+      "categoria": "Inglês",
+      "filtros": [
+        "aulas"
+      ],
+      "imagem": "images/legado/servico-professor.png",
+      "preco": 60,
+      "unidade": "/hora",
+      "trocaPor": "",
+      "detalhes": [
+        "Conversação e vocabulário do dia a dia",
+        "Aulas individuais de uma hora"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Florianópolis / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-reforco",
+      "titulo": "Reforço escolar por pintura",
+      "categoria": "Reforço escolar",
+      "filtros": [
+        "aulas"
+      ],
+      "imagem": "images/legado/servico-professor.png",
+      "preco": null,
+      "unidade": "",
+      "trocaPor": "Pintura de uma parede",
+      "detalhes": [
+        "Reforço de matemática para ensino fundamental",
+        "Quantidade de aulas combinada entre as partes"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "São José / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-informatica",
+      "titulo": "Informática por aulas de inglês",
+      "categoria": "Informática",
+      "filtros": [
+        "aulas"
+      ],
+      "imagem": "images/legado/categoria-eletronicos.png",
+      "preco": null,
+      "unidade": "",
+      "trocaPor": "Aulas de inglês",
+      "detalhes": [
+        "Aprenda a usar e-mail e planilhas",
+        "Troca de aulas com duração combinada"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Biguaçu / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-agricultor",
+      "titulo": "Cuidados com hortas domésticas",
+      "categoria": "Hortas",
+      "filtros": [
+        "manutencao"
+      ],
+      "imagem": "images/legado/servico-agricultor.jpg",
+      "preco": 160,
+      "unidade": "/diária",
+      "trocaPor": "",
+      "detalhes": [
+        "Plantio e manutenção de pequenas hortas",
+        "Mudas e insumos combinados separadamente"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Palhoça / SC",
+      "exemplo": true
+    },
+    {
+      "id": "exemplo-jardinagem",
+      "titulo": "Jardinagem por aulas de violão",
+      "categoria": "Jardinagem",
+      "filtros": [
+        "manutencao"
+      ],
+      "imagem": "images/legado/capinador.gif",
+      "preco": null,
+      "unidade": "",
+      "trocaPor": "Aulas de violão",
+      "detalhes": [
+        "Manutenção de jardins e limpeza leve",
+        "Área e quantidade de aulas a combinar"
+      ],
+      "autor": "Perfil ilustrativo",
+      "avatar": null,
+      "estrelas": null,
+      "quando": "Ilustrativo",
+      "cidade": "Florianópolis / SC",
+      "exemplo": true
     }
   ],
   "categorias": [

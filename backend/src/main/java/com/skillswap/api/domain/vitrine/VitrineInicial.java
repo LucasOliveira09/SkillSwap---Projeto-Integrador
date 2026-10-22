@@ -59,8 +59,10 @@ public class VitrineInicial implements CommandLineRunner {
         a.setUsuario(demonstracao);
         a.setCategoriaExibicao(oferta.categoria());
         a.setCidade(oferta.cidade());
-        a.setModalidade(ModalidadeAnuncio.VENDA);
-        a.setPreco(oferta.preco());
+        boolean troca = oferta.trocaPor() != null && !oferta.trocaPor().isBlank();
+        a.setModalidade(troca ? ModalidadeAnuncio.TROCA : ModalidadeAnuncio.VENDA);
+        a.setHabilidadeDesejada(troca ? oferta.trocaPor().strip() : "");
+        a.setPreco(troca ? null : oferta.preco());
         a.setImagem(oferta.imagem());
         a.setUnidade(oferta.unidade());
         a.setAutorExibicao(oferta.autor());
