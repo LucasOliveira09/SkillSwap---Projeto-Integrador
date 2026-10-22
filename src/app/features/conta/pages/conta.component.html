@@ -1,7 +1,8 @@
 <section class="pagina conta" aria-labelledby="conta-titulo">
   <a mat-button routerLink="/anuncios">Voltar ao catálogo</a>
+  <img class="logo-acesso" src="images/legado/logo-skill-swap.png" alt="Skill Swap" width="320" height="133" />
   <h1 id="conta-titulo">
-    {{ sessao.autenticado() ? 'Minha conta' : registrar() ? 'Criar conta' : 'Entrar no SkillSwap' }}
+    {{ sessao.autenticado() ? 'Minha conta' : registrar() ? 'Criar conta' : 'Entrar' }}
   </h1>
   @if (sessao.autenticado()) {
     <p>Sua sessão está ativa.</p>

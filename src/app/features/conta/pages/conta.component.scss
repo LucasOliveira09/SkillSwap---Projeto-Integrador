@@ -1,10 +1,18 @@
 .conta {
-  max-width: 520px;
-  padding-top: 36px;
-  padding-bottom: 56px;
+  max-width: 440px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+.logo-acesso {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 32px auto 24px;
 }
 h1 {
-  color: var(--ss-azul);
+  color: var(--ss-blue);
+  font-size: 38px;
+  margin-bottom: 12px;
 }
 form {
   display: flex;
@@ -14,6 +22,11 @@ form {
 }
 mat-form-field {
   width: 100%;
+}
+form > button {
+  width: 100%;
+  min-height: 45px;
+  border-radius: 10px;
 }
 .aviso {
   color: var(--ss-muted);

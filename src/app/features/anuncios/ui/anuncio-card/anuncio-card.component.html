@@ -20,11 +20,10 @@
         <p class="preco">Troca</p>
       }
     </div>
-    @if (anuncio().trocaPor) {
-      <p class="troca">
-        <app-icone nome="troca" /> <span>Troco por: {{ anuncio().trocaPor }}</span>
-      </p>
-    }
+    <p class="troca">
+      <app-icone nome="troca" />
+      <span>{{ anuncio().trocaPor ? 'Troco por: ' + anuncio().trocaPor : 'Venda de serviço ou aula' }}</span>
+    </p>
     <ul class="detalhes">
       @for (detalhe of anuncio().detalhes; track $index) {
         <li>
