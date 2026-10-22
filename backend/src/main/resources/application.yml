@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: skillswap-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3307/skillswap?serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8}
+    username: ${DB_USER:skillswap}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 3600000
+skillswap:
+  seed:
+    enabled: ${SEED_ENABLED:true}

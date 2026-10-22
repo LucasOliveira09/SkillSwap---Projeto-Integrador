@@ -34,18 +34,7 @@
       <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo" (click)="menu.close()"
         >Criar anúncio</a
       >
-      <button
-        mat-button
-        (click)="
-          menu.close();
-          informar(
-            'Minha conta',
-            'O acesso às contas estará disponível em uma próxima etapa. Você pode explorar o catálogo e experimentar o cadastro de anúncios.'
-          )
-        "
-      >
-        Minha conta
-      </button>
+      <button mat-button (click)="menu.close(); abrirConta()">Minha conta</button>
       <button
         mat-button
         (click)="
@@ -103,17 +92,10 @@
           >
             <app-icone nome="carrinho" /> Carrinho
           </button>
-          <button
-            mat-stroked-button
-            class="conta"
-            (click)="
-              informar(
-                'Entrar / Registrar-se',
-                'O acesso às contas estará disponível em uma próxima etapa. Por enquanto, você pode testar o cadastro de anúncios sem criar uma conta.'
-              )
-            "
-          >
-            <app-icone nome="usuario" /><span>Entrar/Registrar-se</span>
+          <button mat-stroked-button class="conta" (click)="abrirConta()">
+            <app-icone nome="usuario" /><span>{{
+              sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'
+            }}</span>
           </button>
         </div>
       </div>

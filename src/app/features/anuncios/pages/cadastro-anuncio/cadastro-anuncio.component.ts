@@ -14,6 +14,7 @@ import { DadosAnuncio } from '../../models/anuncio.model';
 import { CategoriaApi } from '../../models/anuncio-api.model';
 import { validarAnuncio } from '../../models/anuncio.validation';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
+import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 @Component({
   selector: 'app-cadastro-anuncio',
@@ -33,6 +34,7 @@ import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
   styleUrl: './cadastro-anuncio.component.scss',
 })
 export class CadastroAnuncioComponent {
+  protected readonly sessao = inject(SessaoService);
   private readonly anuncios = inject(AnunciosApiService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly categorias = signal<readonly CategoriaApi[]>([]);
@@ -80,6 +82,7 @@ export class CadastroAnuncioComponent {
   }
 
   protected salvar(form: NgForm): void {
+    if (!this.sessao.autenticado()) return;
     if (this.salvando || this.carregandoCategorias || this.erroCategorias || this.mensagem) return;
     if (form.invalid || this.erroValidacao) {
       form.control.markAllAsTouched();

@@ -1,0 +1,73 @@
+<section class="pagina conta" aria-labelledby="conta-titulo">
+  <a mat-button routerLink="/anuncios">Voltar ao catálogo</a>
+  <h1 id="conta-titulo">
+    {{ sessao.autenticado() ? 'Minha conta' : registrar() ? 'Criar conta' : 'Entrar no SkillSwap' }}
+  </h1>
+  @if (sessao.autenticado()) {
+    <p>Sua sessão está ativa.</p>
+    <a mat-flat-button routerLink="/anuncios/novo">Criar anúncio</a>
+    <button mat-button (click)="sessao.sair()">Sair</button>
+  } @else {
+    <p>Entre para cadastrar anúncios com sua conta.</p>
+    <form #form="ngForm" (ngSubmit)="enviar(form)" [attr.aria-busy]="enviando">
+      @if (registrar()) {
+        <mat-form-field appearance="outline"
+          ><mat-label>Nome</mat-label>
+          <input
+            matInput
+            name="nome"
+            [(ngModel)]="nome"
+            required
+            maxlength="100"
+            pattern=".*\S.*"
+            autocomplete="name"
+            [disabled]="enviando"
+          />
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline"
+        ><mat-label>E-mail</mat-label>
+        <input
+          matInput
+          name="email"
+          [(ngModel)]="email"
+          type="email"
+          email
+          required
+          maxlength="254"
+          autocomplete="username"
+          [disabled]="enviando"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Senha</mat-label>
+        <input
+          matInput
+          name="senha"
+          [(ngModel)]="senha"
+          type="password"
+          required
+          [minlength]="registrar() ? 6 : 1"
+          maxlength="64"
+          [attr.autocomplete]="registrar() ? 'new-password' : 'current-password'"
+          [disabled]="enviando"
+        />
+      </mat-form-field>
+      @if (erro) {
+        <p role="alert">{{ erro }}</p>
+      }
+      <button mat-flat-button type="submit" [disabled]="form.invalid || enviando">
+        {{ enviando ? 'Aguarde...' : registrar() ? 'Criar conta' : 'Entrar' }}
+      </button>
+      <button
+        mat-button
+        type="button"
+        [disabled]="enviando"
+        (click)="registrar.set(!registrar()); erro = ''"
+      >
+        {{ registrar() ? 'Já tenho uma conta' : 'Quero criar uma conta' }}
+      </button>
+    </form>
+    <p class="aviso">Sua sessão termina ao recarregar ou sair. Os anúncios permanecem salvos.</p>
+  }
+</section>

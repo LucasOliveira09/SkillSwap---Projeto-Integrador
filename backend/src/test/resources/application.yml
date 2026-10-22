@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:skillswap;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+app:
+  jwt:
+    # Chave exclusiva dos testes isolados. Não serve à aplicação.
+    secret: TEST_ONLY_NOT_FOR_DEPLOYMENT_012345678901234567890123456789
+    expiration: 3600000
+skillswap:
+  seed:
+    enabled: false

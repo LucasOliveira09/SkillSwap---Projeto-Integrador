@@ -1,0 +1,21 @@
+.conta {
+  max-width: 520px;
+  padding-top: 36px;
+  padding-bottom: 56px;
+}
+h1 {
+  color: var(--ss-azul);
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+}
+mat-form-field {
+  width: 100%;
+}
+.aviso {
+  color: var(--ss-muted);
+  font-size: 14px;
+}

@@ -1,0 +1,127 @@
+package com.skillswap.api;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest(properties="skillswap.seed.enabled=false")
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Transactional
+class IntegracaoAnuncioTest {
+    @Autowired MockMvc mvc;
+    @Autowired com.skillswap.api.domain.usuario.UsuarioService usuarios;
+    @Autowired com.skillswap.api.infra.security.JwtService jwt;
+    String token;
+    @org.junit.jupiter.api.BeforeEach void autenticar() {
+        usuarios.register(new com.skillswap.api.domain.usuario.dto.RegisterDTO("Teste", "teste@skillswap.invalid", "senha-teste-123"));
+        token = jwt.generateToken("teste@skillswap.invalid");
+    }
+
+
+    private String venda(String titulo, String preco) {
+        return """
+            {"titulo":"%s","descricao":"Música para iniciantes","categoria":"AULAS",
+             "cidade":"Florianópolis","modalidade":"VENDA","preco":%s,"habilidadeDesejada":""}
+            """.formatted(titulo, preco);
+    }
+
+    @Test void persisteVendaELocalizaSemAcentos() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json").content(venda("  Aulas de violão  ", "90.50")))
+            .andExpect(status().isCreated()).andExpect(header().exists("Location"))
+            .andExpect(jsonPath("$.id").isNumber()).andExpect(jsonPath("$.titulo").value("Aulas de violão"))
+            .andExpect(jsonPath("$.exemplo").value(false)).andExpect(jsonPath("$.estrelas").isEmpty());
+        mvc.perform(get("/api/anuncios").param("busca", "VIOLAO").param("categoria", "AULAS"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+            .andExpect(jsonPath("$.itens[0].preco").value(90.5));
+        mvc.perform(get("/api/anuncios").param("categoria", "MANUTENCAO"))
+            .andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test void gravaTrocaSemPreco() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json").content("""
+            {"titulo":"Aula","descricao":"Aula prática","categoria":"AULAS","cidade":"Ourinhos",
+             "modalidade":"TROCA","preco":90,"habilidadeDesejada":"  Pintura  "}
+            """))
+            .andExpect(status().isCreated()).andExpect(jsonPath("$.preco").isEmpty())
+            .andExpect(jsonPath("$.habilidadeDesejada").value("Pintura"));
+    }
+
+    @Test void rejeitaEspacosCategoriaInvalidaEPrecoInvalido() throws Exception {
+        for (String corpo : new String[]{venda("   ", "90"), venda("Aula", "0"), venda("Aula", "1.001"),
+                venda("Aula", "90").replace("AULAS", "inexistente"), venda("Aula", "100000000")}) {
+            mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json").content(corpo))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.codigo").value("DADOS_INVALIDOS"));
+        }
+        mvc.perform(get("/api/anuncios")).andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test void rejeitaTrocaSemHabilidadeECamposGerenciadosPeloServidor() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json")
+                .content(venda("Aula", "90").replace("VENDA", "TROCA")))
+            .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json")
+                .content(venda("Aula", "90").replace("\"titulo\"", "\"exemplo\":true,\"titulo\"")))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test void paginaComOrdemEstavelETrataBuscaLiteral() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json").content(venda("Aula " + i, "10")))
+                .andExpect(status().isCreated());
+        }
+        mvc.perform(get("/api/anuncios").param("tamanho", "2").param("pagina", "1"))
+            .andExpect(jsonPath("$.totalItens").value(3)).andExpect(jsonPath("$.totalPaginas").value(2))
+            .andExpect(jsonPath("$.itens.length()").value(1)).andExpect(jsonPath("$.itens[0].titulo").value("Aula 0"));
+        mvc.perform(get("/api/anuncios").param("busca", "%"))
+            .andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test void validaParametrosENaoExpoeFalhasInternas() throws Exception {
+        for (String query : new String[]{"pagina=-1", "tamanho=51", "pagina=abc", "busca=" + "a".repeat(101)}) {
+            mvc.perform(get("/api/anuncios?" + query)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DADOS_INVALIDOS"));
+        }
+        mvc.perform(get("/api/anuncios/999999")).andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.codigo").value("NAO_ENCONTRADO"));
+    }
+
+    @Test void preservaStatusDeRotaEMetodoInexistentes() throws Exception {
+        mvc.perform(get("/api/inexistente").header("Authorization", "Bearer " + token)).andExpect(status().isNotFound());
+        mvc.perform(delete("/api/categorias").header("Authorization", "Bearer " + token)).andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test void protegeCadastroTokenInvalidoEPropriedade() throws Exception {
+        mvc.perform(post("/api/anuncios").contentType("application/json").content(venda("Aula", "10")))
+            .andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/anuncios").header("Authorization", "Bearer invalido"))
+            .andExpect(status().isUnauthorized());
+        var resposta = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+            .contentType("application/json").content(venda("Aula própria", "10"))).andExpect(status().isCreated()).andReturn();
+        long id = tools.jackson.databind.json.JsonMapper.builder().build()
+            .readTree(resposta.getResponse().getContentAsString()).get("id").asLong();
+        usuarios.register(new com.skillswap.api.domain.usuario.dto.RegisterDTO("Outro", "outro@skillswap.invalid", "senha-teste-123"));
+        mvc.perform(delete("/api/anuncios/"+id).header("Authorization", "Bearer "+jwt.generateToken("outro@skillswap.invalid")))
+            .andExpect(status().isForbidden());
+        mvc.perform(delete("/api/anuncios/"+id).header("Authorization", "Bearer "+token))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/api/anuncios/"+id)).andExpect(status().isNotFound());
+    }
+
+    @Test void autenticaComRotasDeRecursosERejeitaSenhaErrada() throws Exception {
+        mvc.perform(post("/api/sessoes").contentType("application/json").content("""
+            {"email":"teste@skillswap.invalid","senha":"senha-errada"}
+            """)).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/usuarios").contentType("application/json").content("""
+            {"nome":"Nova conta","email":"nova@skillswap.invalid","senha":"senha-valida-123"}
+            """)).andExpect(status().isCreated()).andExpect(header().exists("Location"))
+            .andExpect(jsonPath("$.tipo").value("Bearer"));
+    }
+}

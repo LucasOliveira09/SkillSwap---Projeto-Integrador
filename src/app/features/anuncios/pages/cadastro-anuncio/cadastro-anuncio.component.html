@@ -22,6 +22,14 @@
       <a mat-button class="voltar" routerLink="/anuncios">Início / Novo anúncio</a>
       <h1 id="titulo-pagina">Crie seu anúncio</h1>
       <p class="introducao">Conte o que você oferece e conecte-se a novas possibilidades.</p>
+      @if (!sessao.autenticado()) {
+        <p role="status">
+          Entre na sua conta para salvar seu anúncio.
+          <a mat-flat-button routerLink="/conta" [queryParams]="{ retorno: '/anuncios/novo' }"
+            >Entrar ou criar conta</a
+          >
+        </p>
+      }
       <div class="etapa">
         <span>1</span> Dados do anúncio <small>Preencha para visualizar sua oferta</small>
       </div>
@@ -187,6 +195,7 @@
               [disabled]="
                 form.invalid ||
                 !!erroValidacao ||
+                !sessao.autenticado() ||
                 salvando ||
                 carregandoCategorias ||
                 erroCategorias ||

@@ -10,6 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { IconeComponent } from './shared/ui/icone/icone.component';
+import { SessaoService } from './features/conta/data-access/sessao.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ import { IconeComponent } from './shared/ui/icone/icone.component';
   styleUrl: './app.scss',
 })
 export class App {
+  protected readonly sessao = inject(SessaoService);
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
   private readonly route = inject(ActivatedRoute);
@@ -36,6 +38,10 @@ export class App {
   protected pesquisar(event: Event, termo: string): void {
     event.preventDefault();
     void this.router.navigate(['/anuncios'], { queryParams: { busca: termo.trim() || null } });
+  }
+
+  protected abrirConta(): void {
+    void this.router.navigate(['/conta']);
   }
 
   protected async informar(titulo: string, mensagem: string): Promise<void> {

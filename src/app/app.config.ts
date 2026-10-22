@@ -7,7 +7,8 @@ import {
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { sessaoInterceptor } from './features/conta/data-access/sessao.interceptor';
 
 import { routes } from './app.routes';
 
@@ -19,6 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([sessaoInterceptor])),
   ],
 };

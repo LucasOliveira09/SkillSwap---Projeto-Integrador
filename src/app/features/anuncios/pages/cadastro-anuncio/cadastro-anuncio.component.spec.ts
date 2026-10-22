@@ -3,6 +3,8 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CadastroAnuncioComponent } from './cadastro-anuncio.component';
+import { signal } from '@angular/core';
+import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 describe('Cadastro persistente', () => {
   let fixture: ComponentFixture<CadastroAnuncioComponent>;
@@ -10,7 +12,12 @@ describe('Cadastro persistente', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CadastroAnuncioComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SessaoService, useValue: { autenticado: signal(true) } },
+      ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(CadastroAnuncioComponent);

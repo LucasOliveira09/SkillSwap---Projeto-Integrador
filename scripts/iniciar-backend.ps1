@@ -11,12 +11,13 @@ $env:JAVA_HOME = $JavaHome
 $arquivoEnv = Join-Path $raizProjeto '.env'
 if (Test-Path -LiteralPath $arquivoEnv) {
     foreach ($linha in Get-Content -LiteralPath $arquivoEnv) {
-        if ($linha -match '^(DB_PASSWORD|DB_USER|DB_URL|PORT|SEED_ENABLED)=(.*)$') {
+        if ($linha -match '^(DB_PASSWORD|DB_USER|DB_URL|PORT|SEED_ENABLED|JWT_SECRET|SERVER_ADDRESS)=(.*)$') {
             [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], 'Process')
         }
     }
 }
 if (!$env:DB_PASSWORD) { throw 'Defina DB_PASSWORD ou execute scripts/iniciar-banco.ps1.' }
+if (!$env:JWT_SECRET) { throw 'Defina JWT_SECRET ou execute scripts/iniciar-banco.ps1 para gerar uma chave local.' }
 Push-Location (Join-Path $raizProjeto 'backend')
 try {
     & ./mvnw.cmd spring-boot:run
