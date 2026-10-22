@@ -27,3 +27,15 @@ O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo
 - [x] Mover anúncios ilustrativos e coleções para carga inicial idempotente no banco.
 - [x] Integrar Angular à API, remover estado em memória e tratar carregamento/falha/repetição.
 - [x] Concluir persistência após reinício, revisão final, documentação e commits.
+
+## Integração do backend novo do GitHub (21/10/2026)
+
+- [x] Adotar a base escolhida pelo usuário e preservar o layout Angular.
+- [x] Integrar conta, JWT e cadastro autorizado; manter tokens apenas em memória.
+- [x] Compatibilizar enums, paginação, busca, erros e metadados da vitrine.
+- [x] Preservar repositório e banco da VPS; restaurar backup transacional em stack separada pelo Tailscale.
+- [x] Corrigir índice dos anúncios existentes e enum de categoria no MySQL 8.0 sem atribuir proprietários ou substituir dados.
+- [x] Validar 28 testes Angular, 13 testes Java, build, tipos e fluxo real no navegador/MySQL.
+- [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
+- [ ] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
+- [ ] Adotar migrações versionadas e preparar sincronização dos dados antes de eventual promoção pública.

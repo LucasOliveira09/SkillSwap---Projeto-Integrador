@@ -36,6 +36,10 @@ Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” 
 
 Anúncios de venda/troca, categorias e coleções visuais agora são lidos do backend Spring Boot e persistidos em MySQL, seguindo o projeto local de eventos indicado pelo usuário. Busca e paginação ocorrem no servidor; gravação exige validação e sucesso da transação. A memória da sessão e as fixtures do Angular foram removidas. Há estados de carregamento, falha e tentativa novamente. Autenticação, perfis, edição/exclusão, negociação e demais capacidades do MVP continuam futuras. Consulte o [contrato e a execução](backend.md).
 
+## Integração do GitHub em 21/10/2026
+
+Por escolha do usuário, o backend novo do GitHub passou a ser a base canônica: Java 21, Spring Boot 4.0.8 e Maven Wrapper 3.10.0, mantendo MySQL. O Angular preserva o layout e agora possui conta, login JWT e cadastro autenticado. Catálogo e vitrine continuam vindo da API. Os módulos recebidos de propostas, acordos, mensagens e avaliações permanecem no backend, mas suas telas e validação integral ainda estão pendentes. A [ADR-004](decisions/004-integra-backend-github.md) substitui a organização inicial; o [contrato HTTP](backend.md) descreve o estado atual.
+
 ## Funcionalidades futuras
 
 O PDF propõe gateway PIX/cartão e retenção/liberação de valores, destaque pago, publicidade, galeria antes/depois, fotos em avaliações, geolocalização precisa, verificação documental e app/PWA. Permanecem fora desta inicialização. Pagamentos e verificação de identidade exigem decisões próprias de integração e operação; não serão simulados como garantias existentes.
@@ -44,11 +48,11 @@ O trecho do PDF que chama o MVP de “disponível na aplicação” descreve o e
 
 ## O que definir antes das próximas entregas
 
-1. Backend e banco: Java 21, Spring Boot 4.1.1, Maven Wrapper e MySQL 8.4 implementados para catálogo/cadastro ([ADR-003](decisions/003-backend-padroes-eventos.md)). Evoluir o contrato nas próximas capacidades do MVP.
-2. Contas: método de acesso, dados mínimos, recuperação de conta e autorização de edição.
+1. Backend e banco: adotar migrações versionadas e evoluir o contrato dos demais domínios, conforme a [ADR-004](decisions/004-integra-backend-github.md).
+2. Contas: recuperação de acesso, perfil e edição pela interface. Registro/login e autorização de anúncios por proprietário já estão implementados.
 3. Anúncios: categorias definitivas, cidade/bairro, limites, regras de imagens e moderação.
 4. Acordos: proposta, aceite, cancelamento, conclusão e resolução de divergências em vendas e trocas.
 5. Chat e reputação: participantes, retenção de mensagens, denúncia e critérios de avaliação.
 6. Entrega acadêmica: cronograma, divisão de responsabilidades e evidências da pesquisa.
 
-Modelo conceitual inicial: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. Anúncio, categoria e itens da vitrine já têm entidades e API; as demais relações permanecem em planejamento.
+Modelo conceitual inicial: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. O backend recebido contém esses domínios; somente catálogo, conta e cadastro de anúncios tiveram o fluxo Angular/MySQL validado nesta integração.

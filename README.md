@@ -2,7 +2,7 @@
 
 Plataforma de serviços e aulas locais, com venda direta ou troca de habilidades, desenvolvida pelo grupo Saptura. O foco inicial é Florianópolis e região, conforme o documento de visão fornecido pela equipe.
 
-Stack definida pela equipe: **Angular 20 + Java com Spring Boot + MySQL**. O frontend está integrado ao backend e ao MySQL para listar e cadastrar anúncios. A [ADR-003](docs/decisions/003-backend-padroes-eventos.md) registra os padrões adotados do projeto de eventos.
+Stack definida pela equipe: **Angular 20 + Java com Spring Boot + MySQL**. O frontend está integrado ao backend adotado do GitHub para catálogo, criação de conta, login e cadastro autenticado de anúncios. A [ADR-004](docs/decisions/004-integra-backend-github.md) registra a integração de 21/10/2026, preservando o layout antigo.
 
 ## Executar localmente
 
@@ -29,7 +29,7 @@ Abrir [http://localhost:4200](http://localhost:4200). A raiz redireciona para `/
 - Angular 20.3.34, CLI 20.3.40 e Material/CDK 20.2.14, com versões exatas no lockfile.
 - Componentes standalone, SCSS, TypeScript e templates estritos, rotas por domínio com lazy loading.
 - Catálogo com o layout do projeto antigo, exemplos ilustrativos vindos do banco, busca por URL, filtros, banner e paginação no servidor. Cadastro de serviços/aulas com prévia, validação no cliente e servidor, venda ou troca e ação Limpar.
-- Backend Java 21, Spring Boot 4.1.1, Maven Wrapper 3.9.16, JPA/Lombok e MySQL 8.4.11. Anúncios persistem após recarregar e reiniciar. Categorias e coleções vêm da API; não há fallback em memória. Autenticação, upload, chat, avaliações reais e pagamentos continuam pendentes; a API é de uso acadêmico local, sem contas.
+- Backend Java 21, Spring Boot 4.0.8, Maven Wrapper 3.10.0, JPA/Lombok e JWT. MySQL local 8.4; a prévia na VPS mantém 8.0 em uma base restaurada separada. Anúncios persistem após recarregar e reiniciar. A sessão fica apenas em memória e precisa de novo login após recarga. Categorias e coleções vêm da API; não há fallback em memória. Upload e pagamentos não estão disponíveis; módulos de negociações, mensagens e avaliações ainda precisam de telas e validação integral.
 - Interface em português, preços em reais, navegação por teclado e layout responsivo. Fontes Poppins e Angkor locais com licenças OFL; ícones SVG locais, sem CDNs.
 
 ## Comandos
@@ -56,6 +56,7 @@ src/
     app.config.ts                  # providers e locale pt-BR
     app.routes.ts                  # entrada das áreas funcionais
     features/
+      conta/                       # sessão em memória, interceptor e tela de acesso
       anuncios/
         anuncios.routes.ts         # rotas /anuncios e /anuncios/novo
         models/                    # tipos e validação do anúncio
@@ -98,8 +99,8 @@ O instalador criou o tema com `mat.theme`. Na adaptação do layout antigo, esse
 - [Validação da entrega](docs/validacao-inicial.md) e [contexto para agentes](AGENTS.md).
 - [Layout do projeto antigo e validação visual](docs/layout-legado.md): referência, assets, adaptações e conferências.
 
-O backend fica em `backend/src/main/java/br/edu/unifio/skillswap/`, com `entities`, `repositories`, `services`, `controllers`, `dto` e `config`. As entidades usam IDs identity e relacionamentos JPA; DTOs separam entrada/saída das entidades. A referência local de eventos foi consultada sem alterações.
+O backend fica em `backend/src/main/java/com/skillswap/api/`, organizado por domínio em `domain`, com controllers, services, repositories, entidades e DTOs; `infra` concentra segurança e exceções. Essa organização substituiu a primeira aplicação conforme a escolha do usuário de adotar o backend novo do GitHub.
 
-Próximo passo: implementar contas e autorização dos anúncios, definir perfis profissionais e evoluir o contrato de negociações. A base atual persiste anúncios no MySQL e não expõe edição ou exclusão anônimas. Antes de disponibilizar publicamente, adicionar autenticação e migrações versionadas.
+Próximo passo: implementar as telas dos módulos de negociação e aprofundar seus testes. A base atual possui contas, JWT e autorização de anúncios por proprietário. Antes de promoção pública, validar os demais domínios e adotar migrações versionadas. Consulte [backend.md](docs/backend.md) para contrato, execução e preservação da VPS.
 
 Criar commits por objetivo, revisar o diff e executar as verificações pertinentes antes de cada commit. Nunca versionar segredos, dependências instaladas, cache ou build.
