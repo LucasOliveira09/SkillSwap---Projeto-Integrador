@@ -34,9 +34,9 @@ public class AnuncioController {
         return ResponseEntity.ok(PaginaDTO.de(anuncioService.pesquisar(categoria,cidade,busca,pageable)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AnuncioResponseDTO> buscar(@PathVariable Long id) {
-        var anuncio = anuncioService.buscarPorId(id);
+    @GetMapping("/{identificador}")
+    public ResponseEntity<AnuncioResponseDTO> buscar(@PathVariable String identificador) {
+        var anuncio = anuncioService.buscarPorIdentificador(identificador);
         return ResponseEntity.ok(anuncioService.toResponseDTO(anuncio));
     }
 

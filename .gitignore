@@ -52,5 +52,7 @@ Thumbs.db
 
 # Java / dados locais
 backend/target/
+backend/uploads/
+uploads/
 *.log
 .runtime/

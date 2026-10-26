@@ -139,4 +139,47 @@ class IntegracaoAnuncioTest {
             .andExpect(jsonPath("$.totalItens").value(1))
             .andExpect(jsonPath("$.itens[0].titulo").value("Violão anterior"));
     }
+
+    @Test
+    void realizaUploadDeImagemEPersisteNoAnuncio() throws Exception {
+        org.springframework.mock.web.MockMultipartFile arquivo = new org.springframework.mock.web.MockMultipartFile(
+                "file", "foto.png", "image/png", new byte[]{1, 2, 3, 4}
+        );
+
+        var resultadoUpload = mvc.perform(multipart("/api/uploads")
+                .file(arquivo)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.url").isNotEmpty())
+                .andReturn();
+
+        String url = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resultadoUpload.getResponse().getContentAsString()).get("url").asText();
+
+        mvc.perform(get(url))
+                .andExpect(status().isOk());
+
+        String payloadComImagem = """
+            {"titulo":"Fotografia Profissional","descricao":"Ensaio externo com fotos editadas",
+             "categoria":"AULAS","cidade":"São Paulo","modalidade":"VENDA","preco":250.00,
+             "habilidadeDesejada":"","imagem":"%s"}
+            """.formatted(url);
+
+        var resultadoAnuncio = mvc.perform(post("/api/anuncios")
+                .header("Authorization", "Bearer " + token)
+                .contentType("application/json")
+                .content(payloadComImagem))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.imagem").value(url))
+                .andReturn();
+
+        long id = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resultadoAnuncio.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(get("/api/anuncios/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.imagem").value(url))
+                .andExpect(jsonPath("$.titulo").value("Fotografia Profissional"));
+    }
 }
+

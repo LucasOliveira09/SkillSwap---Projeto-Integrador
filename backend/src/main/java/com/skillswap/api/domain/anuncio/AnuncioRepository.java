@@ -32,6 +32,9 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
     boolean existsByCodigoLegado(String codigo);
 
+    @EntityGraph(attributePaths = {"usuario"})
+    Optional<Anuncio> findByCodigoLegado(String codigoLegado);
+
     java.util.List<Anuncio> findTop100ByTextoBuscaIsNull();
 
     @EntityGraph(attributePaths = {"usuario"})

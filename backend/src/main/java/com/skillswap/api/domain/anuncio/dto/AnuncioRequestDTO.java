@@ -33,5 +33,8 @@ public record AnuncioRequestDTO(
         BigDecimal preco,
 
         @Size(max = 120, message = "Habilidade desejada deve ter no máximo 120 caracteres")
-        String habilidadeDesejada
+        String habilidadeDesejada,
+
+        @Size(max = 500, message = "URL da imagem deve ter no máximo 500 caracteres")
+        String imagem
 ) {}

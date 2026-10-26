@@ -31,6 +31,7 @@ public class AnuncioService {
                 .modalidade(dto.modalidade())
                 .preco(dto.modalidade() == ModalidadeAnuncio.VENDA ? dto.preco() : null)
                 .habilidadeDesejada(dto.modalidade() == ModalidadeAnuncio.TROCA ? dto.habilidadeDesejada().strip() : "")
+                .imagem(dto.imagem() != null && !dto.imagem().isBlank() ? dto.imagem().strip() : null)
                 .usuario(usuario)
                 .build();
         return anuncioRepository.saveAndFlush(anuncio);
@@ -49,6 +50,21 @@ public class AnuncioService {
                 .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
     }
 
+    @Transactional(readOnly = true)
+    public Anuncio buscarPorIdentificador(String idOuCodigo) {
+        if (idOuCodigo == null || idOuCodigo.isBlank()) {
+            throw new NaoEncontradoException("Anúncio não encontrado");
+        }
+        try {
+            Long id = Long.parseLong(idOuCodigo);
+            return buscarPorId(id);
+        } catch (NumberFormatException e) {
+            return anuncioRepository.findByCodigoLegado(idOuCodigo)
+                    .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO)
+                    .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
+        }
+    }
+
     @Transactional
     public Anuncio atualizar(Long id, AnuncioRequestDTO dto, String emailUsuario) {
         validarNegociacao(dto);
@@ -61,6 +77,9 @@ public class AnuncioService {
         anuncio.setModalidade(dto.modalidade());
         anuncio.setPreco(dto.modalidade() == ModalidadeAnuncio.VENDA ? dto.preco() : null);
         anuncio.setHabilidadeDesejada(dto.modalidade() == ModalidadeAnuncio.TROCA ? dto.habilidadeDesejada().strip() : "");
+        if (dto.imagem() != null) {
+            anuncio.setImagem(dto.imagem().isBlank() ? null : dto.imagem().strip());
+        }
         return anuncioRepository.save(anuncio);
     }
 
