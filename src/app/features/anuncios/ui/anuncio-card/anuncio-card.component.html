@@ -1,16 +1,20 @@
 <mat-card class="anuncio-card" [attr.data-origem]="anuncio().exemplo ? 'exemplo' : 'sessao'">
-  <div class="foto">
-    @if (anuncio().imagem) {
-      <img [src]="anuncio().imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" />
-    } @else {
-      <div class="sem-foto"><app-icone nome="troca" /><span>Seu anúncio</span></div>
-    }
-    <span class="categoria">{{ anuncio().categoria }}</span>
-    <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Cadastrado' }}</span>
-  </div>
+  <a [routerLink]="['/anuncios', anuncio().id]" class="foto-link" [attr.aria-label]="'Ver detalhes de ' + anuncio().titulo">
+    <div class="foto">
+      @if (anuncio().imagem) {
+        <img [src]="anuncio().imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" />
+      } @else {
+        <div class="sem-foto"><app-icone nome="troca" /><span>Seu anúncio</span></div>
+      }
+      <span class="categoria">{{ anuncio().categoria }}</span>
+      <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Cadastrado' }}</span>
+    </div>
+  </a>
   <div class="corpo">
     <div class="titulo-preco">
-      <h3>{{ anuncio().titulo }}</h3>
+      <h3>
+        <a [routerLink]="['/anuncios', anuncio().id]" class="titulo-link">{{ anuncio().titulo }}</a>
+      </h3>
       @if (anuncio().preco !== null) {
         <p class="preco">
           {{ anuncio().preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'

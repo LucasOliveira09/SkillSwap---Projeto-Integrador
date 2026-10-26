@@ -9,6 +9,7 @@ export interface DadosAnuncio {
   modalidade: ModalidadeAnuncio;
   preco: number | null;
   habilidadeDesejada: string;
+  imagem?: string | null;
 }
 
 export type Anuncio = Readonly<DadosAnuncio & { id: string }>;

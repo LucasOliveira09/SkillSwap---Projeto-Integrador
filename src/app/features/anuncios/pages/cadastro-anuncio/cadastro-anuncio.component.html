@@ -97,6 +97,46 @@
               ></textarea>
               <mat-error>Descreva o que você oferece.</mat-error>
             </mat-form-field>
+            <!-- FOTO DO ANÚNCIO -->
+            <div class="upload-bloco">
+              <span class="upload-titulo">Foto ilustrativa (opcional)</span>
+              @if (dados.imagem) {
+                <div class="upload-preview">
+                  <img [src]="dados.imagem" alt="Prévia da foto carregada" class="thumb-preview" />
+                  <div class="upload-detalhes">
+                    <span class="upload-status"><app-icone nome="correto" /> Foto pronta para publicar</span>
+                    <button
+                      mat-button
+                      color="warn"
+                      type="button"
+                      [disabled]="salvando"
+                      (click)="removerImagem()"
+                    >
+                      Remover foto
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="upload-dropzone">
+                  <input
+                    type="file"
+                    id="input-foto"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    [disabled]="salvando || enviandoImagem()"
+                    (change)="selecionarArquivo($event)"
+                    class="input-oculto"
+                  />
+                  <label for="input-foto" class="btn-escolher-foto">
+                    <app-icone nome="troca" />
+                    <span>{{ enviandoImagem() ? 'Enviando imagem...' : 'Adicionar foto do serviço ou aula' }}</span>
+                  </label>
+                  <small class="upload-dica">JPG, PNG ou WEBP até 5 MB</small>
+                </div>
+              }
+              @if (erroUpload()) {
+                <p class="alerta-erro-upload" role="alert">{{ erroUpload() }}</p>
+              }
+            </div>
             <div class="campos-em-linha">
               <mat-form-field appearance="outline">
                 <mat-label>Categoria</mat-label>
@@ -215,7 +255,13 @@
         <p>Assim seu card aparece no catálogo.</p>
       </div>
       <div class="previa-conteudo">
-        <div class="capa"><app-icone nome="troca" /><span>CAPA DO ANÚNCIO</span></div>
+        <div class="capa">
+          @if (dados.imagem) {
+            <img [src]="dados.imagem" alt="Foto na prévia" class="previa-foto-img" />
+          } @else {
+            <app-icone nome="troca" /><span>CAPA DO ANÚNCIO</span>
+          }
+        </div>
         <div class="previa-nome">
           <h3>{{ dados.titulo.trim() || 'Título do anúncio' }}</h3>
           <span>{{ dados.modalidade === 'venda' ? 'Serviço' : 'Troca' }}</span>

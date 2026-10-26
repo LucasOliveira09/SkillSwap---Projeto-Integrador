@@ -44,6 +44,8 @@ export class CadastroAnuncioComponent {
   protected erroCategorias = false;
   protected carregandoCategorias = true;
   protected salvando = false;
+  protected readonly enviandoImagem = signal(false);
+  protected readonly erroUpload = signal<string | null>(null);
 
   constructor() {
     this.carregarCategorias();
@@ -104,12 +106,50 @@ export class CadastroAnuncioComponent {
       });
   }
 
+  protected selecionarArquivo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const arquivo = input.files?.[0];
+    if (!arquivo) return;
+
+    if (arquivo.size > 5 * 1024 * 1024) {
+      this.erroUpload.set('A imagem excede o tamanho máximo de 5 MB.');
+      input.value = '';
+      return;
+    }
+
+    this.enviandoImagem.set(true);
+    this.erroUpload.set(null);
+
+    this.anuncios
+      .uploadImagem(arquivo)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.enviandoImagem.set(false)),
+      )
+      .subscribe({
+        next: (res) => {
+          this.dados.imagem = res.url;
+        },
+        error: (err) => {
+          this.erroUpload.set(
+            err?.error?.mensagem || 'Falha ao enviar a imagem. Tente novamente.',
+          );
+        },
+      });
+  }
+
+  protected removerImagem(): void {
+    this.dados.imagem = undefined;
+    this.erroUpload.set(null);
+  }
+
   protected limpar(form: NgForm): void {
     if (this.salvando) return;
     this.dados = this.novoFormulario();
     form.resetForm(this.dados);
     this.mensagem = '';
     this.erro = '';
+    this.erroUpload.set(null);
   }
 
   private novoFormulario(): DadosAnuncio {
@@ -121,6 +161,7 @@ export class CadastroAnuncioComponent {
       modalidade: 'venda',
       preco: null,
       habilidadeDesejada: '',
+      imagem: undefined,
     };
   }
 }

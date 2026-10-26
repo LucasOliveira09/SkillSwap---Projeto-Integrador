@@ -26,6 +26,12 @@ export class AnunciosApiService {
       );
   }
 
+  obter(id: string | number) {
+    return this.http
+      .get<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`)
+      .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
   categorias() {
     return this.http.get<readonly CategoriaApi[]>('/api/categorias');
   }
@@ -39,8 +45,38 @@ export class AnunciosApiService {
         categoria: dados.categoria.toUpperCase(),
         modalidade: dados.modalidade.toUpperCase(),
         preco: dados.modalidade === 'venda' ? dados.preco : null,
+        imagem: dados.imagem || null,
       })
       .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
+  uploadImagem(arquivo: File) {
+    const formData = new FormData();
+    formData.append('file', arquivo);
+    return this.http.post<{ url: string; nomeArquivo: string }>('/api/uploads', formData);
+  }
+
+  enviarProposta(anuncioId: number | string, mensagemInicial: string) {
+    return this.http.post<{ id: number; mensagemInicial: string; status: string }>(
+      `${environment.apiUrl}/anuncios/${anuncioId}/propostas`,
+      { mensagemInicial },
+    );
+  }
+
+  propostasEnviadas() {
+    return this.http.get<readonly any[]>(`${environment.apiUrl}/propostas/minhas`);
+  }
+
+  propostasRecebidas() {
+    return this.http.get<readonly any[]>(`${environment.apiUrl}/propostas/recebidas`);
+  }
+
+  aceitarProposta(id: number) {
+    return this.http.patch(`${environment.apiUrl}/propostas/${id}/aceitar`, {});
+  }
+
+  recusarProposta(id: number) {
+    return this.http.patch(`${environment.apiUrl}/propostas/${id}/recusar`, {});
   }
 
   private converter(anuncio: AnuncioApi): AnuncioApi {

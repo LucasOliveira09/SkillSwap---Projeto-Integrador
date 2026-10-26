@@ -1,0 +1,262 @@
+<div class="detalhe-pagina">
+  @if (estado().carregando) {
+    <div class="estado-carregando" role="status">
+      <div class="spinner"></div>
+      <p>Carregando informações do anúncio...</p>
+    </div>
+  } @else if (estado().erro || !anuncio()) {
+    <div class="estado-erro" role="alert">
+      <h2>Anúncio não encontrado</h2>
+      <p>O anúncio que você procura pode ter sido finalizado ou não existe.</p>
+      <a mat-flat-button color="primary" routerLink="/anuncios">
+        <app-icone nome="esquerda" /> Voltar ao catálogo
+      </a>
+    </div>
+  } @else {
+    @let a = anuncio()!;
+
+    <!-- BREADCRUMB ESTILO MERCADO LIVRE -->
+    <nav class="breadcrumb" aria-label="Navegação estrutural">
+      <a routerLink="/anuncios">Início</a>
+      <span class="sep">&gt;</span>
+      <a routerLink="/anuncios" [queryParams]="{ categoria: a.categoria }">{{ a.categoriaRotulo }}</a>
+      <span class="sep">&gt;</span>
+      <span class="atual" aria-current="page">{{ a.titulo }}</span>
+    </nav>
+
+    <!-- GRID PRINCIPAL DE DETALHES -->
+    <div class="detalhe-layout">
+      <!-- COLUNA ESQUERDA: GALERIA E CONTEÚDO PRINCIPAL -->
+      <section class="coluna-esquerda">
+        <!-- ÁREA DA GALERIA -->
+        <div class="galeria-card">
+          <div class="galeria-destaque">
+            @if (fotoPrincipal()) {
+              <img
+                [src]="fotoPrincipal()"
+                [alt]="a.titulo"
+                class="imagem-destaque"
+                loading="eager"
+              />
+            } @else {
+              <div class="sem-imagem">
+                <app-icone nome="troca" />
+                <span>Foto ilustrativa não fornecida</span>
+              </div>
+            }
+
+            <span class="badge-categoria">{{ a.categoriaRotulo }}</span>
+            <span class="badge-modalidade" [class.troca]="a.modalidade === 'troca'">
+              {{ a.modalidade === 'troca' ? 'Troca de Talentos' : 'Serviço / Aula' }}
+            </span>
+          </div>
+
+          <!-- MINIATURAS SE HOUVER IMAGEM -->
+          @if (a.imagem) {
+            <div class="miniaturas-barra">
+              <button
+                type="button"
+                class="miniatura-btn ativo"
+                [attr.aria-label]="'Foto principal de ' + a.titulo"
+                (click)="selecionarFoto(a.imagem)"
+              >
+                <img [src]="a.imagem" [alt]="a.titulo" />
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- SEÇÃO: DESCRIÇÃO DO SERVIÇO / AULA -->
+        <div class="descricao-card">
+          <h2>Descrição do que é oferecido</h2>
+          <div class="descricao-texto">
+            @for (linha of linhasDescricao(); track $index) {
+              <p>{{ linha }}</p>
+            }
+          </div>
+
+          <!-- SE FOR TROCA: DESTAQUE PARA HABILIDADE DESEJADA -->
+          @if (a.modalidade === 'troca' && a.habilidadeDesejada) {
+            <div class="box-troca">
+              <div class="icone-troca">
+                <app-icone nome="troca" />
+              </div>
+              <div class="info-troca">
+                <strong>O anunciante aceita em troca:</strong>
+                <p>{{ a.habilidadeDesejada }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- SEÇÃO: PERGUNTAS E MENSAGENS AO ANUNCIANTE -->
+        <div class="mensagens-card" id="secao-contato">
+          <div class="mensagens-header">
+            <app-icone nome="email" />
+            <div>
+              <h3>Converse com o anunciante</h3>
+              <p>Envie sua dúvida sobre horários, disponibilidade ou faça uma proposta.</p>
+            </div>
+          </div>
+
+          @if (feedbackSucesso()) {
+            <div class="alerta sucesso" role="status">
+              <app-icone nome="correto" />
+              <span>{{ feedbackSucesso() }}</span>
+            </div>
+          }
+
+          @if (feedbackErro()) {
+            <div class="alerta erro" role="alert">
+              <span>{{ feedbackErro() }}</span>
+            </div>
+          }
+
+          @if (sessao.autenticado()) {
+            <form (ngSubmit)="enviarMensagem()" class="form-mensagem">
+              <label for="campo-mensagem" class="sr-only">Sua mensagem para o anunciante</label>
+              <textarea
+                id="campo-mensagem"
+                name="mensagemTexto"
+                [(ngModel)]="mensagemTexto"
+                rows="4"
+                placeholder="Olá! Gostaria de saber mais informações sobre o seu serviço..."
+                [disabled]="enviandoMensagem()"
+                required
+              ></textarea>
+              <div class="form-acoes">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="enviandoMensagem() || !mensagemTexto.trim()"
+                >
+                  <app-icone nome="email" />
+                  {{ enviandoMensagem() ? 'Enviando...' : 'Enviar mensagem' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="aviso-login">
+              <p>Você precisa estar conectado à sua conta para enviar uma mensagem ao anunciante.</p>
+              <a
+                mat-flat-button
+                color="primary"
+                routerLink="/conta"
+                [queryParams]="{ retorno: '/anuncios/' + a.id }"
+              >
+                Entrar ou criar conta
+              </a>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- COLUNA DIREITA: PREÇO, COMPRA E DADOS DO VENDEDOR -->
+      <aside class="coluna-direita">
+        <!-- CARD DE COMPRA / PREÇO (MERCADO LIVRE STYLE) -->
+        <div class="card-compra">
+          <span class="tag-status">{{ a.exemplo ? 'Exemplo ilustrativo' : 'Anúncio ativo' }}</span>
+          <h1 class="titulo-anuncio">{{ a.titulo }}</h1>
+
+          @if (a.estrelas !== null) {
+            <div class="reputacao-resumo">
+              <span class="estrelas-ouro" [attr.aria-label]="a.estrelas + ' estrelas'">
+                {{ estrelas(a.estrelas) }}
+              </span>
+              <span class="nota-numero">{{ a.estrelas }}.0</span>
+            </div>
+          }
+
+          <div class="preco-container">
+            @if (a.modalidade === 'venda' && a.preco !== null) {
+              <div class="preco-valor">
+                <span class="moeda">R$</span>
+                <span class="valor">{{ a.preco | currency: 'BRL' : '' : '1.2-2' : 'pt-BR' }}</span>
+                @if (a.unidade) {
+                  <span class="unidade">{{ a.unidade }}</span>
+                }
+              </div>
+            } @else {
+              <div class="preco-troca-badge">
+                <app-icone nome="troca" />
+                <span>Disponível para troca</span>
+              </div>
+            }
+          </div>
+
+          <ul class="lista-garantias">
+            <li>
+              <app-icone nome="correto" />
+              <div>
+                <strong>Negociação direta e segura</strong>
+                <small>Combine datas e condições com o profissional</small>
+              </div>
+            </li>
+            <li>
+              <app-icone nome="relogio" />
+              <div>
+                <strong>Resposta ágil</strong>
+                <small>Notificação enviada em tempo real</small>
+              </div>
+            </li>
+            <li>
+              <app-icone nome="local" />
+              <div>
+                <strong>{{ a.cidade }}</strong>
+                <small>Região de atendimento</small>
+              </div>
+            </li>
+          </ul>
+
+          <div class="acoes-card">
+            <button
+              mat-flat-button
+              class="btn-cta-mensagem"
+              type="button"
+              (click)="rolarParaMensagens()"
+            >
+              <app-icone nome="email" /> Entrar em contato
+            </button>
+            <a mat-stroked-button class="btn-cta-catalogo" routerLink="/anuncios">
+              <app-icone nome="esquerda" /> Ver mais anúncios
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD DO PERFIL DO ANUNCIANTE -->
+        <div class="card-vendedor">
+          <h3>Informações do anunciante</h3>
+          <div class="perfil-linha">
+            @if (a.avatar) {
+              <img [src]="a.avatar" [alt]="a.autor || 'Anunciante'" class="avatar-img" />
+            } @else {
+              <div class="avatar-placeholder">
+                <app-icone nome="usuario" />
+              </div>
+            }
+            <div class="perfil-info">
+              <strong>{{ a.autor || 'Anunciante da comunidade' }}</strong>
+              <small>{{ a.cidade }}</small>
+            </div>
+          </div>
+
+          <div class="meta-vendedor">
+            <div class="meta-item">
+              <span class="meta-rotulo">Cadastrado</span>
+              <span class="meta-dado">
+                {{ a.exemplo ? 'Na vitrine' : (a.criadoEm | date: 'dd/MM/yyyy' : '' : 'pt-BR') }}
+              </span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">Modalidade</span>
+              <span class="meta-dado">
+                {{ a.modalidade === 'troca' ? 'Troca de serviços' : 'Venda' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

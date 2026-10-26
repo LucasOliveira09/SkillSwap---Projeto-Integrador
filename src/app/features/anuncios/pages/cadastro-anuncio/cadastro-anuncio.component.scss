@@ -285,3 +285,101 @@ button[type='submit'] {
     padding-inline: 14px;
   }
 }
+
+/* UPLOAD DE IMAGEM */
+.upload-bloco {
+  margin-bottom: 16px;
+}
+.upload-titulo {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ss-ink);
+  margin-bottom: 8px;
+}
+.upload-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  &:hover {
+    border-color: var(--ss-blue);
+    background: #f0f7ff;
+  }
+}
+.input-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.btn-escolher-foto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: var(--ss-blue);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover {
+    background: var(--ss-blue);
+    color: white;
+    border-color: var(--ss-blue);
+  }
+}
+.upload-dica {
+  display: block;
+  font-size: 11px;
+  color: var(--ss-muted);
+  margin-top: 6px;
+}
+.upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+}
+.thumb-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.upload-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.upload-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+}
+.alerta-erro-upload {
+  color: #dc2626;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+.previa-foto-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
