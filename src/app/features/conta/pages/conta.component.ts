@@ -10,6 +10,15 @@ import { finalize } from 'rxjs';
 import { SessaoService } from '../data-access/sessao.service';
 import { AnunciosApiService } from '../../anuncios/data-access/anuncios-api.service';
 
+const ROTA_DETALHE_ANUNCIO = /^\/anuncios\/[A-Za-z0-9_-]+$/;
+
+export function destinoPosLogin(destino: string | null): string {
+  if (destino === '/anuncios/novo' || (destino && ROTA_DETALHE_ANUNCIO.test(destino))) {
+    return destino;
+  }
+  return '/anuncios';
+}
+
 @Component({
   selector: 'app-conta',
   standalone: true,
@@ -107,7 +116,7 @@ export class ContaComponent {
         next: () => {
           this.senha = '';
           const retorno = this.route.snapshot.queryParamMap.get('retorno');
-          void this.router.navigateByUrl(retorno === '/anuncios/novo' ? retorno : '/anuncios');
+          void this.router.navigateByUrl(destinoPosLogin(retorno));
         },
         error: () => {
           this.senha = '';
