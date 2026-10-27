@@ -23,7 +23,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
-- [ ] Completar operação de upload: rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
+- [x] Criar rotina para gerar arquivo de backup somente leitura do volume de uploads, validar tar e SHA-256, sem alterar o volume.
+- [ ] Fazer primeira cópia verificada, definir retenção externa e ensaiar restauração; migrar os arquivos públicos atuais e validar persistência após reinício.
 - [x] Revogar acesso público à imagem quando a última referência pública for removida; uploads órfãos ficam privados do proprietário e sem cache HTTP.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.

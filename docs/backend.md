@@ -106,7 +106,32 @@ Os inserts ocorrem pela aplicação/JPA no MySQL, com chave estável `codigoLega
 
 A tela `/conta` permite registrar, entrar e sair; `/anuncios/novo` solicita login antes de salvar. O JWT fica somente em memória e é enviado apenas à API relativa da própria origem. Não há armazenamento em localStorage/sessionStorage. Recarregar encerra a sessão, mas não apaga anúncios; um 401 encerra a sessão local e a tela trata a falha.
 
-Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil e a troca da foto usam o JWT em memória. O backend confere o conteúdo decodificado e não confia no MIME/na extensão do arquivo; SVG e WebP não são aceitos. A aplicação usa `UPLOAD_DIR` (padrão `uploads`) e os Compose local/público montam volume de arquivos. Cada conta tem quota padrão de 100 MiB (`UPLOAD_USER_QUOTA_BYTES`) e cada imagem aceita até 5 MiB; `GET /api/uploads/uso` informa o consumo, incluindo arquivos enviados ainda sem referência. A migração V6 registra fotos já ligadas a perfil, anúncio e portfólio, mede tamanhos existentes no primeiro acesso e impede contagem duplicada quando a mesma conta reenvia o mesmo conteúdo. Imagens são públicas enquanto ligadas a perfil, anúncio ativo não demonstrativo ou portfólio visível; sem referência pública, só a conta que enviou pode acessá-las até a limpeza. A rotina diária às 03:30 UTC remove somente arquivos hash gerados pela API, sem referência em perfil, anúncio ou publicação e com mais de 30 dias, liberando também o registro de quota. Configure `UPLOAD_ORPHAN_RETENTION_DAYS` (mínimo 1) e `UPLOAD_CLEANUP_CRON` se necessário. Backup do volume e migração dos arquivos públicos existentes continuam pendentes. Pagamentos integrados não estão disponíveis nesta fase.
+Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil e a troca da foto usam o JWT em memória. O backend confere o conteúdo decodificado e não confia no MIME/na extensão do arquivo; SVG e WebP não são aceitos. A aplicação usa `UPLOAD_DIR` (padrão `uploads`) e os Compose local/público montam volume de arquivos. Cada conta tem quota padrão de 100 MiB (`UPLOAD_USER_QUOTA_BYTES`) e cada imagem aceita até 5 MiB; `GET /api/uploads/uso` informa o consumo, incluindo arquivos enviados ainda sem referência. A migração V6 registra fotos já ligadas a perfil, anúncio e portfólio, mede tamanhos existentes no primeiro acesso e impede contagem duplicada quando a mesma conta reenvia o mesmo conteúdo. Imagens são públicas enquanto ligadas a perfil visível, anúncio ativo não demonstrativo ou portfólio visível; sem referência pública, só a conta que enviou pode acessá-las até a limpeza. A rotina diária às 03:30 UTC remove somente arquivos hash gerados pela API, sem referência em perfil, anúncio ou publicação e com mais de 30 dias, liberando também o registro de quota. Configure `UPLOAD_ORPHAN_RETENTION_DAYS` (mínimo 1) e `UPLOAD_CLEANUP_CRON` se necessário. O script `scripts/backup-uploads.sh` gera uma cópia somente leitura, valida o arquivo e calcula SHA-256. A primeira cópia verificada, retenção externa, ensaio de restauração e migração dos arquivos públicos existentes ainda precisam ser realizados. Pagamentos integrados não estão disponíveis nesta fase.
+
+## Backup dos uploads
+
+O script copia o volume Docker escolhido em modo somente leitura para um arquivo `tar.gz`, valida o arquivo, grava SHA-256 e restringe as permissões a quem executou o script. Ele não para nem altera o volume ativo. Para garantir uma cópia consistente com o banco, programe a execução em uma janela sem uploads e coordene-a com o backup do MySQL.
+
+Confira o destino de montagem e o nome real do volume no container da API. No site público, a montagem é `/app/uploads`; não presuma o prefixo do volume Compose:
+
+```sh
+docker inspect skillswap-api --format '{{range .Mounts}}{{if eq .Destination "/app/uploads"}}{{.Name}}{{end}}{{end}}'
+```
+
+Passe o nome retornado e um diretório de backup restrito:
+
+```sh
+./scripts/backup-uploads.sh <nome-do-volume> /home/ubuntu/backups/skillswap-uploads
+```
+
+O script cria um arquivo datado e um arquivo `.sha256`. Confira o checksum antes de copiar para armazenamento externo:
+
+```sh
+cd /home/ubuntu/backups/skillswap-uploads
+sha256sum -c skillswap-uploads-<data>.tar.gz.sha256
+```
+
+Antes de qualquer restauração, crie um volume descartável e valide os arquivos junto de uma cópia do banco. Nunca extraia um backup sobre o volume ativo nem sobreponha os dados públicos com uma fotografia antiga. A retenção, cópia externa e ensaio de restauração continuam operacionais e devem ser concluídos antes de considerar os uploads protegidos por backup.
 
 ## Execução local
 
@@ -165,7 +190,7 @@ Na fatia inicial de perfil, a API pública e a edição autenticada foram cobert
 
 A descoberta pública também oferece `GET /profissionais`, com busca em nome/especialidades, filtro por cidade, média mínima opcional (1 a 5), paginação e ordenação estável por criação. O filtro de média só inclui perfis com pelo menos três avaliações visíveis, evitando tratar poucas avaliações como reputação consolidada. Só entram perfis que declararam especialidades; resultados mostram avaliações apenas quando há registros reais e não retornam e-mail. Testes MockMvc confirmam os filtros, a amostra mínima e a exclusão de perfis vazios. O endpoint ainda precisa ser verificado com MySQL real.
 
-O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica, edita legenda, remove conteúdo e percorre páginas no editor do perfil. A rotina diária de limpeza remove arquivos hash sem referência em perfis, anúncios e publicações após a retenção configurada de 30 dias. Ainda faltam denúncia/moderação, quota por conta, backup do volume e validação real no MySQL. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de alteração por outro usuário; o teste unitário cobre retenção, referências existentes e nomes estranhos.
+O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica, edita legenda, remove conteúdo e percorre páginas no editor do perfil. A rotina diária de limpeza remove arquivos hash sem referência em perfis, anúncios e publicações após a retenção configurada de 30 dias. Denúncia/moderação e quota por conta foram concluídas. O script para gerar backup somente leitura do volume também está disponível; ainda faltam a primeira cópia externa, ensaio de restauração, migração dos arquivos públicos atuais e validação real no MySQL. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de alteração por outro usuário; o teste unitário cobre retenção, referências existentes e nomes estranhos.
 
 A negociação tem recursos REST para propostas e acordos, filtros/paginação e alterações por PATCH. A tela `/acordos/{id}` apresenta a conversa paginada começando pelas mensagens recentes, permite navegar pelo histórico, enviar mensagens e confirmar conclusão. Após ambas as partes confirmarem, somente o cliente que enviou a proposta pode avaliar o profissional e o serviço. Esse cliente pode editar uma única vez nas primeiras 24 horas; a API bloqueia alterações após resposta, denúncia, contestação ou edição anterior, preservando a versão substituída e liberando-a apenas à moderação. O profissional pode publicar uma resposta única e imutável ou contestar privadamente em até sete dias. Moderadores da allowlist decidem as contestações com fundamentação; o conteúdo permanece público durante a análise. A migração Flyway V3 adiciona os marcadores de conclusão, V9 registra contestações e V10 guarda o histórico da edição. Testes MockMvc/JPA e Angular cobrem autorização, prazo, restrições, histórico e atualização. Validação em MySQL real e persistência após reinício ainda estão pendentes.
 
