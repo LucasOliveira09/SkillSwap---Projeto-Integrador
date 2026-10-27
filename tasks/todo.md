@@ -20,14 +20,14 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação, com as limitações documentadas.
 - [x] Adotar Flyway, baseline SQL para banco vazio e Hibernate em modo validate; testar o baseline contra H2/MySQL mode.
 - [x] Executar Flyway V1–V14 e Hibernate `validate` em schema vazio e descartável MySQL 8.0.46, usando a aplicação Java 21.
-- [ ] Reexecutar a preparação/baseline com a versão atual do script guardado em uma cópia MySQL 8.0.46: uma versão anterior já passou em clone somente de estrutura e Flyway V1–V14/Hibernate `validate`, mas a versão atual ainda só foi validada no caminho negativo (guard `0`, sete tabelas da prévia inalteradas). Repetir o caminho positivo antes de considerar o artefato pronto.
-- [ ] Fazer backup verificável e ensaiar a preparação/baseline numa cópia integral do schema e dos uploads existentes; conferir contagens, valores e referências antes de qualquer decisão sobre a base ativa. A inspeção original encontrou sete tabelas sem histórico Flyway; a V1 cria nove, há cinco colunas `ENUM` e falta `avaliacoes.nota_anuncio`.
-- [ ] Validar V1–V14 e Hibernate `validate` em MySQL 8.4 local antes de promoção; Docker Desktop precisa estar ativo.
+- [x] Reexecutar a preparação/baseline guardada em cópia integral do banco público MySQL 8.0.46. Flyway V1–V14 e Hibernate `validate` passaram; os cinco enums foram preservados e uma comparação de IDs e todos os campos compartilhados nas sete tabelas legadas encontrou zero divergências. As cópias foram removidas depois da validação.
+- [x] Fazer backup verificável do banco e dos uploads públicos e ensaiar a preparação/baseline numa cópia integral. A cópia de uploads estava vazia e não havia referências `/api/uploads/` no banco. Dump e arquivo de uploads foram validados por SHA-256; o backup ainda está no mesmo VPS e precisa de cópia externa e política de retenção.
+- [x] Validar V1–V14 e Hibernate `validate` em MySQL 8.4.11 numa instância descartável isolada da VPS; API saudável e `GET /api/anuncios` aprovado. A validação local continua pendente porque o Docker Desktop estava indisponível.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
 - [x] Criar rotina para gerar arquivo de backup somente leitura do volume de uploads, validar tar e SHA-256, sem alterar o volume.
-- [ ] Fazer primeira cópia verificada, definir retenção externa e ensaiar restauração; migrar os arquivos públicos atuais e validar persistência após reinício.
+- [ ] Fazer cópia externa e definir retenção; ensaiar restauração operacional. O backup inicial do diretório público foi verificado e tinha zero arquivos; não havia arquivos/referências para migrar neste snapshot.
 - [x] Revogar acesso público à imagem quando a última referência pública for removida; uploads órfãos ficam privados do proprietário e sem cache HTTP.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
@@ -37,7 +37,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Adicionar links públicos opcionais de LinkedIn, Instagram e site HTTPS, com validação no servidor.
 - [x] Permitir pausar e reativar a exposição do perfil, ofertas, portfólio, avaliações e imagens sem apagar dados da conta ou negociações.
 - [x] Validar perfil, foto e portfólio no MySQL 8.0.46 e persistência após reinício da API, em schema descartável da prévia Tailscale.
-- [ ] Repetir validação no MySQL 8.4 local; Docker Desktop precisa estar ativo.
+- [ ] Repetir validação dos fluxos de perfil, fotos e portfólio no MySQL 8.4 local; o baseline e API básica já passaram em MySQL 8.4.11 descartável na VPS, mas o Docker Desktop local estava indisponível.
 
 ### Portfólio e descoberta
 
@@ -72,7 +72,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Entrega e fases seguintes
 
-- [ ] Completar validação operacional: concorrência, MySQL 8.4, moderação em MySQL, axe/leitor de tela, backup/restauração de uploads e migração segura do schema/arquivos existentes. Os fluxos de venda e troca na interface, autorização básica, persistência de perfil/foto/publicações/avaliações e reinício da API passaram em MySQL 8.0.46.
+- [ ] Completar validação operacional: moderação em MySQL, axe/leitor de tela, cópia externa/retenção e restauração operacional de uploads, além da decisão de migração para o schema ativo. Concorrência e migração integral do schema foram validadas; MySQL 8.4.11 e API básica passaram numa instância descartável da VPS. Os fluxos de venda e troca na interface, autorização básica, persistência de perfil/foto/publicações/avaliações e reinício da API passaram em MySQL 8.0.46.
 - [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
 - [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
