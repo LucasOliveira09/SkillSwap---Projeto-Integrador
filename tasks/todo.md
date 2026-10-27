@@ -20,7 +20,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação, com as limitações documentadas.
 - [x] Adotar Flyway, baseline SQL para banco vazio e Hibernate em modo validate; testar o baseline contra H2/MySQL mode.
 - [x] Executar Flyway V1–V14 e Hibernate `validate` em schema vazio e descartável MySQL 8.0.46, usando a aplicação Java 21.
-- [ ] Comparar e preparar migração/baseline de bancos existentes com backup. A inspeção somente leitura da prévia em 27/10/2026 encontrou MySQL 8.0.46 sem histórico Flyway, sete tabelas (a V1 cria nove), três colunas `ENUM` onde a V1 usa `VARCHAR` e falta `avaliacoes.nota_anuncio`; não baselinar até comparar o schema completo e testar uma migração em cópia descartável.
+- [ ] Reexecutar a preparação/baseline com a versão atual do script guardado em uma cópia MySQL 8.0.46: uma versão anterior já passou em clone somente de estrutura e Flyway V1–V14/Hibernate `validate`, mas a versão atual ainda só foi validada no caminho negativo (guard `0`, sete tabelas da prévia inalteradas). Repetir o caminho positivo antes de considerar o artefato pronto.
+- [ ] Fazer backup verificável e ensaiar a preparação/baseline numa cópia integral do schema e dos uploads existentes; conferir contagens, valores e referências antes de qualquer decisão sobre a base ativa. A inspeção original encontrou sete tabelas sem histórico Flyway; a V1 cria nove, há cinco colunas `ENUM` e falta `avaliacoes.nota_anuncio`.
 - [ ] Validar V1–V14 e Hibernate `validate` em MySQL 8.4 local antes de promoção; Docker Desktop precisa estar ativo.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
@@ -54,7 +55,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Serializar criação/aceite/recusa/cancelamento de propostas por anúncio; permitir cancelamento da própria proposta pendente.
 - [x] Registrar histórico de eventos da negociação.
-- [ ] Validar aceite concorrente com MySQL real.
+- [x] Validar aceite concorrente com MySQL 8.0.46 real: o cenário original reproduziu dois HTTP 200 para o mesmo anúncio; após a correção, requisições simultâneas resultaram em um HTTP 200, um HTTP 400 e apenas um acordo.
 - [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
 - [x] Adicionar navegação de páginas à conversa, abrir nas mensagens recentes e testar histórico extenso.
