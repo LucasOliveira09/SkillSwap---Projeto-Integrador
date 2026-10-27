@@ -41,6 +41,27 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/publicacoes/{id}` | Consulta uma publicação pública de portfólio pelo identificador. |
 | DELETE | `/publicacoes/{id}` | Exige JWT e autoria; remove a publicação e suas referências de foto, responde 204. Arquivos não são apagados. |
 
+### Negociação, conversa e reputação
+
+| Método | Rota | Comportamento |
+| --- | --- | --- |
+| POST | `/anuncios/{anuncioId}/propostas` | Exige JWT de outra pessoa; cria proposta pendente e responde 201 com Location. |
+| GET | `/propostas?direcao=ENVIADAS&pagina=0&tamanho=20` | Exige JWT; lista propostas enviadas ou recebidas em página de até 50 itens. |
+| GET | `/propostas/{id}` | Exige JWT de uma das partes da proposta. |
+| PATCH | `/propostas/{id}` | Exige anunciante; aceita `{ "status": "ACEITA" }` ou `{ "status": "RECUSADA" }` somente para proposta pendente. Aceitar cria o acordo e recusa propostas pendentes concorrentes do anúncio. |
+| GET | `/acordos?pagina=0&tamanho=20` | Exige JWT; lista acordos dos quais a pessoa participa, até 50 por página. |
+| GET | `/acordos/{id}` | Exige JWT de um participante. |
+| PATCH | `/acordos/{id}` | Exige participante; status pode ser `CONCLUIDO` ou `CANCELADO`, somente a partir de `EM_ANDAMENTO`. |
+| GET | `/acordos/{id}/mensagens?pagina=0&tamanho=50` | Exige participante; mensagens em ordem cronológica, até 100 por página. |
+| POST | `/acordos/{id}/mensagens` | Exige participante; grava mensagem de até 2.000 caracteres, 201 com Location. |
+| GET | `/acordos/{id}/mensagens/{mensagemId}` | Exige participante; 404 se a mensagem não pertencer ao acordo informado. |
+| POST | `/acordos/{id}/avaliacoes` | Exige participante e acordo concluído; uma avaliação de 1–5 por participante, sem autoavaliação, com depoimento opcional. Responde 201. |
+| GET | `/acordos/{id}/avaliacoes` | Exige participante; lista avaliações vinculadas ao acordo. |
+| GET | `/acordos/{id}/avaliacoes/{avaliacaoId}` | Exige participante; 404 se a avaliação não pertencer ao acordo. |
+| GET | `/usuarios/{id}/avaliacoes` | Lista avaliações recebidas pelo perfil público. |
+
+Os endpoints legados `/propostas/minhas`, `/propostas/recebidas`, `/propostas/{id}/aceitar`, `/propostas/{id}/recusar`, `/acordos/meus`, `/acordos/{id}/concluir` e `/acordos/{id}/cancelar` continuam disponíveis para clientes antigos. O Angular usa coleções de recursos, `PATCH` no recurso e query parameters para filtrar e paginar.
+
 O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor.
 
 Cadastro: título 1–100, descrição 1–1500, cidade 1–80, categoria e modalidade válidas. Venda exige preço de 0,01 a 99.999.999,99 com até duas casas; troca exige habilidade de até 120 caracteres e não preserva preço. Campos obrigatórios rejeitam espaços. Proprietário, imagens ilustrativas, avaliações e indicação de exemplo não são controlados pelo formulário.
@@ -101,7 +122,9 @@ Na fatia inicial de perfil, a API pública e a edição autenticada foram cobert
 
 A descoberta pública também oferece `GET /profissionais`, com busca em nome/especialidades, filtro por cidade, paginação e ordenação estável por criação. Só entram perfis que declararam especialidades; resultados mostram avaliações apenas quando há registros reais e não retornam e-mail. Testes MockMvc confirmam os filtros e a exclusão de perfis vazios. O endpoint ainda precisa ser verificado com MySQL real.
 
-O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica e remove conteúdo no editor do perfil. A remoção exclui as referências do banco, sem apagar arquivos. Denúncia/moderação, paginação visual além da primeira página, quota e limpeza de uploads continuam pendentes. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de remoção por outro usuário. Após esta etapa: 50 testes Angular, 24 Java, build e typecheck aprovados. MySQL real e reinício ainda não foram verificados.
+O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica e remove conteúdo no editor do perfil. A remoção exclui as referências do banco, sem apagar arquivos. Denúncia/moderação, paginação visual além da primeira página, quota e limpeza de uploads continuam pendentes. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de remoção por outro usuário.
+
+A negociação agora tem recursos REST para propostas e acordos, filtros/paginação e alterações por PATCH. A tela `/acordos/{id}` apresenta a conversa, permite enviar mensagens, confirmar conclusão e avaliar o outro participante após concluir. A API confere participação nas leituras e escritas; o fluxo foi coberto ponta a ponta com MockMvc/JPA. Os aliases de ação antigos permanecem por compatibilidade. A avaliação atual é do participante/profissional; nota separada do anúncio, cancelamento pelo proponente e controle de concorrência continuam pendentes. Nesta verificação: 53 testes Angular, 26 Java, build e typecheck aprovados; perfil, portfólio e conversa foram conferidos no Chrome/Playwright em 1440px e 360px usando mocks da API. MySQL real e persistência após reinício ainda não foram verificados.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

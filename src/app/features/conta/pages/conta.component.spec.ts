@@ -19,6 +19,10 @@ describe('destino após login', () => {
     expect(destinoPosLogin('/meu-perfil')).toBe('/meu-perfil');
   });
 
+  it('retorna à conversa interna de um acordo', () => {
+    expect(destinoPosLogin('/acordos/15')).toBe('/acordos/15');
+  });
+
   it('usa o catálogo quando o destino não é uma rota interna permitida', () => {
     for (const destino of [null, '', '//externo.example', '/conta', '/anuncios/42?x=1']) {
       expect(destinoPosLogin(destino)).toBe('/anuncios');

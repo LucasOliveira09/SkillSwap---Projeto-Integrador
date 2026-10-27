@@ -37,11 +37,13 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Negociação e reputação
 
-- [ ] Definir e implementar máquina de estados de propostas/acordos, controle de concorrência e histórico de eventos.
-- [ ] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios corretos.
-- [ ] Criar conversa persistente por acordo com autorização estrita por participante e paginação.
-- [ ] Concluir o acordo e implementar avaliações elegíveis de profissional e oferta, com nota, amostra, denúncia e moderação.
-- [ ] Validar ponta a ponta: perfil/anúncio -> descoberta -> proposta -> conversa -> acordo -> conclusão -> avaliação.
+- [ ] Completar máquina de estados com concorrência segura, cancelamento pelo proponente e histórico de eventos.
+- [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
+- [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
+- [ ] Adicionar navegação de páginas à conversa e testar histórico extenso.
+- [ ] Implementar nota separada para oferta, denúncia/moderação e regras de resposta/edição das avaliações.
+- [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
+- [ ] Validar no navegador e MySQL os fluxos de venda e troca e a persistência após reinício.
 
 ### Entrega e fases seguintes
 

@@ -6,12 +6,15 @@ import com.skillswap.api.domain.anuncio.Anuncio;
 import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
+import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -63,6 +66,35 @@ public class PropostaService {
         return propostaRepository.findByProponenteId(usuario.getId()).stream()
                 .map(this::toResponseDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PropostaResponseDTO> listarPorDirecao(String direcao, String emailUsuario, Pageable pageable) {
+        Usuario usuario = usuarioService.findByEmail(emailUsuario);
+        return switch (direcao == null ? "" : direcao.toUpperCase(java.util.Locale.ROOT)) {
+            case "ENVIADAS" -> propostaRepository.findByProponenteId(usuario.getId(), pageable).map(this::toResponseDTO);
+            case "RECEBIDAS" -> propostaRepository.findByAnuncioUsuarioId(usuario.getId(), pageable).map(this::toResponseDTO);
+            default -> throw new IllegalArgumentException("Direção deve ser ENVIADAS ou RECEBIDAS");
+        };
+    }
+
+    @Transactional(readOnly = true)
+    public PropostaResponseDTO buscar(Long id, String emailUsuario) {
+        Proposta proposta = findById(id);
+        if (!proposta.getAnuncio().getUsuario().getEmail().equals(emailUsuario)
+                && !proposta.getProponente().getEmail().equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Você não participa desta proposta");
+        }
+        return toResponseDTO(proposta);
+    }
+
+    @Transactional
+    public Proposta atualizarStatus(Long id, AtualizarStatusPropostaDTO dto, String emailUsuario) {
+        return switch (dto.status()) {
+            case ACEITA -> aceitar(id, emailUsuario);
+            case RECUSADA -> recusar(id, emailUsuario);
+            default -> throw new IllegalArgumentException("Status solicitado não é permitido nesta operação");
+        };
     }
 
     @Transactional

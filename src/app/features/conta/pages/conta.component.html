@@ -17,6 +17,8 @@
       <h2>Mensagens recebidas em seus anúncios</h2>
       @if (carregandoPropostas()) {
         <p class="status-msg">Carregando mensagens...</p>
+      } @else if (erroPropostas()) {
+        <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
       } @else if (propostasRecebidas().length === 0) {
         <div class="vazio-card">
           <p>Você ainda não recebeu mensagens de interessados em seus serviços.</p>
@@ -54,7 +56,9 @@
       }
 
       <h2>Suas mensagens enviadas</h2>
-      @if (propostasEnviadas().length === 0) {
+      @if (erroPropostas()) {
+        <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
+      } @else if (propostasEnviadas().length === 0) {
         <div class="vazio-card">
           <p>Você ainda não enviou mensagens para outros anunciantes.</p>
         </div>
@@ -76,6 +80,35 @@
                 <a mat-button [routerLink]="['/anuncios', p.anuncioId]">Ver anúncio</a>
               </div>
             </div>
+          }
+        </div>
+      }
+
+      <h2>Seus acordos</h2>
+      @if (erroAcordos()) {
+        <p role="alert">{{ erroAcordos() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
+      } @else if (acordos().length === 0) {
+        <div class="vazio-card"><p>Quando uma proposta for aceita, o acordo aparecerá aqui.</p></div>
+      } @else {
+        <div class="lista-propostas">
+          @for (acordo of acordos(); track acordo.id) {
+            <article class="proposta-card">
+              <div class="proposta-topo">
+                <div>
+                  <strong>{{ acordo.anuncioTitulo }}</strong>
+                  <span class="proposta-anuncio">{{ acordo.anuncianteNome }} e {{ acordo.proponenteNome }}</span>
+                </div>
+                <span class="badge-status" [class]="acordo.status.toLowerCase()">
+                  {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+                </span>
+              </div>
+              <div class="proposta-meta">
+                <small>Criado em {{ acordo.criadoEm | date: 'dd/MM/yyyy' }}</small>
+                <a mat-flat-button color="primary" [routerLink]="['/acordos', acordo.id]">
+                  {{ acordo.status === 'EM_ANDAMENTO' ? 'Abrir conversa' : 'Ver conversa e avaliação' }}
+                </a>
+              </div>
+            </article>
           }
         </div>
       }

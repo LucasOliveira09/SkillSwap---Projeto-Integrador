@@ -74,6 +74,25 @@ public class AvaliacaoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AvaliacaoResponseDTO> listarPorAcordo(Long acordoId, String emailUsuario) {
+        Acordo acordo = acordoService.findById(acordoId);
+        String anunciante = acordo.getProposta().getAnuncio().getUsuario().getEmail();
+        String proponente = acordo.getProposta().getProponente().getEmail();
+        if (!anunciante.equals(emailUsuario) && !proponente.equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Você não participa deste acordo");
+        }
+        return avaliacaoRepository.findByAcordoId(acordoId).stream().map(this::toResponseDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public AvaliacaoResponseDTO buscarPorAcordo(Long acordoId, Long avaliacaoId, String emailUsuario) {
+        listarPorAcordo(acordoId, emailUsuario);
+        return avaliacaoRepository.findByIdAndAcordoId(avaliacaoId, acordoId)
+                .map(this::toResponseDTO)
+                .orElseThrow(() -> new com.skillswap.api.infra.exception.NaoEncontradoException("Avaliação não encontrada"));
+    }
+
     public AvaliacaoResponseDTO toResponseDTO(Avaliacao a) {
         return new AvaliacaoResponseDTO(
                 a.getId(),

@@ -8,15 +8,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { finalize } from 'rxjs';
 import { SessaoService } from '../data-access/sessao.service';
-import { AnunciosApiService } from '../../anuncios/data-access/anuncios-api.service';
+import { NegociacaoApiService } from '../../negociacao/data-access/negociacao-api.service';
+import { Acordo, Proposta } from '../../negociacao/models/negociacao.model';
 
 const ROTA_DETALHE_ANUNCIO = /^\/anuncios\/[A-Za-z0-9_-]+$/;
+const ROTA_DETALHE_ACORDO = /^\/acordos\/\d+$/;
 
 export function destinoPosLogin(destino: string | null): string {
   if (
     destino === '/anuncios/novo' ||
     destino === '/meu-perfil' ||
-    (destino && ROTA_DETALHE_ANUNCIO.test(destino))
+    (destino && ROTA_DETALHE_ANUNCIO.test(destino)) ||
+    (destino && ROTA_DETALHE_ACORDO.test(destino))
   ) {
     return destino;
   }
@@ -42,7 +45,7 @@ export class ContaComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly api = inject(AnunciosApiService);
+  private readonly api = inject(NegociacaoApiService);
 
   protected readonly registrar = signal(false);
   protected nome = '';
@@ -51,9 +54,12 @@ export class ContaComponent {
   protected enviando = false;
   protected erro = '';
 
-  protected readonly propostasRecebidas = signal<readonly any[]>([]);
-  protected readonly propostasEnviadas = signal<readonly any[]>([]);
+  protected readonly propostasRecebidas = signal<readonly Proposta[]>([]);
+  protected readonly propostasEnviadas = signal<readonly Proposta[]>([]);
+  protected readonly acordos = signal<readonly Acordo[]>([]);
   protected readonly carregandoPropostas = signal(false);
+  protected readonly erroPropostas = signal('');
+  protected readonly erroAcordos = signal('');
 
   constructor() {
     if (this.sessao.autenticado()) {
@@ -63,30 +69,37 @@ export class ContaComponent {
 
   protected carregarPropostas(): void {
     if (!this.sessao.autenticado()) return;
+    this.erroPropostas.set('');
+    this.erroAcordos.set('');
     this.carregandoPropostas.set(true);
     this.api
-      .propostasRecebidas()
+      .propostas('RECEBIDAS')
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.carregandoPropostas.set(false)),
       )
       .subscribe({
-        next: (propostas) => this.propostasRecebidas.set(propostas),
-        error: () => {},
+        next: (pagina) => this.propostasRecebidas.set(pagina.itens),
+        error: () => this.erroPropostas.set('Não foi possível carregar suas propostas. Tente novamente.'),
       });
 
     this.api
-      .propostasEnviadas()
+      .propostas('ENVIADAS')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (propostas) => this.propostasEnviadas.set(propostas),
-        error: () => {},
+        next: (pagina) => this.propostasEnviadas.set(pagina.itens),
+        error: () => this.erroPropostas.set('Não foi possível carregar suas propostas. Tente novamente.'),
       });
+
+    this.api.acordos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (pagina) => this.acordos.set(pagina.itens),
+      error: () => this.erroAcordos.set('Não foi possível carregar seus acordos. Tente novamente.'),
+    });
   }
 
   protected aceitarProposta(id: number): void {
     this.api
-      .aceitarProposta(id)
+      .atualizarProposta(id, 'ACEITA')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.carregarPropostas(),
@@ -95,7 +108,7 @@ export class ContaComponent {
 
   protected recusarProposta(id: number): void {
     this.api
-      .recusarProposta(id)
+      .atualizarProposta(id, 'RECUSADA')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.carregarPropostas(),

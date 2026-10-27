@@ -195,6 +195,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** comprador e anunciante completam um fluxo venda e um fluxo troca; usuários externos não leem nem alteram conversa; aceite concorrente não cria dois acordos; erro não aparece como lista vazia.
 
+**Progresso:** Angular já lista propostas/acordos, apresenta e envia conversa por acordo, e confirma conclusão; a API oferece recursos REST paginados para propostas, acordos e mensagens, com autorização de participantes. O fluxo de API proposta → aceite → acordo → mensagem → conclusão → avaliação passou em MockMvc/JPA. Ainda faltam controle transacional de aceite concorrente, cancelamento da proposta pelo proponente, navegação de páginas na conversa, notifications e validar cenários de venda e troca com MySQL real.
+
 ### Fase 6 — Conclusão, avaliações e reputação
 
 - Definir confirmação unilateral ou mútua de conclusão e janela de avaliação; resolver conflito de confirmação antes de liberar avaliação.
@@ -203,6 +205,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 - Exibir notas e contexto no perfil e detalhe sem personalização enganosa.
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
+
+**Progresso:** a tela permite avaliar o outro participante após concluir um acordo; o backend impede avaliação antes de concluir, por não participante, autoavaliação e duplicidade. As notas existentes alimentam o perfil. Falta nota separada para a oferta/anúncio, janela/moderação/denúncia e validar indicadores no MySQL.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 

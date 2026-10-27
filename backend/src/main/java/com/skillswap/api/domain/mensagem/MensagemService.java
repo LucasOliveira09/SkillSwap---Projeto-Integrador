@@ -9,6 +9,8 @@ import com.skillswap.api.domain.usuario.UsuarioService;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,6 +44,22 @@ public class MensagemService {
         return mensagemRepository.findByAcordoIdOrderByEnviadoEmAsc(acordoId).stream()
                 .map(this::toResponseDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MensagemResponseDTO> listarPorAcordo(Long acordoId, String emailUsuario, Pageable pageable) {
+        Acordo acordo = acordoService.findById(acordoId);
+        checkParticipant(acordo, emailUsuario);
+        return mensagemRepository.findByAcordoId(acordoId, pageable).map(this::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public MensagemResponseDTO buscar(Long acordoId, Long mensagemId, String emailUsuario) {
+        Acordo acordo = acordoService.findById(acordoId);
+        checkParticipant(acordo, emailUsuario);
+        return mensagemRepository.findByIdAndAcordoId(mensagemId, acordoId)
+                .map(this::toResponseDTO)
+                .orElseThrow(() -> new com.skillswap.api.infra.exception.NaoEncontradoException("Mensagem não encontrada"));
     }
 
     private void checkParticipant(Acordo acordo, String emailUsuario) {

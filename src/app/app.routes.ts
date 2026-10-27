@@ -24,6 +24,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'acordos/:id',
+    title: 'Conversa do acordo | SkillSwap',
+    loadComponent: () =>
+      import('./features/negociacao/pages/acordo-detalhe/acordo-detalhe.component').then(
+        (m) => m.AcordoDetalheComponent,
+      ),
+  },
+  {
     path: 'profissionais/:id',
     title: 'Perfil profissional | SkillSwap',
     loadComponent: () =>

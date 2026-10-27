@@ -1,0 +1,33 @@
+:host { display: block; min-width: 0; }
+.pagina-acordo { max-width: 920px; margin: 0 auto; padding: 28px 32px 64px; }
+.voltar { color: var(--ss-blue); font-size: 13px; text-decoration: none; }
+.cabecalho-acordo, .conversa, .avaliacao, .estado { margin-top: 20px; padding: 24px 28px; border: 1px solid var(--ss-line); border-radius: 16px; background: var(--ss-surface); }
+.sobretitulo { margin: 0 0 4px; color: var(--ss-blue); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+h1 { margin: 0; color: var(--ss-text); font-size: clamp(25px, 4vw, 34px); }
+h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
+.cabecalho-acordo > p:not(.sobretitulo) { color: var(--ss-muted); }
+.meta-acordo { display: flex; flex-wrap: wrap; gap: 10px; color: var(--ss-muted); font-size: 13px; }
+.lista-mensagens { display: grid; gap: 12px; max-height: 520px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.mensagem { max-width: 82%; justify-self: start; padding: 12px 14px; border-radius: 12px 12px 12px 3px; background: var(--ss-soft); overflow-wrap: anywhere; }
+.mensagem.propria { justify-self: end; border-radius: 12px 12px 3px 12px; background: #e8f5eb; }
+.mensagem p { margin: 0 0 6px; white-space: pre-line; }
+.mensagem small { color: var(--ss-muted); font-size: 11px; }
+.vazio, .aviso, .avaliacao > p { color: var(--ss-muted); }
+.form-mensagem, .avaliacao form { display: grid; gap: 12px; margin-top: 18px; }
+.form-mensagem mat-form-field, .avaliacao mat-form-field { width: 100%; }
+.concluir { margin-top: 14px; }
+.confirmacao-conclusao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--ss-soft); }
+.confirmacao-conclusao p { flex: 1 1 100%; margin: 0; color: var(--ss-muted); font-size: 13px; }
+.aviso { font-size: 12px; }
+.feedback { padding: 12px 14px; border-radius: 8px; }
+.erro { color: #9f2525; background: #fff1f0; }
+.sucesso { color: #236b38; background: #edf8ef; }
+.avaliacao fieldset { padding: 0; border: 0; }
+.avaliacao legend { margin-bottom: 6px; font-size: 13px; }
+.estrelas { display: flex; gap: 4px; }
+.estrelas button { border: 0; background: none; color: #b9bec6; cursor: pointer; font-size: 32px; }
+.estrelas button.selecionada { color: #ad7600; }
+.avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
+.avaliacao-publicada span { color: #ad7600; }
+.avaliacao-publicada p { margin: 0; white-space: pre-line; }
+@media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } }

@@ -24,7 +24,21 @@ public class AvaliacaoController {
             Authentication authentication) {
         String email = (String) authentication.getPrincipal();
         var avaliacao = avaliacaoService.criar(acordoId, dto, email);
-        return ResponseEntity.status(HttpStatus.CREATED).body(avaliacaoService.toResponseDTO(avaliacao));
+        return ResponseEntity.created(java.net.URI.create("/api/acordos/" + acordoId + "/avaliacoes/" + avaliacao.getId()))
+                .body(avaliacaoService.toResponseDTO(avaliacao));
+    }
+
+    @GetMapping("/api/acordos/{acordoId}/avaliacoes")
+    public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorAcordo(
+            @PathVariable Long acordoId, Authentication authentication) {
+        return ResponseEntity.ok(avaliacaoService.listarPorAcordo(acordoId, (String) authentication.getPrincipal()));
+    }
+
+    @GetMapping("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}")
+    public ResponseEntity<AvaliacaoResponseDTO> buscarPorAcordo(@PathVariable Long acordoId,
+            @PathVariable Long avaliacaoId, Authentication authentication) {
+        return ResponseEntity.ok(avaliacaoService.buscarPorAcordo(
+                acordoId, avaliacaoId, (String) authentication.getPrincipal()));
     }
 
     @GetMapping("/api/usuarios/{usuarioId}/avaliacoes")

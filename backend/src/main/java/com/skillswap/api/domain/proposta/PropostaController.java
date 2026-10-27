@@ -2,11 +2,18 @@ package com.skillswap.api.domain.proposta;
 
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
+import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
+import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +32,33 @@ public class PropostaController {
             Authentication authentication) {
         String email = (String) authentication.getPrincipal();
         var proposta = propostaService.criar(anuncioId, dto, email);
-        return ResponseEntity.status(HttpStatus.CREATED).body(propostaService.toResponseDTO(proposta));
+        return ResponseEntity.created(java.net.URI.create("/api/propostas/" + proposta.getId()))
+                .body(propostaService.toResponseDTO(proposta));
+    }
+
+    @GetMapping("/propostas")
+    public ResponseEntity<PaginaDTO<PropostaResponseDTO>> listar(
+            @RequestParam(defaultValue = "ENVIADAS") @Pattern(regexp = "(?i)ENVIADAS|RECEBIDAS") String direcao,
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(50) int tamanho,
+            Authentication authentication) {
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        var propostas = propostaService.listarPorDirecao(direcao, (String) authentication.getPrincipal(), pageable);
+        return ResponseEntity.ok(PaginaDTO.de(propostas));
+    }
+
+    @GetMapping("/propostas/{id}")
+    public ResponseEntity<PropostaResponseDTO> buscar(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(propostaService.buscar(id, (String) authentication.getPrincipal()));
+    }
+
+    @PatchMapping("/propostas/{id}")
+    public ResponseEntity<PropostaResponseDTO> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody @Valid AtualizarStatusPropostaDTO dto,
+            Authentication authentication) {
+        var proposta = propostaService.atualizarStatus(id, dto, (String) authentication.getPrincipal());
+        return ResponseEntity.ok(propostaService.toResponseDTO(proposta));
     }
 
     @GetMapping("/propostas/minhas")

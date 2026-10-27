@@ -76,22 +76,6 @@ export class AnunciosApiService {
     );
   }
 
-  propostasEnviadas() {
-    return this.http.get<readonly any[]>(`${environment.apiUrl}/propostas/minhas`);
-  }
-
-  propostasRecebidas() {
-    return this.http.get<readonly any[]>(`${environment.apiUrl}/propostas/recebidas`);
-  }
-
-  aceitarProposta(id: number) {
-    return this.http.patch(`${environment.apiUrl}/propostas/${id}/aceitar`, {});
-  }
-
-  recusarProposta(id: number) {
-    return this.http.patch(`${environment.apiUrl}/propostas/${id}/recusar`, {});
-  }
-
   private converter(anuncio: AnuncioApi): AnuncioApi {
     return {
       ...anuncio,
