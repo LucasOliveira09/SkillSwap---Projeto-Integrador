@@ -131,4 +131,57 @@ describe('AcordoDetalheComponent', () => {
     expect(harness.routeNativeElement!.querySelector('.historico-acordo')?.textContent)
       .toContain('Confirmou que o trabalho foi concluído');
   });
+
+  it('permite ao autor editar uma vez a avaliação dentro do prazo', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+
+    const harness = await RouterTestingHarness.create('/acordos/7');
+    http.expectOne('/api/acordos/7').flush({
+      id: 7, propostaId: 5, anuncioId: 3, anuncioTitulo: 'Aula de violão',
+      anuncianteId: 1, anuncianteNome: 'Ana', proponenteId: 2, proponenteNome: 'Bruno',
+      status: 'CONCLUIDO', criadoEm: '2026-10-26T10:00:00', concluidoEm: '2026-10-26T11:00:00',
+      conclusaoConfirmadaAnunciante: true, conclusaoConfirmadaProponente: true,
+    });
+    http.expectOne('/api/acordos/7/eventos').flush([]);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([{
+      id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 3, notaAnuncio: 4, depoimento: 'Relato original', criadoEm: new Date().toISOString(),
+      respostaProfissional: null, respondidaEm: null, edicaoRealizada: false, editadaEm: null,
+    }]);
+    http.expectOne('/api/perfil').flush({
+      id: 2, nome: 'Bruno', bio: null, cidade: null, fotoUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
+    secao.querySelector<HTMLButtonElement>('article.avaliacao-publicada > button')!.click();
+    harness.detectChanges();
+    expect(secao.textContent).toContain('Apenas uma edição é permitida nas primeiras 24 horas');
+    const notaProfissional = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[0].querySelectorAll('button');
+    notaProfissional[4].click();
+    const notaOferta = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[1].querySelectorAll('button');
+    notaOferta[3].click();
+    const depoimento = secao.querySelector<HTMLTextAreaElement>('.editar-avaliacao textarea')!;
+    depoimento.value = 'Relato com contexto revisado';
+    depoimento.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    secao.querySelector<HTMLButtonElement>('.acoes-edicao button[type="submit"]')!.click();
+    const request = http.expectOne('/api/acordos/7/avaliacoes/12');
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual({ nota: 5, notaAnuncio: 4, depoimento: 'Relato com contexto revisado' });
+    request.flush({
+      id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 5, notaAnuncio: 4, depoimento: 'Relato com contexto revisado', criadoEm: new Date().toISOString(),
+      respostaProfissional: null, respondidaEm: null, edicaoRealizada: true, editadaEm: new Date().toISOString(),
+    });
+    harness.detectChanges();
+    expect(secao.textContent).toContain('Relato com contexto revisado');
+    expect(secao.textContent).toContain('foi editada em');
+    expect(secao.querySelector('.editar-avaliacao')).toBeNull();
+  });
 });

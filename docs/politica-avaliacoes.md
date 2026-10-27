@@ -17,6 +17,7 @@ Esta política registra as regras aplicadas pela primeira entrega. Avaliações 
 - O cliente autor pode editar a avaliação uma única vez, até 24 horas após a publicação.
 - A edição é recusada depois de uma resposta do profissional ou da abertura de uma denúncia/contestação relacionada.
 - A versão anterior é preservada para auditoria de moderação; o perfil público mostra somente a versão atual.
+- A moderação acessa a versão anterior pela fila de denúncias de avaliação; clientes e público não recebem esse histórico.
 - Nota do profissional e nota da oferta continuam separadas; a alteração das notas recalcula as médias a partir dos valores atuais e avaliações públicas.
 
 Estas regras não representam verificação de identidade nem garantia de qualidade. A plataforma apenas confirma que a avaliação está ligada a um acordo concluído e aplica as regras de publicação descritas aqui.

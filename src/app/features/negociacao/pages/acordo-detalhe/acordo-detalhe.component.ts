@@ -46,6 +46,11 @@ export class AcordoDetalheComponent {
   protected readonly mensagem = signal('');
   protected respostas: Record<number, string> = {};
   protected readonly respondendoAvaliacao = signal<number | null>(null);
+  protected readonly editandoAvaliacao = signal<number | null>(null);
+  protected readonly salvandoEdicaoAvaliacao = signal<number | null>(null);
+  protected notaEdicao = 0;
+  protected notaAnuncioEdicao = 0;
+  protected depoimentoEdicao = '';
   protected readonly contestandoAvaliacao = signal<number | null>(null);
   protected justificativas: Record<number, string> = {};
   protected nota = 0;
@@ -251,6 +256,42 @@ export class AcordoDetalheComponent {
         this.sucesso.set('Sua resposta foi publicada no perfil profissional.');
       },
       error: () => this.erro.set('Não foi possível publicar a resposta. Atualize o acordo e tente novamente.'),
+    });
+  }
+
+  protected podeEditarAvaliacao(avaliacao: Avaliacao): boolean {
+    const perfil = this.perfil();
+    const acordo = this.acordo();
+    if (!perfil || !acordo || perfil.id !== avaliacao.avaliadorId || acordo.proponenteId !== perfil.id
+        || acordo.status !== 'CONCLUIDO' || avaliacao.edicaoRealizada || avaliacao.respostaProfissional) return false;
+    return Date.now() <= new Date(avaliacao.criadoEm).getTime() + 24 * 60 * 60 * 1000;
+  }
+
+  protected iniciarEdicaoAvaliacao(avaliacao: Avaliacao): void {
+    if (!this.podeEditarAvaliacao(avaliacao)) return;
+    this.notaEdicao = avaliacao.nota;
+    this.notaAnuncioEdicao = avaliacao.notaAnuncio ?? 0;
+    this.depoimentoEdicao = avaliacao.depoimento ?? '';
+    this.editandoAvaliacao.set(avaliacao.id);
+    this.erro.set('');
+  }
+
+  protected salvarEdicaoAvaliacao(avaliacao: Avaliacao): void {
+    if (!this.podeEditarAvaliacao(avaliacao) || !this.notaEdicao || !this.notaAnuncioEdicao
+        || this.salvandoEdicaoAvaliacao() !== null) return;
+    this.salvandoEdicaoAvaliacao.set(avaliacao.id);
+    this.erro.set('');
+    this.api.editarAvaliacao(this.acordoId, avaliacao.id, this.notaEdicao,
+      this.notaAnuncioEdicao, this.depoimentoEdicao.trim()).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.salvandoEdicaoAvaliacao.set(null)),
+    ).subscribe({
+      next: (atualizada) => {
+        this.avaliacoes.update((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
+        this.editandoAvaliacao.set(null);
+        this.sucesso.set('Avaliação atualizada. A versão anterior foi preservada para auditoria.');
+      },
+      error: () => this.erro.set('Não foi possível editar. O prazo pode ter terminado ou a avaliação pode ter recebido resposta, denúncia ou contestação.'),
     });
   }
 

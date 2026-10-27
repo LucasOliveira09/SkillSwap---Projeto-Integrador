@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Denuncia, MotivoDenuncia, PaginaDenuncias, StatusDenuncia, TipoConteudoDenunciado } from '../models/moderacao.model';
+import { Denuncia, HistoricoAvaliacao, MotivoDenuncia, PaginaDenuncias, StatusDenuncia, TipoConteudoDenunciado } from '../models/moderacao.model';
 import { AcaoContestacaoAvaliacao, PaginaContestacoes, StatusContestacaoAvaliacao, ContestacaoAvaliacao } from '../../avaliacao/models/contestacao.model';
 
 @Injectable({ providedIn: 'root' })
@@ -35,5 +35,9 @@ export class ModeracaoApiService {
     return this.http.patch<ContestacaoAvaliacao>(`/api/moderacao/contestacoes/${id}`, {
       acao, decisao,
     });
+  }
+
+  historicoAvaliacao(avaliacaoId: number) {
+    return this.http.get<HistoricoAvaliacao>(`/api/moderacao/avaliacoes/${avaliacaoId}/historico`);
   }
 }

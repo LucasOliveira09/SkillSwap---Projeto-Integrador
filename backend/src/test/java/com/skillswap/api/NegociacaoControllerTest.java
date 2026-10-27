@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "skillswap.seed.enabled=false")
+@SpringBootTest(properties = {"skillswap.seed.enabled=false", "skillswap.moderacao.emails=moderador-negociacao@skillswap.invalid"})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
@@ -25,10 +28,13 @@ class NegociacaoControllerTest {
     @Autowired MockMvc mvc;
     @Autowired UsuarioService usuarios;
     @Autowired JwtService jwt;
+    @Autowired JdbcTemplate jdbc;
+    @PersistenceContext EntityManager entityManager;
 
     private Long anuncianteId;
     private String anuncianteToken;
     private String proponenteToken;
+    private String tokenModerador;
     private Long anuncioId;
 
     @BeforeEach
@@ -38,6 +44,8 @@ class NegociacaoControllerTest {
         anuncianteId = anunciante.getId();
         anuncianteToken = jwt.generateToken(anunciante.getEmail());
         proponenteToken = jwt.generateToken(proponente.getEmail());
+        var moderador = usuarios.register(new RegisterDTO("Moderador", "moderador-negociacao@skillswap.invalid", "senha-teste-123"));
+        tokenModerador = jwt.generateToken(moderador.getEmail());
 
         var resposta = mvc.perform(post("/api/anuncios")
                         .header("Authorization", "Bearer " + anuncianteToken)
@@ -50,6 +58,134 @@ class NegociacaoControllerTest {
                 .andExpect(status().isCreated()).andReturn();
         anuncioId = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(resposta.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    @Test
+    void permiteUmaEdicaoPeloAutorEGuardaVersaoAnteriorParaModeracao() throws Exception {
+        long[] dados = criarAcordoEAvaliacao("Texto original auditável", 2, 3);
+        long acordoId = dados[0];
+        long avaliacaoId = dados[1];
+
+        mvc.perform(put("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":5,\"notaAnuncio\":4,\"depoimento\":\"Texto revisado com contexto.\"}"))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(put("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":5,\"notaAnuncio\":4,\"depoimento\":\"Texto revisado com contexto.\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nota").value(5))
+                .andExpect(jsonPath("$.notaAnuncio").value(4))
+                .andExpect(jsonPath("$.depoimento").value("Texto revisado com contexto."))
+                .andExpect(jsonPath("$.edicaoRealizada").value(true));
+
+        mvc.perform(put("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":5,\"notaAnuncio\":4,\"depoimento\":\"Texto revisado com contexto.\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.edicaoRealizada").value(true));
+
+        mvc.perform(put("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":1,\"notaAnuncio\":1,\"depoimento\":\"Segunda tentativa.\"}"))
+                .andExpect(status().isConflict());
+
+        mvc.perform(get("/api/moderacao/avaliacoes/{id}/historico", avaliacaoId)
+                        .header("Authorization", "Bearer " + proponenteToken))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(get("/api/moderacao/avaliacoes/{id}/historico", avaliacaoId)
+                        .header("Authorization", "Bearer " + tokenModerador))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.notaAnterior").value(2))
+                .andExpect(jsonPath("$.notaAnuncioAnterior").value(3))
+                .andExpect(jsonPath("$.depoimentoAnterior").value("Texto original auditável"));
+    }
+
+    @Test
+    void bloqueiaEdicaoAposRespostaProfissional() throws Exception {
+        long[] dados = criarAcordoEAvaliacao("Avaliação respondida", 4, 4);
+        mvc.perform(patch("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta", dados[0], dados[1])
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"resposta\":\"Obrigado pelo retorno.\"}"))
+                .andExpect(status().isOk());
+        editarAvaliacao(dados).andExpect(status().isConflict());
+    }
+
+    @Test
+    void bloqueiaEdicaoAposDenunciaOuContestacao() throws Exception {
+        long[] denunciada = criarAcordoEAvaliacao("Avaliação denunciada", 3, 3);
+        mvc.perform(post("/api/denuncias").header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"tipoConteudo\":\"AVALIACAO\",\"recursoId\":%d,\"motivo\":\"OUTRO\"}")
+                                .formatted(denunciada[1])))
+                .andExpect(status().isCreated());
+        editarAvaliacao(denunciada).andExpect(status().isConflict());
+
+        var proposta = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"titulo\":\"Aula de violão para iniciantes\",\"descricao\":\"Aulas individuais\",\"categoria\":\"AULAS\",\"cidade\":\"Florianópolis\",\"modalidade\":\"VENDA\",\"preco\":80,\"habilidadeDesejada\":\"\"}"))
+                .andExpect(status().isCreated()).andReturn();
+        long novoAnuncioId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(proposta.getResponse().getContentAsString()).get("id").asLong();
+        anuncioId = novoAnuncioId;
+        long[] contestada = criarAcordoEAvaliacao("Avaliação contestada", 3, 4);
+        mvc.perform(post("/api/avaliacoes/{id}/contestacoes", contestada[1])
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"justificativa\":\"O relato descreve escopo diferente do serviço combinado.\"}"))
+                .andExpect(status().isCreated());
+        editarAvaliacao(contestada).andExpect(status().isConflict());
+    }
+
+    @Test
+    void bloqueiaEdicaoDepoisDeVinteEQuatroHoras() throws Exception {
+        long[] dados = criarAcordoEAvaliacao("Avaliação fora do prazo", 4, 4);
+        jdbc.update("update avaliacoes set criado_em = ? where id = ?",
+                java.time.LocalDateTime.now().minusHours(25), dados[1]);
+        entityManager.clear();
+        editarAvaliacao(dados).andExpect(status().isConflict());
+    }
+
+    private org.springframework.test.web.servlet.ResultActions editarAvaliacao(long[] dados) throws Exception {
+        return mvc.perform(put("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", dados[0], dados[1])
+                .header("Authorization", "Bearer " + proponenteToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"nota\":5,\"notaAnuncio\":5,\"depoimento\":\"Texto atualizado após revisão do relato.\"}"));
+    }
+
+    private long[] criarAcordoEAvaliacao(String depoimento, int nota, int notaAnuncio) throws Exception {
+        var respostaProposta = mvc.perform(post("/api/anuncios/{id}/propostas", anuncioId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"mensagemInicial\":\"Tenho interesse\"}"))
+                .andExpect(status().isCreated()).andReturn();
+        long propostaId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(respostaProposta.getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(patch("/api/propostas/{id}", propostaId).header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACEITA\"}"))
+                .andExpect(status().isOk());
+        var respostaAcordos = mvc.perform(get("/api/acordos").header("Authorization", "Bearer " + proponenteToken))
+                .andExpect(status().isOk()).andReturn();
+        long acordoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(respostaAcordos.getResponse().getContentAsString()).get("itens").get(0).get("id").asLong();
+        mvc.perform(patch("/api/acordos/{id}", acordoId).header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
+                .andExpect(status().isOk());
+        mvc.perform(patch("/api/acordos/{id}", acordoId).header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
+                .andExpect(status().isOk());
+        var respostaAvaliacao = mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken).contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"nota\":%d,\"notaAnuncio\":%d,\"depoimento\":\"%s\"}")
+                                .formatted(nota, notaAnuncio, depoimento)))
+                .andExpect(status().isCreated()).andReturn();
+        long avaliacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(respostaAvaliacao.getResponse().getContentAsString()).get("id").asLong();
+        return new long[]{acordoId, avaliacaoId};
     }
 
     @Test

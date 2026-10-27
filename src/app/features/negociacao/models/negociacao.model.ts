@@ -59,6 +59,8 @@ export interface Avaliacao {
   criadoEm: string;
   respostaProfissional?: string | null;
   respondidaEm?: string | null;
+  edicaoRealizada?: boolean;
+  editadaEm?: string | null;
 }
 
 export interface Pagina<T> {

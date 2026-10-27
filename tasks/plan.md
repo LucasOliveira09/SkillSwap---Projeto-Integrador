@@ -142,7 +142,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** regras de negócio e contratos REST revisados; nenhum dado do banco ativo é usado como sandbox; nenhuma promessa de pagamento/identidade está em texto sem recurso real.
 
-**Progresso:** retorno de login restrito a rotas internas, revisão de promessas da tela de detalhe e início da revisão de dados pessoais concluídos. Estados de negociação, avaliações, moderação e migrações continuam pendentes.
+**Progresso:** retorno de login restrito a rotas internas, revisão de promessas da tela de detalhe, regras de avaliações/moderação e migrações versionadas concluídos. Ainda falta validar o baseline em bases MySQL existentes com backup; avaliações verificadas, denúncia, resposta, edição controlada e contestação foram implementadas e cobertas em H2/Angular.
 
 ### Fase 1 — Fundação de persistência e segurança
 
@@ -206,7 +206,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
 
-**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. O profissional avaliado pode publicar uma resposta única e imutável no perfil, com autoria verificada no servidor, ou abrir contestação privada em até sete dias. A fila usa a allowlist de moderadores; decisões fundamentadas mantêm a avaliação ou ocultam texto e notas públicas, preservando registros. A política e os contratos estão em `docs/politica-avaliacoes.md` e `docs/backend.md`. Edição controlada e validação em MySQL permanecem pendentes.
+**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. O profissional avaliado pode publicar uma resposta única e imutável no perfil, com autoria verificada no servidor, ou abrir contestação privada em até sete dias; moderadores da allowlist decidem com fundamentação. O cliente autor pode editar uma vez em até 24 horas; a versão anterior fica em histórico privado de moderação, e resposta, denúncia ou contestação bloqueia edição. As migrações V9 e V10 registram contestação e edição. A política e os contratos estão em `docs/politica-avaliacoes.md` e `docs/backend.md`. Validação em MySQL permanece pendente.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 

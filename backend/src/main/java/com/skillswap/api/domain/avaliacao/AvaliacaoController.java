@@ -3,6 +3,7 @@ package com.skillswap.api.domain.avaliacao;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoRequestDTO;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoResponseDTO;
 import com.skillswap.api.domain.avaliacao.dto.RespostaAvaliacaoDTO;
+import com.skillswap.api.domain.avaliacao.dto.EditarAvaliacaoDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,14 @@ public class AvaliacaoController {
             @PathVariable Long avaliacaoId, Authentication authentication) {
         return ResponseEntity.ok(avaliacaoService.buscarPorAcordo(
                 acordoId, avaliacaoId, (String) authentication.getPrincipal()));
+    }
+
+    @PutMapping("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}")
+    public ResponseEntity<AvaliacaoResponseDTO> editar(
+            @PathVariable Long acordoId, @PathVariable Long avaliacaoId,
+            @RequestBody @Valid EditarAvaliacaoDTO dto, Authentication authentication) {
+        return ResponseEntity.ok(avaliacaoService.editar(
+                acordoId, avaliacaoId, dto, (String) authentication.getPrincipal()));
     }
 
     @PatchMapping("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta")

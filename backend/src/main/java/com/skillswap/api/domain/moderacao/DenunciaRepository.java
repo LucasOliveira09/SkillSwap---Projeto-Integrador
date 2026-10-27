@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface DenunciaRepository extends JpaRepository<Denuncia, Long> {
     boolean existsByAutorIdAndTipoConteudoAndRecursoId(Long autorId, TipoConteudoDenunciado tipo, Long recursoId);
 
+    boolean existsByTipoConteudoAndRecursoId(TipoConteudoDenunciado tipo, Long recursoId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select d from Denuncia d join fetch d.autor where d.id = :id")
     Optional<Denuncia> findByIdForUpdate(@Param("id") Long id);

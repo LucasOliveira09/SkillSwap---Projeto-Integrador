@@ -14,5 +14,7 @@ public record AvaliacaoResponseDTO(
         String depoimento,
         LocalDateTime criadoEm,
         String respostaProfissional,
-        LocalDateTime respondidaEm
+        LocalDateTime respondidaEm,
+        boolean edicaoRealizada,
+        LocalDateTime editadaEm
 ) {}

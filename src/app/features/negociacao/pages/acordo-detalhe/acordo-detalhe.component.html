@@ -158,6 +158,52 @@
               <span aria-label="Nota do anúncio">Oferta: {{ '★'.repeat(avaliacao.notaAnuncio) }}</span>
             }
             @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
+            @if (avaliacao.editadaEm) {
+              <small>Esta avaliação foi editada em {{ avaliacao.editadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}.</small>
+            }
+            @if (perfil()?.id === avaliacao.avaliadorId && acordo()?.proponenteId === perfil()?.id) {
+              @if (editandoAvaliacao() === avaliacao.id) {
+                <form class="editar-avaliacao" (ngSubmit)="salvarEdicaoAvaliacao(avaliacao)">
+                  <fieldset>
+                    <legend>Nota atualizada do profissional</legend>
+                    <div class="estrelas" aria-label="Nova nota do profissional">
+                      @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                        <button type="button" [attr.aria-pressed]="notaEdicao === estrela"
+                          [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                          [class.selecionada]="notaEdicao >= estrela" (click)="notaEdicao = estrela">★</button>
+                      }
+                    </div>
+                  </fieldset>
+                  <fieldset>
+                    <legend>Nota atualizada da oferta ou serviço</legend>
+                    <div class="estrelas" aria-label="Nova nota da oferta ou serviço">
+                      @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                        <button type="button" [attr.aria-pressed]="notaAnuncioEdicao === estrela"
+                          [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                          [class.selecionada]="notaAnuncioEdicao >= estrela" (click)="notaAnuncioEdicao = estrela">★</button>
+                      }
+                    </div>
+                  </fieldset>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Depoimento atualizado (opcional)</mat-label>
+                    <textarea matInput name="depoimentoEdicao" [value]="depoimentoEdicao"
+                      (input)="depoimentoEdicao = $any($event.target).value" maxlength="1000" rows="3"></textarea>
+                    <mat-hint>{{ depoimentoEdicao.length }}/1000</mat-hint>
+                  </mat-form-field>
+                  <div class="acoes-edicao">
+                    <button mat-flat-button color="primary" type="submit"
+                      [disabled]="!notaEdicao || !notaAnuncioEdicao || salvandoEdicaoAvaliacao() !== null">
+                      {{ salvandoEdicaoAvaliacao() === avaliacao.id ? 'Salvando...' : 'Salvar edição' }}
+                    </button>
+                    <button mat-stroked-button type="button" [disabled]="salvandoEdicaoAvaliacao() !== null"
+                      (click)="editandoAvaliacao.set(null)">Cancelar</button>
+                  </div>
+                  <small>Apenas uma edição é permitida nas primeiras 24 horas. A versão anterior fica disponível à moderação.</small>
+                </form>
+              } @else if (podeEditarAvaliacao(avaliacao)) {
+                <button mat-stroked-button type="button" (click)="iniciarEdicaoAvaliacao(avaliacao)">Editar avaliação</button>
+              }
+            }
             @if (avaliacao.respostaProfissional) {
               <aside class="resposta-profissional">
                 <strong>Resposta de {{ avaliacao.avaliadoNome }}</strong>

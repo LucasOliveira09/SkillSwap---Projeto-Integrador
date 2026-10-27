@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { ContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
+import { Denuncia, HistoricoAvaliacao } from '../../models/moderacao.model';
 import { ModeracaoApiService } from '../../data-access/moderacao-api.service';
 import { DenunciasComponent } from './denuncias.component';
 
@@ -27,16 +28,26 @@ describe('DenunciasComponent', () => {
     analisadaEm: null,
     analisadaPor: null,
   };
+  const denuncia: Denuncia = {
+    id: 11, tipoConteudo: 'AVALIACAO', recursoId: 8, motivo: 'OUTRO', descricao: null,
+    status: 'ABERTA', criadaEm: '2026-10-27T09:00:00', analisadaEm: null, analisadaPor: null,
+    autorId: 3, autorNome: 'Pessoa denunciante', trechoConteudo: 'Relato denunciado',
+  };
+  const historico: HistoricoAvaliacao = {
+    avaliacaoId: 8, notaAnterior: 2, notaAnuncioAnterior: 3, depoimentoAnterior: 'Versão anterior',
+    editorNome: 'Cliente', registradaEm: '2026-10-27T10:00:00',
+  };
 
   beforeEach(async () => {
     api = jasmine.createSpyObj<ModeracaoApiService>(
       'ModeracaoApiService',
-      ['acesso', 'listar', 'decidir', 'listarContestacoes', 'decidirContestacao'],
+      ['acesso', 'listar', 'decidir', 'listarContestacoes', 'decidirContestacao', 'historicoAvaliacao'],
     );
     api.acesso.and.returnValue(of(true));
-    api.listar.and.returnValue(of({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 }));
+    api.listar.and.returnValue(of({ itens: [denuncia], pagina: 0, tamanho: 20, totalItens: 1, totalPaginas: 1 }));
     api.listarContestacoes.and.returnValue(of({ itens: [contestacao], pagina: 0, tamanho: 20, totalItens: 1, totalPaginas: 1 }));
     api.decidirContestacao.and.returnValue(of({ ...contestacao, status: 'OCULTADA' }));
+    api.historicoAvaliacao.and.returnValue(of(historico));
 
     await TestBed.configureTestingModule({
       imports: [DenunciasComponent],
@@ -72,5 +83,16 @@ describe('DenunciasComponent', () => {
       'OCULTAR',
       'A descrição contém afirmações que não correspondem ao acordo confirmado.',
     );
+  });
+
+  it('permite à moderação consultar a versão anterior de uma avaliação denunciada', () => {
+    const pagina = fixture.nativeElement as HTMLElement;
+    const botao = [...pagina.querySelectorAll('button')]
+      .find((item) => item.textContent?.includes('Consultar versões anteriores'))!;
+    botao.click();
+    fixture.detectChanges();
+    expect(api.historicoAvaliacao).toHaveBeenCalledWith(8);
+    expect(pagina.textContent).toContain('Versão anterior, editada por Cliente');
+    expect(pagina.textContent).toContain('Versão anterior');
   });
 });

@@ -53,6 +53,13 @@ public class Avaliacao {
     @Builder.Default
     private boolean moderadaOculta = false;
 
+    @Column(name = "edicao_realizada", nullable = false)
+    @Builder.Default
+    private boolean edicaoRealizada = false;
+
+    @Column(name = "editada_em")
+    private LocalDateTime editadaEm;
+
     @PrePersist
     protected void onCreate() {
         this.criadoEm = LocalDateTime.now();

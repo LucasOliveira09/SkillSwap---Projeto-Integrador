@@ -57,6 +57,12 @@ export class NegociacaoApiService {
     );
   }
 
+  editarAvaliacao(acordoId: number, avaliacaoId: number, nota: number, notaAnuncio: number, depoimento: string) {
+    return this.http.put<Avaliacao>(`/api/acordos/${acordoId}/avaliacoes/${avaliacaoId}`, {
+      nota, notaAnuncio, depoimento,
+    });
+  }
+
   contestarAvaliacao(avaliacaoId: number, justificativa: string) {
     return this.http.post<ContestacaoAvaliacao>(
       `/api/avaliacoes/${avaliacaoId}/contestacoes`, { justificativa },

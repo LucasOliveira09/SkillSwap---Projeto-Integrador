@@ -80,4 +80,14 @@ describe('NegociacaoApiService', () => {
     expect(buscar.request.method).toBe('GET');
     buscar.flush([{ id: 4, avaliacaoId: 8, status: 'ABERTA' }]);
   });
+
+  it('substitui a avaliação usando PUT no recurso do acordo', () => {
+    api.editarAvaliacao(3, 8, 4, 5, 'Texto revisado').subscribe((avaliacao) => {
+      expect(avaliacao.edicaoRealizada).toBeTrue();
+    });
+    const request = http.expectOne('/api/acordos/3/avaliacoes/8');
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual({ nota: 4, notaAnuncio: 5, depoimento: 'Texto revisado' });
+    request.flush({ id: 8, edicaoRealizada: true });
+  });
 });

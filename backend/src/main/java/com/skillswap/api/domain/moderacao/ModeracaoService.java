@@ -118,7 +118,7 @@ public class ModeracaoService {
                         }
                         return publicacao.getLegenda();
                     }).orElseThrow(() -> new NaoEncontradoException("Publicação não encontrada"));
-            case AVALIACAO -> avaliacaoRepository.findById(recursoId)
+            case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(recursoId)
                     .filter(avaliacao -> !avaliacao.isModeradaOculta())
                     .map(avaliacao -> {
                         if (avaliacao.getAvaliador().getId().equals(autorId)) {

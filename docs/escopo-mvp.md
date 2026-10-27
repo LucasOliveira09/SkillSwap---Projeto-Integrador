@@ -44,7 +44,7 @@ Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” 
 
 ## Integração do backend em 20/10/2026
 
-Anúncios de venda/troca, categorias e coleções visuais agora são lidos do backend Spring Boot e persistidos em MySQL, seguindo o projeto local de eventos indicado pelo usuário. Busca e paginação ocorrem no servidor; gravação exige validação e sucesso da transação. A memória da sessão e as fixtures do Angular foram removidas. Há estados de carregamento, falha e tentativa novamente. Autenticação, perfis, edição/exclusão, negociação e demais capacidades do MVP continuam futuras. Consulte o [contrato e a execução](backend.md).
+Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API; a validação real em MySQL das novas migrações continua pendente. Consulte o [contrato e a execução](backend.md).
 
 ## Integração do GitHub em 21/10/2026
 

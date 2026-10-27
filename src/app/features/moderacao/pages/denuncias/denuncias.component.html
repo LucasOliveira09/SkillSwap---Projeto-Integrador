@@ -29,6 +29,22 @@
               <time [attr.datetime]="denuncia.criadaEm">{{ denuncia.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
             </div>
             <p class="trecho">{{ denuncia.trechoConteudo || 'Conteúdo indisponível' }}</p>
+            @if (denuncia.tipoConteudo === 'AVALIACAO') {
+              <button mat-stroked-button type="button" [disabled]="carregandoHistoricoId() !== null"
+                (click)="carregarHistoricoAvaliacao(denuncia.recursoId)">
+                {{ carregandoHistoricoId() === denuncia.recursoId ? 'Carregando histórico...' : 'Consultar versões anteriores' }}
+              </button>
+              @if (historicosAvaliacao()[denuncia.recursoId]; as historico) {
+                <aside class="historico-versao" aria-label="Versão anterior da avaliação">
+                  <strong>Versão anterior, editada por {{ historico.editorNome }}</strong>
+                  <p>Profissional: {{ historico.notaAnterior }}/5 · Oferta: {{ historico.notaAnuncioAnterior ?? 'sem nota' }}/5</p>
+                  <p>{{ historico.depoimentoAnterior || 'Sem depoimento textual' }}</p>
+                  <time [attr.datetime]="historico.registradaEm">{{ historico.registradaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
+                </aside>
+              } @else if (historicosAvaliacao()[denuncia.recursoId] === null) {
+                <p class="estado-historico">Não há versão anterior ou não foi possível carregá-la. Tente novamente.</p>
+              }
+            }
             <dl>
               <div><dt>Motivo</dt><dd>{{ denuncia.motivo }}</dd></div>
               <div><dt>Relato</dt><dd>{{ denuncia.descricao || 'Sem detalhes adicionais' }}</dd></div>
@@ -88,6 +104,20 @@
                 <time [attr.datetime]="contestacao.criadaEm">{{ contestacao.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
               </div>
               <p class="trecho">{{ contestacao.trechoAvaliacao || 'Avaliação sem depoimento textual' }}</p>
+              <button mat-stroked-button type="button" [disabled]="carregandoHistoricoId() !== null"
+                (click)="carregarHistoricoAvaliacao(contestacao.avaliacaoId)">
+                {{ carregandoHistoricoId() === contestacao.avaliacaoId ? 'Carregando histórico...' : 'Consultar versões anteriores' }}
+              </button>
+              @if (historicosAvaliacao()[contestacao.avaliacaoId]; as historico) {
+                <aside class="historico-versao" aria-label="Versão anterior da avaliação">
+                  <strong>Versão anterior, editada por {{ historico.editorNome }}</strong>
+                  <p>Profissional: {{ historico.notaAnterior }}/5 · Oferta: {{ historico.notaAnuncioAnterior ?? 'sem nota' }}/5</p>
+                  <p>{{ historico.depoimentoAnterior || 'Sem depoimento textual' }}</p>
+                  <time [attr.datetime]="historico.registradaEm">{{ historico.registradaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
+                </aside>
+              } @else if (historicosAvaliacao()[contestacao.avaliacaoId] === null) {
+                <p class="estado-historico">Não há versão anterior ou não foi possível carregá-la. Tente novamente.</p>
+              }
               <dl>
                 <div><dt>Nota do profissional</dt><dd>{{ contestacao.nota }}/5</dd></div>
                 @if (contestacao.notaAnuncio !== null) { <div><dt>Nota da oferta</dt><dd>{{ contestacao.notaAnuncio }}/5</dd></div> }

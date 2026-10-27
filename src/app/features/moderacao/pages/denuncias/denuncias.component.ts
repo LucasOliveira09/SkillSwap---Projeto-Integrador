@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-import { Denuncia, StatusDenuncia } from '../../models/moderacao.model';
+import { Denuncia, HistoricoAvaliacao, StatusDenuncia } from '../../models/moderacao.model';
 import { AcaoContestacaoAvaliacao, ContestacaoAvaliacao, StatusContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
 import { ModeracaoApiService } from '../../data-access/moderacao-api.service';
 
@@ -34,6 +34,8 @@ export class DenunciasComponent {
   protected statusContestacoes: StatusContestacaoAvaliacao = 'ABERTA';
   protected readonly processandoContestacaoId = signal<number | null>(null);
   protected decisoesContestacoes: Record<number, string> = {};
+  protected readonly historicosAvaliacao = signal<Readonly<Record<number, HistoricoAvaliacao | null>>>({});
+  protected readonly carregandoHistoricoId = signal<number | null>(null);
 
   constructor() {
     this.api.acesso().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -139,6 +141,18 @@ export class DenunciasComponent {
     ).subscribe({
       next: () => this.carregarContestacoes(),
       error: () => this.erroContestacoes.set('Não foi possível salvar a decisão. Atualize a fila e tente novamente.'),
+    });
+  }
+
+  protected carregarHistoricoAvaliacao(avaliacaoId: number): void {
+    if (this.carregandoHistoricoId() !== null || this.historicosAvaliacao()[avaliacaoId]) return;
+    this.carregandoHistoricoId.set(avaliacaoId);
+    this.api.historicoAvaliacao(avaliacaoId).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.carregandoHistoricoId.set(null)),
+    ).subscribe({
+      next: (historico) => this.historicosAvaliacao.update((atuais) => ({ ...atuais, [avaliacaoId]: historico })),
+      error: () => this.historicosAvaliacao.update((atuais) => ({ ...atuais, [avaliacaoId]: null })),
     });
   }
 }

@@ -24,3 +24,12 @@ export interface PaginaDenuncias {
   totalItens: number;
   totalPaginas: number;
 }
+
+export interface HistoricoAvaliacao {
+  avaliacaoId: number;
+  notaAnterior: number;
+  notaAnuncioAnterior: number | null;
+  depoimentoAnterior: string | null;
+  editorNome: string;
+  registradaEm: string;
+}

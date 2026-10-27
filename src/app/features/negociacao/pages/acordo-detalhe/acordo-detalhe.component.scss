@@ -40,6 +40,11 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao-publicada p { margin: 0; white-space: pre-line; }
 .responder-avaliacao { display: grid; gap: 8px; margin-top: 14px; }
 .responder-avaliacao mat-form-field { width: 100%; }
+.editar-avaliacao { display: grid; gap: 12px; margin-top: 14px; padding: 14px; border: 1px solid var(--ss-line); border-radius: 10px; background: var(--ss-soft); }
+.editar-avaliacao mat-form-field { width: 100%; }
+.editar-avaliacao legend { color: var(--ss-text); }
+.editar-avaliacao small { color: var(--ss-muted); line-height: 1.45; }
+.acoes-edicao { display: flex; flex-wrap: wrap; gap: 8px; }
 .resposta-profissional { margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--ss-primary, #168b83); border-radius: 0 10px 10px 0; background: #f1f8f6; }
 .resposta-profissional p { margin: 7px 0; line-height: 1.55; white-space: pre-line; }
 .resposta-profissional time { color: var(--ss-muted, #65737d); font-size: 12px; }

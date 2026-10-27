@@ -57,4 +57,12 @@ describe('ModeracaoApiService', () => {
     expect(atualizar.request.body).toEqual({ acao: 'OCULTAR', decisao });
     atualizar.flush({ id: 5, status: 'OCULTADA' });
   });
+
+  it('consulta o histórico privado de avaliação pela rota de moderação', () => {
+    api.historicoAvaliacao(8).subscribe((historico) => expect(historico.notaAnterior).toBe(2));
+    const request = http.expectOne('/api/moderacao/avaliacoes/8/historico');
+    expect(request.request.method).toBe('GET');
+    request.flush({ avaliacaoId: 8, notaAnterior: 2, notaAnuncioAnterior: 3,
+      depoimentoAnterior: 'Texto anterior', editorNome: 'Cliente', registradaEm: '2026-10-27T10:00:00' });
+  });
 });
