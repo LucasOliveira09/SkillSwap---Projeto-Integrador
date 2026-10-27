@@ -6,8 +6,11 @@ spring:
     password: ""
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
   jackson:
     deserialization:
       fail-on-unknown-properties: true

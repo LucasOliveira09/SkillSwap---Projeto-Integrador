@@ -109,6 +109,16 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 | UPLOAD_DIR | Diretório de arquivos enviados; padrão `uploads`. Deve estar em armazenamento persistente. |
 | UPLOAD_ORPHAN_RETENTION_DAYS | Retenção mínima antes da remoção automática de uploads sem referência; padrão 30 dias. |
 | UPLOAD_CLEANUP_CRON | Expressão cron Spring, interpretada em UTC; padrão diário às 03:30. |
+
+## Migrações do banco
+
+O schema versionado fica em `backend/src/main/resources/db/migration`. A migração `V1__baseline_skillswap.sql` cria as tabelas atuais em um banco vazio; o Hibernate usa `ddl-auto: validate` e não altera schema automaticamente. O Flyway também valida checksums e executa novas migrações versionadas uma vez, em ordem.
+
+Testes usam H2 em modo MySQL, aplicam a mesma V1 e validam as entidades contra o resultado. Isso cobre o contrato ORM/schema, mas não substitui executar a migração em MySQL 8.0 e 8.4.
+
+Um banco existente sem `flyway_schema_history` falha fechado com a configuração padrão. Antes de adotar o Flyway nele, faça backup, confira a estrutura com `mysqldump --no-data` ou `information_schema` e compare tabelas, colunas, tipos, índices e chaves com a V1. Somente após confirmar que o schema corresponde à versão 1, defina `FLYWAY_BASELINE_ON_MIGRATE=true` no ambiente da API para uma inicialização; o Flyway registra a versão 1 e não executa a V1 nesse banco. Remova a variável após a inicialização. Não habilite esse modo por padrão nem use em um banco público sem solicitação, backup verificado e conferência da estrutura: o Flyway pode marcar qualquer schema não vazio como baseline.
+
+Para um schema vazio, não habilite o baseline automático: a própria V1 cria as tabelas. Se a API existente iniciar com erro por falta de histórico, não volte `ddl-auto` para `update`; confira primeiro a configuração de conexão e o estado real do banco.
 | WEB_BIND / WEB_PORT | Prévia Docker: padrões 127.0.0.1 / 8088. |
 
 Para o conjunto completo local: `docker compose --profile app up -d --build --wait`. A imagem Angular é compilada em estágio separado; não depende de frontend-dist no host. O Nginx preserva as rotas da SPA e encaminha /api à imagem Java. O arquivo canônico é compose.yaml; o docker-compose.yml concorrente foi removido.

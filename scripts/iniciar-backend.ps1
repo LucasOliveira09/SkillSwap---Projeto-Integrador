@@ -11,7 +11,7 @@ $env:JAVA_HOME = $JavaHome
 $arquivoEnv = Join-Path $raizProjeto '.env'
 if (Test-Path -LiteralPath $arquivoEnv) {
     foreach ($linha in Get-Content -LiteralPath $arquivoEnv) {
-        if ($linha -match '^(DB_PASSWORD|DB_USER|DB_URL|PORT|SEED_ENABLED|JWT_SECRET|SERVER_ADDRESS)=(.*)$') {
+        if ($linha -match '^(DB_PASSWORD|DB_USER|DB_URL|PORT|SEED_ENABLED|JWT_SECRET|SERVER_ADDRESS|FLYWAY_BASELINE_ON_MIGRATE)=(.*)$') {
             [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], 'Process')
         }
     }

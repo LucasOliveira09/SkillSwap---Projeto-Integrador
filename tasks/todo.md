@@ -18,7 +18,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Revisar detalhe existente, corrigir retorno de login para rota interna permitida e remover promessas sem suporte real da tela de anúncio.
 - [ ] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação.
-- [ ] Criar baseline e migrações versionadas não destrutivas para MySQL 8.0/8.4.
+- [x] Adotar Flyway, baseline SQL para banco vazio e Hibernate em modo validate; testar o baseline contra H2/MySQL mode.
+- [ ] Comparar e baselinar bancos existentes com backup; validar V1 e futuras migrações em MySQL 8.0/8.4 antes de qualquer promoção.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [ ] Completar operação de upload: quota por conta, rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
