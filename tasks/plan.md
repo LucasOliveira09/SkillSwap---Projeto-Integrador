@@ -153,7 +153,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** banco novo e prévia migram sem perda; uploads inválidos e excessivos são rejeitados; imagem continua acessível após recriação controlada da API; testes não usam arquivo falso como imagem válida.
 
-**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão, quota por conta configurável (100 MiB padrão), consulta autenticada de uso, contabilização gradual de imagens legadas e diretório configurável implementados; Compose local e público declaram volumes de mídia. Limpeza diária de arquivos hash sem referência após 30 dias considera perfis, anúncios e publicações e remove os metadados associados. Ainda faltam rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
+**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão, quota por conta configurável (100 MiB padrão), consulta autenticada de uso, contabilização gradual de imagens legadas e diretório configurável implementados; Compose local e público declaram volumes de mídia. Limpeza diária de arquivos hash sem referência após 30 dias considera perfis, anúncios e publicações e remove os metadados associados. O script `scripts/backup-uploads.sh` cria backup somente leitura, valida o arquivo e registra SHA-256. Ainda faltam gerar e reter a primeira cópia externa, ensaiar restauração, migrar os arquivos do container público atual e validar reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
 
 ### Fase 2 — Perfil público editável
 
@@ -259,7 +259,7 @@ O perfil também aceita título profissional opcional, capa e links de LinkedIn,
 1. Visibilidade de perfil: definida em [`politica-perfis.md`](../docs/politica-perfis.md). O perfil básico e conteúdos profissionais publicados são públicos; contato, conversa e negociação são privados. Controles por campo e exclusão da conta não existem nesta fase.
 2. Avaliações: uma ação do cliente registra nota do profissional e do serviço; o profissional não avalia o cliente nesta fase. Regras em [`politica-avaliacoes.md`](../docs/politica-avaliacoes.md).
 3. Moderação: somente e-mails na allowlist podem analisar, com justificativa obrigatória e trilha persistida; a allowlist operacional continua configurável por ambiente.
-4. Imagens: até seis fotos por publicação, armazenamento em volume configurável e limpeza de arquivos órfãos após retenção. A URL pública é revogada quando some a última referência publicada, e a resposta usa `no-store`; rotina de backup, migração dos arquivos públicos existentes e validação após reinício permanecem pendentes.
+4. Imagens: até seis fotos por publicação, armazenamento em volume configurável e limpeza de arquivos órfãos após retenção. A URL pública é revogada quando some a última referência publicada, e a resposta usa `no-store`; o script de backup está pronto, mas primeira cópia externa, migração dos arquivos públicos existentes e validação após reinício permanecem pendentes.
 5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
 6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
 
