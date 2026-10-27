@@ -142,7 +142,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** regras de negócio e contratos REST revisados; nenhum dado do banco ativo é usado como sandbox; nenhuma promessa de pagamento/identidade está em texto sem recurso real.
 
-**Progresso:** retorno de login restrito a rotas internas, revisão de promessas da tela de detalhe, regras de avaliações/moderação e migrações versionadas concluídos. Ainda falta validar o baseline em bases MySQL existentes com backup; avaliações verificadas, denúncia, resposta, edição controlada e contestação foram implementadas e cobertas em H2/Angular.
+**Progresso:** retorno de login restrito a rotas internas, revisão de promessas da tela de detalhe, regras de avaliações/moderação e migrações versionadas concluídos. Inspeção somente leitura da prévia Tailscale encontrou MySQL 8.0.46 com sete tabelas e sem Flyway history, diferente das nove tabelas da V1; baseline está bloqueado até backup, comparação completa e validação numa cópia descartável. Avaliações verificadas, denúncia, resposta, edição controlada e contestação foram implementadas e cobertas em H2/Angular.
 
 ### Fase 1 — Fundação de persistência e segurança
 

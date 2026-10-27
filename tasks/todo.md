@@ -19,7 +19,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Revisar detalhe existente, corrigir retorno de login para rota interna permitida e remover promessas sem suporte real da tela de anúncio.
 - [x] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação, com as limitações documentadas.
 - [x] Adotar Flyway, baseline SQL para banco vazio e Hibernate em modo validate; testar o baseline contra H2/MySQL mode.
-- [ ] Comparar e baselinar bancos existentes com backup; validar V1 e futuras migrações em MySQL 8.0/8.4 antes de qualquer promoção.
+- [ ] Comparar e baselinar bancos existentes com backup; validar V1 e futuras migrações em MySQL 8.0/8.4 antes de qualquer promoção. A inspeção somente leitura da prévia em 27/10/2026 encontrou MySQL 8.0.46 sem histórico Flyway e sete tabelas, enquanto a V1 cria nove; não baselinar até comparar o schema completo e testar numa cópia descartável.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
