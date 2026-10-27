@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Acordo, Avaliacao, EventoAcordo, Mensagem, Pagina, Proposta, StatusAcordo, StatusProposta } from '../models/negociacao.model';
+import { ContestacaoAvaliacao } from '../../avaliacao/models/contestacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class NegociacaoApiService {
@@ -53,6 +54,18 @@ export class NegociacaoApiService {
   responderAvaliacao(acordoId: number, avaliacaoId: number, resposta: string) {
     return this.http.patch<Avaliacao>(
       `/api/acordos/${acordoId}/avaliacoes/${avaliacaoId}/resposta`, { resposta },
+    );
+  }
+
+  contestarAvaliacao(avaliacaoId: number, justificativa: string) {
+    return this.http.post<ContestacaoAvaliacao>(
+      `/api/avaliacoes/${avaliacaoId}/contestacoes`, { justificativa },
+    );
+  }
+
+  buscarContestacao(avaliacaoId: number) {
+    return this.http.get<readonly ContestacaoAvaliacao[]>(
+      `/api/avaliacoes/${avaliacaoId}/contestacoes`,
     );
   }
 }

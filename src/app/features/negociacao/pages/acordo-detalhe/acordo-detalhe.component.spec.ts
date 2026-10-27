@@ -86,11 +86,30 @@ describe('AcordoDetalheComponent', () => {
       id: 1, nome: 'Ana', bio: null, cidade: null, fotoUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
+    http.expectOne('/api/avaliacoes/12/contestacoes').flush([]);
     harness.detectChanges();
 
     const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
     expect(secao.textContent).toContain('O cliente que enviou a proposta poderá avaliar');
     expect(secao.querySelector('fieldset')).toBeNull();
+    const campoContestacao = secao.querySelector<HTMLTextAreaElement>('.contestar-avaliacao textarea')!;
+    campoContestacao.value = 'O depoimento relata uma etapa que não fazia parte do combinado.';
+    campoContestacao.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    secao.querySelector<HTMLButtonElement>('.contestar-avaliacao button')!.click();
+    const contestar = http.expectOne('/api/avaliacoes/12/contestacoes');
+    expect(contestar.request.method).toBe('POST');
+    expect(contestar.request.body).toEqual({ justificativa: 'O depoimento relata uma etapa que não fazia parte do combinado.' });
+    contestar.flush({
+      id: 4, avaliacaoId: 12, acordoId: 7, contestadorId: 1, contestadorNome: 'Ana',
+      avaliadorNome: 'Bruno', avaliadoNome: 'Ana', nota: 5, notaAnuncio: 4,
+      trechoAvaliacao: 'Ótimo serviço', justificativa: 'O depoimento relata uma etapa que não fazia parte do combinado.',
+      status: 'ABERTA', criadaEm: '2026-10-27T11:00:00', decisao: null, analisadaEm: null, analisadaPor: null,
+    });
+    harness.detectChanges();
+    expect(secao.textContent).toContain('Contestação em análise');
+    expect(secao.querySelector('.contestar-avaliacao')).toBeNull();
+
     const campoResposta = secao.querySelector<HTMLTextAreaElement>('.responder-avaliacao textarea')!;
     campoResposta.value = '  Obrigado pelo retorno.  ';
     campoResposta.dispatchEvent(new Event('input'));

@@ -179,6 +179,29 @@
                 </button>
               </form>
             }
+            @if (perfil()?.id === avaliacao.avaliadoId && acordo()?.anuncianteId === perfil()?.id) {
+              @if (contestacoes()[avaliacao.id]; as contestacao) {
+                <aside class="estado-contestacao" aria-label="Contestação da avaliação">
+                  <strong>Contestação {{ contestacao.status === 'ABERTA' ? 'em análise' : contestacao.status === 'MANTIDA' ? 'encerrada: avaliação mantida' : 'encerrada: avaliação ocultada' }}</strong>
+                  @if (contestacao.decisao) { <p>{{ contestacao.decisao }}</p> }
+                  <small>A justificativa enviada fica privada para você e a equipe de moderação.</small>
+                </aside>
+              } @else {
+                <form class="contestar-avaliacao" (ngSubmit)="contestarAvaliacao(avaliacao)">
+                  <label [for]="'contestacao-' + avaliacao.id">Contestar avaliação (privado)</label>
+                  <textarea [id]="'contestacao-' + avaliacao.id" [name]="'contestacao-' + avaliacao.id"
+                    [value]="justificativas[avaliacao.id] || ''"
+                    (input)="atualizarJustificativa(avaliacao.id, $any($event.target).value)"
+                    minlength="20" maxlength="1000" rows="3"
+                    aria-describedby="prazo-contestacao"></textarea>
+                  <small id="prazo-contestacao">Disponível por sete dias após a publicação. A avaliação permanece visível durante a análise.</small>
+                  <button mat-stroked-button type="submit"
+                    [disabled]="(justificativas[avaliacao.id] || '').trim().length < 20 || (justificativas[avaliacao.id] || '').length > 1000 || contestandoAvaliacao() !== null">
+                    {{ contestandoAvaliacao() === avaliacao.id ? 'Enviando...' : 'Enviar contestação' }}
+                  </button>
+                </form>
+              }
+            }
           </article>
         }
       </section>

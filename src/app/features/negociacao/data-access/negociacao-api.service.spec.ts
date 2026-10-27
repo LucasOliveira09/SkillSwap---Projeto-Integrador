@@ -64,4 +64,20 @@ describe('NegociacaoApiService', () => {
     expect(resposta.request.body).toEqual({ resposta: 'Obrigado pelo retorno.' });
     resposta.flush({ id: 8, respostaProfissional: 'Obrigado pelo retorno.' });
   });
+
+  it('envia contestação privada e consulta o estado da avaliação', () => {
+    const justificativa = 'O texto relata uma etapa que não fazia parte do serviço combinado.';
+    api.contestarAvaliacao(8, justificativa).subscribe((contestacao) => {
+      expect(contestacao.status).toBe('ABERTA');
+    });
+    const criar = http.expectOne('/api/avaliacoes/8/contestacoes');
+    expect(criar.request.method).toBe('POST');
+    expect(criar.request.body).toEqual({ justificativa });
+    criar.flush({ id: 4, avaliacaoId: 8, status: 'ABERTA' });
+
+    api.buscarContestacao(8).subscribe((contestacoes) => expect(contestacoes.length).toBe(1));
+    const buscar = http.expectOne('/api/avaliacoes/8/contestacoes');
+    expect(buscar.request.method).toBe('GET');
+    buscar.flush([{ id: 4, avaliacaoId: 8, status: 'ABERTA' }]);
+  });
 });

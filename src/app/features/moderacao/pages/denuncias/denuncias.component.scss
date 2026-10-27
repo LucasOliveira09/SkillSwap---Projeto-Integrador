@@ -17,6 +17,13 @@ dd { margin: 3px 0 0; color: var(--ss-text); font-size: 13px; overflow-wrap: any
 .acoes { margin: 0; }
 .paginacao { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
 .paginacao span { color: var(--ss-muted); font-size: 12px; }
+.fila-contestacoes { margin-top: 56px; padding-top: 28px; border-top: 2px solid var(--ss-line); }
+.fila-contestacoes header { margin: 0 0 22px; }
+.fila-contestacoes h2 { margin: 0; color: var(--ss-text); font-size: 24px; }
+.fila-contestacoes header > p:last-child { color: var(--ss-muted); }
+.campo-decisao { display: grid; gap: 6px; color: var(--ss-text); font-size: 13px; font-weight: 600; }
+.campo-decisao textarea { width: 100%; min-height: 84px; padding: 10px 12px; border: 1px solid var(--ss-line); border-radius: 8px; background: var(--ss-surface); color: var(--ss-text); font: inherit; resize: vertical; }
+.decisao-anterior { grid-column: 1 / -1; }
 .estado, .erro { padding: 14px; border-radius: 8px; background: var(--ss-soft); color: var(--ss-muted); }
 .erro { color: #9f2525; background: #fff1f0; }
 @media (max-width: 540px) { .pagina-moderacao { padding: 20px 16px 48px; } dl { grid-template-columns: 1fr; } .acoes { align-items: stretch; flex-direction: column; } }

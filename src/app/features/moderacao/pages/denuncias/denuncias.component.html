@@ -62,5 +62,68 @@
         </nav>
       }
     }
+
+    <section class="fila-contestacoes" aria-labelledby="titulo-contestacoes">
+      <header>
+        <p class="sobretitulo">Reputação</p>
+        <h2 id="titulo-contestacoes">Contestações de avaliações</h2>
+        <p>O profissional questiona uma avaliação ligada a um acordo. A justificativa é privada; a avaliação continua pública enquanto a contestação está aberta.</p>
+      </header>
+      <nav class="filtros" aria-label="Filtrar contestações">
+        <button mat-stroked-button type="button" [class.ativo]="statusContestacoes === 'ABERTA'" (click)="filtrarContestacoes('ABERTA')">Abertas</button>
+        <button mat-stroked-button type="button" [class.ativo]="statusContestacoes === 'MANTIDA'" (click)="filtrarContestacoes('MANTIDA')">Mantidas</button>
+        <button mat-stroked-button type="button" [class.ativo]="statusContestacoes === 'OCULTADA'" (click)="filtrarContestacoes('OCULTADA')">Ocultadas</button>
+      </nav>
+      @if (erroContestacoes()) { <p class="erro" role="alert">{{ erroContestacoes() }} <button mat-button (click)="carregarContestacoes()">Tentar novamente</button></p> }
+      @if (carregandoContestacoes()) {
+        <p class="estado" role="status">Carregando contestações...</p>
+      } @else if (!contestacoes().length) {
+        <p class="estado">Não há contestações neste filtro.</p>
+      } @else {
+        <div class="lista" aria-label="Contestações de avaliações">
+          @for (contestacao of contestacoes(); track contestacao.id) {
+            <article class="denuncia">
+              <div class="topo-denuncia">
+                <span>Avaliação de {{ contestacao.avaliadorNome }} sobre {{ contestacao.avaliadoNome }}</span>
+                <time [attr.datetime]="contestacao.criadaEm">{{ contestacao.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
+              </div>
+              <p class="trecho">{{ contestacao.trechoAvaliacao || 'Avaliação sem depoimento textual' }}</p>
+              <dl>
+                <div><dt>Nota do profissional</dt><dd>{{ contestacao.nota }}/5</dd></div>
+                @if (contestacao.notaAnuncio !== null) { <div><dt>Nota da oferta</dt><dd>{{ contestacao.notaAnuncio }}/5</dd></div> }
+                <div><dt>Profissional</dt><dd>{{ contestacao.contestadorNome }}</dd></div>
+                <div><dt>Justificativa privada</dt><dd>{{ contestacao.justificativa }}</dd></div>
+                <div><dt>Status</dt><dd>{{ contestacao.status }}</dd></div>
+                @if (contestacao.analisadaPor) { <div><dt>Analisada por</dt><dd>{{ contestacao.analisadaPor }}</dd></div> }
+                @if (contestacao.decisao) { <div class="decisao-anterior"><dt>Decisão</dt><dd>{{ contestacao.decisao }}</dd></div> }
+              </dl>
+              @if (contestacao.status === 'ABERTA') {
+                <label class="campo-decisao" [for]="'decisao-contestacao-' + contestacao.id">
+                  Fundamentação da decisão
+                  <textarea [id]="'decisao-contestacao-' + contestacao.id" [value]="decisoesContestacoes[contestacao.id] || ''"
+                    (input)="atualizarDecisaoContestacao(contestacao.id, $any($event.target).value)"
+                    minlength="20" maxlength="1000" rows="3"></textarea>
+                </label>
+                <div class="acoes">
+                  <button mat-flat-button color="primary" type="button" [disabled]="processandoContestacaoId() !== null"
+                    (click)="decidirContestacao(contestacao, 'MANTER')">Manter avaliação</button>
+                  <button mat-stroked-button type="button" [disabled]="processandoContestacaoId() !== null"
+                    (click)="decidirContestacao(contestacao, 'OCULTAR')">Ocultar avaliação e notas</button>
+                </div>
+              }
+            </article>
+          }
+        </div>
+        @if (totalPaginasContestacoes() > 1) {
+          <nav class="paginacao" aria-label="Páginas de contestações">
+            <button mat-stroked-button type="button" [disabled]="carregandoContestacoes() || paginaContestacoes() === 0"
+              (click)="mudarPaginaContestacoes(paginaContestacoes() - 1)">Anteriores</button>
+            <span>Página {{ paginaContestacoes() + 1 }} de {{ totalPaginasContestacoes() }}</span>
+            <button mat-stroked-button type="button" [disabled]="carregandoContestacoes() || paginaContestacoes() >= totalPaginasContestacoes() - 1"
+              (click)="mudarPaginaContestacoes(paginaContestacoes() + 1)">Próximas</button>
+          </nav>
+        }
+      }
+    </section>
   }
 </main>

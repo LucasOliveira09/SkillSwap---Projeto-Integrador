@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Denuncia, MotivoDenuncia, PaginaDenuncias, StatusDenuncia, TipoConteudoDenunciado } from '../models/moderacao.model';
+import { AcaoContestacaoAvaliacao, PaginaContestacoes, StatusContestacaoAvaliacao, ContestacaoAvaliacao } from '../../avaliacao/models/contestacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class ModeracaoApiService {
@@ -22,5 +23,17 @@ export class ModeracaoApiService {
 
   decidir(id: number, acao: 'OCULTAR' | 'DESCARTAR' | 'REEXIBIR') {
     return this.http.patch<Denuncia>(`/api/moderacao/denuncias/${id}`, { acao });
+  }
+
+  listarContestacoes(status: StatusContestacaoAvaliacao = 'ABERTA', pagina = 0) {
+    return this.http.get<PaginaContestacoes>('/api/moderacao/contestacoes', {
+      params: { status, pagina, tamanho: 20 },
+    });
+  }
+
+  decidirContestacao(id: number, acao: AcaoContestacaoAvaliacao, decisao: string) {
+    return this.http.patch<ContestacaoAvaliacao>(`/api/moderacao/contestacoes/${id}`, {
+      acao, decisao,
+    });
   }
 }

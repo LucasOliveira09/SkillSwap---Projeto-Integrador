@@ -7,6 +7,7 @@ import { forkJoin, finalize, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
@@ -40,10 +41,13 @@ export class AcordoDetalheComponent {
   protected readonly paginaMensagens = signal(0);
   protected readonly totalPaginasMensagens = signal(0);
   protected readonly avaliacoes = signal<readonly Avaliacao[]>([]);
+  protected readonly contestacoes = signal<Readonly<Record<number, ContestacaoAvaliacao | undefined>>>({});
   protected readonly eventos = signal<readonly EventoAcordo[]>([]);
   protected readonly mensagem = signal('');
   protected respostas: Record<number, string> = {};
   protected readonly respondendoAvaliacao = signal<number | null>(null);
+  protected readonly contestandoAvaliacao = signal<number | null>(null);
+  protected justificativas: Record<number, string> = {};
   protected nota = 0;
   protected notaAnuncio = 0;
   protected depoimento = '';
@@ -120,6 +124,7 @@ export class AcordoDetalheComponent {
         this.avaliacoes.set(resposta.avaliacoes);
         this.eventos.set(resposta.eventos);
         this.perfil.set(resposta.perfil);
+        this.carregarContestacoesDoProfissional(resposta.avaliacoes, resposta.perfil.id);
         if (resposta.mensagens.totalPaginas > 1) {
           this.carregarMensagens(resposta.mensagens.totalPaginas - 1);
         }
@@ -251,5 +256,43 @@ export class AcordoDetalheComponent {
 
   protected atualizarResposta(avaliacaoId: number, resposta: string): void {
     this.respostas = { ...this.respostas, [avaliacaoId]: resposta };
+  }
+
+  protected atualizarJustificativa(avaliacaoId: number, justificativa: string): void {
+    this.justificativas = { ...this.justificativas, [avaliacaoId]: justificativa };
+  }
+
+  protected contestarAvaliacao(avaliacao: Avaliacao): void {
+    const justificativa = (this.justificativas[avaliacao.id] ?? '').trim();
+    if (justificativa.length < 20 || justificativa.length > 1000
+        || this.contestandoAvaliacao() !== null || this.perfil()?.id !== avaliacao.avaliadoId) return;
+    this.contestandoAvaliacao.set(avaliacao.id);
+    this.erro.set('');
+    this.sucesso.set('');
+    this.api.contestarAvaliacao(avaliacao.id, justificativa).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.contestandoAvaliacao.set(null)),
+    ).subscribe({
+      next: (contestacao) => {
+        this.contestacoes.update((atuais) => ({ ...atuais, [avaliacao.id]: contestacao }));
+        this.justificativas[avaliacao.id] = '';
+        this.sucesso.set('Contestação enviada em caráter privado para análise. A avaliação segue visível enquanto aguarda decisão.');
+      },
+      error: () => this.erro.set('Não foi possível contestar esta avaliação. Confira o prazo e atualize o acordo.'),
+    });
+  }
+
+  private carregarContestacoesDoProfissional(avaliacoes: readonly Avaliacao[], perfilId: number): void {
+    this.contestacoes.set({});
+    for (const avaliacao of avaliacoes) {
+      if (avaliacao.avaliadoId !== perfilId) continue;
+      this.api.buscarContestacao(avaliacao.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (contestacoes) => {
+          if (contestacoes.length) {
+            this.contestacoes.update((atuais) => ({ ...atuais, [avaliacao.id]: contestacoes[0] }));
+          }
+        },
+      });
+    }
   }
 }

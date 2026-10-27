@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { Denuncia, StatusDenuncia } from '../../models/moderacao.model';
+import { AcaoContestacaoAvaliacao, ContestacaoAvaliacao, StatusContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
 import { ModeracaoApiService } from '../../data-access/moderacao-api.service';
 
 @Component({
@@ -25,12 +26,23 @@ export class DenunciasComponent {
   protected processandoId: number | null = null;
   protected readonly pagina = signal(0);
   protected readonly totalPaginas = signal(0);
+  protected readonly contestacoes = signal<readonly ContestacaoAvaliacao[]>([]);
+  protected readonly carregandoContestacoes = signal(true);
+  protected readonly erroContestacoes = signal('');
+  protected readonly paginaContestacoes = signal(0);
+  protected readonly totalPaginasContestacoes = signal(0);
+  protected statusContestacoes: StatusContestacaoAvaliacao = 'ABERTA';
+  protected readonly processandoContestacaoId = signal<number | null>(null);
+  protected decisoesContestacoes: Record<number, string> = {};
 
   constructor() {
     this.api.acesso().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (acesso) => {
         this.podeModerar = acesso;
-        if (acesso) this.carregar();
+        if (acesso) {
+          this.carregar();
+          this.carregarContestacoes();
+        }
         else this.carregando = false;
       },
       error: () => {
@@ -78,6 +90,55 @@ export class DenunciasComponent {
     ).subscribe({
       next: () => this.carregar(),
       error: () => this.erro = 'Não foi possível concluir a análise. Tente novamente.',
+    });
+  }
+
+  protected carregarContestacoes(): void {
+    this.carregandoContestacoes.set(true);
+    this.erroContestacoes.set('');
+    this.api.listarContestacoes(this.statusContestacoes, this.paginaContestacoes()).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.carregandoContestacoes.set(false)),
+    ).subscribe({
+      next: (resultado) => {
+        this.contestacoes.set(resultado.itens);
+        this.paginaContestacoes.set(resultado.pagina);
+        this.totalPaginasContestacoes.set(resultado.totalPaginas);
+      },
+      error: () => this.erroContestacoes.set('Não foi possível carregar as contestações.'),
+    });
+  }
+
+  protected filtrarContestacoes(status: StatusContestacaoAvaliacao): void {
+    this.statusContestacoes = status;
+    this.paginaContestacoes.set(0);
+    this.carregarContestacoes();
+  }
+
+  protected mudarPaginaContestacoes(pagina: number): void {
+    if (this.carregandoContestacoes() || pagina < 0 || pagina >= this.totalPaginasContestacoes()) return;
+    this.paginaContestacoes.set(pagina);
+    this.carregarContestacoes();
+  }
+
+  protected atualizarDecisaoContestacao(id: number, decisao: string): void {
+    this.decisoesContestacoes = { ...this.decisoesContestacoes, [id]: decisao };
+  }
+
+  protected decidirContestacao(contestacao: ContestacaoAvaliacao, acao: AcaoContestacaoAvaliacao): void {
+    const decisao = (this.decisoesContestacoes[contestacao.id] ?? '').trim();
+    if (decisao.length < 20 || decisao.length > 1000 || this.processandoContestacaoId() !== null) {
+      this.erroContestacoes.set('A decisão deve explicar o motivo em pelo menos 20 caracteres.');
+      return;
+    }
+    this.processandoContestacaoId.set(contestacao.id);
+    this.erroContestacoes.set('');
+    this.api.decidirContestacao(contestacao.id, acao, decisao).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.processandoContestacaoId.set(null)),
+    ).subscribe({
+      next: () => this.carregarContestacoes(),
+      error: () => this.erroContestacoes.set('Não foi possível salvar a decisão. Atualize a fila e tente novamente.'),
     });
   }
 }

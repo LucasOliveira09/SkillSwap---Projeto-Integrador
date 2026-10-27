@@ -41,4 +41,20 @@ describe('ModeracaoApiService', () => {
     expect(decidir.request.body).toEqual({ acao: 'OCULTAR' });
     decidir.flush({ id: 9, status: 'OCULTADA' });
   });
+
+  it('lista contestações paginadas e envia decisão fundamentada', () => {
+    api.listarContestacoes('ABERTA', 1).subscribe((pagina) => expect(pagina.totalItens).toBe(1));
+    const listar = http.expectOne('/api/moderacao/contestacoes?status=ABERTA&pagina=1&tamanho=20');
+    expect(listar.request.method).toBe('GET');
+    listar.flush({ itens: [], pagina: 1, tamanho: 20, totalItens: 1, totalPaginas: 1 });
+
+    const decisao = 'A avaliação descreve cobrança não acordada e foi ocultada.';
+    api.decidirContestacao(5, 'OCULTAR', decisao).subscribe((contestacao) => {
+      expect(contestacao.status).toBe('OCULTADA');
+    });
+    const atualizar = http.expectOne('/api/moderacao/contestacoes/5');
+    expect(atualizar.request.method).toBe('PATCH');
+    expect(atualizar.request.body).toEqual({ acao: 'OCULTAR', decisao });
+    atualizar.flush({ id: 5, status: 'OCULTADA' });
+  });
 });

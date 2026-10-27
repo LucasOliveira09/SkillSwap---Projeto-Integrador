@@ -52,7 +52,9 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Coletar e calcular nota separada para oferta/serviço após acordo concluído; exibir média/amostra no anúncio e avaliações no perfil.
 - [x] Denunciar e moderar avaliações sem apagar evidências e sem agregar notas ocultas.
 - [x] Permitir resposta pública, única e imutável do profissional a uma avaliação verificada.
-- [ ] Definir política e implementar edição controlada e contestação formal de avaliações.
+- [ ] Implementar edição única da avaliação pelo autor em até 24 horas, preservando versões e bloqueando alteração após resposta ou denúncia/contestação.
+- [x] Registrar a política de edição e contestação: prazo de sete dias, conteúdo privado, manutenção pública durante análise, decisão por allowlist e remoção das notas públicas apenas quando ocultada.
+- [x] Implementar contestação privada pelo profissional avaliado em até sete dias, com decisão fundamentada por moderador, fila de análise e preservação de evidências.
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
 - [ ] Validar no navegador e MySQL os fluxos de venda e troca e a persistência após reinício.
 
@@ -92,7 +94,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
 - [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
 - [x] Filtrar profissionais por média mínima apenas com amostra de três avaliações visíveis, mantendo a ordenação estável por data.
-- [x] Adotar migrações Flyway versionadas (V1–V8).
+- [x] Adotar migrações Flyway versionadas (V1–V9).
 - [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
 
 ## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos

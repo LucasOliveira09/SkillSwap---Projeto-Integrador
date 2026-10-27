@@ -206,7 +206,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
 
-**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. O profissional avaliado pode publicar uma resposta única e imutável no perfil, com autoria verificada no servidor. Ainda faltam definir/implementar edição controlada, contestação formal e validação no MySQL.
+**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. O profissional avaliado pode publicar uma resposta única e imutável no perfil, com autoria verificada no servidor, ou abrir contestação privada em até sete dias. A fila usa a allowlist de moderadores; decisões fundamentadas mantêm a avaliação ou ocultam texto e notas públicas, preservando registros. A política e os contratos estão em `docs/politica-avaliacoes.md` e `docs/backend.md`. Edição controlada e validação em MySQL permanecem pendentes.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 
@@ -256,7 +256,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 1. Quais dados do perfil são públicos por padrão e quais podem ser ocultados?
 2. Avaliação: o cliente dá uma nota ao profissional e outra ao anúncio na mesma ação? O profissional também avalia o cliente?
-3. Moderadores: quem poderá ocultar conteúdo, responder denúncias e tratar contestação de avaliação?
+3. Moderação de avaliações foi decidida para o MVP: somente e-mails na allowlist podem analisar, com justificativa obrigatória e trilha persistida. A allowlist operacional continua configurável por ambiente.
 4. Imagens: limite por publicação, retenção após excluir anúncio e provedor/volume durável.
 5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
 6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
