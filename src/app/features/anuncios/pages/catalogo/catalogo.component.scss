@@ -99,3 +99,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+@media (min-width: 481px) and (max-width: 600px) {
+  .filtros-ofertas { grid-template-columns: minmax(0, 1fr); }
+}

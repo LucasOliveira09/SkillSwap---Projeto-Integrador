@@ -270,21 +270,25 @@ mat-sidenav-content {
 }
 @media (max-width: 480px) {
   .barra {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
     padding: 12px;
   }
   .marca-area {
+    min-width: 0;
     gap: 6px;
   }
   .marca img {
-    width: 100px;
+    width: 88px;
     height: auto;
   }
   .acoes-cabecalho {
+    min-width: 0;
     gap: 6px;
   }
   .acoes-cabecalho .botao-anunciar {
-    padding-inline: 12px;
+    padding-inline: 8px;
+    font-size: 12px;
   }
   .acoes-cabecalho .conta {
     display: none;
