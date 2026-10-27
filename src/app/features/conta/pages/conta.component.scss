@@ -110,6 +110,10 @@ form > button {
       background: #fee2e2;
       color: #991b1b;
     }
+    &.cancelada {
+      background: #e2e8f0;
+      color: #334155;
+    }
   }
 
   .proposta-msg {

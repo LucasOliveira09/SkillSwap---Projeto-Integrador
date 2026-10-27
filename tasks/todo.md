@@ -37,7 +37,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Negociação e reputação
 
-- [ ] Completar máquina de estados com concorrência segura, cancelamento pelo proponente e histórico de eventos.
+- [x] Serializar criação/aceite/recusa/cancelamento de propostas por anúncio; permitir cancelamento da própria proposta pendente.
+- [ ] Validar aceite concorrente com MySQL real e registrar histórico de eventos da negociação.
 - [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
 - [ ] Adicionar navegação de páginas à conversa e testar histórico extenso.

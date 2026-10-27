@@ -78,6 +78,9 @@
               <div class="proposta-meta">
                 <small>Enviado em {{ p.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
                 <a mat-button [routerLink]="['/anuncios', p.anuncioId]">Ver anúncio</a>
+                @if (p.status === 'PENDENTE') {
+                  <button mat-button color="warn" type="button" (click)="cancelarProposta(p.id)">Cancelar proposta</button>
+                }
               </div>
             </div>
           }

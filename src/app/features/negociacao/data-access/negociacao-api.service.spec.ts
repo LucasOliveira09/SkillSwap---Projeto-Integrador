@@ -27,6 +27,12 @@ describe('NegociacaoApiService', () => {
     expect(atualizacao.request.method).toBe('PATCH');
     expect(atualizacao.request.body).toEqual({ status: 'ACEITA' });
     atualizacao.flush({ id: 9 });
+
+    api.atualizarProposta(10, 'CANCELADA').subscribe();
+    const cancelamento = http.expectOne('/api/propostas/10');
+    expect(cancelamento.request.method).toBe('PATCH');
+    expect(cancelamento.request.body).toEqual({ status: 'CANCELADA' });
+    cancelamento.flush({ id: 10, status: 'CANCELADA' });
   });
 
   it('carrega acordo, conversa e avaliações por seus recursos REST', () => {

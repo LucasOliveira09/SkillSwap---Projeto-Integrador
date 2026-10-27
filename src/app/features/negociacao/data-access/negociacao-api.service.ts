@@ -10,7 +10,7 @@ export class NegociacaoApiService {
     return this.http.get<Pagina<Proposta>>('/api/propostas', { params: { direcao, pagina, tamanho: 20 } });
   }
 
-  atualizarProposta(id: number, status: Extract<StatusProposta, 'ACEITA' | 'RECUSADA'>) {
+  atualizarProposta(id: number, status: Extract<StatusProposta, 'ACEITA' | 'RECUSADA' | 'CANCELADA'>) {
     return this.http.patch<Proposta>(`/api/propostas/${id}`, { status });
   }
 

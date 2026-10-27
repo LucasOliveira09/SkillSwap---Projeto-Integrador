@@ -2,6 +2,8 @@ package com.skillswap.api.domain.proposta;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.Collection;
@@ -27,6 +29,9 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
 
     @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
     Optional<Proposta> findById(Long id);
+
+    @Query("select p.anuncio.id from Proposta p where p.id = :id")
+    Optional<Long> findAnuncioIdById(@Param("id") Long id);
 
     boolean existsByAnuncioIdAndProponenteIdAndStatusIn(Long anuncioId, Long proponenteId, Collection<StatusProposta> statuses);
 }

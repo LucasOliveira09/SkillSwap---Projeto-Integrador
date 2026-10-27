@@ -133,4 +133,56 @@ class NegociacaoControllerTest {
         mvc.perform(get("/api/acordos/9999").header("Authorization", "Bearer " + externoToken))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void proponentePodeCancelarSomenteSuaPropostaPendente() throws Exception {
+        long propostaId = criarProposta(proponenteToken);
+
+        mvc.perform(patch("/api/propostas/{id}", propostaId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(patch("/api/propostas/{id}", propostaId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CANCELADA"));
+
+        mvc.perform(patch("/api/propostas/{id}", propostaId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void aceiteRecusaOutrasPropostasPendentesDoMesmoAnuncio() throws Exception {
+        long propostaAceita = criarProposta(proponenteToken);
+        var outroCliente = usuarios.register(new RegisterDTO("Carla Cliente", "carla-negociacao@skillswap.invalid", "senha-teste-123"));
+        String outroToken = jwt.generateToken(outroCliente.getEmail());
+        long propostaConcorrente = criarProposta(outroToken);
+
+        mvc.perform(patch("/api/propostas/{id}", propostaAceita)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACEITA\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ACEITA"));
+
+        mvc.perform(get("/api/propostas/{id}", propostaConcorrente).header("Authorization", "Bearer " + outroToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("RECUSADA"));
+        mvc.perform(patch("/api/propostas/{id}", propostaConcorrente)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACEITA\"}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/acordos").header("Authorization", "Bearer " + anuncianteToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
+    }
+
+    private long criarProposta(String token) throws Exception {
+        var resposta = mvc.perform(post("/api/anuncios/{id}/propostas", anuncioId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"mensagemInicial\":\"Tenho interesse neste serviço\"}"))
+                .andExpect(status().isCreated()).andReturn();
+        return tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resposta.getResponse().getContentAsString()).get("id").asLong();
+    }
 }

@@ -114,6 +114,17 @@ export class ContaComponent {
         next: () => this.carregarPropostas(),
       });
   }
+
+  protected cancelarProposta(id: number): void {
+    this.api
+      .atualizarProposta(id, 'CANCELADA')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.carregarPropostas(),
+        error: () => this.erroPropostas.set('Não foi possível cancelar esta proposta. Atualize a lista e tente novamente.'),
+      });
+  }
+
   protected enviar(form: NgForm): void {
     if (this.enviando || form.invalid) {
       form.control.markAllAsTouched();

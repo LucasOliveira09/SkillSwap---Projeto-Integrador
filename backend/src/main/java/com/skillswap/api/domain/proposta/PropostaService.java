@@ -3,7 +3,9 @@ package com.skillswap.api.domain.proposta;
 import com.skillswap.api.domain.acordo.Acordo;
 import com.skillswap.api.domain.acordo.AcordoRepository;
 import com.skillswap.api.domain.anuncio.Anuncio;
+import com.skillswap.api.domain.anuncio.AnuncioRepository;
 import com.skillswap.api.domain.anuncio.AnuncioService;
+import com.skillswap.api.domain.anuncio.StatusAnuncio;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
 import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
@@ -26,12 +28,16 @@ public class PropostaService {
 
     private final PropostaRepository propostaRepository;
     private final AnuncioService anuncioService;
+    private final AnuncioRepository anuncioRepository;
     private final UsuarioService usuarioService;
     private final AcordoRepository acordoRepository;
 
     @Transactional
     public Proposta criar(Long anuncioId, PropostaRequestDTO dto, String emailUsuario) {
-        Anuncio anuncio = anuncioService.buscarPorId(anuncioId);
+        anuncioService.buscarPorId(anuncioId);
+        Anuncio anuncio = anuncioRepository.findByIdForUpdate(anuncioId)
+                .filter(item -> item.getStatus() == StatusAnuncio.ATIVO)
+                .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
         Usuario proponente = usuarioService.findByEmail(emailUsuario);
 
         if (anuncio.getUsuario().getId().equals(proponente.getId())) {
@@ -93,13 +99,14 @@ public class PropostaService {
         return switch (dto.status()) {
             case ACEITA -> aceitar(id, emailUsuario);
             case RECUSADA -> recusar(id, emailUsuario);
+            case CANCELADA -> cancelar(id, emailUsuario);
             default -> throw new IllegalArgumentException("Status solicitado não é permitido nesta operação");
         };
     }
 
     @Transactional
     public Proposta aceitar(Long propostaId, String emailUsuario) {
-        Proposta proposta = findById(propostaId);
+        Proposta proposta = findPorIdComAnuncioBloqueado(propostaId);
         checkAnuncioOwner(proposta, emailUsuario);
 
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
@@ -128,7 +135,7 @@ public class PropostaService {
 
     @Transactional
     public Proposta recusar(Long propostaId, String emailUsuario) {
-        Proposta proposta = findById(propostaId);
+        Proposta proposta = findPorIdComAnuncioBloqueado(propostaId);
         checkAnuncioOwner(proposta, emailUsuario);
 
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
@@ -137,6 +144,27 @@ public class PropostaService {
 
         proposta.setStatus(StatusProposta.RECUSADA);
         return propostaRepository.save(proposta);
+    }
+
+    @Transactional
+    public Proposta cancelar(Long propostaId, String emailUsuario) {
+        Proposta proposta = findPorIdComAnuncioBloqueado(propostaId);
+        if (!proposta.getProponente().getEmail().equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Você não enviou esta proposta");
+        }
+        if (proposta.getStatus() != StatusProposta.PENDENTE) {
+            throw new IllegalArgumentException("Somente propostas pendentes podem ser canceladas");
+        }
+        proposta.setStatus(StatusProposta.CANCELADA);
+        return propostaRepository.save(proposta);
+    }
+
+    private Proposta findPorIdComAnuncioBloqueado(Long propostaId) {
+        Long anuncioId = propostaRepository.findAnuncioIdById(propostaId)
+                .orElseThrow(() -> new NaoEncontradoException("Proposta não encontrada"));
+        anuncioRepository.findByIdForUpdate(anuncioId)
+                .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
+        return findById(propostaId);
     }
 
     public Proposta findById(Long id) {
