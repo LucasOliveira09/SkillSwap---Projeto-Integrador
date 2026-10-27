@@ -10,6 +10,7 @@ public record AvaliacaoResponseDTO(
         Long avaliadoId,
         String avaliadoNome,
         int nota,
+        Integer notaAnuncio,
         String depoimento,
         LocalDateTime criadoEm
 ) {}

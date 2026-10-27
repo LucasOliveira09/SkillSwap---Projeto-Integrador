@@ -18,6 +18,8 @@ export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   avatar: string | null;
   estrelas: number | null;
   exemplo: boolean;
+  mediaAvaliacoesAnuncio?: number | null;
+  quantidadeAvaliacoesAnuncio?: number;
 }
 
 export interface PaginaAnuncios {

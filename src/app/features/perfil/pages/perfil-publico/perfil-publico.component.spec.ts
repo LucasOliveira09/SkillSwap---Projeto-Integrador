@@ -79,6 +79,18 @@ describe('PerfilPublicoComponent', () => {
       totalItens: 1,
       totalPaginas: 1,
     });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([{
+      id: 9,
+      acordoId: 2,
+      avaliadorId: 18,
+      avaliadorNome: 'Bruno Cliente',
+      avaliadoId: 12,
+      avaliadoNome: 'Ana Profissional',
+      nota: 5,
+      notaAnuncio: 4,
+      depoimento: 'Serviço pontual e bem executado.',
+      criadoEm: '2026-10-03T10:00:00',
+    }]);
     harness.detectChanges();
 
     const texto = harness.routeNativeElement?.textContent || '';
@@ -89,6 +101,10 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('Instalação de luminária');
     expect(texto).toContain('Trabalhos e portfólio');
     expect(texto).toContain('Instalação concluída');
+    expect(texto).toContain('Avaliações após trabalhos concluídos');
+    expect(texto).toContain('Bruno Cliente');
+    expect(texto).toContain('Serviço pontual e bem executado.');
+    expect(texto).toContain('Serviço:');
     expect(texto).not.toContain('ana@');
   });
 

@@ -39,6 +39,7 @@ export class AcordoDetalheComponent {
   protected readonly avaliacoes = signal<readonly Avaliacao[]>([]);
   protected readonly mensagem = signal('');
   protected nota = 0;
+  protected notaAnuncio = 0;
   protected depoimento = '';
   private acordoId = 0;
 
@@ -128,11 +129,11 @@ export class AcordoDetalheComponent {
   }
 
   protected avaliar(): void {
-    if (!this.nota || this.enviando() || this.acordo()?.status !== 'CONCLUIDO' || this.jaAvaliou()) return;
+    if (!this.nota || !this.notaAnuncio || this.enviando() || this.acordo()?.status !== 'CONCLUIDO' || this.jaAvaliou()) return;
     this.enviando.set(true);
     this.erro.set('');
     this.sucesso.set('');
-    this.api.avaliar(this.acordoId, this.nota, this.depoimento.trim()).pipe(
+    this.api.avaliar(this.acordoId, this.nota, this.notaAnuncio, this.depoimento.trim()).pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => this.enviando.set(false)),
     ).subscribe({

@@ -40,7 +40,9 @@ export class NegociacaoApiService {
     return this.http.get<readonly Avaliacao[]>(`/api/acordos/${acordoId}/avaliacoes`);
   }
 
-  avaliar(acordoId: number, nota: number, depoimento: string) {
-    return this.http.post<Avaliacao>(`/api/acordos/${acordoId}/avaliacoes`, { nota, depoimento });
+  avaliar(acordoId: number, nota: number, notaAnuncio: number, depoimento: string) {
+    return this.http.post<Avaliacao>(`/api/acordos/${acordoId}/avaliacoes`, {
+      nota, notaAnuncio, depoimento,
+    });
   }
 }

@@ -105,9 +105,9 @@ class NegociacaoControllerTest {
         var respostaAvaliacao = mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nota\":5,\"depoimento\":\"Serviço cuidadoso e pontual\"}"))
+                        .content("{\"nota\":5,\"notaAnuncio\":4,\"depoimento\":\"Serviço cuidadoso e pontual\"}"))
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.avaliadoId").value(anuncianteId))
-                .andExpect(jsonPath("$.nota").value(5)).andReturn();
+                .andExpect(jsonPath("$.nota").value(5)).andExpect(jsonPath("$.notaAnuncio").value(4)).andReturn();
         long avaliacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(respostaAvaliacao.getResponse().getContentAsString()).get("id").asLong();
         mvc.perform(get("/api/acordos/{id}/avaliacoes", acordoId)
@@ -116,6 +116,14 @@ class NegociacaoControllerTest {
         mvc.perform(get("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
                         .header("Authorization", "Bearer " + anuncianteToken))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(avaliacaoId));
+        mvc.perform(get("/api/anuncios/{id}", anuncioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mediaAvaliacoesAnuncio").value(4.0))
+                .andExpect(jsonPath("$.quantidadeAvaliacoesAnuncio").value(1));
+        mvc.perform(get("/api/anuncios").param("pagina", "0").param("tamanho", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itens[0].mediaAvaliacoesAnuncio").value(4.0))
+                .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoesAnuncio").value(1));
     }
 
     @Test

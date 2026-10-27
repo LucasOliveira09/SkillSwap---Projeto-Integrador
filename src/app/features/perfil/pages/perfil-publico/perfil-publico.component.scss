@@ -124,6 +124,14 @@ h1 {
   white-space: pre-line;
 }
 
+.lista-avaliacoes { display: grid; gap: 14px; }
+.avaliacao-publica { padding: 14px 0; border-top: 1px solid var(--ss-line); }
+.avaliacao-cabecalho { display: flex; justify-content: space-between; gap: 12px; }
+.avaliacao-cabecalho time { color: var(--ss-muted); font-size: 12px; }
+.notas-avaliacao { display: flex; flex-wrap: wrap; gap: 16px; color: var(--ss-muted); font-size: 13px; }
+.notas-avaliacao b { color: #ad7600; font-size: 16px; letter-spacing: 1px; }
+.depoimento { margin: 0; white-space: pre-line; }
+
 .lista-publicacoes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

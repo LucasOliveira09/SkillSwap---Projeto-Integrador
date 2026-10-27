@@ -23,6 +23,14 @@
       <span class="sep">&gt;</span>
       <span class="atual" aria-current="page">{{ a.titulo }}</span>
     </nav>
+    @if ((a.quantidadeAvaliacoesAnuncio ?? 0) > 0 && a.mediaAvaliacoesAnuncio != null) {
+      <p class="reputacao-anuncio" aria-label="Avaliação baseada em trabalhos concluídos">
+        <span aria-hidden="true">★</span> {{ a.mediaAvaliacoesAnuncio | number: '1.1-1' }}
+        · {{ a.quantidadeAvaliacoesAnuncio }} {{ a.quantidadeAvaliacoesAnuncio === 1 ? 'avaliação do serviço' : 'avaliações do serviço' }}
+      </p>
+    } @else {
+      <p class="reputacao-anuncio sem-notas">Este serviço ainda não tem avaliações.</p>
+    }
 
     <!-- GRID PRINCIPAL DE DETALHES -->
     <div class="detalhe-layout">

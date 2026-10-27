@@ -7,6 +7,7 @@ import {
   PaginaPublicacoesPortfolio,
   PublicacaoPortfolio,
 } from '../models/perfil.model';
+import { Avaliacao } from '../../negociacao/models/negociacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class PerfilApiService {
@@ -45,6 +46,10 @@ export class PerfilApiService {
       `/api/perfis/${encodeURIComponent(id)}/publicacoes`,
       { params: { pagina, tamanho: 12 } },
     );
+  }
+
+  avaliacoes(id: number | string) {
+    return this.http.get<readonly Avaliacao[]>(`/api/usuarios/${encodeURIComponent(id)}/avaliacoes`);
   }
 
   enviarFotoPortfolio(arquivo: File) {

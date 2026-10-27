@@ -48,13 +48,13 @@ Anúncios de venda/troca, categorias e coleções visuais agora são lidos do ba
 
 ## Integração do GitHub em 21/10/2026
 
-Por escolha do usuário, o backend novo do GitHub passou a ser a base canônica: Java 21, Spring Boot 4.0.8 e Maven Wrapper 3.10.0, mantendo MySQL. O Angular preserva o layout e agora possui conta, login JWT e cadastro autenticado. Catálogo e vitrine continuam vindo da API. Os módulos recebidos de propostas, acordos, mensagens e avaliações permanecem no backend, mas suas telas e validação integral ainda estão pendentes. A [ADR-004](decisions/004-integra-backend-github.md) substitui a organização inicial; o [contrato HTTP](backend.md) descreve o estado atual.
+Por escolha do usuário, o backend novo do GitHub passou a ser a base canônica: Java 21, Spring Boot 4.0.8 e Maven Wrapper 3.10.0, mantendo MySQL. O Angular preserva o layout antigo e tem conta, login JWT, cadastro autenticado, perfil, busca de profissionais, portfólio, propostas, acordos, conversa e avaliações. A validação integral com MySQL e as regras de moderação ainda estão pendentes. A [ADR-004](decisions/004-integra-backend-github.md) substitui a organização inicial; o [contrato HTTP](backend.md) descreve o estado atual.
 
 ## Implementação de perfis iniciada em 26/10/2026
 
 A API permite consultar campos públicos de um profissional, editar o perfil autenticado, listar ofertas ativas e criar/remover publicações de portfólio com até seis fotos. O DTO público não retorna e-mail; a média e a quantidade de avaliações vêm de registros do backend. O Angular oferece página pública responsiva, editor de perfil e portfólio, prévia e envio das imagens. O backend valida conteúdo real JPG/PNG/GIF, dimensões, tamanho e existência das fotos; a exclusão remove as referências sem apagar arquivos. O Compose local e de publicação declaram volume persistente. Moderação/denúncia, quotas, limpeza e backup dos uploads, migração dos arquivos do container público atual, teste MySQL e persistência após reinício continuam pendentes; o perfil ainda precisa desses critérios operacionais.
 
-A primeira busca de profissionais também está disponível em `/profissionais`, por nome/especialidade e cidade. Ela lista apenas pessoas que preencheram especialidades, apresenta contagem e média só quando vierem de avaliações existentes e não usa perfis ou notas fictícios. A pesquisa de ofertas por região/modalidade/preço e a validação com MySQL seguem pendentes.
+A primeira busca de profissionais também está disponível em `/profissionais`, por nome/especialidade e cidade. Ela lista apenas pessoas que preencheram especialidades, apresenta contagem e média só quando vierem de avaliações existentes e não usa perfis ou notas fictícias. A avaliação após acordo concluído coleta nota do profissional e da oferta/serviço em campos separados; o detalhe apresenta média e amostra reais, e o perfil lista os depoimentos. A pesquisa de ofertas por região/modalidade/preço e a validação com MySQL seguem pendentes. Denúncia, moderação e resposta/edição de avaliações ainda não estão disponíveis.
 
 ## Funcionalidades futuras
 

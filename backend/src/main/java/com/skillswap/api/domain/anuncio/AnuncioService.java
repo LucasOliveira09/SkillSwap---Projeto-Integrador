@@ -2,6 +2,8 @@ package com.skillswap.api.domain.anuncio;
 
 import com.skillswap.api.domain.anuncio.dto.AnuncioRequestDTO;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
+import com.skillswap.api.domain.avaliacao.AvaliacaoRepository;
+import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoAnuncioDTO;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
@@ -12,12 +14,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AnuncioService {
 
     private final AnuncioRepository anuncioRepository;
     private final UsuarioService usuarioService;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     @Transactional
     public Anuncio criar(AnuncioRequestDTO dto, String emailUsuario) {
@@ -39,15 +47,13 @@ public class AnuncioService {
 
     @Transactional(readOnly = true)
     public Page<AnuncioResponseDTO> listar(CategoriaAnuncio categoria, String cidade, Pageable pageable) {
-        return anuncioRepository.findByStatusAndFilters(StatusAnuncio.ATIVO, categoria, cidade, pageable)
-                .map(this::toResponseDTO);
+        return mapearPaginaComAvaliacoes(anuncioRepository.findByStatusAndFilters(StatusAnuncio.ATIVO, categoria, cidade, pageable));
     }
 
     @Transactional(readOnly = true)
     public Page<AnuncioResponseDTO> listarOfertasPublicasDoUsuario(Long usuarioId, Pageable pageable) {
-        return anuncioRepository.findByUsuarioIdAndStatusAndExemploFalse(
-                        usuarioId, StatusAnuncio.ATIVO, pageable)
-                .map(this::toResponseDTO);
+        return mapearPaginaComAvaliacoes(anuncioRepository.findByUsuarioIdAndStatusAndExemploFalse(
+                usuarioId, StatusAnuncio.ATIVO, pageable));
     }
 
     @Transactional(readOnly = true)
@@ -121,11 +127,23 @@ public class AnuncioService {
             catch (IllegalArgumentException ex) { return Page.empty(pageable); }
         }
         String literal = Anuncio.normalizar(busca).replace("!","!!").replace("%","!%").replace("_","!_");
-        return anuncioRepository.pesquisar(StatusAnuncio.ATIVO, filtro, cidade, "%"+literal+"%", pageable)
-            .map(this::toResponseDTO);
+        return mapearPaginaComAvaliacoes(anuncioRepository.pesquisar(StatusAnuncio.ATIVO, filtro, cidade, "%"+literal+"%", pageable));
     }
 
     public AnuncioResponseDTO toResponseDTO(Anuncio a) {
+        var resumo = avaliacaoRepository.resumirAnunciosAvaliados(List.of(a.getId())).stream().findFirst().orElse(null);
+        return toResponseDTO(a, resumo);
+    }
+
+    private Page<AnuncioResponseDTO> mapearPaginaComAvaliacoes(Page<Anuncio> pagina) {
+        var ids = pagina.getContent().stream().map(Anuncio::getId).toList();
+        Map<Long, ResumoAvaliacaoAnuncioDTO> resumos = ids.isEmpty() ? Map.of() :
+                avaliacaoRepository.resumirAnunciosAvaliados(ids).stream()
+                        .collect(Collectors.toMap(ResumoAvaliacaoAnuncioDTO::anuncioId, Function.identity()));
+        return pagina.map(anuncio -> toResponseDTO(anuncio, resumos.get(anuncio.getId())));
+    }
+
+    private AnuncioResponseDTO toResponseDTO(Anuncio a, ResumoAvaliacaoAnuncioDTO resumo) {
         return new AnuncioResponseDTO(
                 a.getId(), a.getTitulo(), a.getDescricao(),
                 a.getCategoria(), a.getCidade(), a.getModalidade(),
@@ -134,7 +152,9 @@ public class AnuncioService {
                 a.getCriadoEm(), a.getCategoriaExibicao() == null ? a.getCategoria().rotulo() : a.getCategoriaExibicao(),
                 a.getImagem(), a.getUnidade() == null ? "" : a.getUnidade(),
                 a.getAutorExibicao() == null ? a.getUsuario().getNome() : a.getAutorExibicao(),
-                a.getAvatar(), a.getEstrelas(), a.isExemplo()
+                a.getAvatar(), a.getEstrelas(), a.isExemplo(),
+                resumo == null ? null : resumo.media(),
+                resumo == null ? 0L : resumo.quantidade()
         );
     }
 }

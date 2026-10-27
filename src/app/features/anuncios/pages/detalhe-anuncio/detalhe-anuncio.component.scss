@@ -454,3 +454,7 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+:host { display: block; }
+.reputacao-anuncio { margin: -10px 0 18px; color: var(--ss-text); font-size: 14px; }
+.reputacao-anuncio span { color: #ad7600; }
+.reputacao-anuncio.sem-notas { color: var(--ss-muted); font-size: 12px; }

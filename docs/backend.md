@@ -4,7 +4,7 @@
 
 O usuário escolheu integrar o backend de `origin/main` (`6085271`) ao layout e ao cliente HTTP locais. Há uma aplicação Spring Boot 4.0.8 com Java 21, Maven Wrapper 3.10.0, JPA/Lombok e JWT em `com.skillswap.api`. A [ADR-004](decisions/004-integra-backend-github.md) registra a escolha; a ADR-003 documenta a etapa anterior.
 
-Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Catálogo, conta, perfil, portfólio, descoberta e autorização de anúncios têm integração Angular/API. Propostas, acordos, mensagens e avaliações ainda precisam de telas e testes próprios; a presença de código não comprova o MVP inteiro.
+Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Catálogo, conta, perfil, portfólio, descoberta, propostas, acordos, conversa e reputação têm integração Angular/API. A validação completa com MySQL, regras de moderação e fluxos operacionais ainda está pendente; a presença de código não comprova o MVP inteiro.
 
 ## Convenções REST
 
@@ -21,7 +21,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/categorias` | Códigos e rótulos dos enums definidos no backend. |
 | GET | `/vitrine` | Categorias visuais, destaques e serviços persistidos no banco. |
 | GET | `/anuncios?busca=&categoria=&pagina=0&tamanho=5` | `{itens,pagina,tamanho,totalItens,totalPaginas}`; página até 1.000.000, tamanho 1–50 e busca até 100 caracteres. Ordem por data/ID decrescente. |
-| GET | `/anuncios/{id}` | Anúncio ativo ou 404. |
+| GET | `/anuncios/{id}` | Anúncio ativo ou 404; inclui `mediaAvaliacoesAnuncio` e `quantidadeAvaliacoesAnuncio`, derivados de avaliações existentes de acordos concluídos. |
 | POST | `/usuarios` | Criar conta, 201 com Location e JWT; alias antigo `/auth/registrar`. |
 | POST | `/sessoes` | Autenticar com e-mail/senha e receber JWT; alias antigo `/auth/login`. |
 | POST | `/anuncios` | Exige Bearer JWT; 201 com Location após persistir. |
@@ -55,14 +55,14 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/acordos/{id}/mensagens?pagina=0&tamanho=50` | Exige participante; mensagens em ordem cronológica, até 100 por página. |
 | POST | `/acordos/{id}/mensagens` | Exige participante; grava mensagem de até 2.000 caracteres, 201 com Location. |
 | GET | `/acordos/{id}/mensagens/{mensagemId}` | Exige participante; 404 se a mensagem não pertencer ao acordo informado. |
-| POST | `/acordos/{id}/avaliacoes` | Exige participante e acordo concluído; uma avaliação de 1–5 por participante, sem autoavaliação, com depoimento opcional. Responde 201. |
+| POST | `/acordos/{id}/avaliacoes` | Exige participante e acordo concluído; uma avaliação por participante, sem autoavaliação. Recebe `nota` (profissional, 1–5), `notaAnuncio` (oferta/serviço, 1–5) e depoimento opcional. `notaAnuncio` é opcional para compatibilidade com clientes antigos. Responde 201. |
 | GET | `/acordos/{id}/avaliacoes` | Exige participante; lista avaliações vinculadas ao acordo. |
 | GET | `/acordos/{id}/avaliacoes/{avaliacaoId}` | Exige participante; 404 se a avaliação não pertencer ao acordo. |
-| GET | `/usuarios/{id}/avaliacoes` | Lista avaliações recebidas pelo perfil público. |
+| GET | `/usuarios/{id}/avaliacoes` | Lista avaliações recebidas pelo perfil público, incluindo as duas notas e depoimento, quando fornecidos. |
 
 Os endpoints legados `/propostas/minhas`, `/propostas/recebidas`, `/propostas/{id}/aceitar`, `/propostas/{id}/recusar`, `/acordos/meus`, `/acordos/{id}/concluir` e `/acordos/{id}/cancelar` continuam disponíveis para clientes antigos. O Angular usa coleções de recursos, `PATCH` no recurso e query parameters para filtrar e paginar.
 
-O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor.
+O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor. A média e a quantidade da oferta ignoram avaliações antigas sem `notaAnuncio`; a nota do profissional continua agregada no perfil.
 
 Cadastro: título 1–100, descrição 1–1500, cidade 1–80, categoria e modalidade válidas. Venda exige preço de 0,01 a 99.999.999,99 com até duas casas; troca exige habilidade de até 120 caracteres e não preserva preço. Campos obrigatórios rejeitam espaços. Proprietário, imagens ilustrativas, avaliações e indicação de exemplo não são controlados pelo formulário.
 
@@ -124,7 +124,7 @@ A descoberta pública também oferece `GET /profissionais`, com busca em nome/es
 
 O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica e remove conteúdo no editor do perfil. A remoção exclui as referências do banco, sem apagar arquivos. Denúncia/moderação, paginação visual além da primeira página, quota e limpeza de uploads continuam pendentes. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de remoção por outro usuário.
 
-A negociação agora tem recursos REST para propostas e acordos, filtros/paginação e alterações por PATCH. A tela `/acordos/{id}` apresenta a conversa, permite enviar mensagens, confirmar conclusão e avaliar o outro participante após concluir. A API confere participação nas leituras e escritas; o fluxo foi coberto ponta a ponta com MockMvc/JPA. Os aliases de ação antigos permanecem por compatibilidade. A avaliação atual é do participante/profissional; nota separada do anúncio, cancelamento pelo proponente e controle de concorrência continuam pendentes. Nesta verificação: 53 testes Angular, 26 Java, build e typecheck aprovados; perfil, portfólio e conversa foram conferidos no Chrome/Playwright em 1440px e 360px usando mocks da API. MySQL real e persistência após reinício ainda não foram verificados.
+A negociação agora tem recursos REST para propostas e acordos, filtros/paginação e alterações por PATCH. A tela `/acordos/{id}` apresenta a conversa, permite enviar mensagens, confirmar conclusão e avaliar o participante e a oferta após concluir. A API confere participação nas leituras e escritas; o fluxo foi coberto ponta a ponta com MockMvc/JPA. Os aliases de ação antigos permanecem por compatibilidade. Controle de concorrência, cancelamento pelo proponente, moderação e resposta/edição de avaliações continuam pendentes. MySQL real e persistência após reinício ainda não foram verificados.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

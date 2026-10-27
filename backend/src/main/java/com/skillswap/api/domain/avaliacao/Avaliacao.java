@@ -35,6 +35,8 @@ public class Avaliacao {
     @Column(nullable = false)
     private int nota;
 
+    private Integer notaAnuncio;
+
     @Column(length = 1000)
     private String depoimento;
 

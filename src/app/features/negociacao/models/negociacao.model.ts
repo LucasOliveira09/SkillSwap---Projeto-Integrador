@@ -43,6 +43,7 @@ export interface Avaliacao {
   avaliadoId: number;
   avaliadoNome: string;
   nota: number;
+  notaAnuncio?: number | null;
   depoimento: string | null;
   criadoEm: string;
 }

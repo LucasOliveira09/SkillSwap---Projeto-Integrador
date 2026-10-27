@@ -18,5 +18,6 @@ public record AnuncioResponseDTO(
         String usuarioNome,
         LocalDateTime criadoEm,
         String categoriaRotulo, String imagem, String unidade, String autor,
-        String avatar, Integer estrelas, boolean exemplo
+        String avatar, Integer estrelas, boolean exemplo,
+        Double mediaAvaliacoesAnuncio, long quantidadeAvaliacoesAnuncio
 ) {}

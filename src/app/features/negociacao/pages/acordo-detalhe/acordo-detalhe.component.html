@@ -78,7 +78,7 @@
           <p>Esta avaliação fica vinculada a um acordo concluído e ajuda outras pessoas a comparar profissionais.</p>
           <form (ngSubmit)="avaliar()">
             <fieldset>
-              <legend>Nota de 1 a 5 estrelas</legend>
+              <legend>Nota do profissional</legend>
               <div class="estrelas" aria-label="Nota do profissional">
                 @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                   <button type="button" [attr.aria-pressed]="nota === estrela"
@@ -87,12 +87,22 @@
                 }
               </div>
             </fieldset>
+            <fieldset>
+              <legend>Nota do anúncio ou serviço</legend>
+              <div class="estrelas" aria-label="Nota do anúncio ou serviço">
+                @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                  <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
+                    [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                    [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">★</button>
+                }
+              </div>
+            </fieldset>
             <mat-form-field appearance="outline">
               <mat-label>Depoimento (opcional)</mat-label>
               <textarea matInput name="depoimento" [(ngModel)]="depoimento" maxlength="1000" rows="3"></textarea>
               <mat-hint>{{ depoimento.length }}/1000</mat-hint>
             </mat-form-field>
-            <button mat-flat-button color="primary" type="submit" [disabled]="!nota || enviando()">
+            <button mat-flat-button color="primary" type="submit" [disabled]="!nota || !notaAnuncio || enviando()">
               {{ enviando() ? 'Enviando...' : 'Enviar avaliação' }}
             </button>
           </form>
@@ -100,7 +110,10 @@
         @for (avaliacao of avaliacoes(); track avaliacao.id) {
           <article class="avaliacao-publicada">
             <strong>{{ avaliacao.avaliadorNome }}</strong>
-            <span aria-label="Nota">{{ '★'.repeat(avaliacao.nota) }}</span>
+            <span aria-label="Nota do profissional">Profissional: {{ '★'.repeat(avaliacao.nota) }}</span>
+            @if (avaliacao.notaAnuncio) {
+              <span aria-label="Nota do anúncio">Oferta: {{ '★'.repeat(avaliacao.notaAnuncio) }}</span>
+            }
             @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
           </article>
         }

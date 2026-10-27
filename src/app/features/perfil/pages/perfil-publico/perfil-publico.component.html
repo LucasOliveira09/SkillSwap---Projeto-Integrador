@@ -60,6 +60,31 @@
       }
     </section>
 
+    <section class="avaliacoes secao" aria-labelledby="titulo-avaliacoes">
+      <h2 id="titulo-avaliacoes">Avaliações após trabalhos concluídos</h2>
+      @if (!avaliacoes().length) {
+        <p class="vazio">Ainda não há avaliações de trabalhos concluídos.</p>
+      } @else {
+        <div class="lista-avaliacoes">
+          @for (avaliacao of avaliacoes(); track avaliacao.id) {
+            <article class="avaliacao-publica">
+              <div class="avaliacao-cabecalho">
+                <strong>{{ avaliacao.avaliadorNome }}</strong>
+                <time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+              </div>
+              <p class="notas-avaliacao">
+                <span>Profissional: <b aria-label="Nota do profissional">{{ estrelas(avaliacao.nota) }}</b></span>
+                @if (avaliacao.notaAnuncio) {
+                  <span>Serviço: <b aria-label="Nota do serviço">{{ estrelas(avaliacao.notaAnuncio) }}</b></span>
+                }
+              </p>
+              @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }
+            </article>
+          }
+        </div>
+      }
+    </section>
+
     <section class="portfolio secao" aria-labelledby="titulo-portfolio">
       <div class="titulo-ofertas">
         <div>

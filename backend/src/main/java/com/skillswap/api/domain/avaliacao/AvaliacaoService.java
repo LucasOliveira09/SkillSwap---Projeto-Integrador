@@ -62,6 +62,7 @@ public class AvaliacaoService {
                 .avaliador(avaliador)
                 .avaliado(avaliado)
                 .nota(dto.nota())
+                .notaAnuncio(dto.notaAnuncio())
                 .depoimento(dto.depoimento())
                 .build();
         return avaliacaoRepository.save(avaliacao);
@@ -102,6 +103,7 @@ public class AvaliacaoService {
                 a.getAvaliado().getId(),
                 a.getAvaliado().getNome(),
                 a.getNota(),
+                a.getNotaAnuncio(),
                 a.getDepoimento(),
                 a.getCriadoEm()
         );
