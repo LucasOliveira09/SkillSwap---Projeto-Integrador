@@ -155,6 +155,7 @@ public class UploadService {
         Resource recurso = resolverArquivo(nomeArquivo);
         String url = "/api/uploads/" + nomeArquivo;
         boolean publicado = usuarioRepository.existsByFotoUrl(url)
+                || usuarioRepository.existsByCapaUrl(url)
                 || anuncioRepository.existsByImagemAndStatusAndExemploFalse(url, StatusAnuncio.ATIVO)
                 || portfolioRepository.existeFotoPublica(url);
         if (publicado || (emailUsuario != null && uploadRepository.pertenceAoUsuario(emailUsuario, nomeArquivo))) {

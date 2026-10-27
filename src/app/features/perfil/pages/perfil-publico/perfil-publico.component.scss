@@ -36,10 +36,29 @@
 }
 
 .cabecalho-perfil {
+  display: block;
+  padding: 16px;
+}
+
+.capa-perfil {
+  height: 168px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #255188, #8bc63f);
+}
+
+.capa-perfil img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.identidade-perfil {
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 28px;
+  padding: 22px 12px 12px;
 }
 
 .foto-perfil,
@@ -314,10 +333,18 @@ h1 {
   }
 
   .cabecalho-perfil {
+    padding: 12px;
+  }
+
+  .capa-perfil {
+    height: 116px;
+  }
+
+  .identidade-perfil {
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 16px;
-    padding: 20px;
+    gap: 14px;
+    padding: 18px 4px 4px;
   }
 
   .foto-perfil,
@@ -331,7 +358,7 @@ h1 {
     flex-basis: calc(100% - 100px);
   }
 
-  .cabecalho-perfil > a {
+  .identidade-perfil > a {
     width: 100%;
   }
 

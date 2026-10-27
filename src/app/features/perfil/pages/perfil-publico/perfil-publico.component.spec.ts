@@ -26,6 +26,7 @@ describe('PerfilPublicoComponent', () => {
       bio: 'Atendo residências em Florianópolis.',
       cidade: 'Florianópolis',
       fotoUrl: null,
+      capaUrl: '/api/uploads/capa-profissional.png',
       especialidades: 'Elétrica residencial',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: 4.8,
@@ -97,6 +98,9 @@ describe('PerfilPublicoComponent', () => {
     }]);
     harness.detectChanges();
 
+    expect(harness.routeNativeElement?.querySelector('.capa-perfil img')?.getAttribute('src'))
+      .toBe('/api/uploads/capa-profissional.png');
+
     const texto = harness.routeNativeElement?.textContent || '';
     expect(texto).toContain('Ana Profissional');
     expect(texto).toContain('Atendo residências em Florianópolis.');
@@ -123,7 +127,7 @@ describe('PerfilPublicoComponent', () => {
   it('navega pelas páginas do portfólio usando a página solicitada pela API', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     const perfil = {
-      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null, capaUrl: null,
       especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
       quantidadeAvaliacoes: 0,
     };
@@ -167,7 +171,7 @@ describe('PerfilPublicoComponent', () => {
   it('pagina todas as ofertas do profissional e mostra a quantidade total', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     const perfil = {
-      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null, capaUrl: null,
       especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
       quantidadeAvaliacoes: 0,
     };

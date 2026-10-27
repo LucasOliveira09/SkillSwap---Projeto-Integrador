@@ -9,6 +9,7 @@ public record PerfilDTO(
         String bio,
         String cidade,
         String fotoUrl,
+        String capaUrl,
         String especialidades,
         LocalDateTime criadoEm,
         Double mediaNotas,

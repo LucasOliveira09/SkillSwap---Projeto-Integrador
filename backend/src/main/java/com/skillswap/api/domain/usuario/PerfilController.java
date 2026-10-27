@@ -139,4 +139,20 @@ public class PerfilController {
         usuarioService.removerFotoAtual(email);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(value = "/perfil/capa", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PerfilDTO> atualizarMinhaCapa(
+            @RequestPart("file") MultipartFile arquivo,
+            Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        var upload = uploadService.salvar(arquivo, email);
+        return ResponseEntity.ok(usuarioService.atualizarCapaAtual(upload.url(), email));
+    }
+
+    @DeleteMapping("/perfil/capa")
+    public ResponseEntity<Void> removerMinhaCapa(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        usuarioService.removerCapaAtual(email);
+        return ResponseEntity.noContent().build();
+    }
 }

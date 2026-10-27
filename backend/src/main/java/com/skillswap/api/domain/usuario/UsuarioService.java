@@ -75,9 +75,23 @@ public class UsuarioService {
     }
 
     @Transactional
+    public PerfilDTO atualizarCapaAtual(String capaUrl, String emailAutenticado) {
+        Usuario usuario = findByEmail(emailAutenticado);
+        usuario.setCapaUrl(capaUrl);
+        return toPerfilDTO(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
     public void removerFotoAtual(String emailAutenticado) {
         Usuario usuario = findByEmail(emailAutenticado);
         usuario.setFotoUrl(null);
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void removerCapaAtual(String emailAutenticado) {
+        Usuario usuario = findByEmail(emailAutenticado);
+        usuario.setCapaUrl(null);
         usuarioRepository.save(usuario);
     }
 
@@ -121,7 +135,7 @@ public class UsuarioService {
         return new PerfilDTO(
                 u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
-                u.getEspecialidades(), u.getCriadoEm(),
+                u.getCapaUrl(), u.getEspecialidades(), u.getCriadoEm(),
                 getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())
         );
     }

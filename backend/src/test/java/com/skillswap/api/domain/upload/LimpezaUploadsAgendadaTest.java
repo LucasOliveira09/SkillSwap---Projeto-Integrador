@@ -39,6 +39,7 @@ class LimpezaUploadsAgendadaTest {
         publicacoes = mock(PublicacaoPortfolioRepository.class);
         uploads = mock(UploadUsuarioRepository.class);
         when(usuarios.listarFotosDePerfil()).thenReturn(List.of("/api/uploads/" + "a".repeat(64) + ".jpg"));
+        when(usuarios.listarCapasDePerfil()).thenReturn(List.of("/api/uploads/" + "f".repeat(64) + ".jpg"));
         when(anuncios.listarImagens()).thenReturn(List.of("/api/uploads/" + "b".repeat(64) + ".png"));
         when(publicacoes.listarFotosReferenciadas()).thenReturn(List.of("/api/uploads/" + "c".repeat(64) + ".gif"));
         limpeza = new LimpezaUploadsAgendada(usuarios, anuncios, publicacoes, uploads);
@@ -49,6 +50,7 @@ class LimpezaUploadsAgendadaTest {
     @Test
     void apagaSomenteUploadOrfaoComRetencaoVencida() throws Exception {
         Path referenciado = criarArquivo("a".repeat(64) + ".jpg", 60);
+        Path capaReferenciada = criarArquivo("f".repeat(64) + ".jpg", 60);
         Path orfaoAntigo = criarArquivo("d".repeat(64) + ".png", 60);
         Path orfaoRecente = criarArquivo("e".repeat(64) + ".gif", 2);
         Path arquivoEstranho = criarArquivo("foto-antiga.png", 60);
@@ -57,6 +59,7 @@ class LimpezaUploadsAgendadaTest {
 
         assertEquals(1, removidos);
         assertTrue(Files.exists(referenciado));
+        assertTrue(Files.exists(capaReferenciada));
         assertFalse(Files.exists(orfaoAntigo));
         assertTrue(Files.exists(orfaoRecente));
         assertTrue(Files.exists(arquivoEstranho));

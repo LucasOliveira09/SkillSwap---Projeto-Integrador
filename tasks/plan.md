@@ -165,7 +165,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado, listagem paginada das ofertas ativas e busca de profissionais por especialidade/cidade implementados. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
 
-O perfil também aceita título profissional opcional; ele aparece no perfil público e nos resultados, e a busca por título inclui profissionais sem especialidades preenchidas. A migração aditiva V11 preserva os registros existentes. Capa e links externos aprovados continuam pendentes.
+O perfil também aceita título profissional opcional e capa; ambos aparecem no perfil público, e o título também aparece nos resultados. A busca por título inclui profissionais sem especialidades preenchidas. As migrações aditivas V11 e V12 preservam os registros existentes. A capa pode ser enviada/removida pelo dono e segue as regras de acesso dos uploads. Links externos aprovados continuam pendentes.
 
 ### Fase 3 — Portfólio com publicações e fotos
 

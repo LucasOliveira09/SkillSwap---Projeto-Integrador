@@ -16,42 +16,50 @@
     </nav>
 
     <section class="cabecalho-perfil" aria-labelledby="titulo-perfil">
-      @if (p.fotoUrl) {
-        <img class="foto-perfil" [src]="p.fotoUrl" [alt]="'Foto de ' + p.nome" />
-      } @else {
-        <div class="foto-vazia" aria-hidden="true"><app-icone nome="usuario" /></div>
-      }
-
-      <div class="identidade">
-        <p class="sobretitulo">Profissional SkillSwap</p>
-        <h1 id="titulo-perfil">{{ p.nome }}</h1>
-        @if (p.tituloProfissional) {
-          <p class="titulo-profissional">{{ p.tituloProfissional }}</p>
+      <div class="capa-perfil">
+        @if (p.capaUrl) {
+          <img [src]="p.capaUrl" alt="" />
         }
-        @if (p.especialidades) {
-          <p class="especialidades">{{ p.especialidades }}</p>
-        }
-        <div class="metadados">
-          @if (p.cidade) {
-            <span><app-icone nome="local" /> {{ p.cidade }}</span>
-          }
-          @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
-            <span class="reputacao" [attr.aria-label]="p.mediaNotas | number: '1.1-1'">
-              <span aria-hidden="true">★</span>
-              {{ p.mediaNotas | number: '1.1-1' }}
-              ({{ p.quantidadeAvaliacoes }}
-              {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
-            </span>
-          } @else {
-            <span class="sem-avaliacoes">Ainda sem avaliações</span>
-          }
-        </div>
-        <p class="desde">No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</p>
       </div>
 
-      <a mat-stroked-button color="primary" routerLink="/anuncios" [queryParams]="{ busca: p.especialidades || p.nome }">
-        Encontrar serviços
-      </a>
+      <div class="identidade-perfil">
+        @if (p.fotoUrl) {
+          <img class="foto-perfil" [src]="p.fotoUrl" [alt]="'Foto de ' + p.nome" />
+        } @else {
+          <div class="foto-vazia" aria-hidden="true"><app-icone nome="usuario" /></div>
+        }
+
+        <div class="identidade">
+          <p class="sobretitulo">Profissional SkillSwap</p>
+          <h1 id="titulo-perfil">{{ p.nome }}</h1>
+          @if (p.tituloProfissional) {
+            <p class="titulo-profissional">{{ p.tituloProfissional }}</p>
+          }
+          @if (p.especialidades) {
+            <p class="especialidades">{{ p.especialidades }}</p>
+          }
+          <div class="metadados">
+            @if (p.cidade) {
+              <span><app-icone nome="local" /> {{ p.cidade }}</span>
+            }
+            @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
+              <span class="reputacao" [attr.aria-label]="p.mediaNotas | number: '1.1-1'">
+                <span aria-hidden="true">★</span>
+                {{ p.mediaNotas | number: '1.1-1' }}
+                ({{ p.quantidadeAvaliacoes }}
+                {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
+              </span>
+            } @else {
+              <span class="sem-avaliacoes">Ainda sem avaliações</span>
+            }
+          </div>
+          <p class="desde">No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</p>
+        </div>
+
+        <a mat-stroked-button color="primary" routerLink="/anuncios" [queryParams]="{ busca: p.especialidades || p.tituloProfissional || p.nome }">
+          Encontrar serviços
+        </a>
+      </div>
     </section>
 
     <section class="sobre secao" aria-labelledby="titulo-sobre">

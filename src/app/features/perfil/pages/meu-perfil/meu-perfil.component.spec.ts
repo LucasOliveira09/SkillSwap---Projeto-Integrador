@@ -28,6 +28,7 @@ describe('MeuPerfilComponent', () => {
       bio: 'Experiência com instalações residenciais.',
       cidade: 'Florianópolis',
       fotoUrl: null,
+      capaUrl: null,
       especialidades: 'Elétrica residencial',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -62,6 +63,7 @@ describe('MeuPerfilComponent', () => {
       bio: 'Experiência com instalações residenciais.',
       cidade: 'Florianópolis',
       fotoUrl: null,
+      capaUrl: null,
       especialidades: 'Elétrica residencial',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -86,7 +88,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
     const harness = await RouterTestingHarness.create('/meu-perfil');
     http.expectOne('/api/perfil').flush({
-      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, capaUrl: null,
       especialidades: null, criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
@@ -146,6 +148,7 @@ describe('MeuPerfilComponent', () => {
       bio: null,
       cidade: null,
       fotoUrl: null,
+      capaUrl: null,
       especialidades: null,
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -182,6 +185,7 @@ describe('MeuPerfilComponent', () => {
       bio: null,
       cidade: null,
       fotoUrl: '/api/uploads/0123456789abcdef0123456789abcdef.png',
+      capaUrl: null,
       especialidades: null,
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,

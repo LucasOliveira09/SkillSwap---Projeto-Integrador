@@ -36,7 +36,7 @@ describe('AcordoDetalheComponent', () => {
       respostaProfissional: null, respondidaEm: null,
     }]);
     http.expectOne('/api/perfil').flush({
-      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, especialidades: null,
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, capaUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     harness.detectChanges();
@@ -83,7 +83,7 @@ describe('AcordoDetalheComponent', () => {
       respostaProfissional: null, respondidaEm: null,
     }]);
     http.expectOne('/api/perfil').flush({
-      id: 1, nome: 'Ana', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, especialidades: null,
+      id: 1, nome: 'Ana', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, capaUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     http.expectOne('/api/avaliacoes/12/contestacoes').flush([]);
@@ -153,7 +153,7 @@ describe('AcordoDetalheComponent', () => {
       respostaProfissional: null, respondidaEm: null, edicaoRealizada: false, editadaEm: null,
     }]);
     http.expectOne('/api/perfil').flush({
-      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, especialidades: null,
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, capaUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     harness.detectChanges();

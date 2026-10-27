@@ -332,4 +332,31 @@ class PerfilControllerTest {
         mvc.perform(get(fotoUrl)).andExpect(status().isNotFound());
         mvc.perform(get(fotoUrl).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
     }
+
+    @Test
+    void atualizaERemoveCapaDoPerfilComAcessoPublicoControlado() throws Exception {
+        var capa = new org.springframework.mock.web.MockMultipartFile(
+                "file", "capa.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+
+        var resultado = mvc.perform(multipart("/api/perfil/capa").file(capa).with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.capaUrl").isNotEmpty())
+                .andReturn();
+        String capaUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resultado.getResponse().getContentAsString()).get("capaUrl").asText();
+
+        mvc.perform(get(capaUrl)).andExpect(status().isOk());
+        mvc.perform(get("/api/perfil").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.capaUrl").value(capaUrl));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/perfil/capa")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+        mvc.perform(get(capaUrl)).andExpect(status().isNotFound());
+        mvc.perform(get(capaUrl).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+    }
 }

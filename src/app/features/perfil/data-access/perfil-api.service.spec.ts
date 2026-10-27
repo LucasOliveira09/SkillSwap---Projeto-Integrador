@@ -30,6 +30,7 @@ describe('PerfilApiService', () => {
       bio: null,
       cidade: 'Florianópolis',
       fotoUrl: null,
+      capaUrl: null,
       especialidades: 'Aulas de violão',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -70,6 +71,7 @@ describe('PerfilApiService', () => {
         bio: null,
         cidade: 'Florianópolis',
         fotoUrl: null,
+        capaUrl: null,
         especialidades: 'Eletricista',
         criadoEm: '2026-10-01T10:00:00',
         mediaNotas: null,
@@ -103,6 +105,7 @@ describe('PerfilApiService', () => {
       bio: dados.bio,
       cidade: dados.cidade,
       fotoUrl: null,
+      capaUrl: null,
       especialidades: dados.especialidades,
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -125,6 +128,7 @@ describe('PerfilApiService', () => {
       bio: null,
       cidade: null,
       fotoUrl: '/api/uploads/foto.png',
+      capaUrl: null,
       especialidades: null,
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -137,6 +141,25 @@ describe('PerfilApiService', () => {
     const request = http.expectOne('/api/perfil/foto');
     expect(request.request.method).toBe('DELETE');
     request.flush(null);
+  });
+
+  it('envia e remove a capa do próprio perfil', () => {
+    const arquivo = new File(['imagem'], 'capa.png', { type: 'image/png' });
+    api.atualizarCapa(arquivo).subscribe((perfil) => expect(perfil.capaUrl).toBe('/api/uploads/capa.png'));
+
+    const atualizar = http.expectOne('/api/perfil/capa');
+    expect(atualizar.request.method).toBe('PUT');
+    expect((atualizar.request.body as FormData).get('file')).toBe(arquivo);
+    atualizar.flush({
+      id: 12, nome: 'Ana', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null,
+      capaUrl: '/api/uploads/capa.png', especialidades: null, criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+
+    api.removerCapa().subscribe();
+    const remover = http.expectOne('/api/perfil/capa');
+    expect(remover.request.method).toBe('DELETE');
+    remover.flush(null);
   });
 
   it('envia e remove publicações de portfólio pelos recursos REST', () => {

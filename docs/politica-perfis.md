@@ -5,7 +5,7 @@ O SkillSwap apresenta profissionais publicamente para que clientes possam compar
 ## Visíveis sem login
 
 - ID do perfil e nome de exibição informado pela própria pessoa. O nome não comprova identidade.
-- Título profissional, data de criação da conta, biografia, cidade, foto e especialidades quando preenchidos.
+- Título profissional, data de criação da conta, biografia, cidade, foto, capa e especialidades quando preenchidos.
 - Resumo das avaliações recebidas e avaliações não ocultadas, incluindo resposta pública do profissional.
 - Anúncios ativos e não demonstrativos, publicações de portfólio publicadas e imagens ligadas a esses conteúdos.
 
@@ -13,12 +13,12 @@ O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, ac
 
 ## Controles disponíveis
 
-- A pessoa pode apagar o título, a biografia, a cidade e as especialidades, remover a foto, pausar seus anúncios e excluir publicações próprias.
+- A pessoa pode apagar o título, a biografia, a cidade e as especialidades, remover a foto e a capa, pausar seus anúncios e excluir publicações próprias.
 - Nome e avaliações públicas não podem ser ocultados por preferência nesta fase; uma avaliação sai da vitrine apenas pelas regras de moderação.
 - Não existe botão para tornar o perfil inteiro privado nem fluxo de exclusão/anônimização de conta. Esses recursos continuam pendentes e não devem ser prometidos pela interface.
 
 ## URLs e remoção de imagens
 
-URLs em `/api/uploads/{hash}.{extensão}` são acessíveis sem login enquanto a imagem estiver ligada a uma foto de perfil, a um anúncio ativo não demonstrativo ou a uma publicação de portfólio visível. Quando a última referência pública é removida ou ocultada, a URL passa a retornar não encontrado. Até a limpeza dos arquivos sem referência (30 dias por padrão), a conta que enviou a imagem ainda pode acessá-la autenticada para prévia ou reutilização. As respostas usam `Cache-Control: no-store` para evitar cache HTTP controlado pelo navegador/proxy. Isso não apaga cópias que visitantes já baixaram ou capturaram.
+URLs em `/api/uploads/{hash}.{extensão}` são acessíveis sem login enquanto a imagem estiver ligada a uma foto ou capa de perfil, a um anúncio ativo não demonstrativo ou a uma publicação de portfólio visível. Quando a última referência pública é removida ou ocultada, a URL passa a retornar não encontrado. Até a limpeza dos arquivos sem referência (30 dias por padrão), a conta que enviou a imagem ainda pode acessá-la autenticada para prévia ou reutilização. As respostas usam `Cache-Control: no-store` para evitar cache HTTP controlado pelo navegador/proxy. Isso não apaga cópias que visitantes já baixaram ou capturaram.
 
 O SkillSwap não verifica documentos nem garante que uma pessoa, especialidade ou avaliação represente uma qualificação profissional. As notas descritas na [política de avaliações](politica-avaliacoes.md) vêm de acordos concluídos e seguem as regras de moderação.

@@ -5,6 +5,7 @@ export interface PerfilProfissional {
   bio: string | null;
   cidade: string | null;
   fotoUrl: string | null;
+  capaUrl: string | null;
   especialidades: string | null;
   criadoEm: string;
   mediaNotas: number | null;

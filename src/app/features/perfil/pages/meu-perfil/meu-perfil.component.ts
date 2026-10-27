@@ -39,11 +39,14 @@ export class MeuPerfilComponent {
   protected readonly usoArmazenamento = signal<UsoArmazenamento | null>(null);
   protected erroArmazenamento = '';
   protected readonly previaFoto = signal<string | null>(null);
+  protected readonly previaCapa = signal<string | null>(null);
   protected dados: AtualizacaoPerfil = { ...formularioVazio };
   protected arquivoFoto: File | null = null;
+  protected arquivoCapa: File | null = null;
   protected carregando = false;
   protected salvando = false;
   protected enviandoFoto = false;
+  protected enviandoCapa = false;
   protected erro = '';
   protected sucesso = '';
   protected readonly publicacoes = signal<readonly PublicacaoPortfolio[]>([]);
@@ -96,7 +99,7 @@ export class MeuPerfilComponent {
   }
 
   protected salvar(form: NgForm): void {
-    if (this.salvando || form.invalid) {
+    if (this.salvando || this.enviandoFoto || this.enviandoCapa || form.invalid) {
       form.control.markAllAsTouched();
       return;
     }
@@ -151,8 +154,71 @@ export class MeuPerfilComponent {
     this.previaFoto.set(url);
   }
 
+  protected selecionarCapa(evento: Event): void {
+    const campo = evento.target as HTMLInputElement;
+    const arquivo = campo.files?.[0] ?? null;
+    campo.value = '';
+    if (!arquivo) return;
+    if (!['image/jpeg', 'image/png', 'image/gif'].includes(arquivo.type)) {
+      this.erro = 'Escolha uma capa em JPG, PNG ou GIF.';
+      return;
+    }
+    if (arquivo.size > 5 * 1024 * 1024) {
+      this.erro = 'A capa deve ter no máximo 5 MB.';
+      return;
+    }
+
+    this.limparPreviaCapa();
+    this.arquivoCapa = arquivo;
+    const url = URL.createObjectURL(arquivo);
+    this.urlsTemporarias.add(url);
+    this.previaCapa.set(url);
+    this.erro = '';
+  }
+
+  protected enviarCapa(): void {
+    if (!this.arquivoCapa || this.enviandoCapa || this.salvando || this.enviandoFoto) return;
+
+    this.enviandoCapa = true;
+    this.erro = '';
+    this.sucesso = '';
+    this.api.atualizarCapa(this.arquivoCapa).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => (this.enviandoCapa = false)),
+    ).subscribe({
+      next: (perfil) => {
+        this.perfil.set(perfil);
+        this.arquivoCapa = null;
+        this.limparPreviaCapa();
+        this.sucesso = 'Capa do perfil atualizada.';
+        this.carregarUsoArmazenamento();
+      },
+      error: () => (this.erro = 'Não foi possível enviar a capa. Tente novamente.'),
+    });
+  }
+
+  protected removerCapa(): void {
+    if (this.enviandoCapa || this.enviandoFoto || this.salvando || !this.perfil()?.capaUrl) return;
+
+    this.enviandoCapa = true;
+    this.erro = '';
+    this.sucesso = '';
+    this.api.removerCapa().pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => (this.enviandoCapa = false)),
+    ).subscribe({
+      next: () => {
+        this.perfil.update((perfil) => (perfil ? { ...perfil, capaUrl: null } : null));
+        this.arquivoCapa = null;
+        this.limparPreviaCapa();
+        this.sucesso = 'Capa do perfil removida.';
+      },
+      error: () => (this.erro = 'Não foi possível remover a capa. Tente novamente.'),
+    });
+  }
+
   protected enviarFoto(): void {
-    if (!this.arquivoFoto || this.enviandoFoto) return;
+    if (!this.arquivoFoto || this.enviandoFoto || this.enviandoCapa || this.salvando) return;
 
     this.enviandoFoto = true;
     this.erro = '';
@@ -176,7 +242,7 @@ export class MeuPerfilComponent {
   }
 
   protected removerFoto(): void {
-    if (this.enviandoFoto || !this.perfil()?.fotoUrl) return;
+    if (this.enviandoFoto || this.enviandoCapa || this.salvando || !this.perfil()?.fotoUrl) return;
 
     this.enviandoFoto = true;
     this.erro = '';
@@ -385,6 +451,15 @@ export class MeuPerfilComponent {
       this.urlsTemporarias.delete(atual);
     }
     this.previaFoto.set(null);
+  }
+
+  private limparPreviaCapa(): void {
+    const atual = this.previaCapa();
+    if (atual?.startsWith('blob:')) {
+      URL.revokeObjectURL(atual);
+      this.urlsTemporarias.delete(atual);
+    }
+    this.previaCapa.set(null);
   }
 
   private limparPreviaPortfolio(): void {

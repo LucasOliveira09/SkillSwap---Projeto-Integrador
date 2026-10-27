@@ -31,6 +31,8 @@ O documento relata dificuldade de descoberta, desconfiança na contratação e f
 
 Esta decomposição organiza o documento em seis capacidades para planejamento. Autenticação, estados de acordo e regras contra abuso são definições técnicas propostas para viabilizar o domínio, ainda dependentes do contrato do backend.
 
+O perfil do MVP inclui nome, título profissional, foto, capa opcional, biografia, cidade, especialidades e portfólio visual. A capa e a foto são enviadas pelo próprio usuário autenticado.
+
 ## Entrega da inicialização (histórico)
 
 - Workspace Angular standalone, modo estrito, roteamento e arquivos HTML/SCSS/TypeScript separados.

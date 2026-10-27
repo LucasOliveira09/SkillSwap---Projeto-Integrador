@@ -14,7 +14,7 @@
       <button mat-stroked-button type="button" (click)="carregar()">Tentar novamente</button>
     </div>
   } @else {
-    <form #form="ngForm" (ngSubmit)="salvar(form)" [attr.aria-busy]="salvando">
+    <form #form="ngForm" (ngSubmit)="salvar(form)" [attr.aria-busy]="salvando || enviandoFoto || enviandoCapa">
       <section class="foto-editor" aria-labelledby="titulo-foto">
         <div class="foto-preview">
           @if (previaFoto() || perfil()?.fotoUrl) {
@@ -35,18 +35,51 @@
             (change)="selecionarFoto($event)"
           />
           <div class="foto-acoes">
-            <button mat-stroked-button type="button" (click)="campoFoto.click()" [disabled]="enviandoFoto">
+            <button mat-stroked-button type="button" (click)="campoFoto.click()"
+              [disabled]="enviandoFoto || enviandoCapa || salvando">
               Escolher imagem
             </button>
             @if (arquivoFoto) {
-              <button mat-flat-button color="primary" type="button" (click)="enviarFoto()" [disabled]="enviandoFoto">
+              <button mat-flat-button color="primary" type="button" (click)="enviarFoto()"
+                [disabled]="enviandoFoto || enviandoCapa || salvando">
                 {{ enviandoFoto ? 'Enviando...' : 'Enviar foto' }}
               </button>
             }
             @if (perfil()?.fotoUrl) {
-              <button mat-button type="button" (click)="removerFoto()" [disabled]="enviandoFoto">
+              <button mat-button type="button" (click)="removerFoto()"
+                [disabled]="enviandoFoto || enviandoCapa || salvando">
                 Remover foto
               </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="capa-editor" aria-labelledby="titulo-capa">
+        <div class="capa-preview">
+          @if (previaCapa() || perfil()?.capaUrl) {
+            <img [src]="previaCapa() || perfil()?.capaUrl" alt="Prévia da capa profissional" />
+          } @else {
+            <span>Prévia da capa profissional</span>
+          }
+        </div>
+        <div class="capa-conteudo">
+          <h2 id="titulo-capa">Capa profissional <small>Opcional</small></h2>
+          <p>Escolha uma imagem que represente seu trabalho. JPG, PNG ou GIF, até 5 MB.</p>
+          <input #campoCapa class="arquivo-oculto" type="file" accept="image/jpeg,image/png,image/gif"
+            aria-label="Selecionar capa profissional" (change)="selecionarCapa($event)" />
+          <div class="foto-acoes">
+            <button mat-stroked-button type="button" (click)="campoCapa.click()"
+              [disabled]="enviandoCapa || enviandoFoto || salvando">Escolher capa</button>
+            @if (arquivoCapa) {
+              <button mat-flat-button color="primary" type="button" (click)="enviarCapa()"
+                [disabled]="enviandoCapa || enviandoFoto || salvando">
+                {{ enviandoCapa ? 'Enviando...' : 'Enviar capa' }}
+              </button>
+            }
+            @if (perfil()?.capaUrl) {
+              <button mat-button type="button" (click)="removerCapa()"
+                [disabled]="enviandoCapa || salvando">Remover capa</button>
             }
           </div>
         </div>
@@ -143,7 +176,8 @@
       }
 
       <div class="acoes">
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || salvando">
+        <button mat-flat-button color="primary" type="submit"
+          [disabled]="form.invalid || salvando || enviandoFoto || enviandoCapa">
           {{ salvando ? 'Salvando...' : 'Salvar perfil' }}
         </button>
         @if (perfil()) {

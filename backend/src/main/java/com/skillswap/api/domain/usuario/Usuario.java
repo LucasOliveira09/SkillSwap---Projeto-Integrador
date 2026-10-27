@@ -36,6 +36,9 @@ public class Usuario {
 
     private String fotoUrl;
 
+    @Column(name = "capa_url", length = 120)
+    private String capaUrl;
+
     @Column(length = 500)
     private String especialidades;
 

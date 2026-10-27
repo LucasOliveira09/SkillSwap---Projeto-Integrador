@@ -69,6 +69,7 @@ public class LimpezaUploadsAgendada {
 
         Set<String> referenciados = new HashSet<>();
         usuarioRepository.listarFotosDePerfil().forEach(url -> adicionarNome(url, referenciados));
+        usuarioRepository.listarCapasDePerfil().forEach(url -> adicionarNome(url, referenciados));
         anuncioRepository.listarImagens().forEach(url -> adicionarNome(url, referenciados));
         publicacaoRepository.listarFotosReferenciadas().forEach(url -> adicionarNome(url, referenciados));
 

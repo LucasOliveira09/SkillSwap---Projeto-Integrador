@@ -14,6 +14,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByFotoUrl(String fotoUrl);
+    boolean existsByCapaUrl(String capaUrl);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Usuario u where u.email = :email")
@@ -21,6 +22,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("select u.fotoUrl from Usuario u where u.fotoUrl is not null")
     List<String> listarFotosDePerfil();
+
+    @Query("select u.capaUrl from Usuario u where u.capaUrl is not null")
+    List<String> listarCapasDePerfil();
 
     @Query(value = """
             select u from Usuario u

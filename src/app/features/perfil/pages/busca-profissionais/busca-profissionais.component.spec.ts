@@ -32,6 +32,7 @@ describe('BuscaProfissionaisComponent', () => {
           bio: 'Atendo residências.',
           cidade: 'Florianópolis',
           fotoUrl: null,
+          capaUrl: null,
           especialidades: 'Eletricista, instalações',
           criadoEm: '2026-10-01T10:00:00',
           mediaNotas: null,

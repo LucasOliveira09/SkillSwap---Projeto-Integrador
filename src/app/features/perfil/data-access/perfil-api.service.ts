@@ -46,6 +46,16 @@ export class PerfilApiService {
     return this.http.delete<void>('/api/perfil/foto');
   }
 
+  atualizarCapa(arquivo: File) {
+    const dados = new FormData();
+    dados.append('file', arquivo);
+    return this.http.put<PerfilProfissional>('/api/perfil/capa', dados);
+  }
+
+  removerCapa() {
+    return this.http.delete<void>('/api/perfil/capa');
+  }
+
   publicacoes(id: number | string, pagina = 0) {
     return this.http.get<PaginaPublicacoesPortfolio>(
       `/api/perfis/${encodeURIComponent(id)}/publicacoes`,
