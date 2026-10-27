@@ -99,7 +99,12 @@
           >
             <app-icone nome="carrinho" /> Carrinho
           </button>
-          <button mat-stroked-button class="conta" (click)="abrirConta()">
+          <button
+            mat-stroked-button
+            class="conta"
+            (click)="abrirConta()"
+            [attr.aria-label]="sessao.autenticado() ? 'Minha conta' : 'Entrar ou registrar-se'"
+          >
             <app-icone nome="usuario" /><span>{{
               sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'
             }}</span>
