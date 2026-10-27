@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Lock;
 import jakarta.persistence.LockModeType;
 import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoAnuncioDTO;
+import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoProfissionalDTO;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,6 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     List<Avaliacao> findByAvaliadoIdAndModeradaOcultaFalse(Long avaliadoId);
 
     long countByAvaliadoId(Long avaliadoId);
-
-    long countByAvaliadoIdAndModeradaOcultaFalse(Long avaliadoId);
 
     boolean existsByAcordoIdAndAvaliadorId(Long acordoId, Long avaliadorId);
 
@@ -43,4 +42,9 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
             "from Avaliacao a where a.acordo.proposta.anuncio.id in :anuncioIds and a.notaAnuncio is not null and a.moderadaOculta = false " +
             "group by a.acordo.proposta.anuncio.id")
     List<ResumoAvaliacaoAnuncioDTO> resumirAnunciosAvaliados(@Param("anuncioIds") Collection<Long> anuncioIds);
+
+    @Query("select new com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoProfissionalDTO(a.avaliado.id, avg(a.nota), count(a)) " +
+            "from Avaliacao a where a.avaliado.id in :profissionalIds and a.moderadaOculta = false " +
+            "group by a.avaliado.id")
+    List<ResumoAvaliacaoProfissionalDTO> resumirProfissionais(@Param("profissionalIds") Collection<Long> profissionalIds);
 }

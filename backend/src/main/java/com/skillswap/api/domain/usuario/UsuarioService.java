@@ -1,6 +1,7 @@
 package com.skillswap.api.domain.usuario;
 
 import com.skillswap.api.domain.avaliacao.AvaliacaoRepository;
+import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoProfissionalDTO;
 import com.skillswap.api.domain.usuario.dto.PerfilDTO;
 import com.skillswap.api.domain.usuario.dto.RegisterDTO;
 import com.skillswap.api.domain.usuario.dto.UpdatePerfilDTO;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,9 +66,13 @@ public class UsuarioService {
     public Page<PerfilDTO> buscarProfissionais(String busca, String cidade, Double notaMinima, Pageable pageable) {
         String termoSeguro = normalizarFiltro(busca, 100);
         String cidadeSegura = normalizarFiltro(cidade, 80);
-        return usuarioRepository.buscarProfissionais(
-                        termoSeguro, cidadeSegura, notaMinima, AMOSTRA_MINIMA_PARA_FILTRO_NOTA, pageable)
-                .map(this::toPerfilDTO);
+        Page<Usuario> profissionais = usuarioRepository.buscarProfissionais(
+                termoSeguro, cidadeSegura, notaMinima, AMOSTRA_MINIMA_PARA_FILTRO_NOTA, pageable);
+        List<Long> ids = profissionais.getContent().stream().map(Usuario::getId).toList();
+        Map<Long, ResumoAvaliacaoProfissionalDTO> resumos = ids.isEmpty() ? Map.of()
+                : avaliacaoRepository.resumirProfissionais(ids).stream()
+                        .collect(Collectors.toMap(ResumoAvaliacaoProfissionalDTO::profissionalId, Function.identity()));
+        return profissionais.map(profissional -> toPerfilDTO(profissional, resumos.get(profissional.getId())));
     }
 
     @Transactional
@@ -132,22 +141,19 @@ public class UsuarioService {
         return filtro;
     }
 
-    public Double getAverageRating(Long usuarioId) {
-        var avaliacoes = avaliacaoRepository.findByAvaliadoIdAndModeradaOcultaFalse(usuarioId);
-        if (avaliacoes.isEmpty()) return null;
-        return avaliacoes.stream()
-                .mapToInt(a -> a.getNota())
-                .average()
-                .orElse(0.0);
+    public PerfilDTO toPerfilDTO(Usuario u) {
+        var resumo = avaliacaoRepository.resumirProfissionais(List.of(u.getId())).stream()
+                .findFirst().orElse(null);
+        return toPerfilDTO(u, resumo);
     }
 
-    public PerfilDTO toPerfilDTO(Usuario u) {
+    private PerfilDTO toPerfilDTO(Usuario u, ResumoAvaliacaoProfissionalDTO resumo) {
         return new PerfilDTO(
                 u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
                 u.getCapaUrl(), u.getLinkedinUrl(), u.getInstagramUrl(), u.getSiteUrl(), u.isPerfilPublico(),
                 u.getEspecialidades(), u.getCriadoEm(),
-                getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())
+                resumo == null ? null : resumo.media(), resumo == null ? 0 : resumo.quantidade()
         );
     }
 }

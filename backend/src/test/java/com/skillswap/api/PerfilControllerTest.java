@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.SessionFactory;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,7 +22,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "skillswap.seed.enabled=false")
+@SpringBootTest(properties = {
+        "skillswap.seed.enabled=false",
+        "spring.jpa.properties.hibernate.generate_statistics=true"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
@@ -28,6 +33,7 @@ class PerfilControllerTest {
     @Autowired MockMvc mvc;
     @Autowired UsuarioService usuarios;
     @Autowired JwtService jwt;
+    @Autowired EntityManagerFactory entityManagerFactory;
 
     private Long usuarioId;
     private String token;
@@ -48,6 +54,37 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.email").doesNotExist())
                 .andExpect(jsonPath("$.senha").doesNotExist())
                 .andExpect(jsonPath("$.quantidadeAvaliacoes").value(0));
+    }
+
+    @Test
+    void buscaProfissionaisCarregaAReputacaoDaPaginaEmUmaAgregacao() throws Exception {
+        var outraProfissional = usuarios.register(new RegisterDTO(
+                "Bia Profissional", "bia-perfil@skillswap.invalid", "senha-teste-123"));
+        String outroToken = jwt.generateToken(outraProfissional.getEmail());
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"Aulas de violão\"}"))
+                .andExpect(status().isOk());
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + outroToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"Aulas de piano\"}"))
+                .andExpect(status().isOk());
+
+        var estatisticas = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        estatisticas.clear();
+
+        mvc.perform(get("/api/profissionais").param("tamanho", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(2))
+                .andExpect(jsonPath("$.itens[0].mediaNotas").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoes").value(0))
+                .andExpect(jsonPath("$.itens[1].mediaNotas").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.itens[1].quantidadeAvaliacoes").value(0));
+
+        org.junit.jupiter.api.Assertions.assertEquals(4, estatisticas.getPrepareStatementCount(),
+                "a página de dois profissionais deve manter o número de consultas limitado");
     }
 
     @Test

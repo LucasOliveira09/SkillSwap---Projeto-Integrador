@@ -309,6 +309,10 @@ class NegociacaoControllerTest {
                 .andExpect(status().isConflict());
         mvc.perform(get("/api/usuarios/{id}/avaliacoes", anuncianteId))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].respostaProfissional").value("Obrigado pelo retorno."));
+        mvc.perform(get("/api/perfis/{id}", anuncianteId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mediaNotas").value(5.0))
+                .andExpect(jsonPath("$.quantidadeAvaliacoes").value(1));
         mvc.perform(get("/api/anuncios/{id}", anuncioId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mediaAvaliacoesAnuncio").value(4.0))
@@ -321,6 +325,10 @@ class NegociacaoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"especialidades\":\"Eletricista\"}"))
                 .andExpect(status().isOk());
+        mvc.perform(get("/api/profissionais").param("busca", "Ana"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itens[0].mediaNotas").value(5.0))
+                .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoes").value(1));
         mvc.perform(get("/api/profissionais").param("notaMinima", "4"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
         mvc.perform(get("/api/notificacoes").header("Authorization", "Bearer " + proponenteToken))
