@@ -19,7 +19,9 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Revisar detalhe existente, corrigir retorno de login para rota interna permitida e remover promessas sem suporte real da tela de anúncio.
 - [x] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação, com as limitações documentadas.
 - [x] Adotar Flyway, baseline SQL para banco vazio e Hibernate em modo validate; testar o baseline contra H2/MySQL mode.
-- [ ] Comparar e baselinar bancos existentes com backup; validar V1 e futuras migrações em MySQL 8.0/8.4 antes de qualquer promoção. A inspeção somente leitura da prévia em 27/10/2026 encontrou MySQL 8.0.46 sem histórico Flyway, sete tabelas (a V1 cria nove), três colunas `ENUM` onde a V1 usa `VARCHAR` e falta `avaliacoes.nota_anuncio`; não baselinar até comparar o schema completo e testar numa cópia descartável.
+- [x] Executar Flyway V1–V14 e Hibernate `validate` em schema vazio e descartável MySQL 8.0.46, usando a aplicação Java 21.
+- [ ] Comparar e preparar migração/baseline de bancos existentes com backup. A inspeção somente leitura da prévia em 27/10/2026 encontrou MySQL 8.0.46 sem histórico Flyway, sete tabelas (a V1 cria nove), três colunas `ENUM` onde a V1 usa `VARCHAR` e falta `avaliacoes.nota_anuncio`; não baselinar até comparar o schema completo e testar uma migração em cópia descartável.
+- [ ] Validar V1–V14 e Hibernate `validate` em MySQL 8.4 local antes de promoção; Docker Desktop precisa estar ativo.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
@@ -33,7 +35,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Adicionar capa opcional ao perfil, com upload autenticado, remoção, exibição pública e retenção do arquivo referenciado.
 - [x] Adicionar links públicos opcionais de LinkedIn, Instagram e site HTTPS, com validação no servidor.
 - [x] Permitir pausar e reativar a exposição do perfil, ofertas, portfólio, avaliações e imagens sem apagar dados da conta ou negociações.
-- [ ] Validar perfil/foto no MySQL local e após reinício da API; Docker Desktop precisa estar ativo.
+- [x] Validar perfil, foto e portfólio no MySQL 8.0.46 e persistência após reinício da API, em schema descartável da prévia Tailscale.
+- [ ] Repetir validação no MySQL 8.4 local; Docker Desktop precisa estar ativo.
 
 ### Portfólio e descoberta
 
@@ -62,7 +65,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Registrar a política de edição e contestação: prazo de sete dias, conteúdo privado, manutenção pública durante análise, decisão por allowlist e remoção das notas públicas apenas quando ocultada.
 - [x] Implementar contestação privada pelo profissional avaliado em até sete dias, com decisão fundamentada por moderador, fila de análise e preservação de evidências.
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
-- [ ] Validar no navegador e MySQL os fluxos de venda e troca e a persistência após reinício.
+- [x] Validar pela API os fluxos de venda e troca, avaliações do profissional/serviço e persistência após reinício em MySQL 8.0.46 com Java 21.
+- [ ] Validar os mesmos fluxos pela interface Angular no navegador, incluindo autorização e acessibilidade.
 
 ### Entrega e fases seguintes
 
