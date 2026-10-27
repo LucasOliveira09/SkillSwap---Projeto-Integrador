@@ -351,3 +351,6 @@ h1 {
     text-align: left;
   }
 }
+.paginacao-ofertas { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; }
+.paginacao-ofertas span { color: var(--ss-muted); font-size: 13px; }
+@media (max-width: 480px) { .paginacao-ofertas { gap: 8px; flex-wrap: wrap; } }

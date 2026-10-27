@@ -159,4 +159,47 @@ describe('PerfilPublicoComponent', () => {
     expect(harness.routeNativeElement?.textContent).toContain('13 publicações');
     expect(TestBed.inject(Router).url).toContain('portfolioPagina=1');
   });
+
+  it('pagina todas as ofertas do profissional e mostra a quantidade total', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    const perfil = {
+      id: 12, nome: 'Ana Profissional', bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
+      quantidadeAvaliacoes: 0,
+    };
+    const oferta = {
+      titulo: 'Manutenção residencial', descricao: 'Atendimento local', categoria: 'MANUTENCAO',
+      categoriaRotulo: 'Manutenção', cidade: 'Florianópolis', modalidade: 'VENDA', preco: 80,
+      habilidadeDesejada: '', status: 'ATIVO', usuarioId: 12, criadoEm: '2026-10-01T10:00:00',
+      imagem: null, unidade: '/visita', autor: 'Ana Profissional', avatar: null, estrelas: null, exemplo: false,
+    };
+    http.expectOne('/api/perfis/12').flush(perfil);
+    const primeira = http.expectOne((request) => request.url === '/api/perfis/12/anuncios');
+    expect(primeira.request.params.get('pagina')).toBe('0');
+    primeira.flush({ itens: Array.from({ length: 6 }, (_, i) => ({ ...oferta, id: 81 + i })), pagina: 0, tamanho: 6, totalItens: 7, totalPaginas: 2 });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('7 ofertas');
+
+    const proxima = Array.from(harness.routeNativeElement!.querySelectorAll('.paginacao-ofertas button'))
+      .find((button) => button.textContent?.includes('Próximas')) as HTMLButtonElement;
+    proxima.click();
+    await harness.fixture.whenStable();
+    http.expectOne('/api/perfis/12').flush(perfil);
+    const segunda = http.expectOne((request) => request.url === '/api/perfis/12/anuncios');
+    expect(segunda.request.params.get('pagina')).toBe('1');
+    segunda.flush({ itens: [{ ...oferta, id: 87 }], pagina: 1, tamanho: 6, totalItens: 7, totalPaginas: 2 });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Página 2 de 2');
+    expect(harness.routeNativeElement?.textContent).toContain('Manutenção residencial');
+    expect(TestBed.inject(Router).url).toContain('ofertasPagina=1');
+  });
 });

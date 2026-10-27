@@ -136,7 +136,7 @@
           <h2 id="titulo-ofertas">Serviços e aulas</h2>
           <p>Ofertas publicadas por {{ p.nome }}.</p>
         </div>
-        <span>{{ ofertas().length }} {{ ofertas().length === 1 ? 'oferta' : 'ofertas' }}</span>
+        <span>{{ estado().totalOfertas }} {{ estado().totalOfertas === 1 ? 'oferta' : 'ofertas' }}</span>
       </div>
 
       @if (ofertas().length === 0) {
@@ -168,6 +168,16 @@
             </article>
           }
         </div>
+        @if (estado().totalPaginasOfertas > 1) {
+          <nav class="paginacao-ofertas" aria-label="Páginas de ofertas">
+            <button mat-stroked-button type="button" [disabled]="estado().paginaOfertas === 0"
+              (click)="mudarPaginaOfertas(estado().paginaOfertas - 1)">Anteriores</button>
+            <span>Página {{ estado().paginaOfertas + 1 }} de {{ estado().totalPaginasOfertas }}</span>
+            <button mat-stroked-button type="button"
+              [disabled]="estado().paginaOfertas >= estado().totalPaginasOfertas - 1"
+              (click)="mudarPaginaOfertas(estado().paginaOfertas + 1)">Próximas</button>
+          </nav>
+        }
       }
     </section>
   }

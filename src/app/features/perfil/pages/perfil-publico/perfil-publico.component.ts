@@ -16,6 +16,9 @@ interface EstadoPerfil {
   erro: boolean;
   perfil: PerfilProfissional | null;
   ofertas: readonly AnuncioApi[];
+  paginaOfertas: number;
+  totalPaginasOfertas: number;
+  totalOfertas: number;
   publicacoes: readonly PublicacaoPortfolio[];
   erroPublicacoes: boolean;
   paginaPublicacoes: number;
@@ -29,6 +32,9 @@ const estadoInicial: EstadoPerfil = {
   erro: false,
   perfil: null,
   ofertas: [],
+  paginaOfertas: 0,
+  totalPaginasOfertas: 0,
+  totalOfertas: 0,
   publicacoes: [],
   erroPublicacoes: false,
   paginaPublicacoes: 0,
@@ -65,10 +71,14 @@ export class PerfilPublicoComponent {
         const pagina = Number.isSafeInteger(numeroPagina) && numeroPagina >= 0 && numeroPagina <= 1_000_000
           ? numeroPagina
           : 0;
+        const numeroPaginaOfertas = Number(query.get('ofertasPagina') || 0);
+        const paginaOfertas = Number.isSafeInteger(numeroPaginaOfertas) && numeroPaginaOfertas >= 0 && numeroPaginaOfertas <= 1_000_000
+          ? numeroPaginaOfertas
+          : 0;
         return this.perfilApi.publico(usuarioId).pipe(
           switchMap((perfil) =>
             forkJoin({
-              ofertas: this.anunciosApi.listarDoUsuario(perfil.id),
+              ofertas: this.anunciosApi.listarDoUsuario(perfil.id, paginaOfertas),
               publicacoes: this.perfilApi.publicacoes(perfil.id, pagina).pipe(catchError(() => of(null))),
               avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of([]))),
             }).pipe(
@@ -77,6 +87,9 @@ export class PerfilPublicoComponent {
                 erro: false,
                 perfil,
                 ofertas: ofertas.itens,
+                paginaOfertas: ofertas.pagina,
+                totalPaginasOfertas: ofertas.totalPaginas,
+                totalOfertas: ofertas.totalItens,
                 publicacoes: publicacoes?.itens ?? [],
                 erroPublicacoes: publicacoes === null,
                 paginaPublicacoes: publicacoes?.pagina ?? 0,
@@ -105,6 +118,16 @@ export class PerfilPublicoComponent {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { portfolioPagina: pagina === 0 ? null : pagina },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  protected mudarPaginaOfertas(pagina: number): void {
+    const atual = this.estado();
+    if (pagina < 0 || pagina >= atual.totalPaginasOfertas || atual.carregando) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { ofertasPagina: pagina === 0 ? null : pagina },
       queryParamsHandling: 'merge',
     });
   }
