@@ -24,3 +24,22 @@ export interface PaginaPerfisProfissionais {
   totalItens: number;
   totalPaginas: number;
 }
+
+export interface PublicacaoPortfolio {
+  id: number;
+  profissionalId: number;
+  profissionalNome: string;
+  anuncioId: number | null;
+  anuncioTitulo: string | null;
+  legenda: string;
+  fotos: readonly string[];
+  criadoEm: string;
+}
+
+export interface PaginaPublicacoesPortfolio {
+  itens: readonly PublicacaoPortfolio[];
+  pagina: number;
+  tamanho: number;
+  totalItens: number;
+  totalPaginas: number;
+}

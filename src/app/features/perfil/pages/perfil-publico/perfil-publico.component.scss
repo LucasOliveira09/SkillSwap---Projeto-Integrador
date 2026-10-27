@@ -124,6 +124,52 @@ h1 {
   white-space: pre-line;
 }
 
+.lista-publicacoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.publicacao {
+  overflow: hidden;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+}
+
+.fotos-publicacao {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  background: var(--ss-soft);
+}
+
+.fotos-publicacao img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.texto-publicacao {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.texto-publicacao p,
+.texto-publicacao time {
+  margin: 0;
+}
+
+.texto-publicacao p {
+  white-space: pre-line;
+}
+
+.texto-publicacao a,
+.texto-publicacao time {
+  color: var(--ss-muted);
+  font-size: 12px;
+}
+
 .titulo-ofertas {
   display: flex;
   align-items: center;
@@ -262,6 +308,14 @@ h1 {
 
   .secao {
     padding: 20px;
+  }
+
+  .lista-publicacoes {
+    grid-template-columns: 1fr;
+  }
+
+  .fotos-publicacao img {
+    height: 150px;
   }
 
   .oferta {

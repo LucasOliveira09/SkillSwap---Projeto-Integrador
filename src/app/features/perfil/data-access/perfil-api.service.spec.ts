@@ -117,4 +117,21 @@ describe('PerfilApiService', () => {
     expect(request.request.method).toBe('DELETE');
     request.flush(null);
   });
+
+  it('envia e remove publicações de portfólio pelos recursos REST', () => {
+    const fotos = ['/api/uploads/' + 'a'.repeat(64) + '.png'];
+    api.criarPublicacao('Trabalho concluído', fotos).subscribe((post) => {
+      expect(post.fotos).toEqual(fotos);
+    });
+    const criar = http.expectOne('/api/publicacoes');
+    expect(criar.request.method).toBe('POST');
+    expect(criar.request.body).toEqual({ legenda: 'Trabalho concluído', fotos });
+    criar.flush({ id: 9, profissionalId: 12, profissionalNome: 'Ana', anuncioId: null, anuncioTitulo: null,
+      legenda: 'Trabalho concluído', fotos, criadoEm: '2026-10-02T10:00:00' });
+
+    api.excluirPublicacao(9).subscribe();
+    const remover = http.expectOne('/api/publicacoes/9');
+    expect(remover.request.method).toBe('DELETE');
+    remover.flush(null);
+  });
 });

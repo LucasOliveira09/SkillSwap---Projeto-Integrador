@@ -2,19 +2,21 @@ import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, forkJoin, map, of, startWith, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
-import { PerfilProfissional } from '../../models/perfil.model';
+import { PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 
 interface EstadoPerfil {
   carregando: boolean;
   erro: boolean;
   perfil: PerfilProfissional | null;
   ofertas: readonly AnuncioApi[];
+  publicacoes: readonly PublicacaoPortfolio[];
+  erroPublicacoes: boolean;
 }
 
 const estadoInicial: EstadoPerfil = {
@@ -22,6 +24,8 @@ const estadoInicial: EstadoPerfil = {
   erro: false,
   perfil: null,
   ofertas: [],
+  publicacoes: [],
+  erroPublicacoes: false,
 };
 
 @Component({
@@ -41,24 +45,29 @@ export class PerfilPublicoComponent {
       switchMap((params) => {
         const id = params.get('id');
         if (!id || !/^\d+$/.test(id)) {
-          return of({ carregando: false, erro: true, perfil: null, ofertas: [] });
+          return of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false });
         }
         const usuarioId = Number(id);
         if (!Number.isSafeInteger(usuarioId) || usuarioId <= 0) {
-          return of({ carregando: false, erro: true, perfil: null, ofertas: [] });
+          return of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false });
         }
         return this.perfilApi.publico(usuarioId).pipe(
           switchMap((perfil) =>
-            this.anunciosApi.listarDoUsuario(perfil.id).pipe(
-              map((ofertas) => ({
+            forkJoin({
+              ofertas: this.anunciosApi.listarDoUsuario(perfil.id),
+              publicacoes: this.perfilApi.publicacoes(perfil.id).pipe(catchError(() => of(null))),
+            }).pipe(
+              map(({ ofertas, publicacoes }) => ({
                 carregando: false,
                 erro: false,
                 perfil,
                 ofertas: ofertas.itens,
+                publicacoes: publicacoes?.itens ?? [],
+                erroPublicacoes: publicacoes === null,
               })),
             ),
           ),
-          catchError(() => of({ carregando: false, erro: true, perfil: null, ofertas: [] })),
+          catchError(() => of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false })),
           startWith(estadoInicial),
         );
       }),
@@ -68,4 +77,5 @@ export class PerfilPublicoComponent {
 
   protected readonly perfil = computed(() => this.estado().perfil);
   protected readonly ofertas = computed(() => this.estado().ofertas);
+  protected readonly publicacoes = computed(() => this.estado().publicacoes);
 }

@@ -32,6 +32,12 @@ describe('MeuPerfilComponent', () => {
       mediaNotas: null,
       quantidadeAvaliacoes: 0,
     });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
     harness.detectChanges();
 
     const raiz = harness.routeNativeElement!;
@@ -84,6 +90,12 @@ describe('MeuPerfilComponent', () => {
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
       quantidadeAvaliacoes: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();
 

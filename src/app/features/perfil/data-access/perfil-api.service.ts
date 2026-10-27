@@ -4,6 +4,8 @@ import {
   AtualizacaoPerfil,
   PaginaPerfisProfissionais,
   PerfilProfissional,
+  PaginaPublicacoesPortfolio,
+  PublicacaoPortfolio,
 } from '../models/perfil.model';
 
 @Injectable({ providedIn: 'root' })
@@ -36,5 +38,28 @@ export class PerfilApiService {
 
   removerFoto() {
     return this.http.delete<void>('/api/perfil/foto');
+  }
+
+  publicacoes(id: number | string, pagina = 0) {
+    return this.http.get<PaginaPublicacoesPortfolio>(
+      `/api/perfis/${encodeURIComponent(id)}/publicacoes`,
+      { params: { pagina, tamanho: 12 } },
+    );
+  }
+
+  enviarFotoPortfolio(arquivo: File) {
+    const dados = new FormData();
+    dados.append('file', arquivo);
+    return this.http.post<{ url: string }>('/api/uploads', dados);
+  }
+
+  criarPublicacao(legenda: string, fotos: readonly string[], anuncioId?: number) {
+    return this.http.post<PublicacaoPortfolio>('/api/publicacoes', {
+      legenda, fotos, ...(anuncioId ? { anuncioId } : {}),
+    });
+  }
+
+  excluirPublicacao(id: number) {
+    return this.http.delete<void>(`/api/publicacoes/${id}`);
   }
 }

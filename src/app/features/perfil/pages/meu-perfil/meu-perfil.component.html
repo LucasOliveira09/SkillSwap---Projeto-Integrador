@@ -122,5 +122,80 @@
         }
       </div>
     </form>
+
+    <section class="portfolio-editor" aria-labelledby="titulo-portfolio">
+      <header class="portfolio-titulo">
+        <div>
+          <p class="sobretitulo">Mostre como você trabalha</p>
+          <h2 id="titulo-portfolio">Portfólio de serviços</h2>
+          <p>Publique até 6 fotos por trabalho. As imagens ficam visíveis no seu perfil público.</p>
+        </div>
+      </header>
+
+      <div class="nova-publicacao">
+        <mat-form-field appearance="outline">
+          <mat-label>Legenda do trabalho</mat-label>
+          <textarea matInput name="legendaPortfolio" [(ngModel)]="legendaPortfolio" maxlength="500" rows="3"
+            placeholder="Conte o que foi feito, os materiais usados ou o resultado."></textarea>
+          <mat-hint>{{ legendaPortfolio.length }}/500</mat-hint>
+        </mat-form-field>
+        @if (ofertasPortfolio().length) {
+          <label class="vinculo-oferta" for="ofertaPortfolio">Vincular a uma oferta sua (opcional)
+            <select id="ofertaPortfolio" name="ofertaPortfolio" [(ngModel)]="anuncioPortfolioId">
+              <option value="">Sem oferta vinculada</option>
+              @for (oferta of ofertasPortfolio(); track oferta.id) {
+                <option [value]="oferta.id">{{ oferta.titulo }}</option>
+              }
+            </select>
+          </label>
+        }
+        <input #campoPortfolio class="arquivo-oculto" type="file" multiple
+          accept="image/jpeg,image/png,image/gif" aria-label="Selecionar fotos para o portfólio"
+          (change)="selecionarFotosPortfolio($event)" />
+        <div class="acoes-portfolio">
+          <button mat-stroked-button type="button" (click)="campoPortfolio.click()" [disabled]="enviandoPortfolio">
+            Escolher até 6 fotos
+          </button>
+          <button mat-flat-button color="primary" type="button" (click)="publicarPortfolio()"
+            [disabled]="!previaFotosPortfolio().length || enviandoPortfolio">
+            {{ enviandoPortfolio ? 'Enviando fotos...' : 'Publicar no portfólio' }}
+          </button>
+        </div>
+        @if (previaFotosPortfolio().length) {
+          <div class="previas-portfolio" aria-label="Prévia das fotos selecionadas">
+            @for (item of previaFotosPortfolio(); track item.url) {
+              <img [src]="item.url" [alt]="'Prévia de ' + item.arquivo.name" />
+            }
+          </div>
+        }
+        @if (erroPortfolio) { <p class="feedback erro" role="alert">{{ erroPortfolio }}</p> }
+        @if (sucessoPortfolio) { <p class="feedback sucesso" role="status">{{ sucessoPortfolio }}</p> }
+      </div>
+
+      <div class="publicacoes-proprias">
+        <h3>Suas publicações</h3>
+        @if (carregandoPortfolio) {
+          <p class="estado" role="status">Carregando portfólio...</p>
+        } @else if (!publicacoes().length) {
+          <p class="introducao">Suas fotos publicadas aparecerão aqui.</p>
+        } @else {
+          @for (publicacao of publicacoes(); track publicacao.id) {
+            <article class="item-publicacao">
+              <div class="miniaturas">
+                @for (foto of publicacao.fotos; track foto) { <img [src]="foto" alt="" loading="lazy" /> }
+              </div>
+              <div class="item-publicacao-texto">
+                <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
+                <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+              </div>
+              <button mat-button type="button" (click)="removerPublicacao(publicacao)"
+                [disabled]="removendoPublicacaoId !== null" [attr.aria-label]="'Remover publicação de ' + publicacao.criadoEm">
+                {{ removendoPublicacaoId === publicacao.id ? 'Removendo...' : 'Remover' }}
+              </button>
+            </article>
+          }
+        }
+      </div>
+    </section>
   }
 </main>

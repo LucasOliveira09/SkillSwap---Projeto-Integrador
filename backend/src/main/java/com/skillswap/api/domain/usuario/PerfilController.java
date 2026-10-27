@@ -6,6 +6,9 @@ import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import com.skillswap.api.domain.upload.UploadService;
+import com.skillswap.api.domain.portfolio.PublicacaoPortfolioService;
+import com.skillswap.api.domain.portfolio.dto.CriarPublicacaoPortfolioDTO;
+import com.skillswap.api.domain.portfolio.dto.PublicacaoPortfolioDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
@@ -36,6 +39,7 @@ public class PerfilController {
     private final UsuarioService usuarioService;
     private final AnuncioService anuncioService;
     private final UploadService uploadService;
+    private final PublicacaoPortfolioService publicacaoPortfolioService;
 
     @GetMapping("/perfis/{id}")
     public ResponseEntity<PerfilDTO> buscarPublico(@PathVariable Long id) {
@@ -51,6 +55,35 @@ public class PerfilController {
         usuarioService.findById(id);
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
         return ResponseEntity.ok(PaginaDTO.de(anuncioService.listarOfertasPublicasDoUsuario(id, pageable)));
+    }
+
+    @GetMapping("/perfis/{id}/publicacoes")
+    public ResponseEntity<PaginaDTO<PublicacaoPortfolioDTO>> listarPublicacoes(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "6") @Min(1) @Max(20) int tamanho) {
+        usuarioService.findById(id);
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(publicacaoPortfolioService.listar(id, pageable)));
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/publicacoes")
+    public ResponseEntity<PublicacaoPortfolioDTO> criarPublicacao(
+            @RequestBody @Valid CriarPublicacaoPortfolioDTO dto,
+            Authentication authentication) {
+        var publicacao = publicacaoPortfolioService.criar(dto, (String) authentication.getPrincipal());
+        return ResponseEntity.created(java.net.URI.create("/api/publicacoes/" + publicacao.id())).body(publicacao);
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/publicacoes/{id}")
+    public ResponseEntity<PublicacaoPortfolioDTO> buscarPublicacao(@PathVariable Long id) {
+        return ResponseEntity.ok(publicacaoPortfolioService.buscar(id));
+    }
+
+    @DeleteMapping("/publicacoes/{id}")
+    public ResponseEntity<Void> excluirPublicacao(@PathVariable Long id, Authentication authentication) {
+        publicacaoPortfolioService.excluir(id, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/profissionais")

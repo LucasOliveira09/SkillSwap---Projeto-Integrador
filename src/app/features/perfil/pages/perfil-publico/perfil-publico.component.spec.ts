@@ -61,6 +61,24 @@ describe('PerfilPublicoComponent', () => {
       totalItens: 1,
       totalPaginas: 1,
     });
+    const publicacoes = http.expectOne((request) => request.url === '/api/perfis/12/publicacoes');
+    expect(publicacoes.request.params.get('tamanho')).toBe('12');
+    publicacoes.flush({
+      itens: [{
+        id: 4,
+        profissionalId: 12,
+        profissionalNome: 'Ana Profissional',
+        anuncioId: null,
+        anuncioTitulo: null,
+        legenda: 'Instalação concluída',
+        fotos: ['/api/uploads/foto.png'],
+        criadoEm: '2026-10-02T10:00:00',
+      }],
+      pagina: 0,
+      tamanho: 12,
+      totalItens: 1,
+      totalPaginas: 1,
+    });
     harness.detectChanges();
 
     const texto = harness.routeNativeElement?.textContent || '';
@@ -69,6 +87,8 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('4,8');
     expect(texto).toContain('5 avaliações');
     expect(texto).toContain('Instalação de luminária');
+    expect(texto).toContain('Trabalhos e portfólio');
+    expect(texto).toContain('Instalação concluída');
     expect(texto).not.toContain('ana@');
   });
 

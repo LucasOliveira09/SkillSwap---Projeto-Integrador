@@ -60,6 +60,41 @@
       }
     </section>
 
+    <section class="portfolio secao" aria-labelledby="titulo-portfolio">
+      <div class="titulo-ofertas">
+        <div>
+          <h2 id="titulo-portfolio">Trabalhos e portfólio</h2>
+          <p>Fotos de serviços e projetos apresentados por {{ p.nome }}.</p>
+        </div>
+        <span>{{ publicacoes().length }} {{ publicacoes().length === 1 ? 'publicação' : 'publicações' }}</span>
+      </div>
+
+      @if (estado().erroPublicacoes) {
+        <p class="vazio" role="status">Não foi possível carregar o portfólio agora.</p>
+      } @else if (publicacoes().length === 0) {
+        <p class="vazio">Este profissional ainda não publicou fotos de trabalhos.</p>
+      } @else {
+        <div class="lista-publicacoes">
+          @for (publicacao of publicacoes(); track publicacao.id) {
+            <article class="publicacao">
+              <div class="fotos-publicacao">
+                @for (foto of publicacao.fotos; track foto; let indice = $index) {
+                  <img [src]="foto" [alt]="'Foto ' + (indice + 1) + ' do trabalho de ' + p.nome" loading="lazy" />
+                }
+              </div>
+              <div class="texto-publicacao">
+                <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
+                @if (publicacao.anuncioId && publicacao.anuncioTitulo) {
+                  <a [routerLink]="['/anuncios', publicacao.anuncioId]">{{ publicacao.anuncioTitulo }}</a>
+                }
+                <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
     <section class="ofertas secao" aria-labelledby="titulo-ofertas">
       <div class="titulo-ofertas">
         <div>

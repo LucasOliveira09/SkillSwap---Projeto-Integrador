@@ -4,7 +4,7 @@
 
 O usuário escolheu integrar o backend de `origin/main` (`6085271`) ao layout e ao cliente HTTP locais. Há uma aplicação Spring Boot 4.0.8 com Java 21, Maven Wrapper 3.10.0, JPA/Lombok e JWT em `com.skillswap.api`. A [ADR-004](decisions/004-integra-backend-github.md) registra a escolha; a ADR-003 documenta a etapa anterior.
 
-Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Esta integração valida catálogo, conta, cadastro e autorização de anúncios. Os demais domínios ainda precisam de telas e testes próprios; a presença de código não comprova o MVP inteiro.
+Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Catálogo, conta, perfil, portfólio, descoberta e autorização de anúncios têm integração Angular/API. Propostas, acordos, mensagens e avaliações ainda precisam de telas e testes próprios; a presença de código não comprova o MVP inteiro.
 
 ## Convenções REST
 
@@ -29,6 +29,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | DELETE | `/anuncios/{id}` | Exige proprietário; inativa e devolve 204. Exemplos não podem ser alterados. |
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
+| GET | `/perfis/{id}/publicacoes?pagina=0&tamanho=12` | Publicações públicas de portfólio, com até 20 itens por página e fotos em ordem. |
 | GET | `/profissionais?busca=&cidade=&pagina=0&tamanho=12` | Perfis públicos com especialidades preenchidas; filtra nome/especialidades e cidade e limita a página a 20. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
 | PATCH | `/perfil` | Exige JWT; altera nome público, biografia, cidade ou especialidades após validar o DTO. |
@@ -36,6 +37,9 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | DELETE | `/perfil/foto` | Exige JWT; remove a referência da foto atual do perfil e devolve 204. |
 | POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
 | GET | `/uploads/{nomeArquivo}` | Serve somente nomes aleatórios gerados pelo backend, como imagem pública com `nosniff`. |
+| POST | `/publicacoes` | Exige JWT; cria publicação com legenda de até 500 caracteres e de 1 a 6 fotos existentes no armazenamento. Vínculo opcional é aceito somente para oferta ativa e própria. Responde 201 com Location. |
+| GET | `/publicacoes/{id}` | Consulta uma publicação pública de portfólio pelo identificador. |
+| DELETE | `/publicacoes/{id}` | Exige JWT e autoria; remove a publicação e suas referências de foto, responde 204. Arquivos não são apagados. |
 
 O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor.
 
@@ -96,6 +100,8 @@ Na restauração visual e ampliação da carga, o backend passou a 14 testes apr
 Na fatia inicial de perfil, a API pública e a edição autenticada foram cobertas por testes MockMvc/JPA; `GET /perfis/{id}` não expõe e-mail. A listagem pública limita-se a ofertas ativas e não demonstrativas. A suíte então passou com 43 testes Angular e 19 Java. Na fatia de fotos, testes cobrem upload, leitura, atualização/remoção da referência e rejeição de conteúdo falso; o total passou a 46 testes Angular e 21 Java, com build e typecheck aprovados. Chrome/Playwright conferiu perfil público e editor em 1440px e 360px sem overflow horizontal nem erros JavaScript. A inspeção de MySQL local não foi possível porque o Docker Desktop não estava ativo e a porta 3307 não respondeu; reinício/persistência real continuam pendentes. A configuração do volume público foi preparada, mas ainda exige migração controlada de arquivos já existentes antes de qualquer implantação.
 
 A descoberta pública também oferece `GET /profissionais`, com busca em nome/especialidades, filtro por cidade, paginação e ordenação estável por criação. Só entram perfis que declararam especialidades; resultados mostram avaliações apenas quando há registros reais e não retornam e-mail. Testes MockMvc confirmam os filtros e a exclusão de perfis vazios. O endpoint ainda precisa ser verificado com MySQL real.
+
+O portfólio agora persiste publicações e até seis referências de fotos por post; criação exige autenticação, valida que as imagens já foram enviadas ao armazenamento e restringe uma oferta vinculada ao próprio autor. A página pública exibe as fotos; o proprietário publica e remove conteúdo no editor do perfil. A remoção exclui as referências do banco, sem apagar arquivos. Denúncia/moderação, paginação visual além da primeira página, quota e limpeza de uploads continuam pendentes. MockMvc/JPA valida criação, leitura, vínculo/armazenamento de imagens e bloqueio de remoção por outro usuário. Após esta etapa: 50 testes Angular, 24 Java, build e typecheck aprovados. MySQL real e reinício ainda não foram verificados.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

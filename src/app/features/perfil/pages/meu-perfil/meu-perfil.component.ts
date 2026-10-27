@@ -1,14 +1,17 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { concatMap, finalize, from, switchMap, toArray } from 'rxjs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
-import { AtualizacaoPerfil, PerfilProfissional } from '../../models/perfil.model';
+import { AtualizacaoPerfil, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
+import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
+import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 
 const formularioVazio: AtualizacaoPerfil = {
   nome: '',
@@ -20,12 +23,13 @@ const formularioVazio: AtualizacaoPerfil = {
 @Component({
   selector: 'app-meu-perfil',
   standalone: true,
-  imports: [FormsModule, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, RouterLink, DatePipe, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './meu-perfil.component.html',
   styleUrl: './meu-perfil.component.scss',
 })
 export class MeuPerfilComponent {
   private readonly api = inject(PerfilApiService);
+  private readonly anunciosApi = inject(AnunciosApiService);
   private readonly sessao = inject(SessaoService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -39,8 +43,21 @@ export class MeuPerfilComponent {
   protected enviandoFoto = false;
   protected erro = '';
   protected sucesso = '';
+  protected readonly publicacoes = signal<readonly PublicacaoPortfolio[]>([]);
+  protected readonly ofertasPortfolio = signal<readonly AnuncioApi[]>([]);
+  protected readonly previaFotosPortfolio = signal<readonly { arquivo: File; url: string }[]>([]);
+  protected legendaPortfolio = '';
+  protected anuncioPortfolioId = '';
+  protected carregandoPortfolio = false;
+  protected enviandoPortfolio = false;
+  protected removendoPublicacaoId: number | null = null;
+  protected erroPortfolio = '';
+  protected sucessoPortfolio = '';
+  private arquivosPortfolio: File[] = [];
 
   private readonly urlsTemporarias = new Set<string>();
+  private portfolioCarregadoParaId: number | null = null;
+  private ofertasCarregadasParaId: number | null = null;
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -169,6 +186,79 @@ export class MeuPerfilComponent {
       });
   }
 
+  protected selecionarFotosPortfolio(evento: Event): void {
+    const campo = evento.target as HTMLInputElement;
+    const arquivos = Array.from(campo.files ?? []);
+    campo.value = '';
+    this.erroPortfolio = '';
+    this.sucessoPortfolio = '';
+    if (!arquivos.length) return;
+    if (arquivos.length > 6) {
+      this.erroPortfolio = 'Escolha até 6 fotos para cada publicação.';
+      return;
+    }
+    if (arquivos.some((arquivo) => !['image/jpeg', 'image/png', 'image/gif'].includes(arquivo.type))) {
+      this.erroPortfolio = 'Use somente imagens JPG, PNG ou GIF.';
+      return;
+    }
+    if (arquivos.some((arquivo) => arquivo.size > 5 * 1024 * 1024)) {
+      this.erroPortfolio = 'Cada foto deve ter no máximo 5 MB.';
+      return;
+    }
+    this.limparPreviaPortfolio();
+    this.arquivosPortfolio = arquivos;
+    this.previaFotosPortfolio.set(arquivos.map((arquivo) => {
+      const url = URL.createObjectURL(arquivo);
+      this.urlsTemporarias.add(url);
+      return { arquivo, url };
+    }));
+  }
+
+  protected publicarPortfolio(): void {
+    if (!this.arquivosPortfolio.length || this.enviandoPortfolio || !this.perfil()) return;
+    this.enviandoPortfolio = true;
+    this.erroPortfolio = '';
+    this.sucessoPortfolio = '';
+    from(this.arquivosPortfolio).pipe(
+      concatMap((arquivo) => this.api.enviarFotoPortfolio(arquivo)),
+      toArray(),
+      switchMap((uploads) => this.api.criarPublicacao(
+        this.legendaPortfolio.trim(), uploads.map((upload) => upload.url),
+        this.anuncioPortfolioId ? Number(this.anuncioPortfolioId) : undefined,
+      )),
+      switchMap(() => this.api.publicacoes(this.perfil()!.id)),
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => (this.enviandoPortfolio = false)),
+    ).subscribe({
+      next: (pagina) => {
+        this.publicacoes.set(pagina.itens);
+        this.arquivosPortfolio = [];
+        this.legendaPortfolio = '';
+        this.anuncioPortfolioId = '';
+        this.limparPreviaPortfolio();
+        this.sucessoPortfolio = 'Publicação adicionada ao seu portfólio.';
+      },
+      error: () => (this.erroPortfolio = 'Não foi possível publicar as fotos. Confira sua conexão e tente novamente.'),
+    });
+  }
+
+  protected removerPublicacao(publicacao: PublicacaoPortfolio): void {
+    if (this.removendoPublicacaoId !== null) return;
+    this.removendoPublicacaoId = publicacao.id;
+    this.erroPortfolio = '';
+    this.sucessoPortfolio = '';
+    this.api.excluirPublicacao(publicacao.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => (this.removendoPublicacaoId = null)),
+    ).subscribe({
+      next: () => {
+        this.publicacoes.update((itens) => itens.filter((item) => item.id !== publicacao.id));
+        this.sucessoPortfolio = 'Publicação removida.';
+      },
+      error: () => (this.erroPortfolio = 'Não foi possível remover esta publicação.'),
+    });
+  }
+
   private preencher(perfil: PerfilProfissional): void {
     this.perfil.set(perfil);
     this.dados = {
@@ -177,6 +267,36 @@ export class MeuPerfilComponent {
       cidade: perfil.cidade ?? '',
       especialidades: perfil.especialidades ?? '',
     };
+    this.carregarPortfolio(perfil.id);
+    this.carregarOfertasPortfolio(perfil.id);
+  }
+
+  private carregarOfertasPortfolio(id: number): void {
+    if (this.ofertasCarregadasParaId === id) return;
+    this.ofertasCarregadasParaId = id;
+    this.anunciosApi.listarDoUsuario(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (pagina) => this.ofertasPortfolio.set(pagina.itens.filter((anuncio) => !anuncio.exemplo)),
+      error: () => {
+        this.ofertasCarregadasParaId = null;
+        this.ofertasPortfolio.set([]);
+      },
+    });
+  }
+
+  private carregarPortfolio(id: number): void {
+    if (this.portfolioCarregadoParaId === id) return;
+    this.portfolioCarregadoParaId = id;
+    this.carregandoPortfolio = true;
+    this.api.publicacoes(id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => (this.carregandoPortfolio = false)),
+    ).subscribe({
+      next: (pagina) => this.publicacoes.set(pagina.itens),
+      error: () => {
+        this.portfolioCarregadoParaId = null;
+        this.erroPortfolio = 'Não foi possível carregar seu portfólio.';
+      },
+    });
   }
 
   private limparPrevia(): void {
@@ -186,5 +306,13 @@ export class MeuPerfilComponent {
       this.urlsTemporarias.delete(atual);
     }
     this.previaFoto.set(null);
+  }
+
+  private limparPreviaPortfolio(): void {
+    for (const { url } of this.previaFotosPortfolio()) {
+      URL.revokeObjectURL(url);
+      this.urlsTemporarias.delete(url);
+    }
+    this.previaFotosPortfolio.set([]);
   }
 }

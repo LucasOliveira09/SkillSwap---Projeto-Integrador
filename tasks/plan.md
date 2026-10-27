@@ -163,13 +163,15 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** usuário edita somente seu perfil; visitante consulta a versão pública; campos privados não saem na API pública; dados persistem em reinício e erros têm feedback claro.
 
-**Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado e listagem paginada das ofertas ativas implementado. As telas públicas e de edição estão conectadas à API. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
+**Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado, listagem paginada das ofertas ativas e busca de profissionais por especialidade/cidade implementados. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
 
 ### Fase 3 — Portfólio com publicações e fotos
 
 - Criar CRUD de publicação e relação com o autor; múltiplas imagens ordenadas com limites; publicação no perfil.
 - Exibir feed compacto no perfil e grade responsiva com detalhes e acessibilidade.
 - Adicionar denúncia e estados `RASCUNHO`, `PUBLICADA`, `OCULTA` ou conjunto equivalente aprovado.
+
+**Progresso:** criação e remoção de publicações autenticadas, com até seis fotos JPG/PNG/GIF enviadas previamente, legenda e vínculo opcional a oferta ativa do próprio autor; perfil público exibe as publicações e o proprietário gerencia seu conteúdo no editor. Ainda faltam edição, denúncia/moderação, navegação visual entre páginas, limpeza dos arquivos sem referência e validação real no MySQL.
 
 **Aceite:** criação, edição e remoção afetam somente conteúdo próprio; publicação aparece no perfil público; arquivo removido não deixa referência quebrada; falha de rede preserva o texto editável.
 

@@ -123,6 +123,61 @@ class PerfilControllerTest {
     }
 
     @Test
+    void criaEListaPublicacaoDePortfolioComFotosPersistidasEProtecaoDoAutor() throws Exception {
+        var foto = new org.springframework.mock.web.MockMultipartFile(
+                "file", "portfolio.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+        var upload = mvc.perform(multipart("/api/uploads").file(foto)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(upload.getResponse().getContentAsString()).get("url").asText();
+
+        var publicacao = mvc.perform(post("/api/publicacoes")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"legenda":"Instalação concluída", "fotos":["%s"]}
+                                """.formatted(fotoUrl)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.legenda").value("Instalação concluída"))
+                .andExpect(jsonPath("$.fotos[0]").value(fotoUrl))
+                .andExpect(jsonPath("$.profissionalId").value(usuarioId))
+                .andReturn();
+        long publicacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(publicacao.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(get("/api/perfis/{id}/publicacoes", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].fotos[0]").value(fotoUrl))
+                .andReturn();
+        mvc.perform(get("/api/publicacoes/{id}", publicacaoId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(publicacaoId))
+                .andExpect(jsonPath("$.profissionalNome").value("Ana Profissional"))
+                .andExpect(jsonPath("$.fotos[0]").value(fotoUrl))
+                .andExpect(jsonPath("$.email").doesNotExist());
+
+        var outraConta = usuarios.register(new RegisterDTO("Outro usuário", "outro@skillswap.invalid", "senha-teste-123"));
+        String tokenOutro = jwt.generateToken(outraConta.getEmail());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/publicacoes/{id}", publicacaoId)
+                        .header("Authorization", "Bearer " + tokenOutro))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void publicacaoRejeitaFotoExternaOuNaoEnviada() throws Exception {
+        mvc.perform(post("/api/publicacoes")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"legenda\":\"teste\",\"fotos\":[\"https://exemplo.invalid/foto.png\"]}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void atualizaFotoDoPerfilSomentePorUploadAutenticado() throws Exception {
         var foto = new org.springframework.mock.web.MockMultipartFile(
                 "file", "perfil.png", "image/png",

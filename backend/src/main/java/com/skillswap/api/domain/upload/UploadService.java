@@ -106,6 +106,13 @@ public class UploadService {
         }
     }
 
+    public void validarFotoPublica(String url) {
+        if (url == null || !url.startsWith("/api/uploads/")) {
+            throw new IllegalArgumentException("A foto deve ser enviada para o SkillSwap");
+        }
+        carregarComoRecurso(url.substring("/api/uploads/".length()));
+    }
+
     private FormatoImagem validarImagem(MultipartFile arquivo) {
         try (var arquivoEntrada = arquivo.getInputStream();
              ImageInputStream entrada = ImageIO.createImageInputStream(arquivoEntrada)) {
