@@ -1,0 +1,2 @@
+ALTER TABLE usuarios
+    ADD COLUMN perfil_publico BOOLEAN NOT NULL DEFAULT TRUE;

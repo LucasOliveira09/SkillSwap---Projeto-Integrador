@@ -63,6 +63,10 @@ export class PerfilApiService {
     );
   }
 
+  minhasPublicacoes(pagina = 0) {
+    return this.http.get<PaginaPublicacoesPortfolio>('/api/publicacoes', { params: { pagina, tamanho: 12 } });
+  }
+
   avaliacoes(id: number | string) {
     return this.http.get<readonly Avaliacao[]>(`/api/usuarios/${encodeURIComponent(id)}/avaliacoes`);
   }

@@ -46,7 +46,7 @@ public class PerfilController {
 
     @GetMapping("/perfis/{id}")
     public ResponseEntity<PerfilDTO> buscarPublico(@PathVariable Long id) {
-        var usuario = usuarioService.findById(id);
+        var usuario = usuarioService.buscarPerfilPublico(id);
         return ResponseEntity.ok(usuarioService.toPerfilDTO(usuario));
     }
 
@@ -55,7 +55,7 @@ public class PerfilController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
             @RequestParam(defaultValue = "6") @Min(1) @Max(20) int tamanho) {
-        usuarioService.findById(id);
+        usuarioService.buscarPerfilPublico(id);
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
         return ResponseEntity.ok(PaginaDTO.de(anuncioService.listarOfertasPublicasDoUsuario(id, pageable)));
     }
@@ -65,9 +65,19 @@ public class PerfilController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
             @RequestParam(defaultValue = "6") @Min(1) @Max(20) int tamanho) {
-        usuarioService.findById(id);
+        usuarioService.buscarPerfilPublico(id);
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
         return ResponseEntity.ok(PaginaDTO.de(publicacaoPortfolioService.listar(id, pageable)));
+    }
+
+    @GetMapping("/publicacoes")
+    public ResponseEntity<PaginaDTO<PublicacaoPortfolioDTO>> listarMinhasPublicacoes(
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "12") @Min(1) @Max(20) int tamanho,
+            Authentication authentication) {
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(publicacaoPortfolioService.listarProprias(
+                (String) authentication.getPrincipal(), pageable)));
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/publicacoes")

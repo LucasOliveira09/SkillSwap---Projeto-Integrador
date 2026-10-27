@@ -22,7 +22,7 @@ O documento relata dificuldade de descoberta, desconfiança na contratação e f
 
 | Capacidade | Entrega e regra de aceite futura |
 | --- | --- |
-| Contas e perfis profissionais | Acesso autenticado, perfil público com título, biografia, foto, capa opcional, links HTTPS, especialidades e métricas derivadas de operações reais. Um usuário poderá buscar e oferecer serviços. |
+| Contas e perfis profissionais | Acesso autenticado, perfil público com título, biografia, foto, capa opcional, links HTTPS, especialidades e métricas derivadas de operações reais. O titular pode pausar a exibição pública sem apagar negociações ou histórico. |
 | Anúncios de serviços e aulas | Criar e editar anúncios próprios com título, descrição, categoria, localidade, modalidade e portfólio. Venda informa preço; troca informa a habilidade desejada. |
 | Catálogo e detalhe | Buscar e filtrar por categoria, localidade e modalidade; abrir anúncio e perfil correspondente; tratar carregamento, erro e ausência de resultados. |
 | Propostas e acordos | Registrar intenção de venda ou troca entre duas pessoas, acompanhar status e confirmar conclusão. Não processar dinheiro nesta fase. |

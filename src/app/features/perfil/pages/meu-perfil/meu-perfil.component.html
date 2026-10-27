@@ -101,6 +101,16 @@
         }
       </section>
 
+      <section class="visibilidade-perfil" aria-labelledby="titulo-visibilidade">
+        <div>
+          <h2 id="titulo-visibilidade">Exibição pública</h2>
+          <p>Ao pausar, seu perfil, anúncios, portfólio e avaliações deixam de aparecer nas páginas públicas. Seus dados e negociações são preservados.</p>
+        </div>
+        <mat-checkbox name="perfilPublico" [(ngModel)]="dados.perfilPublico" [disabled]="salvando">
+          Manter meu perfil visível
+        </mat-checkbox>
+      </section>
+
       <mat-form-field appearance="outline">
         <mat-label>Nome público</mat-label>
         <input

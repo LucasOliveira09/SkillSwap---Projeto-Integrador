@@ -33,17 +33,18 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
 | GET | `/perfis/{id}/publicacoes?pagina=0&tamanho=12` | Publicações públicas de portfólio, com até 20 itens por página e fotos em ordem. |
-| GET | `/profissionais?busca=&cidade=&notaMinima=&pagina=0&tamanho=12` | Perfis públicos com título ou especialidades preenchidos; filtra nome/título/especialidades, cidade e média mínima, e limita a página a 20. O filtro de nota só considera perfis com pelo menos três avaliações visíveis; a ordenação permanece estável por criação. |
+| GET | `/profissionais?busca=&cidade=&notaMinima=&pagina=0&tamanho=12` | Perfis visíveis com título ou especialidades preenchidos; filtra nome/título/especialidades, cidade e média mínima, e limita a página a 20. O filtro de nota só considera perfis com pelo menos três avaliações visíveis; a ordenação permanece estável por criação. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
-| PATCH | `/perfil` | Exige JWT; altera nome público, título profissional, biografia, cidade, especialidades e links opcionais para LinkedIn, Instagram e site HTTPS após validar o DTO. |
+| PATCH | `/perfil` | Exige JWT; altera nome público, título profissional, biografia, cidade, especialidades, links HTTPS e `perfilPublico` após validar o DTO. Perfil pausado retorna 404 nas rotas públicas e sai da busca; anúncios, portfólio, avaliações e imagens ligadas também deixam de ser públicos. |
 | PUT | `/perfil/foto` | Exige JWT e multipart `file`; valida conteúdo JPG/PNG/GIF, até 5 MB, 5000 px por lado e 20 MP; associa a nova imagem ao perfil autenticado. |
 | DELETE | `/perfil/foto` | Exige JWT; remove a referência da foto atual do perfil e devolve 204. |
 | PUT | `/perfil/capa` | Exige JWT e multipart `file`; valida e associa a imagem à capa opcional do perfil autenticado. |
 | DELETE | `/perfil/capa` | Exige JWT; remove a referência da capa atual do perfil e devolve 204. |
 | POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
 | GET | `/uploads/uso` | Exige JWT; informa bytes usados, quota da conta e limite por imagem. |
-| GET | `/uploads/{nomeArquivo}` | Serve nomes hash gerados pelo backend sem login enquanto houver uma referência pública ativa; uploads órfãos ficam restritos à conta proprietária e a resposta não é armazenada em cache (`no-store`). |
+| GET | `/uploads/{nomeArquivo}` | Serve nomes hash gerados pelo backend sem login enquanto houver uma referência pública ativa de perfil visível; uploads órfãos ou de perfil pausado ficam restritos à conta proprietária e a resposta não é armazenada em cache (`no-store`). |
 | POST | `/publicacoes` | Exige JWT; cria publicação com legenda de até 500 caracteres e de 1 a 6 fotos existentes no armazenamento. Vínculo opcional é aceito somente para oferta ativa e própria. Responde 201 com Location. |
+| GET | `/publicacoes?pagina=0&tamanho=12` | Exige JWT; lista o portfólio próprio, inclusive quando o perfil está pausado, para edição e remoção pelo titular. |
 | PATCH | `/publicacoes/{id}` | Exige o autor; altera a legenda (até 500 caracteres) e devolve a publicação atualizada, preservando suas fotos e vínculo. |
 | GET | `/publicacoes/{id}` | Consulta uma publicação pública de portfólio pelo identificador. |
 | DELETE | `/publicacoes/{id}` | Exige JWT e autoria; remove a publicação e suas referências de foto, responde 204. Arquivos não são apagados. |
@@ -137,7 +138,7 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 
 O schema versionado fica em `backend/src/main/resources/db/migration`. A migração `V1__baseline_skillswap.sql` cria as tabelas atuais em um banco vazio; o Hibernate usa `ddl-auto: validate` e não altera schema automaticamente. O Flyway também valida checksums e executa novas migrações versionadas uma vez, em ordem.
 
-As migrações V8–V10 acrescentam resposta profissional, contestação privada e histórico de edição às avaliações existentes. A V11 acrescenta título profissional, a V12 capa opcional e a V13 links públicos opcionais à tabela de usuários; são aditivas e preservam contas existentes. LinkedIn e Instagram aceitam somente endereços HTTPS dos domínios correspondentes; site pessoal exige HTTPS. Foto e capa só ficam publicamente acessíveis enquanto referenciadas por perfil ativo; uploads sem referência exigem autenticação do proprietário. O cliente autor pode editar uma vez até 24 horas da publicação, desde que não haja resposta, denúncia ou contestação; a versão anterior só fica acessível pela rota autenticada de moderação. O profissional avaliado pode responder uma vez e contestar dentro de sete dias. Os fluxos e as migrações foram cobertos com H2; MySQL 8.0/8.4 real segue pendente.
+As migrações V8–V10 acrescentam resposta profissional, contestação privada e histórico de edição às avaliações existentes. A V11 acrescenta título profissional, a V12 capa opcional, a V13 links públicos opcionais e a V14 controle de visibilidade à tabela de usuários; são aditivas e preservam contas existentes. LinkedIn e Instagram aceitam somente endereços HTTPS dos domínios correspondentes; site pessoal exige HTTPS. Foto e capa só ficam publicamente acessíveis enquanto referenciadas por perfil visível; uploads sem referência exigem autenticação do proprietário. O cliente autor pode editar uma vez até 24 horas da publicação, desde que não haja resposta, denúncia ou contestação; a versão anterior só fica acessível pela rota autenticada de moderação. O profissional avaliado pode responder uma vez e contestar dentro de sete dias. Os fluxos e as migrações foram cobertos com H2; MySQL 8.0/8.4 real segue pendente.
 
 Testes usam H2 em modo MySQL, aplicam a mesma V1 e validam as entidades contra o resultado. Isso cobre o contrato ORM/schema, mas não substitui executar a migração em MySQL 8.0 e 8.4.
 

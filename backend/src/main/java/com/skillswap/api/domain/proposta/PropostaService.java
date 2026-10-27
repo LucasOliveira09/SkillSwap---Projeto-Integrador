@@ -42,7 +42,7 @@ public class PropostaService {
     public Proposta criar(Long anuncioId, PropostaRequestDTO dto, String emailUsuario) {
         anuncioService.buscarPorId(anuncioId);
         Anuncio anuncio = anuncioRepository.findByIdForUpdate(anuncioId)
-                .filter(item -> item.getStatus() == StatusAnuncio.ATIVO)
+                .filter(item -> item.getStatus() == StatusAnuncio.ATIVO && item.getUsuario().isPerfilPublico())
                 .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
         Usuario proponente = usuarioService.findByEmail(emailUsuario);
 

@@ -29,6 +29,7 @@ describe('MeuPerfilComponent', () => {
       cidade: 'Florianópolis',
       fotoUrl: null,
       capaUrl: null,
+      perfilPublico: true,
       especialidades: 'Elétrica residencial',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: null,
@@ -38,7 +39,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
       itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
     });
-    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+    http.expectOne((request) => request.url === '/api/publicacoes').flush({
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();
@@ -56,6 +57,7 @@ describe('MeuPerfilComponent', () => {
     expect(requisicao.request.method).toBe('PATCH');
     expect(requisicao.request.body.nome).toBe('Ana Lima');
     expect(requisicao.request.body.tituloProfissional).toBe('Eletricista autônoma');
+    expect(requisicao.request.body.perfilPublico).toBeTrue();
     requisicao.flush({
       id: 12,
       nome: 'Ana Lima',
@@ -72,7 +74,7 @@ describe('MeuPerfilComponent', () => {
     await harness.fixture.whenStable();
     harness.detectChanges();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Perfil salvo.');
+    expect(harness.routeNativeElement?.textContent).toContain('Perfil salvo e visível publicamente.');
     expect(componente.dados.nome).toBe('Ana Lima');
   });
 
@@ -94,7 +96,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
     http.expectOne((request) => request.urlWithParams === '/api/perfis/12/anuncios?pagina=0&tamanho=6')
       .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
-    http.expectOne((request) => request.urlWithParams === '/api/perfis/12/publicacoes?pagina=0&tamanho=12').flush({
+    http.expectOne((request) => request.urlWithParams === '/api/publicacoes?pagina=0&tamanho=12').flush({
       itens: [{
         id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
         anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],
@@ -158,7 +160,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
       itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
     });
-    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+    http.expectOne((request) => request.urlWithParams === '/api/publicacoes?pagina=0&tamanho=12').flush({
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();

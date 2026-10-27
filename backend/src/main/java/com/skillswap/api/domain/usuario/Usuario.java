@@ -48,6 +48,10 @@ public class Usuario {
     @Column(name = "site_url", length = 300)
     private String siteUrl;
 
+    @Builder.Default
+    @Column(name = "perfil_publico", nullable = false)
+    private boolean perfilPublico = true;
+
     @Column(length = 500)
     private String especialidades;
 

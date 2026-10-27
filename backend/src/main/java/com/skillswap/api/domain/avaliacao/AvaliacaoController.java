@@ -4,6 +4,7 @@ import com.skillswap.api.domain.avaliacao.dto.AvaliacaoRequestDTO;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoResponseDTO;
 import com.skillswap.api.domain.avaliacao.dto.RespostaAvaliacaoDTO;
 import com.skillswap.api.domain.avaliacao.dto.EditarAvaliacaoDTO;
+import com.skillswap.api.domain.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 public class AvaliacaoController {
 
     private final AvaliacaoService avaliacaoService;
+    private final UsuarioService usuarioService;
 
     @PostMapping("/api/acordos/{acordoId}/avaliacoes")
     public ResponseEntity<AvaliacaoResponseDTO> criar(
@@ -61,6 +63,7 @@ public class AvaliacaoController {
 
     @GetMapping("/api/usuarios/{usuarioId}/avaliacoes")
     public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
+        usuarioService.buscarPerfilPublico(usuarioId);
         return ResponseEntity.ok(avaliacaoService.listarPorUsuario(usuarioId));
     }
 }

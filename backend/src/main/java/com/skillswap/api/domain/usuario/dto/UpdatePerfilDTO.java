@@ -35,5 +35,7 @@ public record UpdatePerfilDTO(
         @Size(max = 300)
         @Pattern(regexp = "^$|https://(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,}(?::[0-9]{1,5})?(?:/[^\\s]*)?$",
                 flags = Pattern.Flag.CASE_INSENSITIVE, message = "Informe um site com endereço HTTPS válido")
-        String siteUrl
+        String siteUrl,
+
+        Boolean perfilPublico
 ) {}

@@ -79,10 +79,10 @@ class UploadServiceTest {
         assertThrows(NaoEncontradoException.class, () -> service.carregarComoRecurso(nomeArquivo, null));
         assertTrue(service.carregarComoRecurso(nomeArquivo, "ana@skillswap.invalid").exists());
 
-        when(usuarios.existsByFotoUrl(url)).thenReturn(true);
+        when(usuarios.existsByFotoUrlAndPerfilPublicoTrue(url)).thenReturn(true);
         assertTrue(service.carregarComoRecurso(nomeArquivo, null).exists());
 
-        when(usuarios.existsByFotoUrl(url)).thenReturn(false);
+        when(usuarios.existsByFotoUrlAndPerfilPublicoTrue(url)).thenReturn(false);
         assertThrows(NaoEncontradoException.class, () -> service.carregarComoRecurso(nomeArquivo, null));
     }
 

@@ -165,7 +165,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado, listagem paginada das ofertas ativas e busca de profissionais por especialidade/cidade implementados. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
 
-O perfil também aceita título profissional opcional, capa e links de LinkedIn, Instagram e site HTTPS. Título e links aparecem publicamente; o título também aparece nos resultados. A busca por título inclui profissionais sem especialidades preenchidas. As migrações aditivas V11–V13 preservam os registros existentes. Capa pode ser enviada/removida pelo dono e segue as regras de acesso dos uploads. URLs externas são validadas no servidor e abertas com `noopener noreferrer`.
+O perfil também aceita título profissional opcional, capa e links de LinkedIn, Instagram e site HTTPS. Título e links aparecem publicamente; o título também aparece nos resultados. A busca por título inclui profissionais sem especialidades preenchidas. O titular pode pausar e reativar a exposição pública sem apagar dados ou negociações; anúncios, portfólio, avaliações e referências de imagens também respeitam essa configuração. As migrações aditivas V11–V14 preservam os registros existentes. Capa pode ser enviada/removida pelo dono e segue as regras de acesso dos uploads. URLs externas são validadas no servidor e abertas com `noopener noreferrer`.
 
 ### Fase 3 — Portfólio com publicações e fotos
 

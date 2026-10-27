@@ -87,6 +87,76 @@ class PerfilControllerTest {
     }
 
     @Test
+    void pausarPerfilRetiraOfertasEPerfilDaVitrineSemApagarDadosDoDono() throws Exception {
+        var oferta = mvc.perform(post("/api/anuncios")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"titulo":"Aulas de violão","descricao":"Para iniciantes","categoria":"AULAS",
+                                 "cidade":"Florianópolis","modalidade":"VENDA","preco":80,"habilidadeDesejada":""}
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Long anuncioId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(oferta.getResponse().getContentAsString()).get("id").asLong();
+        var capa = new org.springframework.mock.web.MockMultipartFile(
+                "file", "capa.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+        var perfilComCapa = mvc.perform(multipart("/api/perfil/capa").file(capa).with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andReturn();
+        String capaUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(perfilComCapa.getResponse().getContentAsString()).get("capaUrl").asText();
+        var publicacao = mvc.perform(post("/api/publicacoes")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"legenda":"Trabalho concluído","fotos":["%s"]}
+                                """.formatted(capaUrl)))
+                .andExpect(status().isCreated()).andReturn();
+        Long publicacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(publicacao.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.perfilPublico").value(false));
+
+        mvc.perform(get("/api/perfil").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.perfilPublico").value(false));
+        mvc.perform(get("/api/perfis/{id}", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/usuarios/{id}", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/perfis/{id}/anuncios", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/perfis/{id}/publicacoes", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/usuarios/{id}/avaliacoes", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/publicacoes/{id}", publicacaoId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/anuncios/{id}", anuncioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/anuncios").param("busca", "Aulas"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get(capaUrl)).andExpect(status().isNotFound());
+        mvc.perform(get(capaUrl).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+        mvc.perform(get("/api/publicacoes")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/publicacoes").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
+        mvc.perform(get("/api/anuncios/meus").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"perfilPublico\":true}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/perfis/{id}", usuarioId)).andExpect(status().isOk());
+        mvc.perform(get("/api/publicacoes/{id}", publicacaoId)).andExpect(status().isOk());
+        mvc.perform(get(capaUrl)).andExpect(status().isOk());
+    }
+
+    @Test
     void perfilPublicaLinksHttpsDoProfissionalERejeitaEsquemaInseguro() throws Exception {
         mvc.perform(patch("/api/perfil")
                         .header("Authorization", "Bearer " + token)

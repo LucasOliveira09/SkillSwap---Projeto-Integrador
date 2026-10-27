@@ -31,14 +31,22 @@ public class PublicacaoPortfolioService {
 
     @Transactional(readOnly = true)
     public Page<PublicacaoPortfolioDTO> listar(Long usuarioId, Pageable pageable) {
+        usuarioService.buscarPerfilPublico(usuarioId);
         return publicacaoRepository.findByUsuarioIdAndModeradaOcultaFalse(usuarioId, pageable).map(this::paraDTO);
     }
 
     @Transactional(readOnly = true)
+    public Page<PublicacaoPortfolioDTO> listarProprias(String email, Pageable pageable) {
+        var usuario = usuarioService.findByEmail(email);
+        return publicacaoRepository.findByUsuarioIdAndModeradaOcultaFalse(usuario.getId(), pageable).map(this::paraDTO);
+    }
+
+    @Transactional(readOnly = true)
     public PublicacaoPortfolioDTO buscar(Long id) {
-        return publicacaoRepository.findByIdAndModeradaOcultaFalse(id)
-                .map(this::paraDTO)
+        var publicacao = publicacaoRepository.findByIdAndModeradaOcultaFalse(id)
                 .orElseThrow(() -> new NaoEncontradoException("Publicação não encontrada"));
+        usuarioService.buscarPerfilPublico(publicacao.getUsuario().getId());
+        return paraDTO(publicacao);
     }
 
     @Transactional

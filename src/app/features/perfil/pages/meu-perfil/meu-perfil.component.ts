@@ -5,6 +5,7 @@ import { concatMap, finalize, from, switchMap, toArray } from 'rxjs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
@@ -22,12 +23,13 @@ const formularioVazio: AtualizacaoPerfil = {
   linkedinUrl: '',
   instagramUrl: '',
   siteUrl: '',
+  perfilPublico: true,
 };
 
 @Component({
   selector: 'app-meu-perfil',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, RouterLink, DatePipe, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule],
   templateUrl: './meu-perfil.component.html',
   styleUrl: './meu-perfil.component.scss',
 })
@@ -119,6 +121,7 @@ export class MeuPerfilComponent {
       linkedinUrl: (this.dados.linkedinUrl ?? '').trim(),
       instagramUrl: (this.dados.instagramUrl ?? '').trim(),
       siteUrl: (this.dados.siteUrl ?? '').trim(),
+      perfilPublico: this.dados.perfilPublico !== false,
     };
 
     this.api
@@ -130,7 +133,9 @@ export class MeuPerfilComponent {
       .subscribe({
         next: (perfil) => {
           this.preencher(perfil);
-          this.sucesso = 'Perfil salvo.';
+          this.sucesso = perfil.perfilPublico !== false
+            ? 'Perfil salvo e visível publicamente.'
+            : 'Perfil salvo e pausado nas páginas públicas.';
         },
         error: () => (this.erro = 'Não foi possível salvar. Seus dados continuam neste formulário.'),
       });
@@ -414,6 +419,7 @@ export class MeuPerfilComponent {
       linkedinUrl: perfil.linkedinUrl ?? '',
       instagramUrl: perfil.instagramUrl ?? '',
       siteUrl: perfil.siteUrl ?? '',
+      perfilPublico: perfil.perfilPublico !== false,
     };
     this.carregarPortfolio(perfil.id);
     this.carregarOfertasPortfolio(perfil.id);
@@ -436,7 +442,7 @@ export class MeuPerfilComponent {
     if (pagina === 0) this.portfolioCarregadoParaId = id;
     this.erroPortfolio = '';
     this.carregandoPortfolio = true;
-    this.api.publicacoes(id, pagina).pipe(
+    this.api.minhasPublicacoes(pagina).pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => (this.carregandoPortfolio = false)),
     ).subscribe({

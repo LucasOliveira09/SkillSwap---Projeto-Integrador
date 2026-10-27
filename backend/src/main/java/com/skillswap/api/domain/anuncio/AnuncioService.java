@@ -61,7 +61,7 @@ public class AnuncioService {
 
     @Transactional(readOnly = true)
     public Page<AnuncioResponseDTO> listarOfertasPublicasDoUsuario(Long usuarioId, Pageable pageable) {
-        return mapearPaginaComAvaliacoes(anuncioRepository.findByUsuarioIdAndStatusAndExemploFalse(
+        return mapearPaginaComAvaliacoes(anuncioRepository.findByUsuarioIdAndStatusAndExemploFalseAndUsuarioPerfilPublicoTrue(
                 usuarioId, StatusAnuncio.ATIVO, pageable));
     }
 
@@ -91,7 +91,7 @@ public class AnuncioService {
     @Transactional(readOnly = true)
     public Anuncio buscarPorId(Long id) {
         return anuncioRepository.findById(id)
-                .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO)
+                .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO && anuncio.getUsuario().isPerfilPublico())
                 .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
     }
 
@@ -105,7 +105,7 @@ public class AnuncioService {
             return buscarPorId(id);
         } catch (NumberFormatException e) {
             return anuncioRepository.findByCodigoLegado(idOuCodigo)
-                    .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO)
+                    .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO && anuncio.getUsuario().isPerfilPublico())
                     .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
         }
     }
@@ -130,7 +130,7 @@ public class AnuncioService {
 
     @Transactional
     public void inativar(Long id, String emailUsuario) {
-        var anuncio = buscarPorId(id);
+        var anuncio = buscarMeu(id, emailUsuario);
         checkOwner(anuncio, emailUsuario);
         anuncio.setStatus(StatusAnuncio.INATIVO);
         anuncioRepository.save(anuncio);

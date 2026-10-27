@@ -13,6 +13,7 @@ public record PerfilDTO(
         String linkedinUrl,
         String instagramUrl,
         String siteUrl,
+        boolean perfilPublico,
         String especialidades,
         LocalDateTime criadoEm,
         Double mediaNotas,

@@ -13,8 +13,8 @@ import jakarta.persistence.LockModeType;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
-    boolean existsByFotoUrl(String fotoUrl);
-    boolean existsByCapaUrl(String capaUrl);
+    boolean existsByFotoUrlAndPerfilPublicoTrue(String fotoUrl);
+    boolean existsByCapaUrlAndPerfilPublicoTrue(String capaUrl);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Usuario u where u.email = :email")
@@ -26,9 +26,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("select u.capaUrl from Usuario u where u.capaUrl is not null")
     List<String> listarCapasDePerfil();
 
+    Optional<Usuario> findByIdAndPerfilPublicoTrue(Long id);
+
     @Query(value = """
             select u from Usuario u
-            where ((u.especialidades is not null and trim(u.especialidades) <> '')
+            where u.perfilPublico = true
+              and ((u.especialidades is not null and trim(u.especialidades) <> '')
                or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
                    or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
@@ -39,7 +42,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
                    and (select avg(av.nota) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :notaMinima))
             """, countQuery = """
             select count(u) from Usuario u
-            where ((u.especialidades is not null and trim(u.especialidades) <> '')
+            where u.perfilPublico = true
+              and ((u.especialidades is not null and trim(u.especialidades) <> '')
                or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
                    or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))

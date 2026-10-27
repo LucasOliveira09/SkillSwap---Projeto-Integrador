@@ -41,6 +41,12 @@ public class UsuarioService {
                 .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
     }
 
+    @Transactional(readOnly = true)
+    public Usuario buscarPerfilPublico(Long id) {
+        return usuarioRepository.findByIdAndPerfilPublicoTrue(id)
+                .orElseThrow(() -> new NaoEncontradoException("Perfil não encontrado"));
+    }
+
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
@@ -114,6 +120,7 @@ public class UsuarioService {
         if (dto.linkedinUrl() != null) usuario.setLinkedinUrl(dto.linkedinUrl().strip());
         if (dto.instagramUrl() != null) usuario.setInstagramUrl(dto.instagramUrl().strip());
         if (dto.siteUrl() != null) usuario.setSiteUrl(dto.siteUrl().strip());
+        if (dto.perfilPublico() != null) usuario.setPerfilPublico(dto.perfilPublico());
     }
 
     private String normalizarFiltro(String valor, int limite) {
@@ -138,7 +145,7 @@ public class UsuarioService {
         return new PerfilDTO(
                 u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
-                u.getCapaUrl(), u.getLinkedinUrl(), u.getInstagramUrl(), u.getSiteUrl(),
+                u.getCapaUrl(), u.getLinkedinUrl(), u.getInstagramUrl(), u.getSiteUrl(), u.isPerfilPublico(),
                 u.getEspecialidades(), u.getCriadoEm(),
                 getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())
         );

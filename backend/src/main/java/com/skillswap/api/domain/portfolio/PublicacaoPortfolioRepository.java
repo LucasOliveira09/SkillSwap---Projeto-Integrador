@@ -26,6 +26,6 @@ public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoP
 
     @Query("select case when count(p) > 0 then true else false end " +
             "from PublicacaoPortfolio p join p.fotos foto " +
-            "where foto = :fotoUrl and p.moderadaOculta = false")
+            "where foto = :fotoUrl and p.moderadaOculta = false and p.usuario.perfilPublico = true")
     boolean existeFotoPublica(@Param("fotoUrl") String fotoUrl);
 }

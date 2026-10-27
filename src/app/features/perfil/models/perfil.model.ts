@@ -9,6 +9,7 @@ export interface PerfilProfissional {
   linkedinUrl?: string | null;
   instagramUrl?: string | null;
   siteUrl?: string | null;
+  perfilPublico?: boolean;
   especialidades: string | null;
   criadoEm: string;
   mediaNotas: number | null;
@@ -30,6 +31,7 @@ export interface AtualizacaoPerfil {
   linkedinUrl?: string;
   instagramUrl?: string;
   siteUrl?: string;
+  perfilPublico?: boolean;
 }
 
 export interface PaginaPerfisProfissionais {

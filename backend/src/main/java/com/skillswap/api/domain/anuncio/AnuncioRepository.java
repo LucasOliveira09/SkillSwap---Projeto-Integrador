@@ -21,7 +21,8 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     List<Anuncio> findByUsuarioId(Long usuarioId);
 
     @EntityGraph(attributePaths = {"usuario"})
-    Page<Anuncio> findByUsuarioIdAndStatusAndExemploFalse(Long usuarioId, StatusAnuncio status, Pageable pageable);
+    Page<Anuncio> findByUsuarioIdAndStatusAndExemploFalseAndUsuarioPerfilPublicoTrue(
+            Long usuarioId, StatusAnuncio status, Pageable pageable);
 
     @EntityGraph(attributePaths = {"usuario"})
     Page<Anuncio> findByUsuarioIdAndExemploFalse(Long usuarioId, Pageable pageable);
@@ -34,7 +35,7 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     Optional<Anuncio> findByIdForUpdate(@Param("id") Long id);
 
     @EntityGraph(attributePaths = {"usuario"})
-    @Query("SELECT a FROM Anuncio a WHERE a.status = :status " +
+    @Query("SELECT a FROM Anuncio a WHERE a.status = :status AND a.usuario.perfilPublico = true " +
            "AND (:categoria IS NULL OR a.categoria = :categoria) " +
            "AND (:cidade IS NULL OR LOWER(a.cidade) LIKE LOWER(CONCAT('%', :cidade, '%')))")
     Page<Anuncio> findByStatusAndFilters(
@@ -44,7 +45,7 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
             Pageable pageable);
 
     boolean existsByCodigoLegado(String codigo);
-    boolean existsByImagemAndStatusAndExemploFalse(String imagem, StatusAnuncio status);
+    boolean existsByImagemAndStatusAndExemploFalseAndUsuarioPerfilPublicoTrue(String imagem, StatusAnuncio status);
 
     @Query("select a.imagem from Anuncio a where a.imagem is not null")
     List<String> listarImagens();
@@ -55,7 +56,7 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     java.util.List<Anuncio> findTop100ByTextoBuscaIsNull();
 
     @EntityGraph(attributePaths = {"usuario"})
-    @Query("SELECT a FROM Anuncio a WHERE a.status = :status " +
+    @Query("SELECT a FROM Anuncio a WHERE a.status = :status AND a.usuario.perfilPublico = true " +
            "AND (:categoria IS NULL OR a.categoria = :categoria) " +
            "AND (:cidade IS NULL OR LOWER(a.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
            "AND (:modalidade IS NULL OR a.modalidade = :modalidade) " +

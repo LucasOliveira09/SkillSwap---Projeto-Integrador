@@ -400,3 +400,18 @@ mat-form-field {
 
 .links-perfil legend { padding: 0 6px; font-weight: 700; }
 .links-perfil legend span { color: var(--ss-muted); font-size: 0.875rem; font-weight: 400; }
+
+.visibilidade-perfil {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 8px 0 4px;
+  padding: 16px;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+  background: var(--ss-soft);
+}
+.visibilidade-perfil h2 { margin: 0; font-size: 16px; }
+.visibilidade-perfil p { max-width: 470px; margin: 4px 0 0; color: var(--ss-muted); font-size: 13px; }
+@media (max-width: 520px) { .visibilidade-perfil { align-items: flex-start; flex-direction: column; } }
