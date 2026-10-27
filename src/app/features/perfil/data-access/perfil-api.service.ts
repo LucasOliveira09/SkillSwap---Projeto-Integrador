@@ -26,9 +26,9 @@ export class PerfilApiService {
     return this.http.get<PerfilProfissional>(`/api/perfis/${encodeURIComponent(id)}`);
   }
 
-  buscarProfissionais(busca: string, cidade: string, pagina: number) {
+  buscarProfissionais(busca: string, cidade: string, pagina: number, notaMinima?: number) {
     return this.http.get<PaginaPerfisProfissionais>('/api/profissionais', {
-      params: { busca, cidade, pagina, tamanho: 12 },
+      params: { busca, cidade, pagina, tamanho: 12, ...(notaMinima ? { notaMinima } : {}) },
     });
   }
 

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -101,10 +103,11 @@ public class PerfilController {
     public ResponseEntity<PaginaDTO<PerfilDTO>> buscarProfissionais(
             @RequestParam(defaultValue = "") @Size(max = 100) String busca,
             @RequestParam(defaultValue = "") @Size(max = 80) String cidade,
+            @RequestParam(required = false) @DecimalMin("1.0") @DecimalMax("5.0") Double notaMinima,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
             @RequestParam(defaultValue = "12") @Min(1) @Max(20) int tamanho) {
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
-        return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(busca, cidade, pageable)));
+        return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(busca, cidade, notaMinima, pageable)));
     }
 
     @GetMapping("/perfil")

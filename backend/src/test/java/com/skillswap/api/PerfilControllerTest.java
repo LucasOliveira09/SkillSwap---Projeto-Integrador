@@ -154,6 +154,21 @@ class PerfilControllerTest {
     }
 
     @Test
+    void filtroDeNotaMinimaIgnoraPerfisSemAmostraSuficienteEValidaLimites() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"Eletricista\"}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/api/profissionais").param("notaMinima", "4"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get("/api/profissionais").param("notaMinima", "5.5"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void criaEListaPublicacaoDePortfolioComFotosPersistidasEProtecaoDoAutor() throws Exception {
         var foto = new org.springframework.mock.web.MockMultipartFile(
                 "file", "portfolio.png", "image/png",

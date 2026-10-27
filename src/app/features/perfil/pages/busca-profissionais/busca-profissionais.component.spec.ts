@@ -65,4 +65,15 @@ describe('BuscaProfissionaisComponent', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Nenhum perfil encontrado');
   });
+
+  it('envia filtro de reputação pela URL e explica a amostra mínima', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais?notaMinima=4.5');
+    const requisicao = http.expectOne((request) => request.url === '/api/profissionais');
+    expect(requisicao.request.params.get('notaMinima')).toBe('4.5');
+    requisicao.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('pelo menos 3 avaliações');
+    expect(harness.routeNativeElement?.querySelector<HTMLSelectElement>('[name="notaMinima"]')?.value).toBe('4.5');
+  });
 });

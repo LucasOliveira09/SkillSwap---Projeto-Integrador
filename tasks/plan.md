@@ -250,7 +250,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 | Crescimento do escopo social | Atraso e produto genérico | Limitar publicações a portfólio profissional ligado a oferta/trabalho |
 | Pagamento integrado cedo demais | Risco operacional e financeiro | Fase posterior, provedor apropriado, sandbox, conciliação e aprovação antes do real |
 | Evolução de schema sobre banco ativo | Perda de dados | Baseline, migração aditiva, cópia, comparação, rollback e prévia separada |
-| Poucas avaliações no início | Ranking instável | Mostrar contagem/contexto, não ordenar por nota até ter amostra suficiente |
+| Poucas avaliações no início | Ranking instável | Mostrar contagem/contexto, não ordenar por nota; filtro de média só inclui profissionais com pelo menos três avaliações visíveis |
 
 ## Decisões pendentes para fechar antes das fases correspondentes
 

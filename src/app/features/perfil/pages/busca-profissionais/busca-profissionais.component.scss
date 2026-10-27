@@ -1,5 +1,7 @@
 .pagina-busca {
-  width: min(100% - 40px, 1080px);
+  width: calc(100% - 40px);
+  max-width: 1080px;
+  min-width: 0;
   margin: 0 auto;
   padding: 26px 0 64px;
 }
@@ -47,7 +49,7 @@ h3 {
 
 .filtros {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(180px, 1fr) auto;
   align-items: start;
   gap: 12px;
   padding: 20px;
@@ -58,7 +60,16 @@ h3 {
 
 .filtros mat-form-field {
   width: 100%;
+  min-width: 0;
 }
+
+.filtros > * {
+  min-width: 0;
+}
+
+.filtro-nota { display: grid; gap: 6px; color: var(--ss-text); font-size: 13px; font-weight: 600; }
+.filtro-nota select { width: 100%; min-height: 56px; padding: 0 12px; border: 1px solid var(--ss-line); border-radius: 5px; background: var(--ss-surface); color: inherit; font: inherit; }
+.filtro-nota small { color: var(--ss-muted); font-size: 11px; font-weight: 400; line-height: 1.35; }
 
 .filtros > button {
   min-height: 56px;
@@ -172,7 +183,8 @@ h3 {
 
 @media (max-width: 760px) {
   .pagina-busca {
-    width: min(100% - 32px, 560px);
+    width: calc(100% - 32px);
+    max-width: 560px;
     padding-top: 20px;
   }
 

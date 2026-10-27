@@ -80,6 +80,13 @@ describe('PerfilApiService', () => {
     });
   });
 
+  it('envia nota mínima como filtro opcional', () => {
+    api.buscarProfissionais('', '', 0, 4.5).subscribe();
+    const requisicao = http.expectOne((candidate) => candidate.url === '/api/profissionais');
+    expect(requisicao.request.params.get('notaMinima')).toBe('4.5');
+    requisicao.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+  });
+
   it('atualiza o próprio perfil pelo recurso autenticado', () => {
     const dados = { nome: 'Ana Lima', bio: 'Aulas com prática', cidade: 'São José', especialidades: 'Violão' };
     api.atualizarMeuPerfil(dados).subscribe((perfil) => expect(perfil.nome).toBe('Ana Lima'));

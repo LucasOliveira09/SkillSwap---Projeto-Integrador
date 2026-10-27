@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 public class UsuarioService {
+    private static final int AMOSTRA_MINIMA_PARA_FILTRO_NOTA = 3;
 
     private final UsuarioRepository usuarioRepository;
     private final AvaliacaoRepository avaliacaoRepository;
@@ -51,10 +52,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PerfilDTO> buscarProfissionais(String busca, String cidade, Pageable pageable) {
+    public Page<PerfilDTO> buscarProfissionais(String busca, String cidade, Double notaMinima, Pageable pageable) {
         String termoSeguro = normalizarFiltro(busca, 100);
         String cidadeSegura = normalizarFiltro(cidade, 80);
-        return usuarioRepository.buscarProfissionais(termoSeguro, cidadeSegura, pageable)
+        return usuarioRepository.buscarProfissionais(
+                        termoSeguro, cidadeSegura, notaMinima, AMOSTRA_MINIMA_PARA_FILTRO_NOTA, pageable)
                 .map(this::toPerfilDTO);
     }
 

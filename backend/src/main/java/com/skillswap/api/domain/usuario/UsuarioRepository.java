@@ -21,15 +21,29 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("select u.fotoUrl from Usuario u where u.fotoUrl is not null")
     List<String> listarFotosDePerfil();
 
-    @Query("""
+    @Query(value = """
             select u from Usuario u
             where u.especialidades is not null and trim(u.especialidades) <> ''
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
                    or lower(u.especialidades) like lower(concat('%', :busca, '%')))
               and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
+              and (:notaMinima is null or (
+                   (select count(av.id) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :amostraMinima
+                   and (select avg(av.nota) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :notaMinima))
+            """, countQuery = """
+            select count(u) from Usuario u
+            where u.especialidades is not null and trim(u.especialidades) <> ''
+              and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
+                   or lower(u.especialidades) like lower(concat('%', :busca, '%')))
+              and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
+              and (:notaMinima is null or (
+                   (select count(av.id) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :amostraMinima
+                   and (select avg(av.nota) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :notaMinima))
             """)
     Page<Usuario> buscarProfissionais(
             @Param("busca") String busca,
             @Param("cidade") String cidade,
+            @Param("notaMinima") Double notaMinima,
+            @Param("amostraMinima") int amostraMinima,
             Pageable pageable);
 }

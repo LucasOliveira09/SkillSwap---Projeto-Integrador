@@ -91,6 +91,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Validar 28 testes Angular, 13 testes Java, build, tipos e fluxo real no navegador/MySQL.
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
 - [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
+- [x] Filtrar profissionais por média mínima apenas com amostra de três avaliações visíveis, mantendo a ordenação estável por data.
 - [x] Adotar migrações Flyway versionadas (V1–V8).
 - [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
 

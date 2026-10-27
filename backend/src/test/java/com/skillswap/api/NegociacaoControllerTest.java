@@ -181,6 +181,12 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itens[0].mediaAvaliacoesAnuncio").value(4.0))
                 .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoesAnuncio").value(1));
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"Eletricista\"}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/profissionais").param("notaMinima", "4"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
         mvc.perform(get("/api/notificacoes").header("Authorization", "Bearer " + proponenteToken))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(2))
                 .andExpect(jsonPath("$.itens[0].tipo").value("ACORDO_ATUALIZADO"))

@@ -34,6 +34,7 @@ export class BuscaProfissionaisComponent {
 
   protected busca = '';
   protected cidade = '';
+  protected notaMinima = '';
 
   protected readonly estado = toSignal(
     combineLatest([
@@ -43,8 +44,10 @@ export class BuscaProfissionaisComponent {
       switchMap(([parametros]) => {
         this.busca = parametros.get('busca') ?? '';
         this.cidade = parametros.get('cidade') ?? '';
+        this.notaMinima = this.normalizarNotaMinima(parametros.get('notaMinima'));
         const pagina = this.lerPagina(parametros.get('pagina'));
-        return this.api.buscarProfissionais(this.busca, this.cidade, pagina).pipe(
+        const nota = this.notaMinima ? Number(this.notaMinima) : undefined;
+        return this.api.buscarProfissionais(this.busca, this.cidade, pagina, nota).pipe(
           map((resultado) => ({ carregando: false, erro: false, pagina: resultado })),
           catchError(() => of({ carregando: false, erro: true, pagina: null })),
           startWith(estadoCarregando),
@@ -63,6 +66,7 @@ export class BuscaProfissionaisComponent {
       queryParams: {
         busca: this.busca.trim() || null,
         cidade: this.cidade.trim() || null,
+        notaMinima: this.normalizarNotaMinima(this.notaMinima) || null,
         pagina: null,
       },
     });
@@ -88,5 +92,9 @@ export class BuscaProfissionaisComponent {
   private lerPagina(valor: string | null): number {
     const pagina = Number(valor ?? 0);
     return Number.isSafeInteger(pagina) && pagina >= 0 && pagina <= 1_000_000 ? pagina : 0;
+  }
+
+  private normalizarNotaMinima(valor: string | null): string {
+    return ['4', '4.5', '5'].includes(valor ?? '') ? valor! : '';
   }
 }
