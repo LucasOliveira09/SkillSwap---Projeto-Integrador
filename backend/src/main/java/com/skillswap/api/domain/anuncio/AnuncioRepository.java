@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,8 +51,13 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     @Query("SELECT a FROM Anuncio a WHERE a.status = :status " +
            "AND (:categoria IS NULL OR a.categoria = :categoria) " +
            "AND (:cidade IS NULL OR LOWER(a.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
+           "AND (:modalidade IS NULL OR a.modalidade = :modalidade) " +
+           "AND (:precoMinimo IS NULL OR (a.preco IS NOT NULL AND a.preco >= :precoMinimo)) " +
+           "AND (:precoMaximo IS NULL OR (a.preco IS NOT NULL AND a.preco <= :precoMaximo)) " +
            "AND a.textoBusca LIKE :busca ESCAPE '!'")
     Page<Anuncio> pesquisar(@Param("status") StatusAnuncio status,
         @Param("categoria") CategoriaAnuncio categoria, @Param("cidade") String cidade,
+        @Param("modalidade") ModalidadeAnuncio modalidade,
+        @Param("precoMinimo") BigDecimal precoMinimo, @Param("precoMaximo") BigDecimal precoMaximo,
         @Param("busca") String busca, Pageable pageable);
 }

@@ -39,5 +39,9 @@ export interface VitrineApi {
 export interface FiltrosAnuncios {
   busca: string;
   categoria: string;
+  cidade: string;
+  modalidade: string;
+  precoMinimo: string;
+  precoMaximo: string;
   pagina: number;
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,11 +39,17 @@ export class CatalogoComponent {
   private readonly router = inject(Router);
   private readonly api = inject(AnunciosApiService);
   private readonly repetir = new BehaviorSubject(0);
+  protected readonly erroFiltro = signal('');
   protected readonly parametros = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
   });
   protected readonly temFiltro = computed(
-    () => !!(this.parametros().get('busca') || this.parametros().get('categoria')),
+    () => !!(
+      this.parametros().get('busca') || this.parametros().get('categoria') ||
+      this.parametros().get('cidade') ||
+      this.parametros().get('modalidade') || this.parametros().get('precoMinimo') ||
+      this.parametros().get('precoMaximo')
+    ),
   );
   protected readonly estado = toSignal(
     combineLatest([this.route.queryParamMap, this.repetir]).pipe(
@@ -53,6 +59,10 @@ export class CatalogoComponent {
           .listar({
             busca: parametros.get('busca') || '',
             categoria: parametros.get('categoria') || '',
+            cidade: parametros.get('cidade') || '',
+            modalidade: parametros.get('modalidade') || '',
+            precoMinimo: parametros.get('precoMinimo') || '',
+            precoMaximo: parametros.get('precoMaximo') || '',
             pagina: Number.isSafeInteger(pagina) && pagina >= 0 && pagina <= 1000000 ? pagina : 0,
           })
           .pipe(
@@ -91,6 +101,33 @@ export class CatalogoComponent {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pagina },
+      queryParamsHandling: 'merge',
+    });
+  }
+  protected submeterFiltros(
+    evento: Event,
+    cidade: string,
+    modalidade: string,
+    precoMinimo: string,
+    precoMaximo: string,
+  ): void {
+    evento.preventDefault();
+    const minimo = precoMinimo.trim();
+    const maximo = precoMaximo.trim();
+    if (minimo && maximo && Number(minimo) > Number(maximo)) {
+      this.erroFiltro.set('O preço mínimo não pode ser maior que o máximo.');
+      return;
+    }
+    this.erroFiltro.set('');
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        cidade: cidade.trim() || null,
+        modalidade: modalidade || null,
+        precoMinimo: minimo || null,
+        precoMaximo: maximo || null,
+        pagina: 0,
+      },
       queryParamsHandling: 'merge',
     });
   }

@@ -12,6 +12,33 @@
   color: var(--ss-muted);
   margin: 12px 0;
 }
+.filtros-ofertas {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.2fr) minmax(120px, 0.9fr) minmax(120px, 0.8fr) minmax(120px, 0.8fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+  background: var(--ss-surface);
+}
+.filtros-ofertas label { display: grid; gap: 5px; min-width: 0; color: var(--ss-muted); font-size: 12px; }
+.filtros-ofertas select,
+.filtros-ofertas input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ss-line);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ss-text);
+  font: inherit;
+}
+.filtros-ofertas button { min-height: 40px; }
+.ajuda-filtros { grid-column: 1 / -1; margin: -4px 0 0; color: var(--ss-muted); font-size: 12px; }
+.erro-filtro { margin: -8px 0 12px; color: #9f2525; font-size: 13px; }
 .barra-lista {
   display: flex;
   justify-content: space-between;
@@ -61,11 +88,13 @@
     flex-direction: column;
     gap: 12px;
   }
+  .filtros-ofertas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .paginacao {
     align-self: end;
   }
 }
 @media (max-width: 480px) {
+  .filtros-ofertas { grid-template-columns: minmax(0, 1fr); }
   .vitrine-anuncios {
     grid-template-columns: minmax(0, 1fr);
   }

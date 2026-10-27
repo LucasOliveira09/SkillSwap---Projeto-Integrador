@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -120,14 +121,26 @@ public class AnuncioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AnuncioResponseDTO> pesquisar(String categoria, String cidade, String busca, Pageable pageable) {
+    public Page<AnuncioResponseDTO> pesquisar(
+            String categoria, String cidade, String modalidade, BigDecimal precoMinimo,
+            BigDecimal precoMaximo, String busca, Pageable pageable) {
         CategoriaAnuncio filtro = null;
         if (categoria != null && !categoria.isBlank()) {
             try { filtro = CategoriaAnuncio.valueOf(categoria.toUpperCase(java.util.Locale.ROOT)); }
             catch (IllegalArgumentException ex) { return Page.empty(pageable); }
         }
+        ModalidadeAnuncio modalidadeFiltro = null;
+        if (modalidade != null && !modalidade.isBlank()) {
+            try { modalidadeFiltro = ModalidadeAnuncio.valueOf(modalidade.toUpperCase(java.util.Locale.ROOT)); }
+            catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Modalidade inválida."); }
+        }
+        if (precoMinimo != null && precoMaximo != null && precoMinimo.compareTo(precoMaximo) > 0) {
+            throw new IllegalArgumentException("O preço mínimo não pode ser maior que o preço máximo.");
+        }
         String literal = Anuncio.normalizar(busca).replace("!","!!").replace("%","!%").replace("_","!_");
-        return mapearPaginaComAvaliacoes(anuncioRepository.pesquisar(StatusAnuncio.ATIVO, filtro, cidade, "%"+literal+"%", pageable));
+        return mapearPaginaComAvaliacoes(anuncioRepository.pesquisar(
+                StatusAnuncio.ATIVO, filtro, cidade, modalidadeFiltro, precoMinimo, precoMaximo,
+                "%" + literal + "%", pageable));
     }
 
     public AnuncioResponseDTO toResponseDTO(Anuncio a) {

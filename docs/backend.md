@@ -20,7 +20,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | --- | --- | --- |
 | GET | `/categorias` | Códigos e rótulos dos enums definidos no backend. |
 | GET | `/vitrine` | Categorias visuais, destaques e serviços persistidos no banco. |
-| GET | `/anuncios?busca=&categoria=&pagina=0&tamanho=5` | `{itens,pagina,tamanho,totalItens,totalPaginas}`; página até 1.000.000, tamanho 1–50 e busca até 100 caracteres. Ordem por data/ID decrescente. |
+| GET | `/anuncios?busca=&categoria=&cidade=&modalidade=VENDA&precoMinimo=&precoMaximo=&pagina=0&tamanho=5` | `{itens,pagina,tamanho,totalItens,totalPaginas}`; filtros são opcionais, cidade até 80 caracteres, página até 1.000.000, tamanho 1–50 e busca até 100 caracteres. `modalidade` aceita `VENDA` ou `TROCA`; faixa de preço se aplica a vendas com preço, e nunca inclui trocas. Mínimo não pode exceder máximo. Ordem por data/ID decrescente. |
 | GET | `/anuncios/{id}` | Anúncio ativo ou 404; inclui `mediaAvaliacoesAnuncio` e `quantidadeAvaliacoesAnuncio`, derivados de avaliações existentes de acordos concluídos. |
 | POST | `/usuarios` | Criar conta, 201 com Location e JWT; alias antigo `/auth/registrar`. |
 | POST | `/sessoes` | Autenticar com e-mail/senha e receber JWT; alias antigo `/auth/login`. |
@@ -68,7 +68,7 @@ Cadastro: título 1–100, descrição 1–1500, cidade 1–80, categoria e moda
 
 Erro JSON: `{codigo,mensagem,campos}`. 400 para entrada inválida; 401 para credenciais/token ausentes ou inválidos; 403 para operação de outro usuário; 404 para recurso ausente/inativo; 405 para método indisponível; 500/503 com mensagem genérica. Não retornar SQL, senha, segredo JWT ou stack trace ao cliente.
 
-Busca ignora acentos/caixa e trata %/_ literalmente. Um inicializador preenche o índice novo dos anúncios antigos sem mudar seus dados ou proprietários. No MySQL, outro inicializador amplia o enum antigo conhecido para incluir TRANSPORTE antes da carga; não altera enums desconhecidos. A vitrine é idempotente, identificada como ilustrativa e não substitui dados existentes.
+Busca ignora acentos/caixa e trata %/_ literalmente. A pesquisa aceita categoria, cidade, modalidade e faixa de preço combinados. A faixa inclui somente vendas com valor monetário; ofertas de troca não possuem preço e não aparecem quando há filtro de preço. Um inicializador preenche o índice novo dos anúncios antigos sem mudar seus dados ou proprietários. No MySQL, outro inicializador amplia o enum antigo conhecido para incluir TRANSPORTE antes da carga; não altera enums desconhecidos. A vitrine é idempotente, identificada como ilustrativa e não substitui dados existentes.
 
 ### Dados demonstrativos
 

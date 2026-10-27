@@ -16,11 +16,15 @@ describe('AnunciosApiService', () => {
   afterEach(() => http.verify());
 
   it('envia busca, categoria e página para o backend', () => {
-    api.listar({ busca: 'violão', categoria: 'aulas', pagina: 2 }).subscribe();
+    api.listar({ busca: 'violão', categoria: 'aulas', cidade: 'Florianópolis', pagina: 2, modalidade: 'VENDA', precoMinimo: '50', precoMaximo: '200' }).subscribe();
     const req = http.expectOne((r) => r.url === '/api/anuncios');
     expect(req.request.params.get('busca')).toBe('violão');
     expect(req.request.params.get('categoria')).toBe('aulas');
+    expect(req.request.params.get('cidade')).toBe('Florianópolis');
     expect(req.request.params.get('pagina')).toBe('2');
+    expect(req.request.params.get('modalidade')).toBe('VENDA');
+    expect(req.request.params.get('precoMinimo')).toBe('50');
+    expect(req.request.params.get('precoMaximo')).toBe('200');
     req.flush({ itens: [], pagina: 2, tamanho: 5, totalItens: 0, totalPaginas: 0 });
   });
 

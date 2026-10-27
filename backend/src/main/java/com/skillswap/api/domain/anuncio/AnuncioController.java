@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/anuncios")
@@ -26,12 +27,16 @@ public class AnuncioController {
     @GetMapping
     public ResponseEntity<PaginaDTO<AnuncioResponseDTO>> listar(
             @RequestParam(defaultValue = "") @Size(max = 40) String categoria,
-            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) @Size(max = 80) String cidade,
+            @RequestParam(defaultValue = "") @Pattern(regexp = "(?i)|VENDA|TROCA") String modalidade,
+            @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) BigDecimal precoMinimo,
+            @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) BigDecimal precoMaximo,
             @RequestParam(defaultValue = "") @Size(max = 100) String busca,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1000000) int pagina,
             @RequestParam(defaultValue = "5") @Min(1) @Max(50) int tamanho) {
         var pageable = PageRequest.of(pagina,tamanho, Sort.by(Sort.Direction.DESC,"criadoEm","id"));
-        return ResponseEntity.ok(PaginaDTO.de(anuncioService.pesquisar(categoria,cidade,busca,pageable)));
+        return ResponseEntity.ok(PaginaDTO.de(anuncioService.pesquisar(
+                categoria, cidade, modalidade, precoMinimo, precoMaximo, busca, pageable)));
     }
 
     @GetMapping("/{identificador}")

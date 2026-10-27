@@ -32,7 +32,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [ ] Adicionar edição, denúncia/moderação e paginação visual do portfólio; definir retenção/limpeza de arquivos sem referência.
 - [ ] Ligar anúncios ao perfil, completar edição/pausa/reativação e associar ofertas às publicações.
 - [x] Buscar profissionais por nome/especialidade e cidade com paginação, perfil público e reputação apenas quando há avaliações reais.
-- [ ] Completar descoberta de ofertas por região, modalidade, preço e disponibilidade declarada.
+- [x] Filtrar ofertas do catálogo por cidade, modalidade e faixa de preço combinadas, preservando trocas sem preço.
+- [ ] Descobrir ofertas por disponibilidade declarada.
 - [x] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.
 
 ### Negociação e reputação

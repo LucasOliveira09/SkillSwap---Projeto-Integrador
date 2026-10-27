@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { DadosAnuncio } from '../models/anuncio.model';
@@ -16,8 +16,15 @@ export class AnunciosApiService {
   private readonly http = inject(HttpClient);
 
   listar(filtros: FiltrosAnuncios) {
+    const params = new HttpParams({
+      fromObject: {
+        ...filtros,
+        pagina: String(filtros.pagina),
+        tamanho: '5',
+      },
+    });
     return this.http
-      .get<PaginaAnuncios>(environment.apiUrl + '/anuncios', { params: { ...filtros, tamanho: 5 } })
+      .get<PaginaAnuncios>(environment.apiUrl + '/anuncios', { params })
       .pipe(
         map((pagina) => ({
           ...pagina,

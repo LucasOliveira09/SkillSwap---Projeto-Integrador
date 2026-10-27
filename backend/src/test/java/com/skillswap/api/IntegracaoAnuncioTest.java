@@ -66,6 +66,37 @@ class IntegracaoAnuncioTest {
         mvc.perform(get("/api/anuncios")).andExpect(jsonPath("$.totalItens").value(0));
     }
 
+    @Test void filtraOfertasPorModalidadeEFaixaDePreco() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content(venda("Aula de violão", "90")))
+                .andExpect(status().isCreated());
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json")
+                        .content("""
+                                {"titulo":"Troca por aula de inglês","descricao":"Aulas particulares",
+                                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"TROCA",
+                                 "preco":null,"habilidadeDesejada":"Conversação em inglês"}
+                                """))
+                .andExpect(status().isCreated());
+
+        mvc.perform(get("/api/anuncios").param("modalidade", "VENDA")
+                        .param("cidade", "Florianópolis")
+                        .param("precoMinimo", "80").param("precoMaximo", "100"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].titulo").value("Aula de violão"));
+        mvc.perform(get("/api/anuncios").param("cidade", "Ourinhos"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get("/api/anuncios").param("modalidade", "TROCA"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].preco").isEmpty());
+        mvc.perform(get("/api/anuncios").param("precoMinimo", "100"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get("/api/anuncios").param("precoMinimo", "100").param("precoMaximo", "50"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/anuncios").param("modalidade", "INVALIDA"))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test void rejeitaTrocaSemHabilidadeECamposGerenciadosPeloServidor() throws Exception {
         mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json")
                 .content(venda("Aula", "90").replace("VENDA", "TROCA")))
