@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -7,6 +8,9 @@ import { CadastroAnuncioComponent } from './cadastro-anuncio.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { signal } from '@angular/core';
 
+@Component({ standalone: true, template: '' })
+class PaginaDeGestaoTesteComponent {}
+
 describe('Edição de anúncio', () => {
   let http: HttpTestingController;
 
@@ -14,7 +18,8 @@ describe('Edição de anúncio', () => {
     await TestBed.configureTestingModule({
       imports: [CadastroAnuncioComponent],
       providers: [
-        provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
+        provideRouter([{ path: 'anuncios/minhas', component: PaginaDeGestaoTesteComponent }]),
+        provideHttpClient(), provideHttpClientTesting(),
         { provide: SessaoService, useValue: { autenticado: signal(true) } },
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '42' })) } },
       ],
