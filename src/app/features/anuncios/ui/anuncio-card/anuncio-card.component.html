@@ -1,5 +1,11 @@
 <mat-card class="anuncio-card" [attr.data-origem]="anuncio().exemplo ? 'exemplo' : 'sessao'">
-  <a [routerLink]="['/anuncios', anuncio().id]" class="foto-link" [attr.aria-label]="'Ver detalhes de ' + anuncio().titulo">
+  <a
+    [routerLink]="['/anuncios', anuncio().id]"
+    class="foto-link"
+  >
+    @if (!anuncio().imagem) {
+      <span class="sr-only">Ver detalhes de {{ anuncio().titulo }}</span>
+    }
     <div class="foto">
       @if (anuncio().imagem) {
         <img [src]="anuncio().imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" />

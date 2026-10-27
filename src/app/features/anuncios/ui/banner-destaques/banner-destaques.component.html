@@ -5,7 +5,7 @@
     <p class="chamada">{{ destaques[atual()].chamada }}</p>
     <h1>{{ destaques[atual()].titulo }}</h1>
     <p class="subtitulo">{{ destaques[atual()].descricao }}</p>
-    <div class="indicadores" aria-label="Selecionar destaque">
+    <div class="indicadores" role="group" aria-label="Selecionar destaque">
       @for (destaque of destaques; track $index) {
         <button
           type="button"

@@ -103,7 +103,7 @@
             mat-stroked-button
             class="conta"
             (click)="abrirConta()"
-            [attr.aria-label]="sessao.autenticado() ? 'Minha conta' : 'Entrar ou registrar-se'"
+            [attr.aria-label]="sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'"
           >
             <app-icone nome="usuario" /><span>{{
               sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'

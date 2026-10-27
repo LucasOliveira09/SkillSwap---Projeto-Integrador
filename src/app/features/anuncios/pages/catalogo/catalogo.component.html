@@ -63,7 +63,7 @@
         <span aria-hidden="true"> · </span>
         <a routerLink="/profissionais">Encontrar profissionais</a>
       </p>
-      <div class="paginacao" aria-label="Paginação de anúncios">
+      <nav class="paginacao" aria-label="Paginação de anúncios">
         <button
           type="button"
           aria-label="Anúncios anteriores"
@@ -91,7 +91,7 @@
         >
           <app-icone nome="direita" />
         </button>
-      </div>
+      </nav>
     </div>
     @if (estado().carregando) {
       <p class="vazio" role="status">Carregando anúncios...</p>

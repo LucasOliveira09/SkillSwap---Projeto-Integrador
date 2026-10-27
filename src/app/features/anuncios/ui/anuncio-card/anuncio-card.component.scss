@@ -35,14 +35,14 @@
   font-weight: 600;
   border-radius: 5px;
   color: white;
-  background: #17365fc9;
+  background: #17365f;
 }
 .categoria {
   left: 10px;
 }
 .origem {
   right: 8px;
-  background: #ffffffed;
+  background: #fff;
   color: var(--ss-blue);
   font-size: 9px;
 }
@@ -60,6 +60,7 @@
   margin-bottom: 6px;
 }
 .foto-link {
+  position: relative;
   display: block;
   text-decoration: none;
   cursor: pointer;
@@ -67,6 +68,17 @@
   &:hover {
     opacity: 0.95;
   }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 h3 {
   margin: 0;

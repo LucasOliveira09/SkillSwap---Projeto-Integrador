@@ -43,7 +43,7 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const botaoConta = compiled.querySelector('header .conta');
 
-    expect(botaoConta?.getAttribute('aria-label')).toBe('Entrar ou registrar-se');
+    expect(botaoConta?.getAttribute('aria-label')).toBe('Entrar/Registrar-se');
 
     autenticado.set(true);
     fixture.detectChanges();
