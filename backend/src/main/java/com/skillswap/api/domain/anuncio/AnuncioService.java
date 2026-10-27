@@ -2,6 +2,7 @@ package com.skillswap.api.domain.anuncio;
 
 import com.skillswap.api.domain.anuncio.dto.AnuncioRequestDTO;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
+import com.skillswap.api.domain.anuncio.dto.AtualizarStatusAnuncioDTO;
 import com.skillswap.api.domain.avaliacao.AvaliacaoRepository;
 import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoAnuncioDTO;
 import com.skillswap.api.domain.usuario.Usuario;
@@ -58,6 +59,29 @@ public class AnuncioService {
     }
 
     @Transactional(readOnly = true)
+    public Page<AnuncioResponseDTO> listarMeus(String emailUsuario, Pageable pageable) {
+        var usuario = usuarioService.findByEmail(emailUsuario);
+        return mapearPaginaComAvaliacoes(anuncioRepository.findByUsuarioIdAndExemploFalse(usuario.getId(), pageable));
+    }
+
+    @Transactional(readOnly = true)
+    public Anuncio buscarMeu(Long id, String emailUsuario) {
+        var anuncio = anuncioRepository.findById(id)
+                .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
+        checkOwner(anuncio, emailUsuario);
+        return anuncio;
+    }
+
+    @Transactional
+    public Anuncio atualizarStatus(Long id, StatusAnuncio status, String emailUsuario) {
+        var anuncio = anuncioRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
+        checkOwner(anuncio, emailUsuario);
+        anuncio.setStatus(status);
+        return anuncioRepository.save(anuncio);
+    }
+
+    @Transactional(readOnly = true)
     public Anuncio buscarPorId(Long id) {
         return anuncioRepository.findById(id)
                 .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO)
@@ -82,8 +106,7 @@ public class AnuncioService {
     @Transactional
     public Anuncio atualizar(Long id, AnuncioRequestDTO dto, String emailUsuario) {
         validarNegociacao(dto);
-        var anuncio = buscarPorId(id);
-        checkOwner(anuncio, emailUsuario);
+        var anuncio = buscarMeu(id, emailUsuario);
         anuncio.setTitulo(dto.titulo().strip());
         anuncio.setDescricao(dto.descricao().strip());
         anuncio.setCategoria(dto.categoria());

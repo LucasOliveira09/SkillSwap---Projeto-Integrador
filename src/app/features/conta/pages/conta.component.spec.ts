@@ -15,6 +15,11 @@ describe('destino após login', () => {
     expect(destinoPosLogin('/anuncios/novo')).toBe('/anuncios/novo');
   });
 
+  it('permite voltar à gestão ou à edição de anúncio depois do login', () => {
+    expect(destinoPosLogin('/anuncios/minhas')).toBe('/anuncios/minhas');
+    expect(destinoPosLogin('/anuncios/42/editar')).toBe('/anuncios/42/editar');
+  });
+
   it('retorna ao editor de perfil profissional', () => {
     expect(destinoPosLogin('/meu-perfil')).toBe('/meu-perfil');
   });

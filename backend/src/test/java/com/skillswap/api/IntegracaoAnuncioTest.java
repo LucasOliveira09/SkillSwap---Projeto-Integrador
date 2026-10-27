@@ -97,6 +97,37 @@ class IntegracaoAnuncioTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test void proprietarioListaEditaEReativaSomenteSeusAnuncios() throws Exception {
+        var criado = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content(venda("Aula de violão", "90")))
+                .andExpect(status().isCreated()).andReturn();
+        long id = com.fasterxml.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(criado.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(delete("/api/anuncios/{id}", id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/anuncios/meus").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].status").value("INATIVO"));
+        mvc.perform(get("/api/anuncios/meus/{id}", id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id));
+        mvc.perform(put("/api/anuncios/{id}", id).header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content(venda("Aula de piano", "90")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("INATIVO"))
+                .andExpect(jsonPath("$.titulo").value("Aula de piano"));
+        mvc.perform(patch("/api/anuncios/{id}", id).header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content("{\"status\":\"ATIVO\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ATIVO"));
+        mvc.perform(get("/api/anuncios/{id}", id)).andExpect(status().isOk());
+
+        usuarios.register(new com.skillswap.api.domain.usuario.dto.RegisterDTO(
+                "Outra pessoa", "outra@skillswap.invalid", "senha-teste-123"));
+        String outroToken = jwt.generateToken("outra@skillswap.invalid");
+        mvc.perform(patch("/api/anuncios/{id}", id).header("Authorization", "Bearer " + outroToken)
+                        .contentType("application/json").content("{\"status\":\"INATIVO\"}"))
+                .andExpect(status().isForbidden());
+    }
+
     @Test void rejeitaTrocaSemHabilidadeECamposGerenciadosPeloServidor() throws Exception {
         mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token).contentType("application/json")
                 .content(venda("Aula", "90").replace("VENDA", "TROCA")))

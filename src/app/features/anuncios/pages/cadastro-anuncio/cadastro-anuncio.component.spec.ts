@@ -77,4 +77,5 @@ describe('Cadastro persistente', () => {
     expect(fixture.nativeElement.querySelector('[name="titulo"]').value).toBe('Aulas de violão');
     expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
   });
+
 });

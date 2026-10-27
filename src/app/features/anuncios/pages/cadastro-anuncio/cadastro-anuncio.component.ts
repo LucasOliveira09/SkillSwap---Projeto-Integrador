@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,6 +36,8 @@ import { SessaoService } from '../../../conta/data-access/sessao.service';
 export class CadastroAnuncioComponent {
   protected readonly sessao = inject(SessaoService);
   private readonly anuncios = inject(AnunciosApiService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly categorias = signal<readonly CategoriaApi[]>([]);
   protected dados = this.novoFormulario();
@@ -44,11 +46,51 @@ export class CadastroAnuncioComponent {
   protected erroCategorias = false;
   protected carregandoCategorias = true;
   protected salvando = false;
+  protected readonly anuncioId = signal<number | null>(null);
+  protected readonly carregandoAnuncio = signal(false);
   protected readonly enviandoImagem = signal(false);
   protected readonly erroUpload = signal<string | null>(null);
 
   constructor() {
     this.carregarCategorias();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((parametros) => {
+      const id = parametros.get('id');
+      if (!id) return;
+      const numero = Number(id);
+      if (!Number.isSafeInteger(numero) || numero < 1) {
+        this.erro = 'Anúncio inválido.';
+        return;
+      }
+      if (!this.sessao.autenticado()) {
+        void this.router.navigate(['/conta'], { queryParams: { retorno: `/anuncios/${numero}/editar` } });
+        return;
+      }
+      this.anuncioId.set(numero);
+      this.carregarAnuncio(numero);
+    });
+  }
+
+  private carregarAnuncio(id: number): void {
+    this.carregandoAnuncio.set(true);
+    this.erro = '';
+    this.anuncios.obterMeu(id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.carregandoAnuncio.set(false)),
+    ).subscribe({
+      next: (anuncio) => {
+        this.dados = {
+          titulo: anuncio.titulo,
+          descricao: anuncio.descricao,
+          categoria: anuncio.categoria,
+          cidade: anuncio.cidade,
+          modalidade: anuncio.modalidade,
+          preco: anuncio.preco,
+          habilidadeDesejada: anuncio.habilidadeDesejada || '',
+          imagem: anuncio.imagem,
+        };
+      },
+      error: () => this.erro = 'Não foi possível carregar este anúncio. Confira se ele pertence à sua conta.',
+    });
   }
 
   protected carregarCategorias(): void {
@@ -85,21 +127,29 @@ export class CadastroAnuncioComponent {
 
   protected salvar(form: NgForm): void {
     if (!this.sessao.autenticado()) return;
-    if (this.salvando || this.carregandoCategorias || this.erroCategorias || this.mensagem) return;
+    if (this.salvando || this.carregandoCategorias || this.carregandoAnuncio() || this.erroCategorias || this.mensagem) return;
     if (form.invalid || this.erroValidacao) {
       form.control.markAllAsTouched();
       return;
     }
     this.salvando = true;
     this.erro = '';
-    this.anuncios
-      .criar({ ...this.dados })
+    const salvar = this.anuncioId()
+      ? this.anuncios.atualizar(this.anuncioId()!, { ...this.dados })
+      : this.anuncios.criar({ ...this.dados });
+    salvar
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => (this.salvando = false)),
       )
       .subscribe({
-        next: (anuncio) => (this.mensagem = `Anúncio "${anuncio.titulo}" salvo no banco de dados.`),
+        next: (anuncio) => {
+          if (this.anuncioId()) {
+            void this.router.navigate(['/anuncios/minhas'], { queryParams: { atualizado: anuncio.id } });
+          } else {
+            this.mensagem = `Anúncio "${anuncio.titulo}" salvo no banco de dados.`;
+          }
+        },
         error: () =>
           (this.erro =
             'Não foi possível salvar o anúncio. Os campos foram mantidos; revise e tente novamente.'),

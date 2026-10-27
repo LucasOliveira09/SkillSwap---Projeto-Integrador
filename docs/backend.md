@@ -22,10 +22,13 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/vitrine` | Categorias visuais, destaques e serviços persistidos no banco. |
 | GET | `/anuncios?busca=&categoria=&cidade=&modalidade=VENDA&precoMinimo=&precoMaximo=&pagina=0&tamanho=5` | `{itens,pagina,tamanho,totalItens,totalPaginas}`; filtros são opcionais, cidade até 80 caracteres, página até 1.000.000, tamanho 1–50 e busca até 100 caracteres. `modalidade` aceita `VENDA` ou `TROCA`; faixa de preço se aplica a vendas com preço, e nunca inclui trocas. Mínimo não pode exceder máximo. Ordem por data/ID decrescente. |
 | GET | `/anuncios/{id}` | Anúncio ativo ou 404; inclui `mediaAvaliacoesAnuncio` e `quantidadeAvaliacoesAnuncio`, derivados de avaliações existentes de acordos concluídos. |
+| GET | `/anuncios/meus?pagina=0&tamanho=20` | Exige JWT; lista somente anúncios da conta autenticada, inclusive pausados, sem exemplos demonstrativos; paginação até 50. |
+| GET | `/anuncios/meus/{id}` | Exige JWT do proprietário; permite carregar para edição anúncio ativo ou pausado. |
 | POST | `/usuarios` | Criar conta, 201 com Location e JWT; alias antigo `/auth/registrar`. |
 | POST | `/sessoes` | Autenticar com e-mail/senha e receber JWT; alias antigo `/auth/login`. |
 | POST | `/anuncios` | Exige Bearer JWT; 201 com Location após persistir. |
 | PUT | `/anuncios/{id}` | Exige proprietário autenticado e entrada completa. |
+| PATCH | `/anuncios/{id}` | Exige proprietário autenticado; recebe `{ "status": "ATIVO" }` ou `{ "status": "INATIVO" }` e devolve a representação atualizada. |
 | DELETE | `/anuncios/{id}` | Exige proprietário; inativa e devolve 204. Exemplos não podem ser alterados. |
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
@@ -64,7 +67,7 @@ Os endpoints legados `/propostas/minhas`, `/propostas/recebidas`, `/propostas/{i
 
 O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor. A média e a quantidade da oferta ignoram avaliações antigas sem `notaAnuncio`; a nota do profissional continua agregada no perfil.
 
-Cadastro: título 1–100, descrição 1–1500, cidade 1–80, categoria e modalidade válidas. Venda exige preço de 0,01 a 99.999.999,99 com até duas casas; troca exige habilidade de até 120 caracteres e não preserva preço. Campos obrigatórios rejeitam espaços. Proprietário, imagens ilustrativas, avaliações e indicação de exemplo não são controlados pelo formulário.
+Cadastro/edição: título 1–100, descrição 1–1500, cidade 1–80, categoria e modalidade válidas. Venda exige preço de 0,01 a 99.999.999,99 com até duas casas; troca exige habilidade de até 120 caracteres e não preserva preço. Campos obrigatórios rejeitam espaços. Proprietário, imagens ilustrativas, avaliações e indicação de exemplo não são controlados pelo formulário. A conta pode pausar e reativar o próprio anúncio com `PATCH`; o público vê somente anúncios ativos.
 
 Erro JSON: `{codigo,mensagem,campos}`. 400 para entrada inválida; 401 para credenciais/token ausentes ou inválidos; 403 para operação de outro usuário; 404 para recurso ausente/inativo; 405 para método indisponível; 500/503 com mensagem genérica. Não retornar SQL, senha, segredo JWT ou stack trace ao cliente.
 

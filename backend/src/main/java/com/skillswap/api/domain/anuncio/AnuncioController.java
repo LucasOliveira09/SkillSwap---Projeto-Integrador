@@ -2,6 +2,7 @@ package com.skillswap.api.domain.anuncio;
 
 import com.skillswap.api.domain.anuncio.dto.AnuncioRequestDTO;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
+import com.skillswap.api.domain.anuncio.dto.AtualizarStatusAnuncioDTO;
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import jakarta.validation.constraints.*;
 import org.springframework.data.domain.PageRequest;
@@ -53,6 +54,33 @@ public class AnuncioController {
         var anuncio = anuncioService.criar(dto, email);
         return ResponseEntity.created(java.net.URI.create("/api/anuncios/"+anuncio.getId()))
             .body(anuncioService.toResponseDTO(anuncio));
+    }
+
+    @GetMapping("/meus")
+    public ResponseEntity<PaginaDTO<AnuncioResponseDTO>> listarMeus(
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(50) int tamanho,
+            Authentication authentication) {
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(anuncioService.listarMeus(
+                (String) authentication.getPrincipal(), pageable)));
+    }
+
+    @GetMapping("/meus/{id}")
+    public ResponseEntity<AnuncioResponseDTO> buscarMeu(
+            @PathVariable Long id, Authentication authentication) {
+        var anuncio = anuncioService.buscarMeu(id, (String) authentication.getPrincipal());
+        return ResponseEntity.ok(anuncioService.toResponseDTO(anuncio));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<AnuncioResponseDTO> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody @Valid AtualizarStatusAnuncioDTO dto,
+            Authentication authentication) {
+        var anuncio = anuncioService.atualizarStatus(
+                id, dto.status(), (String) authentication.getPrincipal());
+        return ResponseEntity.ok(anuncioService.toResponseDTO(anuncio));
     }
 
     @PutMapping("/{id}")

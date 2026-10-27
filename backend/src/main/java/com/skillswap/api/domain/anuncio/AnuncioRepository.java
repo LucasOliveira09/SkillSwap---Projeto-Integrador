@@ -24,6 +24,9 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     Page<Anuncio> findByUsuarioIdAndStatusAndExemploFalse(Long usuarioId, StatusAnuncio status, Pageable pageable);
 
     @EntityGraph(attributePaths = {"usuario"})
+    Page<Anuncio> findByUsuarioIdAndExemploFalse(Long usuarioId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario"})
     Optional<Anuncio> findById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

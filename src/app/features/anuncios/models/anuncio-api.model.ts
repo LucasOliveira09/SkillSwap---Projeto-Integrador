@@ -8,6 +8,7 @@ export interface CategoriaApi {
 
 export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   id: number;
+  status: 'ATIVO' | 'INATIVO';
   usuarioId: number;
   categoria: string;
   categoriaRotulo: string;
@@ -21,6 +22,8 @@ export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   mediaAvaliacoesAnuncio?: number | null;
   quantidadeAvaliacoesAnuncio?: number;
 }
+
+export type StatusAnuncioApi = AnuncioApi['status'];
 
 export interface PaginaAnuncios {
   itens: readonly AnuncioApi[];

@@ -12,12 +12,15 @@ import { NegociacaoApiService } from '../../negociacao/data-access/negociacao-ap
 import { Acordo, Proposta } from '../../negociacao/models/negociacao.model';
 
 const ROTA_DETALHE_ANUNCIO = /^\/anuncios\/[A-Za-z0-9_-]+$/;
+const ROTA_EDICAO_ANUNCIO = /^\/anuncios\/\d+\/editar$/;
 const ROTA_DETALHE_ACORDO = /^\/acordos\/\d+$/;
 
 export function destinoPosLogin(destino: string | null): string {
   if (
     destino === '/anuncios/novo' ||
+    destino === '/anuncios/minhas' ||
     destino === '/meu-perfil' ||
+    (destino && ROTA_EDICAO_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ACORDO.test(destino))
   ) {

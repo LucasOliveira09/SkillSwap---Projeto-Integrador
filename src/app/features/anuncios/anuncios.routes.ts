@@ -10,6 +10,22 @@ export const ANUNCIOS_ROUTES: Routes = [
       ),
   },
   {
+    path: 'minhas',
+    title: 'Meus anúncios | SkillSwap',
+    loadComponent: () =>
+      import('./pages/minhas-anuncios/minhas-anuncios.component').then(
+        (m) => m.MinhasAnunciosComponent,
+      ),
+  },
+  {
+    path: ':id/editar',
+    title: 'Editar anúncio | SkillSwap',
+    loadComponent: () =>
+      import('./pages/cadastro-anuncio/cadastro-anuncio.component').then(
+        (m) => m.CadastroAnuncioComponent,
+      ),
+  },
+  {
     path: ':id',
     title: 'Detalhes do anúncio | SkillSwap',
     loadComponent: () =>

@@ -8,6 +8,7 @@ import {
   CategoriaApi,
   FiltrosAnuncios,
   PaginaAnuncios,
+  StatusAnuncioApi,
   VitrineApi,
 } from '../models/anuncio-api.model';
 
@@ -46,6 +47,23 @@ export class AnunciosApiService {
       );
   }
 
+  listarMeus(pagina = 0) {
+    return this.http
+      .get<PaginaAnuncios>('/api/anuncios/meus', { params: { pagina, tamanho: 20 } })
+      .pipe(
+        map((resultado) => ({
+          ...resultado,
+          itens: resultado.itens.map((anuncio) => this.converter(anuncio)),
+        })),
+      );
+  }
+
+  obterMeu(id: number) {
+    return this.http
+      .get<AnuncioApi>(`/api/anuncios/meus/${id}`)
+      .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
   obter(id: string | number) {
     return this.http
       .get<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`)
@@ -60,13 +78,18 @@ export class AnunciosApiService {
   }
   criar(dados: DadosAnuncio) {
     return this.http
-      .post<AnuncioApi>(environment.apiUrl + '/anuncios', {
-        ...dados,
-        categoria: dados.categoria.toUpperCase(),
-        modalidade: dados.modalidade.toUpperCase(),
-        preco: dados.modalidade === 'venda' ? dados.preco : null,
-        imagem: dados.imagem || null,
-      })
+      .post<AnuncioApi>(environment.apiUrl + '/anuncios', this.payload(dados))
+      .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
+  atualizar(id: number, dados: DadosAnuncio) {
+    return this.http
+      .put<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`, this.payload(dados))
+      .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
+  atualizarStatus(id: number, status: StatusAnuncioApi) {
+    return this.http.patch<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`, { status })
       .pipe(map((anuncio) => this.converter(anuncio)));
   }
 
@@ -88,6 +111,16 @@ export class AnunciosApiService {
       ...anuncio,
       categoria: anuncio.categoria.toLowerCase(),
       modalidade: anuncio.modalidade.toLowerCase() as DadosAnuncio['modalidade'],
+    };
+  }
+
+  private payload(dados: DadosAnuncio) {
+    return {
+      ...dados,
+      categoria: dados.categoria.toUpperCase(),
+      modalidade: dados.modalidade.toUpperCase(),
+      preco: dados.modalidade === 'venda' ? dados.preco : null,
+      imagem: dados.imagem || null,
     };
   }
 }

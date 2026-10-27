@@ -19,9 +19,11 @@
 <section class="area-cadastro" aria-labelledby="titulo-pagina">
   <div class="cadastro-layout">
     <div class="editor">
-      <a mat-button class="voltar" routerLink="/anuncios">Início / Novo anúncio</a>
-      <h1 id="titulo-pagina">Crie seu anúncio</h1>
-      <p class="introducao">Conte o que você oferece e conecte-se a novas possibilidades.</p>
+      <a mat-button class="voltar" [routerLink]="anuncioId() ? '/anuncios/minhas' : '/anuncios'">
+        {{ anuncioId() ? '← Meus anúncios' : 'Início / Novo anúncio' }}
+      </a>
+      <h1 id="titulo-pagina">{{ anuncioId() ? 'Edite seu anúncio' : 'Crie seu anúncio' }}</h1>
+      <p class="introducao">{{ anuncioId() ? 'Mantenha sua oferta atualizada para quem procura seu trabalho.' : 'Conte o que você oferece e conecte-se a novas possibilidades.' }}</p>
       @if (!sessao.autenticado()) {
         <p role="status">
           Entre na sua conta para salvar seu anúncio.
@@ -31,7 +33,7 @@
         </p>
       }
       <div class="etapa">
-        <span>1</span> Dados do anúncio <small>Preencha para visualizar sua oferta</small>
+        <span>1</span> Dados do anúncio <small>{{ anuncioId() ? 'Atualize os dados da sua oferta' : 'Preencha para visualizar sua oferta' }}</small>
       </div>
       <div class="modos" aria-label="Modalidade do anúncio">
         <button
@@ -61,6 +63,9 @@
         @if (carregandoCategorias) {
           <p role="status">Carregando categorias...</p>
         }
+        @if (carregandoAnuncio()) {
+          <p role="status">Carregando anúncio...</p>
+        }
         @if (erroCategorias) {
           <p role="alert">
             Não foi possível carregar as categorias.
@@ -76,7 +81,7 @@
               <input
                 matInput
                 name="titulo"
-                [disabled]="salvando || carregandoCategorias"
+                [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                 [(ngModel)]="dados.titulo"
                 required
                 maxlength="100"
@@ -89,7 +94,7 @@
               <textarea
                 matInput
                 name="descricao"
-                [disabled]="salvando || carregandoCategorias"
+                [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                 [(ngModel)]="dados.descricao"
                 required
                 maxlength="1500"
@@ -142,7 +147,7 @@
                 <mat-label>Categoria</mat-label>
                 <mat-select
                   name="categoria"
-                  [disabled]="salvando || carregandoCategorias"
+                  [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                   [(ngModel)]="dados.categoria"
                   required
                 >
@@ -156,7 +161,7 @@
                 <input
                   matInput
                   name="cidade"
-                  [disabled]="salvando || carregandoCategorias"
+                  [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                   [(ngModel)]="dados.cidade"
                   required
                   maxlength="80"
@@ -169,7 +174,7 @@
               <mat-label>Como deseja negociar?</mat-label>
               <mat-select
                 name="modalidade"
-                [disabled]="salvando || carregandoCategorias"
+                [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                 [(ngModel)]="dados.modalidade"
                 required
               >
@@ -184,7 +189,7 @@
                   matInput
                   name="preco"
                   type="number"
-                  [disabled]="salvando || carregandoCategorias"
+                  [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                   [(ngModel)]="dados.preco"
                   required
                   min="0.01"
@@ -198,7 +203,7 @@
                 <input
                   matInput
                   name="habilidadeDesejada"
-                  [disabled]="salvando || carregandoCategorias"
+                  [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                   [(ngModel)]="dados.habilidadeDesejada"
                   required
                   maxlength="120"
@@ -243,7 +248,7 @@
               "
               aria-describedby="orientacao"
             >
-              {{ salvando ? 'Salvando...' : 'Salvar anúncio' }}
+          {{ salvando ? 'Salvando...' : anuncioId() ? 'Salvar alterações' : 'Salvar anúncio' }}
             </button>
           </mat-card-actions>
         </form>

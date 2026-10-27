@@ -52,4 +52,34 @@ describe('AnunciosApiService', () => {
     expect(falhou).toBeTrue();
     expect(concluido).toBeFalse();
   });
+
+  it('lista e consulta somente anúncios gerenciáveis pela conta autenticada', () => {
+    api.listarMeus(1).subscribe();
+    const lista = http.expectOne('/api/anuncios/meus?pagina=1&tamanho=20');
+    expect(lista.request.method).toBe('GET');
+    lista.flush({ itens: [], pagina: 1, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+
+    api.obterMeu(42).subscribe();
+    const detalhe = http.expectOne('/api/anuncios/meus/42');
+    expect(detalhe.request.method).toBe('GET');
+    detalhe.flush({ id: 42, categoria: 'AULAS', modalidade: 'VENDA' });
+  });
+
+  it('edita o anúncio e altera apenas o status pela API REST', () => {
+    const dados = {
+      titulo: 'Aula de piano', descricao: 'Iniciante', categoria: 'aulas', cidade: 'Florianópolis',
+      modalidade: 'venda' as const, preco: 75, habilidadeDesejada: '',
+    };
+    api.atualizar(42, dados).subscribe();
+    const edicao = http.expectOne('/api/anuncios/42');
+    expect(edicao.request.method).toBe('PUT');
+    expect(edicao.request.body).toEqual(jasmine.objectContaining({ categoria: 'AULAS', modalidade: 'VENDA', preco: 75 }));
+    edicao.flush({ id: 42, categoria: 'AULAS', modalidade: 'VENDA' });
+
+    api.atualizarStatus(42, 'INATIVO').subscribe();
+    const status = http.expectOne('/api/anuncios/42');
+    expect(status.request.method).toBe('PATCH');
+    expect(status.request.body).toEqual({ status: 'INATIVO' });
+    status.flush({ id: 42, categoria: 'AULAS', modalidade: 'VENDA', status: 'INATIVO' });
+  });
 });
