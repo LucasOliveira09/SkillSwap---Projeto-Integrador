@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Acordo, Avaliacao, Mensagem, Pagina, Proposta, StatusAcordo, StatusProposta } from '../models/negociacao.model';
+import { Acordo, Avaliacao, EventoAcordo, Mensagem, Pagina, Proposta, StatusAcordo, StatusProposta } from '../models/negociacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class NegociacaoApiService {
@@ -20,6 +20,10 @@ export class NegociacaoApiService {
 
   acordo(id: number) {
     return this.http.get<Acordo>(`/api/acordos/${id}`);
+  }
+
+  eventos(acordoId: number) {
+    return this.http.get<readonly EventoAcordo[]>(`/api/acordos/${acordoId}/eventos`);
   }
 
   atualizarAcordo(id: number, status: Extract<StatusAcordo, 'CONCLUIDO' | 'CANCELADO'>) {

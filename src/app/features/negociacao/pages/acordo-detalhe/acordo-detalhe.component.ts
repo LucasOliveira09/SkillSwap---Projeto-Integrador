@@ -11,7 +11,7 @@ import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
 import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
-import { Acordo, Avaliacao, Mensagem } from '../../models/negociacao.model';
+import { Acordo, Avaliacao, EventoAcordo, Mensagem, TipoEventoAcordo } from '../../models/negociacao.model';
 
 @Component({
   selector: 'app-acordo-detalhe',
@@ -40,6 +40,7 @@ export class AcordoDetalheComponent {
   protected readonly paginaMensagens = signal(0);
   protected readonly totalPaginasMensagens = signal(0);
   protected readonly avaliacoes = signal<readonly Avaliacao[]>([]);
+  protected readonly eventos = signal<readonly EventoAcordo[]>([]);
   protected readonly mensagem = signal('');
   protected nota = 0;
   protected notaAnuncio = 0;
@@ -105,6 +106,7 @@ export class AcordoDetalheComponent {
       acordo: this.api.acordo(this.acordoId),
       mensagens: this.api.mensagens(this.acordoId, 0),
       avaliacoes: this.api.avaliacoes(this.acordoId),
+      eventos: this.api.eventos(this.acordoId),
       perfil: this.perfilApi.meuPerfil(),
     }).pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -114,6 +116,7 @@ export class AcordoDetalheComponent {
         this.acordo.set(resposta.acordo);
         this.aplicarPaginaMensagens(resposta.mensagens);
         this.avaliacoes.set(resposta.avaliacoes);
+        this.eventos.set(resposta.eventos);
         this.perfil.set(resposta.perfil);
         if (resposta.mensagens.totalPaginas > 1) {
           this.carregarMensagens(resposta.mensagens.totalPaginas - 1);
@@ -121,6 +124,15 @@ export class AcordoDetalheComponent {
       },
       error: () => this.erro.set('Não foi possível carregar este acordo. Confira se você participa dele e tente novamente.'),
     });
+  }
+
+  protected descricaoEvento(tipo: TipoEventoAcordo): string {
+    switch (tipo) {
+      case 'ACORDO_INICIADO': return 'Acordo iniciado após a proposta ser aceita.';
+      case 'CONCLUSAO_CONFIRMADA': return 'Confirmou que o trabalho foi concluído.';
+      case 'ACORDO_CONCLUIDO': return 'As duas partes confirmaram a conclusão.';
+      case 'ACORDO_CANCELADO': return 'Acordo cancelado.';
+    }
   }
 
   protected carregarMensagens(pagina: number): void {

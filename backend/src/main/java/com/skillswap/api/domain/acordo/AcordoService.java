@@ -24,6 +24,7 @@ public class AcordoService {
     private final AcordoRepository acordoRepository;
     private final UsuarioService usuarioService;
     private final NotificacaoService notificacaoService;
+    private final EventoAcordoService eventoAcordoService;
 
     @Transactional(readOnly = true)
     public List<AcordoResponseDTO> listarMeus(String emailUsuario) {
@@ -68,14 +69,19 @@ public class AcordoService {
             throw new IllegalArgumentException("Acordo não está em andamento");
         }
         Long anuncianteId = acordo.getProposta().getAnuncio().getUsuario().getId();
-        Long usuarioId = usuarioService.findByEmail(emailUsuario).getId();
+        Usuario ator = usuarioService.findByEmail(emailUsuario);
+        Long usuarioId = ator.getId();
+        boolean novaConfirmacao;
         if (anuncianteId.equals(usuarioId)) {
+            novaConfirmacao = !Boolean.TRUE.equals(acordo.getConclusaoConfirmadaAnunciante());
             acordo.setConclusaoConfirmadaAnunciante(true);
         } else {
+            novaConfirmacao = !Boolean.TRUE.equals(acordo.getConclusaoConfirmadaProponente());
             acordo.setConclusaoConfirmadaProponente(true);
         }
-        if (Boolean.TRUE.equals(acordo.getConclusaoConfirmadaAnunciante())
-                && Boolean.TRUE.equals(acordo.getConclusaoConfirmadaProponente())) {
+        boolean concluiuAgora = Boolean.TRUE.equals(acordo.getConclusaoConfirmadaAnunciante())
+                && Boolean.TRUE.equals(acordo.getConclusaoConfirmadaProponente());
+        if (concluiuAgora) {
             acordo.setStatus(StatusAcordo.CONCLUIDO);
             acordo.setConcluidoEm(LocalDateTime.now());
         }
@@ -84,11 +90,15 @@ public class AcordoService {
                 ? acordo.getProposta().getProponente()
                 : anunciante;
         boolean concluido = acordo.getStatus() == StatusAcordo.CONCLUIDO;
-        notificacaoService.criar(destinatario, TipoNotificacao.ACORDO_ATUALIZADO,
-                concluido ? "Acordo concluído" : "Confirmação de conclusão",
-                concluido ? "As duas pessoas confirmaram a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Avaliações liberadas."
-                        : "A outra pessoa confirmou a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Confirme para concluir.",
-                "/acordos/" + acordo.getId());
+        if (novaConfirmacao) {
+            eventoAcordoService.registrar(acordo, ator, TipoEventoAcordo.CONCLUSAO_CONFIRMADA);
+            if (concluiuAgora) eventoAcordoService.registrar(acordo, ator, TipoEventoAcordo.ACORDO_CONCLUIDO);
+            notificacaoService.criar(destinatario, TipoNotificacao.ACORDO_ATUALIZADO,
+                    concluido ? "Acordo concluído" : "Confirmação de conclusão",
+                    concluido ? "As duas pessoas confirmaram a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Avaliações liberadas."
+                            : "A outra pessoa confirmou a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Confirme para concluir.",
+                    "/acordos/" + acordo.getId());
+        }
         return acordoRepository.save(acordo);
     }
 
@@ -109,6 +119,7 @@ public class AcordoService {
         notificacaoService.criar(destinatario, TipoNotificacao.ACORDO_ATUALIZADO,
                 "Acordo cancelado", "O acordo para “" + acordo.getProposta().getAnuncio().getTitulo() + "” foi cancelado.",
                 "/acordos/" + acordo.getId());
+        eventoAcordoService.registrar(acordo, atual, TipoEventoAcordo.ACORDO_CANCELADO);
         return acordoRepository.save(acordo);
     }
 

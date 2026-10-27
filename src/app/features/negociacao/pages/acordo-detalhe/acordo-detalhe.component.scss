@@ -1,13 +1,19 @@
 :host { display: block; min-width: 0; }
 .pagina-acordo { max-width: 920px; margin: 0 auto; padding: 28px 32px 64px; }
 .voltar { color: var(--ss-blue); font-size: 13px; text-decoration: none; }
-.cabecalho-acordo, .conversa, .avaliacao, .estado { margin-top: 20px; padding: 24px 28px; border: 1px solid var(--ss-line); border-radius: 16px; background: var(--ss-surface); }
+.cabecalho-acordo, .conversa, .historico-acordo, .avaliacao, .estado { margin-top: 20px; padding: 24px 28px; border: 1px solid var(--ss-line); border-radius: 16px; background: var(--ss-surface); }
 .sobretitulo { margin: 0 0 4px; color: var(--ss-blue); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 h1 { margin: 0; color: var(--ss-text); font-size: clamp(25px, 4vw, 34px); }
 h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .cabecalho-acordo > p:not(.sobretitulo) { color: var(--ss-muted); }
 .meta-acordo { display: flex; flex-wrap: wrap; gap: 10px; color: var(--ss-muted); font-size: 13px; }
 .lista-mensagens { display: grid; gap: 12px; max-height: 520px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.historico-acordo ol { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.historico-acordo li { position: relative; display: flex; gap: 12px; padding: 0 0 18px; }
+.historico-acordo li:not(:last-child)::before { position: absolute; top: 12px; bottom: -2px; left: 5px; width: 1px; background: var(--ss-line); content: ''; }
+.marcador-evento { z-index: 1; flex: 0 0 11px; height: 11px; margin-top: 4px; border: 2px solid var(--ss-blue); border-radius: 50%; background: var(--ss-surface); }
+.historico-acordo li div { display: grid; gap: 4px; min-width: 0; }
+.historico-acordo small { color: var(--ss-muted); }
 .paginacao-mensagens { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; color: var(--ss-muted); font-size: 12px; }
 .mensagem { max-width: 82%; justify-self: start; padding: 12px 14px; border-radius: 12px 12px 12px 3px; background: var(--ss-soft); overflow-wrap: anywhere; }
 .mensagem.propria { justify-self: end; border-radius: 12px 12px 3px 12px; background: #e8f5eb; }
@@ -32,4 +38,4 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
 .avaliacao-publicada span { color: #ad7600; }
 .avaliacao-publicada p { margin: 0; white-space: pre-line; }
-@media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } .paginacao-mensagens { flex-wrap: wrap; } .paginacao-mensagens span { order: -1; width: 100%; text-align: center; } }
+@media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .historico-acordo, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } .paginacao-mensagens { flex-wrap: wrap; } .paginacao-mensagens span { order: -1; width: 100%; text-align: center; } }

@@ -41,6 +41,11 @@ describe('NegociacaoApiService', () => {
     expect(acordo.request.method).toBe('GET');
     acordo.flush({ id: 3 });
 
+    api.eventos(3).subscribe((eventos) => expect(eventos).toEqual([]));
+    const eventos = http.expectOne('/api/acordos/3/eventos');
+    expect(eventos.request.method).toBe('GET');
+    eventos.flush([]);
+
     api.mensagens(3, 4).subscribe((pagina) => expect(pagina.itens.length).toBe(0));
     const mensagens = http.expectOne((request) => request.url === '/api/acordos/3/mensagens');
     expect(mensagens.request.params.get('pagina')).toBe('4');

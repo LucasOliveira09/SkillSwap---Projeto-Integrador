@@ -8,6 +8,8 @@ import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.anuncio.StatusAnuncio;
 import com.skillswap.api.domain.notificacao.NotificacaoService;
 import com.skillswap.api.domain.notificacao.TipoNotificacao;
+import com.skillswap.api.domain.acordo.EventoAcordoService;
+import com.skillswap.api.domain.acordo.TipoEventoAcordo;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
 import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
@@ -34,6 +36,7 @@ public class PropostaService {
     private final UsuarioService usuarioService;
     private final AcordoRepository acordoRepository;
     private final NotificacaoService notificacaoService;
+    private final EventoAcordoService eventoAcordoService;
 
     @Transactional
     public Proposta criar(Long anuncioId, PropostaRequestDTO dto, String emailUsuario) {
@@ -126,6 +129,7 @@ public class PropostaService {
         // Avisa a pessoa que enviou a proposta e aponta para a nova conversa.
         var acordo = Acordo.builder().proposta(proposta).build();
         acordoRepository.save(acordo);
+        eventoAcordoService.registrar(acordo, proposta.getAnuncio().getUsuario(), TipoEventoAcordo.ACORDO_INICIADO);
         notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                 "Proposta aceita", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi aceita.",
                 "/acordos/" + acordo.getId());

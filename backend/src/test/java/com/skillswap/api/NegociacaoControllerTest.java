@@ -169,6 +169,15 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(2))
                 .andExpect(jsonPath("$.itens[0].tipo").value("ACORDO_ATUALIZADO"))
                 .andExpect(jsonPath("$.itens[1].tipo").value("PROPOSTA_RESPONDIDA"));
+        mvc.perform(get("/api/acordos/{id}/eventos", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].tipo").value("ACORDO_INICIADO"))
+                .andExpect(jsonPath("$[1].tipo").value("CONCLUSAO_CONFIRMADA"))
+                .andExpect(jsonPath("$[2].tipo").value("CONCLUSAO_CONFIRMADA"))
+                .andExpect(jsonPath("$[3].tipo").value("ACORDO_CONCLUIDO"));
+        mvc.perform(get("/api/acordos/{id}/eventos", acordoId)
+                        .header("Authorization", "Bearer " + tokenExterno))
+                .andExpect(status().isForbidden());
     }
 
     @Test

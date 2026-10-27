@@ -85,6 +85,25 @@
       }
     </section>
 
+    <section class="historico-acordo" aria-labelledby="titulo-historico">
+      <h2 id="titulo-historico">Histórico do acordo</h2>
+      @if (!eventos().length) {
+        <p>Não há eventos de histórico disponíveis para este acordo.</p>
+      } @else {
+        <ol>
+          @for (evento of eventos(); track evento.id) {
+            <li>
+              <span class="marcador-evento" aria-hidden="true"></span>
+              <div>
+                <strong>{{ descricaoEvento(evento.tipo) }}</strong>
+                <small>{{ evento.atorNome }} · {{ evento.criadoEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</small>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+
     @if (erro()) { <p class="feedback erro" role="alert">{{ erro() }}</p> }
     @if (sucesso()) { <p class="feedback sucesso" role="status">{{ sucesso() }}</p> }
 

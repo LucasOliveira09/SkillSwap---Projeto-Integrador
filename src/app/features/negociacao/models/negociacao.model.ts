@@ -1,5 +1,14 @@
 export type StatusProposta = 'PENDENTE' | 'ACEITA' | 'RECUSADA' | 'CANCELADA';
 export type StatusAcordo = 'EM_ANDAMENTO' | 'CONCLUIDO' | 'CANCELADO';
+export type TipoEventoAcordo = 'ACORDO_INICIADO' | 'CONCLUSAO_CONFIRMADA' | 'ACORDO_CONCLUIDO' | 'ACORDO_CANCELADO';
+
+export interface EventoAcordo {
+  id: number;
+  tipo: TipoEventoAcordo;
+  atorId: number;
+  atorNome: string;
+  criadoEm: string;
+}
 
 export interface Proposta {
   id: number;

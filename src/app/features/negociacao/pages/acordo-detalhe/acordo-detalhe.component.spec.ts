@@ -26,6 +26,7 @@ describe('AcordoDetalheComponent', () => {
       conclusaoConfirmadaAnunciante: false, conclusaoConfirmadaProponente: false,
     };
     http.expectOne('/api/acordos/7').flush(acordo);
+    http.expectOne('/api/acordos/7/eventos').flush([]);
     http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
       itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
     });
@@ -65,6 +66,10 @@ describe('AcordoDetalheComponent', () => {
       status: 'CONCLUIDO', criadoEm: '2026-10-26T10:00:00', concluidoEm: '2026-10-26T11:00:00',
       conclusaoConfirmadaAnunciante: true, conclusaoConfirmadaProponente: true,
     });
+    http.expectOne('/api/acordos/7/eventos').flush([
+      { id: 1, tipo: 'ACORDO_INICIADO', atorId: 1, atorNome: 'Ana', criadoEm: '2026-10-26T10:00:00' },
+      { id: 2, tipo: 'CONCLUSAO_CONFIRMADA', atorId: 1, atorNome: 'Ana', criadoEm: '2026-10-26T11:00:00' },
+    ]);
     http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
       itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
     });
@@ -78,5 +83,7 @@ describe('AcordoDetalheComponent', () => {
     const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
     expect(secao.textContent).toContain('O cliente que enviou a proposta poderá avaliar');
     expect(secao.querySelector('form')).toBeNull();
+    expect(harness.routeNativeElement!.querySelector('.historico-acordo')?.textContent)
+      .toContain('Confirmou que o trabalho foi concluído');
   });
 });

@@ -2,6 +2,7 @@ package com.skillswap.api.domain.acordo;
 
 import com.skillswap.api.domain.acordo.dto.AcordoResponseDTO;
 import com.skillswap.api.domain.acordo.dto.AtualizarStatusAcordoDTO;
+import com.skillswap.api.domain.acordo.dto.EventoAcordoDTO;
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -21,6 +22,7 @@ import java.util.List;
 public class AcordoController {
 
     private final AcordoService acordoService;
+    private final EventoAcordoService eventoAcordoService;
 
     @GetMapping
     public ResponseEntity<PaginaDTO<AcordoResponseDTO>> listar(Authentication authentication,
@@ -34,6 +36,12 @@ public class AcordoController {
     @GetMapping("/{id}")
     public ResponseEntity<AcordoResponseDTO> buscar(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(acordoService.buscar(id, (String) authentication.getPrincipal()));
+    }
+
+    @GetMapping("/{id}/eventos")
+    public ResponseEntity<List<EventoAcordoDTO>> listarEventos(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(eventoAcordoService.listar(id, (String) authentication.getPrincipal()));
     }
 
     @PatchMapping("/{id}")
