@@ -53,4 +53,30 @@ describe('AcordoDetalheComponent', () => {
     expect(harness.routeNativeElement?.querySelector('.avaliacao')).toBeNull();
     expect(harness.routeNativeElement?.querySelector('.concluir')).toBeNull();
   });
+
+  it('não oferece avaliação ao profissional depois da conclusão', async () => {
+    TestBed.inject(SessaoService).entrar('profissional@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+
+    const harness = await RouterTestingHarness.create('/acordos/7');
+    http.expectOne('/api/acordos/7').flush({
+      id: 7, propostaId: 5, anuncioId: 3, anuncioTitulo: 'Aula de violão',
+      anuncianteId: 1, anuncianteNome: 'Ana', proponenteId: 2, proponenteNome: 'Bruno',
+      status: 'CONCLUIDO', criadoEm: '2026-10-26T10:00:00', concluidoEm: '2026-10-26T11:00:00',
+      conclusaoConfirmadaAnunciante: true, conclusaoConfirmadaProponente: true,
+    });
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/perfil').flush({
+      id: 1, nome: 'Ana', bio: null, cidade: null, fotoUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
+    expect(secao.textContent).toContain('O cliente que enviou a proposta poderá avaliar');
+    expect(secao.querySelector('form')).toBeNull();
+  });
 });

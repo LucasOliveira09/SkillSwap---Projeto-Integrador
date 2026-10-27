@@ -76,6 +76,12 @@ export class AcordoDetalheComponent {
     return perfil ? this.avaliacoes().some((avaliacao) => avaliacao.avaliadorId === perfil.id) : false;
   });
 
+  protected readonly podeAvaliar = computed(() => {
+    const acordo = this.acordo();
+    const perfil = this.perfil();
+    return Boolean(acordo && perfil && acordo.proponenteId === perfil.id);
+  });
+
   constructor() {
     if (!this.sessao.autenticado()) {
       const id = this.route.snapshot.paramMap.get('id');
@@ -192,7 +198,7 @@ export class AcordoDetalheComponent {
   }
 
   protected avaliar(): void {
-    if (!this.nota || !this.notaAnuncio || this.enviando() || this.acordo()?.status !== 'CONCLUIDO' || this.jaAvaliou()) return;
+    if (!this.nota || !this.notaAnuncio || this.enviando() || this.acordo()?.status !== 'CONCLUIDO' || !this.podeAvaliar() || this.jaAvaliou()) return;
     this.enviando.set(true);
     this.erro.set('');
     this.sucesso.set('');

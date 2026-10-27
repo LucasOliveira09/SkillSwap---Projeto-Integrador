@@ -39,13 +39,12 @@ public class AvaliacaoService {
             throw new NaoAutorizadoException("Você não é participante deste acordo");
         }
 
-        // Determinar avaliado (o outro participante)
-        Usuario avaliado;
-        if (emailAnunciante.equals(emailUsuario)) {
-            avaliado = acordo.getProposta().getProponente();
-        } else {
-            avaliado = acordo.getProposta().getAnuncio().getUsuario();
+        if (!emailProponente.equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Somente o cliente que enviou a proposta pode avaliar o profissional e o serviço");
         }
+
+        // Determinar avaliado (o outro participante)
+        Usuario avaliado = acordo.getProposta().getAnuncio().getUsuario();
 
         // Sem autoavaliação
         if (avaliador.getId().equals(avaliado.getId())) {

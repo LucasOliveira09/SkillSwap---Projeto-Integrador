@@ -119,6 +119,11 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CONCLUIDO"))
                 .andExpect(jsonPath("$.conclusaoConfirmadaAnunciante").value(true))
                 .andExpect(jsonPath("$.conclusaoConfirmadaProponente").value(true));
+        mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":5,\"notaAnuncio\":4}"))
+                .andExpect(status().isForbidden());
         var respostaAvaliacao = mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON)

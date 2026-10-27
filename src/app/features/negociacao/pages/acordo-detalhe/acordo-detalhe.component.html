@@ -90,41 +90,46 @@
 
     @if (a.status === 'CONCLUIDO') {
       <section class="avaliacao" aria-labelledby="titulo-avaliacao">
-        <h2 id="titulo-avaliacao">Avaliar {{ interlocutor() }}</h2>
-        @if (jaAvaliou()) {
-          <p class="sucesso" role="status">Você já enviou sua avaliação para este acordo.</p>
+        @if (podeAvaliar()) {
+          <h2 id="titulo-avaliacao">Avaliar {{ interlocutor() }}</h2>
+          @if (jaAvaliou()) {
+            <p class="sucesso" role="status">Você já enviou sua avaliação para este acordo.</p>
+          } @else {
+            <p>Esta avaliação fica vinculada a um acordo concluído e ajuda outras pessoas a comparar profissionais.</p>
+            <form (ngSubmit)="avaliar()">
+              <fieldset>
+                <legend>Nota do profissional</legend>
+                <div class="estrelas" aria-label="Nota do profissional">
+                  @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                    <button type="button" [attr.aria-pressed]="nota === estrela"
+                      [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                      [class.selecionada]="nota >= estrela" (click)="nota = estrela">★</button>
+                  }
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Nota do anúncio ou serviço</legend>
+                <div class="estrelas" aria-label="Nota do anúncio ou serviço">
+                  @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                    <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
+                      [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                      [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">★</button>
+                  }
+                </div>
+              </fieldset>
+              <mat-form-field appearance="outline">
+                <mat-label>Depoimento (opcional)</mat-label>
+                <textarea matInput name="depoimento" [(ngModel)]="depoimento" maxlength="1000" rows="3"></textarea>
+                <mat-hint>{{ depoimento.length }}/1000</mat-hint>
+              </mat-form-field>
+              <button mat-flat-button color="primary" type="submit" [disabled]="!nota || !notaAnuncio || enviando()">
+                {{ enviando() ? 'Enviando...' : 'Enviar avaliação' }}
+              </button>
+            </form>
+          }
         } @else {
-          <p>Esta avaliação fica vinculada a um acordo concluído e ajuda outras pessoas a comparar profissionais.</p>
-          <form (ngSubmit)="avaliar()">
-            <fieldset>
-              <legend>Nota do profissional</legend>
-              <div class="estrelas" aria-label="Nota do profissional">
-                @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
-                  <button type="button" [attr.aria-pressed]="nota === estrela"
-                    [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                    [class.selecionada]="nota >= estrela" (click)="nota = estrela">★</button>
-                }
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>Nota do anúncio ou serviço</legend>
-              <div class="estrelas" aria-label="Nota do anúncio ou serviço">
-                @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
-                  <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
-                    [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                    [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">★</button>
-                }
-              </div>
-            </fieldset>
-            <mat-form-field appearance="outline">
-              <mat-label>Depoimento (opcional)</mat-label>
-              <textarea matInput name="depoimento" [(ngModel)]="depoimento" maxlength="1000" rows="3"></textarea>
-              <mat-hint>{{ depoimento.length }}/1000</mat-hint>
-            </mat-form-field>
-            <button mat-flat-button color="primary" type="submit" [disabled]="!nota || !notaAnuncio || enviando()">
-              {{ enviando() ? 'Enviando...' : 'Enviar avaliação' }}
-            </button>
-          </form>
+          <h2 id="titulo-avaliacao">Avaliação da experiência</h2>
+          <p role="status">O cliente que enviou a proposta poderá avaliar o profissional e o serviço.</p>
         }
         @for (avaliacao of avaliacoes(); track avaliacao.id) {
           <article class="avaliacao-publicada">
