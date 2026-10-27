@@ -72,7 +72,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Entrega e fases seguintes
 
-- [ ] Completar validação operacional: moderação em MySQL, axe/leitor de tela, cópia externa/retenção e restauração operacional de uploads, além da decisão de migração para o schema ativo. Concorrência e migração integral do schema foram validadas; MySQL 8.4.11 e API básica passaram numa instância descartável da VPS. Os fluxos de venda e troca na interface, autorização básica, persistência de perfil/foto/publicações/avaliações e reinício da API passaram em MySQL 8.0.46.
+- [ ] Completar validação operacional: axe/leitor de tela, cópia externa/retenção e restauração operacional de uploads, além da decisão de migração para o schema ativo. Concorrência, migração integral e moderação foram validadas em cópias isoladas MySQL 8.0.46; baseline e API básica passaram em MySQL 8.4.11 descartável na VPS. Os fluxos de venda e troca na interface, autorização básica e persistência após reinício passaram em MySQL 8.0.46.
 - [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
 - [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
