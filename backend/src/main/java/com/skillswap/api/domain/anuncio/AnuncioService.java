@@ -44,6 +44,13 @@ public class AnuncioService {
     }
 
     @Transactional(readOnly = true)
+    public Page<AnuncioResponseDTO> listarOfertasPublicasDoUsuario(Long usuarioId, Pageable pageable) {
+        return anuncioRepository.findByUsuarioIdAndStatusAndExemploFalse(
+                        usuarioId, StatusAnuncio.ATIVO, pageable)
+                .map(this::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
     public Anuncio buscarPorId(Long id) {
         return anuncioRepository.findById(id)
                 .filter(anuncio -> anuncio.getStatus() == StatusAnuncio.ATIVO)

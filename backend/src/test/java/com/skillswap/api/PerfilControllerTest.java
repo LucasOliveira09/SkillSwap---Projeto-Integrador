@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,5 +76,24 @@ class PerfilControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"bio\":\"Texto\"}"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void perfilPublicoListaSomenteOfertasAtivasDoProfissional() throws Exception {
+        mvc.perform(post("/api/anuncios")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"titulo":"Aulas de violão","descricao":"Para iniciantes", "categoria":"AULAS",
+                                 "cidade":"Florianópolis","modalidade":"VENDA","preco":80,"habilidadeDesejada":""}
+                                """))
+                .andExpect(status().isCreated());
+
+        mvc.perform(get("/api/perfis/{id}/anuncios", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].titulo").value("Aulas de violão"))
+                .andExpect(jsonPath("$.itens[0].usuarioId").value(usuarioId))
+                .andExpect(jsonPath("$.itens[0].exemplo").value(false));
     }
 }

@@ -12,7 +12,7 @@ public record UpdatePerfilDTO(
         String bio,
 
         @Size(max = 80, message = "Cidade deve ter no máximo 80 caracteres")
-        @Pattern(regexp = ".*\\S.*", message = "Cidade não pode conter apenas espaços")
+        @Pattern(regexp = "^$|.*\\S.*", message = "Cidade não pode conter apenas espaços")
         String cidade,
 
         @Size(max = 500, message = "URL da foto deve ter no máximo 500 caracteres")
