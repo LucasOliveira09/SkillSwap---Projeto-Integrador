@@ -35,6 +35,16 @@
           }
         </ol>
       }
+      @if (carregandoMensagens()) { <p role="status">Carregando mensagens...</p> }
+      @if (totalPaginasMensagens() > 1) {
+        <nav class="paginacao-mensagens" aria-label="Páginas da conversa">
+          <button mat-stroked-button type="button" (click)="carregarMensagens(paginaMensagens() - 1)"
+            [disabled]="paginaMensagens() === 0 || carregandoMensagens()">Mensagens anteriores</button>
+          <span>Página {{ paginaMensagens() + 1 }} de {{ totalPaginasMensagens() }}</span>
+          <button mat-stroked-button type="button" (click)="carregarMensagens(paginaMensagens() + 1)"
+            [disabled]="paginaMensagens() + 1 >= totalPaginasMensagens() || carregandoMensagens()">Mensagens mais recentes</button>
+        </nav>
+      }
 
       @if (a.status === 'EM_ANDAMENTO') {
         <form class="form-mensagem" (ngSubmit)="enviarMensagem()">

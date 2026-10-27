@@ -195,7 +195,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** comprador e anunciante completam um fluxo venda e um fluxo troca; usuários externos não leem nem alteram conversa; aceite concorrente não cria dois acordos; erro não aparece como lista vazia.
 
-**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, confirma conclusão e permite cancelar proposta pendente enviada. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento bloqueiam a linha do anúncio para serializar transições; ao aceitar, as propostas concorrentes são recusadas. Testes MockMvc/JPA cobrem cancelamento e um teste com duas requisições simultâneas em H2 confirma que apenas uma é aceita e um acordo é criado. Ainda faltam validar o bloqueio no MySQL real, histórico de eventos, navegação de páginas na conversa, notificações e validar cenários de venda e troca no MySQL.
+**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, confirma conclusão e permite cancelar proposta pendente enviada. A conversa paginada abre nas mensagens recentes e permite percorrer páginas anteriores e seguintes. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento bloqueiam a linha do anúncio para serializar transições; ao aceitar, as propostas concorrentes são recusadas. Testes MockMvc/JPA cobrem cancelamento e um teste com duas requisições simultâneas em H2 confirma que apenas uma é aceita e um acordo é criado. Ainda faltam validar o bloqueio no MySQL real, histórico de eventos, notificações e validar cenários de venda e troca no MySQL.
 
 ### Fase 6 — Conclusão, avaliações e reputação
 

@@ -8,6 +8,7 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .cabecalho-acordo > p:not(.sobretitulo) { color: var(--ss-muted); }
 .meta-acordo { display: flex; flex-wrap: wrap; gap: 10px; color: var(--ss-muted); font-size: 13px; }
 .lista-mensagens { display: grid; gap: 12px; max-height: 520px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.paginacao-mensagens { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; color: var(--ss-muted); font-size: 12px; }
 .mensagem { max-width: 82%; justify-self: start; padding: 12px 14px; border-radius: 12px 12px 12px 3px; background: var(--ss-soft); overflow-wrap: anywhere; }
 .mensagem.propria { justify-self: end; border-radius: 12px 12px 3px 12px; background: #e8f5eb; }
 .mensagem p { margin: 0 0 6px; white-space: pre-line; }
@@ -30,4 +31,4 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
 .avaliacao-publicada span { color: #ad7600; }
 .avaliacao-publicada p { margin: 0; white-space: pre-line; }
-@media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } }
+@media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } .paginacao-mensagens { flex-wrap: wrap; } .paginacao-mensagens span { order: -1; width: 100%; text-align: center; } }

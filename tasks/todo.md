@@ -41,7 +41,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [ ] Validar aceite concorrente com MySQL real e registrar histórico de eventos da negociação.
 - [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
-- [ ] Adicionar navegação de páginas à conversa e testar histórico extenso.
+- [x] Adicionar navegação de páginas à conversa, abrir nas mensagens recentes e testar histórico extenso.
 - [x] Coletar e calcular nota separada para oferta/serviço após acordo concluído; exibir média/amostra no anúncio e avaliações no perfil.
 - [ ] Implementar denúncia/moderação e regras de resposta/edição das avaliações.
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.

@@ -26,9 +26,9 @@ export class NegociacaoApiService {
     return this.http.patch<Acordo>(`/api/acordos/${id}`, { status });
   }
 
-  mensagens(acordoId: number) {
+  mensagens(acordoId: number, pagina = 0) {
     return this.http.get<Pagina<Mensagem>>(`/api/acordos/${acordoId}/mensagens`, {
-      params: { pagina: 0, tamanho: 50 },
+      params: { pagina, tamanho: 50 },
     });
   }
 
