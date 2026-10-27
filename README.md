@@ -97,6 +97,7 @@ O instalador criou o tema com `mat.theme`. Na adaptação do layout antigo, esse
 
 - [Backend e contrato HTTP](docs/backend.md): execução, banco, arquitetura e validação.
 - [Escopo do MVP](docs/escopo-mvp.md): problema, público, seis capacidades planejadas e decisões em aberto.
+- [Política de perfis e privacidade](docs/politica-perfis.md) e [política de avaliações](docs/politica-avaliacoes.md): campos públicos, controles existentes e limites da moderação.
 - [Diretrizes da disciplina](docs/diretrizes-projeto.md) e [PDFs originais](docs/referencias/README.md).
 - [Decisão de arquitetura](docs/decisions/001-angular-standalone.md), [plano](tasks/plan.md) e [tarefas](tasks/todo.md).
 - [Validação da entrega](docs/validacao-inicial.md) e [contexto para agentes](AGENTS.md).

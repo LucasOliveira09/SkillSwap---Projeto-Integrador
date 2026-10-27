@@ -254,14 +254,14 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 ## Decisões pendentes para fechar antes das fases correspondentes
 
-1. Quais dados do perfil são públicos por padrão e quais podem ser ocultados?
-2. Avaliação: o cliente dá uma nota ao profissional e outra ao anúncio na mesma ação? O profissional também avalia o cliente?
-3. Moderação de avaliações foi decidida para o MVP: somente e-mails na allowlist podem analisar, com justificativa obrigatória e trilha persistida. A allowlist operacional continua configurável por ambiente.
-4. Imagens: limite por publicação, retenção após excluir anúncio e provedor/volume durável.
+1. Visibilidade de perfil: definida em [`politica-perfis.md`](../docs/politica-perfis.md). O perfil básico e conteúdos profissionais publicados são públicos; contato, conversa e negociação são privados. Controles por campo e exclusão da conta não existem nesta fase.
+2. Avaliações: uma ação do cliente registra nota do profissional e do serviço; o profissional não avalia o cliente nesta fase. Regras em [`politica-avaliacoes.md`](../docs/politica-avaliacoes.md).
+3. Moderação: somente e-mails na allowlist podem analisar, com justificativa obrigatória e trilha persistida; a allowlist operacional continua configurável por ambiente.
+4. Imagens: até seis fotos por publicação, armazenamento em volume configurável e limpeza de arquivos órfãos após retenção. Backup/migração e revogação imediata das URLs ao remover a última referência permanecem pendentes.
 5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
 6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
 
-A confirmação mútua para concluir acordos foi implementada e registrada na [ADR-005](../docs/decisions/005-confirmacao-mutua-acordo.md). Notificações transacionais em tela foram implementadas; ainda faltam janela de contestação e processo de divergência.
+A confirmação mútua para concluir acordos foi implementada e registrada na [ADR-005](../docs/decisions/005-confirmacao-mutua-acordo.md). Notificações transacionais em tela foram implementadas; a janela de contestação das avaliações está implementada em sete dias. Um processo de divergência sobre o resultado do serviço ainda precisa ser definido antes de apresentar a plataforma como árbitro de disputas.
 
 ## Referências do projeto
 
