@@ -123,6 +123,13 @@ public class PropostaService {
             throw new IllegalArgumentException("Proposta não está pendente");
         }
 
+        List<Proposta> propostasDoAnuncio = propostaRepository.findByAnuncioIdForUpdate(proposta.getAnuncio().getId());
+        boolean outraJaAceita = propostasDoAnuncio.stream()
+                .anyMatch(item -> !item.getId().equals(propostaId) && item.getStatus() == StatusProposta.ACEITA);
+        if (outraJaAceita) {
+            throw new IllegalArgumentException("Já existe uma proposta aceita para este anúncio");
+        }
+
         proposta.setStatus(StatusProposta.ACEITA);
         propostaRepository.save(proposta);
 
@@ -135,7 +142,7 @@ public class PropostaService {
                 "/acordos/" + acordo.getId());
 
         // Recusar outras propostas pendentes do mesmo anúncio
-        propostaRepository.findByAnuncioId(proposta.getAnuncio().getId()).stream()
+        propostasDoAnuncio.stream()
                 .filter(p -> !p.getId().equals(propostaId) && p.getStatus() == StatusProposta.PENDENTE)
                 .forEach(p -> {
                     p.setStatus(StatusProposta.RECUSADA);
@@ -185,7 +192,10 @@ public class PropostaService {
                 .orElseThrow(() -> new NaoEncontradoException("Proposta não encontrada"));
         anuncioRepository.findByIdForUpdate(anuncioId)
                 .orElseThrow(() -> new NaoEncontradoException("Anúncio não encontrado"));
-        return findById(propostaId);
+        return propostaRepository.findByAnuncioIdForUpdate(anuncioId).stream()
+                .filter(proposta -> proposta.getId().equals(propostaId))
+                .findFirst()
+                .orElseThrow(() -> new NaoEncontradoException("Proposta não encontrada"));
     }
 
     public Proposta findById(Long id) {

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,11 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
 
     @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
     List<Proposta> findByAnuncioId(Long anuncioId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
+    @Query("select p from Proposta p where p.anuncio.id = :anuncioId")
+    List<Proposta> findByAnuncioIdForUpdate(@Param("anuncioId") Long anuncioId);
 
     @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
     List<Proposta> findByAnuncioUsuarioId(Long usuarioId);
