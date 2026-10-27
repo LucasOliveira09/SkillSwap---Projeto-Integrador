@@ -17,4 +17,14 @@ export class PerfilApiService {
   atualizarMeuPerfil(dados: AtualizacaoPerfil) {
     return this.http.patch<PerfilProfissional>('/api/perfil', dados);
   }
+
+  atualizarFoto(arquivo: File) {
+    const dados = new FormData();
+    dados.append('file', arquivo);
+    return this.http.put<PerfilProfissional>('/api/perfil/foto', dados);
+  }
+
+  removerFoto() {
+    return this.http.delete<void>('/api/perfil/foto');
+  }
 }

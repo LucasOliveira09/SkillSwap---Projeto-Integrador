@@ -31,13 +31,21 @@ export class MeuPerfilComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly perfil = signal<PerfilProfissional | null>(null);
+  protected readonly previaFoto = signal<string | null>(null);
   protected dados: AtualizacaoPerfil = { ...formularioVazio };
+  protected arquivoFoto: File | null = null;
   protected carregando = false;
   protected salvando = false;
+  protected enviandoFoto = false;
   protected erro = '';
   protected sucesso = '';
 
+  private readonly urlsTemporarias = new Set<string>();
+
   constructor() {
+    this.destroyRef.onDestroy(() => {
+      for (const url of this.urlsTemporarias) URL.revokeObjectURL(url);
+    });
     if (!this.sessao.autenticado()) {
       void this.router.navigate(['/conta'], { queryParams: { retorno: '/meu-perfil' } });
       return;
@@ -91,6 +99,76 @@ export class MeuPerfilComponent {
       });
   }
 
+  protected selecionarFoto(evento: Event): void {
+    const campo = evento.target as HTMLInputElement;
+    const arquivo = campo.files?.[0] ?? null;
+    campo.value = '';
+    this.erro = '';
+    this.sucesso = '';
+
+    if (!arquivo) return;
+    if (!['image/jpeg', 'image/png', 'image/gif'].includes(arquivo.type)) {
+      this.erro = 'Escolha uma imagem JPG, PNG ou GIF.';
+      return;
+    }
+    if (arquivo.size > 5 * 1024 * 1024) {
+      this.erro = 'A imagem deve ter no máximo 5 MB.';
+      return;
+    }
+
+    this.limparPrevia();
+    this.arquivoFoto = arquivo;
+    const url = URL.createObjectURL(arquivo);
+    this.urlsTemporarias.add(url);
+    this.previaFoto.set(url);
+  }
+
+  protected enviarFoto(): void {
+    if (!this.arquivoFoto || this.enviandoFoto) return;
+
+    this.enviandoFoto = true;
+    this.erro = '';
+    this.sucesso = '';
+    this.api
+      .atualizarFoto(this.arquivoFoto)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => (this.enviandoFoto = false)),
+      )
+      .subscribe({
+        next: (perfil) => {
+          this.perfil.set(perfil);
+          this.arquivoFoto = null;
+          this.limparPrevia();
+          this.sucesso = 'Foto do perfil atualizada.';
+        },
+        error: () => (this.erro = 'Não foi possível enviar a foto. Tente novamente.'),
+      });
+  }
+
+  protected removerFoto(): void {
+    if (this.enviandoFoto || !this.perfil()?.fotoUrl) return;
+
+    this.enviandoFoto = true;
+    this.erro = '';
+    this.sucesso = '';
+    this.api
+      .removerFoto()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => (this.enviandoFoto = false)),
+      )
+      .subscribe({
+        next: () => {
+          this.perfil.update((perfil) => (perfil ? { ...perfil, fotoUrl: null } : null));
+          this.arquivoFoto = null;
+          this.limparPrevia();
+          this.sucesso = 'Foto do perfil removida.';
+        },
+        error: () => (this.erro = 'Não foi possível remover a foto. Tente novamente.'),
+      });
+  }
+
   private preencher(perfil: PerfilProfissional): void {
     this.perfil.set(perfil);
     this.dados = {
@@ -99,5 +177,14 @@ export class MeuPerfilComponent {
       cidade: perfil.cidade ?? '',
       especialidades: perfil.especialidades ?? '',
     };
+  }
+
+  private limparPrevia(): void {
+    const atual = this.previaFoto();
+    if (atual?.startsWith('blob:')) {
+      URL.revokeObjectURL(atual);
+      this.urlsTemporarias.delete(atual);
+    }
+    this.previaFoto.set(null);
   }
 }

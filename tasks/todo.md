@@ -19,10 +19,12 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Revisar detalhe existente, corrigir retorno de login para rota interna permitida e remover promessas sem suporte real da tela de anúncio.
 - [ ] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação.
 - [ ] Criar baseline e migrações versionadas não destrutivas para MySQL 8.0/8.4.
-- [ ] Completar upload seguro e durável: validação de conteúdo, limites sincronizados, armazenamento com backup, autorização, quota e remoção.
+- [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
+- [ ] Completar operação de upload: quota, limpeza, rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
-- [ ] Completar foto de perfil, prévia, integração validada com MySQL e persistência após reinício.
+- [x] Permitir prévia, envio e remoção da foto profissional por fluxo autenticado.
+- [ ] Validar perfil/foto no MySQL local e após reinício da API; Docker Desktop precisa estar ativo.
 
 ### Portfólio e descoberta
 

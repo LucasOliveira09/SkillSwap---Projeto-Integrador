@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -95,5 +96,42 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.itens[0].titulo").value("Aulas de violão"))
                 .andExpect(jsonPath("$.itens[0].usuarioId").value(usuarioId))
                 .andExpect(jsonPath("$.itens[0].exemplo").value(false));
+    }
+
+    @Test
+    void atualizaFotoDoPerfilSomentePorUploadAutenticado() throws Exception {
+        var foto = new org.springframework.mock.web.MockMultipartFile(
+                "file", "perfil.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+
+        var resultado = mvc.perform(multipart("/api/perfil/foto").file(foto).with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fotoUrl").isNotEmpty())
+                .andReturn();
+        String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resultado.getResponse().getContentAsString()).get("fotoUrl").asText();
+
+        mvc.perform(get(fotoUrl)).andExpect(status().isOk());
+        mvc.perform(get("/api/perfil").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fotoUrl").value(fotoUrl));
+        mvc.perform(multipart("/api/perfil/foto").file(foto).with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fotoUrl").value(fotoUrl));
+        mvc.perform(multipart("/api/perfil/foto").file(foto).with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/perfil/foto")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/perfil").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fotoUrl").isEmpty());
     }
 }

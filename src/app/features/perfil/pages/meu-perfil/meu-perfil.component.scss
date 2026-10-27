@@ -47,6 +47,60 @@ mat-form-field {
   width: 100%;
 }
 
+.foto-editor {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ss-line);
+}
+
+.foto-preview {
+  display: grid;
+  width: 104px;
+  height: 104px;
+  flex: 0 0 104px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ss-soft);
+  color: var(--ss-blue);
+  font-size: 32px;
+}
+
+.foto-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-conteudo h2 {
+  margin: 0;
+  color: var(--ss-text);
+  font-size: 17px;
+}
+
+.foto-conteudo p {
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.arquivo-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.foto-acoes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .acoes {
   display: flex;
   align-items: center;
@@ -84,6 +138,22 @@ mat-form-field {
 
   form {
     padding: 18px;
+  }
+
+  .foto-editor {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .foto-preview {
+    width: 76px;
+    height: 76px;
+    flex-basis: 76px;
+  }
+
+  .foto-acoes {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .acoes {

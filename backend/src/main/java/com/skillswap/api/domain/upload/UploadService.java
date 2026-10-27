@@ -2,33 +2,44 @@ package com.skillswap.api.domain.upload;
 
 import com.skillswap.api.domain.upload.dto.UploadResponseDTO;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.*;
-import java.util.Set;
-import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.Locale;
 
 @Service
 public class UploadService {
 
-    private static final Path PASTA_UPLOADS = Paths.get("uploads").toAbsolutePath().normalize();
-    private static final Set<String> TIPOS_PERMITIDOS = Set.of(
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "image/webp",
-            "image/gif"
-    );
-    private static final long TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024; // 5 MB
+    private static final long TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
+    private static final int DIMENSAO_MAXIMA = 5_000;
+    private static final long PIXELS_MAXIMOS = 20_000_000;
 
-    public UploadService() {
+    @Value("${skillswap.upload.directory:uploads}")
+    private String diretorioConfigurado;
+
+    private Path pastaUploads;
+
+    @PostConstruct
+    void inicializar() {
+        pastaUploads = Path.of(diretorioConfigurado).toAbsolutePath().normalize();
         try {
-            Files.createDirectories(PASTA_UPLOADS);
+            Files.createDirectories(pastaUploads);
         } catch (IOException e) {
             throw new IllegalStateException("Não foi possível inicializar diretório de uploads", e);
         }
@@ -38,35 +49,51 @@ public class UploadService {
         if (arquivo == null || arquivo.isEmpty()) {
             throw new IllegalArgumentException("Arquivo de imagem é obrigatório");
         }
-
         if (arquivo.getSize() > TAMANHO_MAXIMO_BYTES) {
             throw new IllegalArgumentException("Arquivo excede o tamanho máximo de 5MB");
         }
 
-        String contentType = arquivo.getContentType();
-        if (contentType == null || !TIPOS_PERMITIDOS.contains(contentType.toLowerCase())) {
-            throw new IllegalArgumentException("Formato de imagem não suportado. Formatos aceitos: JPG, PNG, WEBP, GIF");
+        FormatoImagem formato = validarImagem(arquivo);
+        byte[] bytes;
+        try {
+            bytes = arquivo.getBytes();
+        } catch (IOException e) {
+            throw new IllegalStateException("Falha ao ler arquivo enviado", e);
+        }
+        String nomeSalvo = calcularHash(bytes) + formato.extensao();
+        Path destino = pastaUploads.resolve(nomeSalvo).normalize();
+        if (!destino.startsWith(pastaUploads)) {
+            throw new IllegalArgumentException("Nome de arquivo inválido");
         }
 
-        String extensao = obterExtensao(arquivo.getOriginalFilename(), contentType);
-        String nomeSalvo = UUID.randomUUID().toString().replace("-", "") + extensao;
-
         try {
-            Path destino = PASTA_UPLOADS.resolve(nomeSalvo).normalize();
-            if (!destino.startsWith(PASTA_UPLOADS)) {
-                throw new IllegalArgumentException("Nome de arquivo inválido");
+            try {
+                Files.write(destino, bytes, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            } catch (FileAlreadyExistsException arquivoJaSalvo) {
+                // O mesmo conteúdo enviado novamente pelo PUT conserva a mesma representação.
             }
-            Files.copy(arquivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
             return new UploadResponseDTO("/api/uploads/" + nomeSalvo, nomeSalvo);
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao salvar arquivo no servidor", e);
+            throw new IllegalStateException("Falha ao salvar arquivo no servidor", e);
+        }
+    }
+
+    private String calcularHash(byte[] bytes) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(bytes);
+            return java.util.HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 indisponível", e);
         }
     }
 
     public Resource carregarComoRecurso(String nomeArquivo) {
+        if (nomeArquivo == null || !nomeArquivo.matches("^[a-f0-9]{64}\\.(jpg|png|gif)$")) {
+            throw new NaoEncontradoException("Arquivo não encontrado");
+        }
         try {
-            Path caminho = PASTA_UPLOADS.resolve(nomeArquivo).normalize();
-            if (!caminho.startsWith(PASTA_UPLOADS)) {
+            Path caminho = pastaUploads.resolve(nomeArquivo).normalize();
+            if (!caminho.startsWith(pastaUploads)) {
                 throw new NaoEncontradoException("Arquivo não encontrado");
             }
             Resource recurso = new UrlResource(caminho.toUri());
@@ -79,18 +106,65 @@ public class UploadService {
         }
     }
 
-    private String obterExtensao(String nomeOriginal, String contentType) {
-        if (nomeOriginal != null && nomeOriginal.contains(".")) {
-            String ext = nomeOriginal.substring(nomeOriginal.lastIndexOf(".")).toLowerCase();
-            if (ext.matches("^\\.(jpe?g|png|webp|gif)$")) {
-                return ext;
+    private FormatoImagem validarImagem(MultipartFile arquivo) {
+        try (var arquivoEntrada = arquivo.getInputStream();
+             ImageInputStream entrada = ImageIO.createImageInputStream(arquivoEntrada)) {
+            if (entrada == null) {
+                throw new IllegalArgumentException("O conteúdo não é uma imagem válida");
             }
+            Iterator<ImageReader> leitores = ImageIO.getImageReaders(entrada);
+            if (!leitores.hasNext()) {
+                throw new IllegalArgumentException("O conteúdo não é uma imagem válida");
+            }
+            ImageReader leitor = leitores.next();
+            try {
+                leitor.setInput(entrada, true, true);
+                FormatoImagem formato = FormatoImagem.de(leitor.getFormatName(), arquivo.getContentType());
+                int largura = leitor.getWidth(0);
+                int altura = leitor.getHeight(0);
+                if (largura < 1 || altura < 1 || largura > DIMENSAO_MAXIMA || altura > DIMENSAO_MAXIMA
+                        || (long) largura * altura > PIXELS_MAXIMOS) {
+                    throw new IllegalArgumentException("A imagem deve ter no máximo 5000px por lado e 20 megapixels");
+                }
+                if (leitor.read(0) == null) {
+                    throw new IllegalArgumentException("O conteúdo não é uma imagem válida");
+                }
+                return formato;
+            } finally {
+                leitor.dispose();
+            }
+        } catch (IOException | SecurityException e) {
+            throw new IllegalArgumentException("O conteúdo não é uma imagem válida", e);
         }
-        return switch (contentType.toLowerCase()) {
-            case "image/png" -> ".png";
-            case "image/webp" -> ".webp";
-            case "image/gif" -> ".gif";
-            default -> ".jpg";
-        };
+    }
+
+    private enum FormatoImagem {
+        JPEG("jpg", "image/jpeg"), PNG("png", "image/png"), GIF("gif", "image/gif");
+
+        private final String extensao;
+        private final String tipoMime;
+
+        FormatoImagem(String extensao, String tipoMime) {
+            this.extensao = extensao;
+            this.tipoMime = tipoMime;
+        }
+
+        String extensao() {
+            return "." + extensao;
+        }
+
+        static FormatoImagem de(String formato, String tipoInformado) {
+            String mime = tipoInformado == null ? "" : tipoInformado.toLowerCase(Locale.ROOT);
+            FormatoImagem resultado = switch (formato.toUpperCase(Locale.ROOT)) {
+                case "JPEG", "JPG" -> JPEG;
+                case "PNG" -> PNG;
+                case "GIF" -> GIF;
+                default -> throw new IllegalArgumentException("Formato não suportado. Envie JPG, PNG ou GIF");
+            };
+            if (!resultado.tipoMime.equals(mime) && !(resultado == JPEG && mime.equals("image/jpg"))) {
+                throw new IllegalArgumentException("O tipo informado não corresponde ao conteúdo da imagem");
+            }
+            return resultado;
+        }
     }
 }

@@ -12,6 +12,10 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
 server:
   address: ${SERVER_ADDRESS:127.0.0.1}
   port: ${PORT:8080}
@@ -31,5 +35,7 @@ app:
     secret: ${JWT_SECRET}
     expiration: 3600000
 skillswap:
+  upload:
+    directory: ${UPLOAD_DIR:uploads}
   seed:
     enabled: ${SEED_ENABLED:true}

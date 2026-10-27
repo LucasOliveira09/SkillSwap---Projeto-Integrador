@@ -13,6 +13,9 @@ services:
       SERVER_ADDRESS: 0.0.0.0
       SERVER_FORWARD_HEADERS_STRATEGY: framework
       SEED_ENABLED: ${SEED_ENABLED:-true}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - skillswap-uploads:/app/uploads
     networks: [banco, proxy]
     mem_limit: 768m
     healthcheck:
@@ -40,3 +43,5 @@ networks:
   proxy:
     external: true
     name: oracle_default
+volumes:
+  skillswap-uploads:

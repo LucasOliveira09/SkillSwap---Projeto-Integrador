@@ -143,7 +143,9 @@ class IntegracaoAnuncioTest {
     @Test
     void realizaUploadDeImagemEPersisteNoAnuncio() throws Exception {
         org.springframework.mock.web.MockMultipartFile arquivo = new org.springframework.mock.web.MockMultipartFile(
-                "file", "foto.png", "image/png", new byte[]{1, 2, 3, 4}
+                "file", "foto.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII=")
         );
 
         var resultadoUpload = mvc.perform(multipart("/api/uploads")
@@ -180,6 +182,17 @@ class IntegracaoAnuncioTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.imagem").value(url))
                 .andExpect(jsonPath("$.titulo").value("Fotografia Profissional"));
+    }
+
+    @Test
+    void rejeitaArquivoQueNaoContemImagemMesmoComMimePermitido() throws Exception {
+        var arquivo = new org.springframework.mock.web.MockMultipartFile(
+                "file", "foto.png", "image/png", new byte[]{1, 2, 3, 4});
+
+        mvc.perform(multipart("/api/uploads").file(arquivo)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("DADOS_INVALIDOS"));
     }
 }
 

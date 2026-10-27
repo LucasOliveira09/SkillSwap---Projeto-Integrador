@@ -31,6 +31,10 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
 | PATCH | `/perfil` | Exige JWT; altera nome público, biografia, cidade ou especialidades após validar o DTO. |
+| PUT | `/perfil/foto` | Exige JWT e multipart `file`; valida conteúdo JPG/PNG/GIF, até 5 MB, 5000 px por lado e 20 MP; associa a nova imagem ao perfil autenticado. |
+| DELETE | `/perfil/foto` | Exige JWT; remove a referência da foto atual do perfil e devolve 204. |
+| POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
+| GET | `/uploads/{nomeArquivo}` | Serve somente nomes aleatórios gerados pelo backend, como imagem pública com `nosniff`. |
 
 O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor.
 
@@ -50,7 +54,7 @@ Os inserts ocorrem pela aplicação/JPA no MySQL, com chave estável `codigoLega
 
 A tela `/conta` permite registrar, entrar e sair; `/anuncios/novo` solicita login antes de salvar. O JWT fica somente em memória e é enviado apenas à API relativa da própria origem. Não há armazenamento em localStorage/sessionStorage. Recarregar encerra a sessão, mas não apaga anúncios; um 401 encerra a sessão local e a tela trata a falha.
 
-Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil usa o JWT em memória. Upload de foto para perfil/portfólio ainda não está pronto; pagamentos integrados não estão disponíveis nesta fase.
+Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil e a troca da foto usam o JWT em memória. O backend confere o conteúdo decodificado e não confia no MIME/na extensão do arquivo; SVG e WebP não são aceitos. A aplicação usa `UPLOAD_DIR` (padrão `uploads`) e os Compose local/público montam volume de arquivos. A remoção da foto desvincula a referência do perfil, mas não apaga o arquivo; política de quota, limpeza e backup ainda está pendente. Pagamentos integrados não estão disponíveis nesta fase.
 
 ## Execução local
 
@@ -88,7 +92,7 @@ Verificação da integração em 21/10/2026: 28 testes Angular, build e typechec
 
 Na restauração visual e ampliação da carga, o backend passou a 14 testes aprovados, incluindo a coerência das modalidades e localidades dos novos exemplos. Os 28 testes Angular, build e tipos continuaram aprovados.
 
-Na primeira fatia de perfis, a API pública e a edição autenticada foram cobertas por testes MockMvc/JPA; `GET /perfis/{id}` não expõe e-mail. A listagem pública limita-se a ofertas ativas e não demonstrativas. As páginas Angular cobrem leitura, edição, estados de erro e acesso sem sessão; a página pública foi inspecionada em Chrome a 1440px e 360px, sem overflow horizontal ou erros JavaScript. A suíte completa passou com 43 testes Angular e 19 Java; build e typecheck também passaram. O perfil ainda não foi validado contra MySQL local nem após reinício.
+Na fatia inicial de perfil, a API pública e a edição autenticada foram cobertas por testes MockMvc/JPA; `GET /perfis/{id}` não expõe e-mail. A listagem pública limita-se a ofertas ativas e não demonstrativas. A suíte então passou com 43 testes Angular e 19 Java. Na fatia de fotos, testes cobrem upload, leitura, atualização/remoção da referência e rejeição de conteúdo falso; o total passou a 46 testes Angular e 21 Java, com build e typecheck aprovados. Chrome/Playwright conferiu perfil público e editor em 1440px e 360px sem overflow horizontal nem erros JavaScript. A inspeção de MySQL local não foi possível porque o Docker Desktop não estava ativo e a porta 3307 não respondeu; reinício/persistência real continuam pendentes. A configuração do volume público foi preparada, mas ainda exige migração controlada de arquivos já existentes antes de qualquer implantação.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

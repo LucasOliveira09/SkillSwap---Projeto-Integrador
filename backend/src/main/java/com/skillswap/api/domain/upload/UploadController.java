@@ -33,6 +33,7 @@ public class UploadController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                .header("X-Content-Type-Options", "nosniff")
                 .contentType(mediaType)
                 .body(recurso);
     }

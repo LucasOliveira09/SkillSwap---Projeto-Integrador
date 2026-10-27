@@ -15,6 +15,43 @@
     </div>
   } @else {
     <form #form="ngForm" (ngSubmit)="salvar(form)" [attr.aria-busy]="salvando">
+      <section class="foto-editor" aria-labelledby="titulo-foto">
+        <div class="foto-preview">
+          @if (previaFoto() || perfil()?.fotoUrl) {
+            <img [src]="previaFoto() || perfil()?.fotoUrl" alt="Prévia da foto do perfil" />
+          } @else {
+            <span aria-hidden="true">+</span>
+          }
+        </div>
+        <div class="foto-conteudo">
+          <h2 id="titulo-foto">Foto profissional</h2>
+          <p>Use uma imagem sua ou do seu trabalho. JPG, PNG ou GIF, até 5 MB.</p>
+          <input
+            #campoFoto
+            class="arquivo-oculto"
+            type="file"
+            accept="image/jpeg,image/png,image/gif"
+            aria-label="Selecionar foto profissional"
+            (change)="selecionarFoto($event)"
+          />
+          <div class="foto-acoes">
+            <button mat-stroked-button type="button" (click)="campoFoto.click()" [disabled]="enviandoFoto">
+              Escolher imagem
+            </button>
+            @if (arquivoFoto) {
+              <button mat-flat-button color="primary" type="button" (click)="enviarFoto()" [disabled]="enviandoFoto">
+                {{ enviandoFoto ? 'Enviando...' : 'Enviar foto' }}
+              </button>
+            }
+            @if (perfil()?.fotoUrl) {
+              <button mat-button type="button" (click)="removerFoto()" [disabled]="enviandoFoto">
+                Remover foto
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
       <mat-form-field appearance="outline">
         <mat-label>Nome público</mat-label>
         <input

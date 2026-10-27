@@ -55,4 +55,32 @@ describe('PerfilApiService', () => {
       quantidadeAvaliacoes: 0,
     });
   });
+
+  it('envia a foto do próprio perfil como multipart autenticado', () => {
+    const arquivo = new File(['dados-da-imagem'], 'perfil.png', { type: 'image/png' });
+    api.atualizarFoto(arquivo).subscribe((perfil) => expect(perfil.fotoUrl).toBe('/api/uploads/foto.png'));
+
+    const request = http.expectOne('/api/perfil/foto');
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body instanceof FormData).toBeTrue();
+    expect((request.request.body as FormData).get('file')).toBe(arquivo);
+    request.flush({
+      id: 12,
+      nome: 'Ana Profissional',
+      bio: null,
+      cidade: null,
+      fotoUrl: '/api/uploads/foto.png',
+      especialidades: null,
+      criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null,
+      quantidadeAvaliacoes: 0,
+    });
+  });
+
+  it('remove a foto pelo recurso do perfil', () => {
+    api.removerFoto().subscribe();
+    const request = http.expectOne('/api/perfil/foto');
+    expect(request.request.method).toBe('DELETE');
+    request.flush(null);
+  });
 });

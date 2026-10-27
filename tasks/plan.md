@@ -153,6 +153,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** banco novo e prévia migram sem perda; uploads inválidos e excessivos são rejeitados; imagem continua acessível após recriação controlada da API; testes não usam arquivo falso como imagem válida.
 
+**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão e diretório configurável implementados; Compose local e público agora declaram volumes de mídia. Ainda faltam quota/limpeza, rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
+
 ### Fase 2 — Perfil público editável
 
 - Criar entidade/DTO/repositório/serviço/controller e migração; campos com limites e visibilidade.
@@ -161,7 +163,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** usuário edita somente seu perfil; visitante consulta a versão pública; campos privados não saem na API pública; dados persistem em reinício e erros têm feedback claro.
 
-**Progresso:** contrato REST de leitura pública, leitura/edição do próprio perfil e listagem paginada das ofertas ativas implementado. As telas públicas e de edição estão conectadas à API; foto de perfil, portfólio, integração real com MySQL e persistência após reinício ainda precisam ser concluídos e validados.
+**Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado e listagem paginada das ofertas ativas implementado. As telas públicas e de edição estão conectadas à API. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
 
 ### Fase 3 — Portfólio com publicações e fotos
 

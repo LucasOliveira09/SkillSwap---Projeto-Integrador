@@ -5,6 +5,9 @@ import com.skillswap.api.domain.usuario.dto.UpdatePerfilDTO;
 import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
+import com.skillswap.api.domain.upload.UploadService;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.constraints.Max;
@@ -14,12 +17,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 
 @RestController
 @RequestMapping("/api")
@@ -28,6 +34,7 @@ public class PerfilController {
 
     private final UsuarioService usuarioService;
     private final AnuncioService anuncioService;
+    private final UploadService uploadService;
 
     @GetMapping("/perfis/{id}")
     public ResponseEntity<PerfilDTO> buscarPublico(@PathVariable Long id) {
@@ -57,5 +64,21 @@ public class PerfilController {
             Authentication authentication) {
         String email = (String) authentication.getPrincipal();
         return ResponseEntity.ok(usuarioService.atualizarPerfilAtual(dto, email));
+    }
+
+    @PutMapping(value = "/perfil/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PerfilDTO> atualizarMinhaFoto(
+            @RequestPart("file") MultipartFile arquivo,
+            Authentication authentication) {
+        var upload = uploadService.salvar(arquivo);
+        String email = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(usuarioService.atualizarFotoAtual(upload.url(), email));
+    }
+
+    @DeleteMapping("/perfil/foto")
+    public ResponseEntity<Void> removerMinhaFoto(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        usuarioService.removerFotoAtual(email);
+        return ResponseEntity.noContent().build();
     }
 }

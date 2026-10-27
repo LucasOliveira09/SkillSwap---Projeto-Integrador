@@ -56,6 +56,20 @@ public class UsuarioService {
     }
 
     @Transactional
+    public PerfilDTO atualizarFotoAtual(String fotoUrl, String emailAutenticado) {
+        Usuario usuario = findByEmail(emailAutenticado);
+        usuario.setFotoUrl(fotoUrl);
+        return toPerfilDTO(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
+    public void removerFotoAtual(String emailAutenticado) {
+        Usuario usuario = findByEmail(emailAutenticado);
+        usuario.setFotoUrl(null);
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
     public Usuario updateProfile(Long id, UpdatePerfilDTO dto, String emailAutenticado) {
         var usuario = findById(id);
         if (!usuario.getEmail().equals(emailAutenticado)) {
@@ -69,7 +83,6 @@ public class UsuarioService {
         if (dto.nome() != null) usuario.setNome(dto.nome().strip());
         if (dto.bio() != null) usuario.setBio(dto.bio().strip());
         if (dto.cidade() != null) usuario.setCidade(dto.cidade().strip());
-        if (dto.fotoUrl() != null) usuario.setFotoUrl(dto.fotoUrl().strip());
         if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades().strip());
     }
 
