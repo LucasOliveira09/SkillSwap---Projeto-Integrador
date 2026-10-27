@@ -34,9 +34,9 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao legend { margin-bottom: 6px; font-size: 13px; }
 .estrelas { display: flex; gap: 4px; }
 .estrelas button { border: 0; background: none; color: #b9bec6; cursor: pointer; font-size: 32px; }
-.estrelas button.selecionada { color: #ad7600; }
+.estrelas button.selecionada { color: #8a5d00; }
 .avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
-.avaliacao-publicada span { color: #ad7600; }
+.avaliacao-publicada span { color: #8a5d00; }
 .avaliacao-publicada p { margin: 0; white-space: pre-line; }
 .responder-avaliacao { display: grid; gap: 8px; margin-top: 14px; }
 .responder-avaliacao mat-form-field { width: 100%; }

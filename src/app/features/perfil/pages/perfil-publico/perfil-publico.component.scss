@@ -121,7 +121,7 @@ h1 {
 }
 
 .reputacao span {
-  color: #ad7600;
+  color: #8a5d00;
 }
 
 .sem-avaliacoes,
@@ -155,7 +155,7 @@ h1 {
 .avaliacao-cabecalho { display: flex; justify-content: space-between; gap: 12px; }
 .avaliacao-cabecalho time { color: var(--ss-muted); font-size: 12px; }
 .notas-avaliacao { display: flex; flex-wrap: wrap; gap: 16px; color: var(--ss-muted); font-size: 13px; }
-.notas-avaliacao b { color: #ad7600; font-size: 16px; letter-spacing: 1px; }
+.notas-avaliacao b { color: #8a5d00; font-size: 16px; letter-spacing: 1px; }
 .depoimento { margin: 0; white-space: pre-line; }
 .resposta-profissional { margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--ss-primary, #168b83); border-radius: 0 10px 10px 0; background: #f1f8f6; }
 .resposta-profissional p { margin: 7px 0; line-height: 1.55; white-space: pre-line; }

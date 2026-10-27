@@ -81,7 +81,7 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: #94a3b8;
+    color: #475569;
     font-size: 14px;
 
     app-icone {
@@ -110,8 +110,8 @@
 
   .badge-modalidade {
     right: 14px;
-    background: #0284c7;
-    &.troca { background: #16a34a; }
+    background: #0369a1;
+    &.troca { background: #15803d; }
   }
 }
 
@@ -415,7 +415,7 @@
     .meta-item {
       display: flex;
       flex-direction: column;
-      .meta-rotulo { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+      .meta-rotulo { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600; }
       .meta-dado { font-size: 13px; color: #334155; font-weight: 600; margin-top: 2px; }
     }
   }
