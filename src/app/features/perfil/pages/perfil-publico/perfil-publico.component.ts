@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, forkJoin, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, of, startWith, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
@@ -18,6 +18,9 @@ interface EstadoPerfil {
   ofertas: readonly AnuncioApi[];
   publicacoes: readonly PublicacaoPortfolio[];
   erroPublicacoes: boolean;
+  paginaPublicacoes: number;
+  totalPaginasPublicacoes: number;
+  totalPublicacoes: number;
   avaliacoes: readonly Avaliacao[];
 }
 
@@ -28,6 +31,9 @@ const estadoInicial: EstadoPerfil = {
   ofertas: [],
   publicacoes: [],
   erroPublicacoes: false,
+  paginaPublicacoes: 0,
+  totalPaginasPublicacoes: 0,
+  totalPublicacoes: 0,
   avaliacoes: [],
 };
 
@@ -40,25 +46,30 @@ const estadoInicial: EstadoPerfil = {
 })
 export class PerfilPublicoComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly perfilApi = inject(PerfilApiService);
   private readonly anunciosApi = inject(AnunciosApiService);
 
   protected readonly estado = toSignal(
-    this.route.paramMap.pipe(
-      switchMap((params) => {
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
+      switchMap(([params, query]) => {
         const id = params.get('id');
         if (!id || !/^\d+$/.test(id)) {
-          return of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false, avaliacoes: [] });
+          return of({ ...estadoInicial, carregando: false, erro: true });
         }
         const usuarioId = Number(id);
         if (!Number.isSafeInteger(usuarioId) || usuarioId <= 0) {
-          return of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false, avaliacoes: [] });
+          return of({ ...estadoInicial, carregando: false, erro: true });
         }
+        const numeroPagina = Number(query.get('portfolioPagina') || 0);
+        const pagina = Number.isSafeInteger(numeroPagina) && numeroPagina >= 0 && numeroPagina <= 1_000_000
+          ? numeroPagina
+          : 0;
         return this.perfilApi.publico(usuarioId).pipe(
           switchMap((perfil) =>
             forkJoin({
               ofertas: this.anunciosApi.listarDoUsuario(perfil.id),
-              publicacoes: this.perfilApi.publicacoes(perfil.id).pipe(catchError(() => of(null))),
+              publicacoes: this.perfilApi.publicacoes(perfil.id, pagina).pipe(catchError(() => of(null))),
               avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of([]))),
             }).pipe(
               map(({ ofertas, publicacoes, avaliacoes }) => ({
@@ -68,11 +79,14 @@ export class PerfilPublicoComponent {
                 ofertas: ofertas.itens,
                 publicacoes: publicacoes?.itens ?? [],
                 erroPublicacoes: publicacoes === null,
+                paginaPublicacoes: publicacoes?.pagina ?? 0,
+                totalPaginasPublicacoes: publicacoes?.totalPaginas ?? 0,
+                totalPublicacoes: publicacoes?.totalItens ?? 0,
                 avaliacoes,
               })),
             ),
           ),
-          catchError(() => of({ carregando: false, erro: true, perfil: null, ofertas: [], publicacoes: [], erroPublicacoes: false, avaliacoes: [] })),
+          catchError(() => of({ ...estadoInicial, carregando: false, erro: true })),
           startWith(estadoInicial),
         );
       }),
@@ -84,6 +98,16 @@ export class PerfilPublicoComponent {
   protected readonly ofertas = computed(() => this.estado().ofertas);
   protected readonly publicacoes = computed(() => this.estado().publicacoes);
   protected readonly avaliacoes = computed(() => this.estado().avaliacoes);
+
+  protected mudarPaginaPublicacoes(pagina: number): void {
+    const atual = this.estado();
+    if (pagina < 0 || pagina >= atual.totalPaginasPublicacoes || atual.carregando) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { portfolioPagina: pagina === 0 ? null : pagina },
+      queryParamsHandling: 'merge',
+    });
+  }
 
   protected estrelas(nota: number): string {
     return '★'.repeat(nota) + '☆'.repeat(5 - nota);

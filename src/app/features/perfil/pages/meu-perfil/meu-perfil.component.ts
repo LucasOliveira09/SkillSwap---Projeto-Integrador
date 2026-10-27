@@ -51,6 +51,12 @@ export class MeuPerfilComponent {
   protected carregandoPortfolio = false;
   protected enviandoPortfolio = false;
   protected removendoPublicacaoId: number | null = null;
+  protected readonly editandoPublicacaoId = signal<number | null>(null);
+  protected legendaEmEdicao = '';
+  protected readonly salvandoPublicacaoId = signal<number | null>(null);
+  protected readonly paginaPortfolio = signal(0);
+  protected readonly totalPaginasPortfolio = signal(0);
+  protected readonly totalPublicacoesPortfolio = signal(0);
   protected erroPortfolio = '';
   protected sucessoPortfolio = '';
   private arquivosPortfolio: File[] = [];
@@ -226,17 +232,16 @@ export class MeuPerfilComponent {
         this.legendaPortfolio.trim(), uploads.map((upload) => upload.url),
         this.anuncioPortfolioId ? Number(this.anuncioPortfolioId) : undefined,
       )),
-      switchMap(() => this.api.publicacoes(this.perfil()!.id)),
       takeUntilDestroyed(this.destroyRef),
       finalize(() => (this.enviandoPortfolio = false)),
     ).subscribe({
-      next: (pagina) => {
-        this.publicacoes.set(pagina.itens);
+      next: () => {
         this.arquivosPortfolio = [];
         this.legendaPortfolio = '';
         this.anuncioPortfolioId = '';
         this.limparPreviaPortfolio();
         this.sucessoPortfolio = 'Publicação adicionada ao seu portfólio.';
+        this.carregarPortfolio(this.perfil()!.id, 0, true);
       },
       error: () => (this.erroPortfolio = 'Não foi possível publicar as fotos. Confira sua conexão e tente novamente.'),
     });
@@ -253,10 +258,52 @@ export class MeuPerfilComponent {
     ).subscribe({
       next: () => {
         this.publicacoes.update((itens) => itens.filter((item) => item.id !== publicacao.id));
+        const total = Math.max(0, this.totalPublicacoesPortfolio() - 1);
+        this.totalPublicacoesPortfolio.set(total);
+        this.totalPaginasPortfolio.set(Math.ceil(total / 12));
+        if (!this.publicacoes().length && this.paginaPortfolio() > 0) {
+          this.carregarPortfolio(this.perfil()!.id, this.paginaPortfolio() - 1, true);
+        }
         this.sucessoPortfolio = 'Publicação removida.';
       },
       error: () => (this.erroPortfolio = 'Não foi possível remover esta publicação.'),
     });
+  }
+
+  protected iniciarEdicaoPublicacao(publicacao: PublicacaoPortfolio): void {
+    this.editandoPublicacaoId.set(publicacao.id);
+    this.legendaEmEdicao = publicacao.legenda;
+    this.erroPortfolio = '';
+    this.sucessoPortfolio = '';
+  }
+
+  protected cancelarEdicaoPublicacao(): void {
+    this.editandoPublicacaoId.set(null);
+    this.legendaEmEdicao = '';
+  }
+
+  protected salvarEdicaoPublicacao(publicacao: PublicacaoPortfolio): void {
+    if (this.salvandoPublicacaoId() !== null || this.legendaEmEdicao.length > 500) return;
+    this.salvandoPublicacaoId.set(publicacao.id);
+    this.erroPortfolio = '';
+    this.sucessoPortfolio = '';
+    this.api.atualizarLegendaPublicacao(publicacao.id, this.legendaEmEdicao.trim()).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.salvandoPublicacaoId.set(null)),
+    ).subscribe({
+      next: (atualizada) => {
+        this.publicacoes.update((itens) => itens.map((item) => item.id === atualizada.id ? atualizada : item));
+        this.cancelarEdicaoPublicacao();
+        this.sucessoPortfolio = 'Legenda da publicação atualizada.';
+      },
+      error: () => this.erroPortfolio = 'Não foi possível atualizar a legenda. Tente novamente.',
+    });
+  }
+
+  protected mudarPaginaPortfolio(pagina: number): void {
+    const perfil = this.perfil();
+    if (!perfil || this.carregandoPortfolio || pagina < 0 || pagina >= this.totalPaginasPortfolio()) return;
+    this.carregarPortfolio(perfil.id, pagina, true);
   }
 
   private preencher(perfil: PerfilProfissional): void {
@@ -283,17 +330,23 @@ export class MeuPerfilComponent {
     });
   }
 
-  private carregarPortfolio(id: number): void {
-    if (this.portfolioCarregadoParaId === id) return;
-    this.portfolioCarregadoParaId = id;
+  private carregarPortfolio(id: number, pagina = 0, forcar = false): void {
+    if (!forcar && this.portfolioCarregadoParaId === id) return;
+    if (pagina === 0) this.portfolioCarregadoParaId = id;
+    this.erroPortfolio = '';
     this.carregandoPortfolio = true;
-    this.api.publicacoes(id).pipe(
+    this.api.publicacoes(id, pagina).pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => (this.carregandoPortfolio = false)),
     ).subscribe({
-      next: (pagina) => this.publicacoes.set(pagina.itens),
+      next: (resultado) => {
+        this.publicacoes.set(resultado.itens);
+        this.paginaPortfolio.set(resultado.pagina);
+        this.totalPaginasPortfolio.set(resultado.totalPaginas);
+        this.totalPublicacoesPortfolio.set(resultado.totalItens);
+      },
       error: () => {
-        this.portfolioCarregadoParaId = null;
+        if (pagina === 0) this.portfolioCarregadoParaId = null;
         this.erroPortfolio = 'Não foi possível carregar seu portfólio.';
       },
     });

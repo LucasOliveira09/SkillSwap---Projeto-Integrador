@@ -91,7 +91,7 @@
           <h2 id="titulo-portfolio">Trabalhos e portfólio</h2>
           <p>Fotos de serviços e projetos apresentados por {{ p.nome }}.</p>
         </div>
-        <span>{{ publicacoes().length }} {{ publicacoes().length === 1 ? 'publicação' : 'publicações' }}</span>
+        <span>{{ estado().totalPublicacoes }} {{ estado().totalPublicacoes === 1 ? 'publicação' : 'publicações' }}</span>
       </div>
 
       @if (estado().erroPublicacoes) {
@@ -117,6 +117,16 @@
             </article>
           }
         </div>
+        @if (estado().totalPaginasPublicacoes > 1) {
+          <nav class="paginacao-publicacoes" aria-label="Páginas do portfólio">
+            <button mat-stroked-button type="button" [disabled]="estado().paginaPublicacoes === 0"
+              (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes - 1)">Anteriores</button>
+            <span>Página {{ estado().paginaPublicacoes + 1 }} de {{ estado().totalPaginasPublicacoes }}</span>
+            <button mat-stroked-button type="button"
+              [disabled]="estado().paginaPublicacoes >= estado().totalPaginasPublicacoes - 1"
+              (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes + 1)">Próximas</button>
+          </nav>
+        }
       }
     </section>
 

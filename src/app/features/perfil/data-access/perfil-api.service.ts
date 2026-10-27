@@ -67,4 +67,8 @@ export class PerfilApiService {
   excluirPublicacao(id: number) {
     return this.http.delete<void>(`/api/publicacoes/${id}`);
   }
+
+  atualizarLegendaPublicacao(id: number, legenda: string) {
+    return this.http.patch<PublicacaoPortfolio>(`/api/publicacoes/${id}`, { legenda });
+  }
 }

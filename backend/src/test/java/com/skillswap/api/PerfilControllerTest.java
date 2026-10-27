@@ -161,10 +161,23 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.fotos[0]").value(fotoUrl))
                 .andExpect(jsonPath("$.email").doesNotExist());
 
+        mvc.perform(patch("/api/publicacoes/{id}", publicacaoId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"legenda\":\"Instalação revisada\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.legenda").value("Instalação revisada"))
+                .andExpect(jsonPath("$.fotos[0]").value(fotoUrl));
+
         var outraConta = usuarios.register(new RegisterDTO("Outro usuário", "outro@skillswap.invalid", "senha-teste-123"));
         String tokenOutro = jwt.generateToken(outraConta.getEmail());
         mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/publicacoes/{id}", publicacaoId)
                         .header("Authorization", "Bearer " + tokenOutro))
+                .andExpect(status().isForbidden());
+        mvc.perform(patch("/api/publicacoes/{id}", publicacaoId)
+                        .header("Authorization", "Bearer " + tokenOutro)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"legenda\":\"Alteração indevida\"}"))
                 .andExpect(status().isForbidden());
     }
 

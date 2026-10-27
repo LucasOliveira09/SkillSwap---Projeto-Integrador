@@ -29,7 +29,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 ### Portfólio e descoberta
 
 - [x] Criar publicações persistidas com legenda, até seis fotos, vínculo opcional a oferta própria; mostrar no perfil e permitir remoção pelo autor.
-- [ ] Adicionar edição, denúncia/moderação e paginação visual do portfólio; definir retenção/limpeza de arquivos sem referência.
+- [x] Permitir editar legenda de publicação e navegar pelas páginas do portfólio público e próprio.
+- [ ] Implementar denúncia/moderação e definir retenção/limpeza de arquivos sem referência.
 - [ ] Ligar anúncios ao perfil e associar ofertas às publicações.
 - [x] Editar, pausar e reativar anúncios próprios com leitura autenticada, validação do proprietário e persistência pela API.
 - [x] Buscar profissionais por nome/especialidade e cidade com paginação, perfil público e reputação apenas quando há avaliações reais.

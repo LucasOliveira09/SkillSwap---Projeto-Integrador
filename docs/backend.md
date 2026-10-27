@@ -41,6 +41,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
 | GET | `/uploads/{nomeArquivo}` | Serve somente nomes aleatórios gerados pelo backend, como imagem pública com `nosniff`. |
 | POST | `/publicacoes` | Exige JWT; cria publicação com legenda de até 500 caracteres e de 1 a 6 fotos existentes no armazenamento. Vínculo opcional é aceito somente para oferta ativa e própria. Responde 201 com Location. |
+| PATCH | `/publicacoes/{id}` | Exige o autor; altera a legenda (até 500 caracteres) e devolve a publicação atualizada, preservando suas fotos e vínculo. |
 | GET | `/publicacoes/{id}` | Consulta uma publicação pública de portfólio pelo identificador. |
 | DELETE | `/publicacoes/{id}` | Exige JWT e autoria; remove a publicação e suas referências de foto, responde 204. Arquivos não são apagados. |
 

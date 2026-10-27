@@ -3,6 +3,7 @@ package com.skillswap.api.domain.portfolio;
 import com.skillswap.api.domain.anuncio.AnuncioRepository;
 import com.skillswap.api.domain.anuncio.StatusAnuncio;
 import com.skillswap.api.domain.portfolio.dto.CriarPublicacaoPortfolioDTO;
+import com.skillswap.api.domain.portfolio.dto.AtualizarLegendaPublicacaoDTO;
 import com.skillswap.api.domain.portfolio.dto.PublicacaoPortfolioDTO;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
@@ -75,6 +76,21 @@ public class PublicacaoPortfolioService {
             throw new NaoAutorizadoException("Você não pode remover esta publicação");
         }
         publicacaoRepository.delete(publicacao);
+    }
+
+    @Transactional
+    public PublicacaoPortfolioDTO atualizarLegenda(Long id, AtualizarLegendaPublicacaoDTO dto, String email) {
+        var publicacao = publicacaoRepository.findById(id)
+                .orElseThrow(() -> new NaoEncontradoException("Publicação não encontrada"));
+        validarAutor(publicacao, email);
+        publicacao.setLegenda(dto.legenda().strip());
+        return paraDTO(publicacaoRepository.saveAndFlush(publicacao));
+    }
+
+    private void validarAutor(PublicacaoPortfolio publicacao, String email) {
+        if (!publicacao.getUsuario().getEmail().equals(email)) {
+            throw new NaoAutorizadoException("Você não pode alterar esta publicação");
+        }
     }
 
     private PublicacaoPortfolioDTO paraDTO(PublicacaoPortfolio p) {

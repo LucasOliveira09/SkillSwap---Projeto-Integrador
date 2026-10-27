@@ -276,6 +276,17 @@ h1 {
   font-weight: 400;
 }
 
+.paginacao-publicacoes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.paginacao-publicacoes span { color: var(--ss-muted); font-size: 12px; }
+
 .estado {
   padding: 20px;
   border: 1px solid var(--ss-line);

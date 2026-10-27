@@ -76,6 +76,59 @@ describe('MeuPerfilComponent', () => {
     expect(TestBed.inject(HttpTestingController).match('/api/perfil')).toHaveSize(0);
   });
 
+  it('edita e persiste a legenda de uma publicação existente', async () => {
+    TestBed.inject(SessaoService).entrar('ana@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/meu-perfil');
+    http.expectOne('/api/perfil').flush({
+      id: 12, nome: 'Ana Profissional', bio: null, cidade: null, fotoUrl: null,
+      especialidades: null, criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    http.expectOne((request) => request.urlWithParams === '/api/perfis/12/anuncios?pagina=0&tamanho=6')
+      .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
+    http.expectOne((request) => request.urlWithParams === '/api/perfis/12/publicacoes?pagina=0&tamanho=12').flush({
+      itens: [{
+        id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+        anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],
+        criadoEm: '2026-10-02T10:00:00',
+      }],
+      pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
+    });
+    harness.detectChanges();
+
+    const publicacao = {
+      id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+      anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],
+      criadoEm: '2026-10-02T10:00:00',
+    };
+    const componente = harness.routeDebugElement!.componentInstance as unknown as {
+      iniciarEdicaoPublicacao(item: typeof publicacao): void;
+      salvarEdicaoPublicacao(item: typeof publicacao): void;
+      legendaEmEdicao: string;
+      publicacoes(): readonly typeof publicacao[];
+      editandoPublicacaoId(): number | null;
+    };
+    expect(componente.publicacoes()).toHaveSize(1);
+    componente.iniciarEdicaoPublicacao(publicacao);
+    expect(componente.editandoPublicacaoId()).toBe(9);
+    harness.detectChanges();
+    componente.legendaEmEdicao = 'Resultado revisado';
+    componente.salvarEdicaoPublicacao(publicacao);
+
+    const atualizar = http.expectOne('/api/publicacoes/9');
+    expect(atualizar.request.method).toBe('PATCH');
+    expect(atualizar.request.body).toEqual({ legenda: 'Resultado revisado' });
+    atualizar.flush({
+      id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+      anuncioTitulo: null, legenda: 'Resultado revisado', fotos: ['/api/uploads/foto.png'],
+      criadoEm: '2026-10-02T10:00:00',
+    });
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Resultado revisado');
+    expect(harness.routeNativeElement?.textContent).toContain('Legenda da publicação atualizada.');
+  });
+
   it('envia a foto selecionada e atualiza a prévia persistida pelo servidor', async () => {
     TestBed.inject(SessaoService).entrar('ana@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });

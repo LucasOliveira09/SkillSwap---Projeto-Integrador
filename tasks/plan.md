@@ -171,7 +171,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 - Exibir feed compacto no perfil e grade responsiva com detalhes e acessibilidade.
 - Adicionar denúncia e estados `RASCUNHO`, `PUBLICADA`, `OCULTA` ou conjunto equivalente aprovado.
 
-**Progresso:** criação e remoção de publicações autenticadas, com até seis fotos JPG/PNG/GIF enviadas previamente, legenda e vínculo opcional a oferta ativa do próprio autor; perfil público exibe as publicações e o proprietário gerencia seu conteúdo no editor. Ainda faltam edição, denúncia/moderação, navegação visual entre páginas, limpeza dos arquivos sem referência e validação real no MySQL.
+**Progresso:** criação e remoção de publicações autenticadas, com até seis fotos JPG/PNG/GIF enviadas previamente, legenda e vínculo opcional a oferta ativa do próprio autor. O autor pode editar a legenda e navegar pelas páginas do próprio portfólio; o perfil público pagina as publicações a partir dos dados da API. Ainda faltam denúncia/moderação, limpeza dos arquivos sem referência e validação real no MySQL.
 
 **Aceite:** criação, edição e remoção afetam somente conteúdo próprio; publicação aparece no perfil público; arquivo removido não deixa referência quebrada; falha de rede preserva o texto editável.
 

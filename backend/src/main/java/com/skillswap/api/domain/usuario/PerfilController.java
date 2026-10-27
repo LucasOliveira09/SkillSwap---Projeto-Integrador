@@ -8,6 +8,7 @@ import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import com.skillswap.api.domain.upload.UploadService;
 import com.skillswap.api.domain.portfolio.PublicacaoPortfolioService;
 import com.skillswap.api.domain.portfolio.dto.CriarPublicacaoPortfolioDTO;
+import com.skillswap.api.domain.portfolio.dto.AtualizarLegendaPublicacaoDTO;
 import com.skillswap.api.domain.portfolio.dto.PublicacaoPortfolioDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,6 +79,16 @@ public class PerfilController {
     @org.springframework.web.bind.annotation.GetMapping("/publicacoes/{id}")
     public ResponseEntity<PublicacaoPortfolioDTO> buscarPublicacao(@PathVariable Long id) {
         return ResponseEntity.ok(publicacaoPortfolioService.buscar(id));
+    }
+
+    @PatchMapping("/publicacoes/{id}")
+    public ResponseEntity<PublicacaoPortfolioDTO> atualizarLegendaPublicacao(
+            @PathVariable Long id,
+            @RequestBody @Valid AtualizarLegendaPublicacaoDTO dto,
+            Authentication authentication) {
+        var publicacao = publicacaoPortfolioService.atualizarLegenda(
+                id, dto, (String) authentication.getPrincipal());
+        return ResponseEntity.ok(publicacao);
     }
 
     @DeleteMapping("/publicacoes/{id}")

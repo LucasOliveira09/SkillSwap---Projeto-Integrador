@@ -133,5 +133,13 @@ describe('PerfilApiService', () => {
     const remover = http.expectOne('/api/publicacoes/9');
     expect(remover.request.method).toBe('DELETE');
     remover.flush(null);
+
+    api.atualizarLegendaPublicacao(9, 'Projeto revisado').subscribe((post) => {
+      expect(post.legenda).toBe('Projeto revisado');
+    });
+    const atualizar = http.expectOne('/api/publicacoes/9');
+    expect(atualizar.request.method).toBe('PATCH');
+    expect(atualizar.request.body).toEqual({ legenda: 'Projeto revisado' });
+    atualizar.flush({ id: 9, legenda: 'Projeto revisado', fotos, criadoEm: '2026-10-02T10:00:00' });
   });
 });

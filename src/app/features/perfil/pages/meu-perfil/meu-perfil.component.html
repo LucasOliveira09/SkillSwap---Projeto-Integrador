@@ -185,14 +185,48 @@
                 @for (foto of publicacao.fotos; track foto) { <img [src]="foto" alt="" loading="lazy" /> }
               </div>
               <div class="item-publicacao-texto">
-                <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
-                <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                @if (editandoPublicacaoId() === publicacao.id) {
+                  <form class="edicao-legenda" (ngSubmit)="salvarEdicaoPublicacao(publicacao)">
+                    <label [for]="'legenda-' + publicacao.id">Legenda</label>
+                    <textarea [id]="'legenda-' + publicacao.id" [name]="'legenda-' + publicacao.id"
+                      [(ngModel)]="legendaEmEdicao" maxlength="500" rows="3"></textarea>
+                    <div class="acoes-legenda">
+                      <button mat-flat-button color="primary" type="submit"
+                        [disabled]="salvandoPublicacaoId() !== null || legendaEmEdicao.length > 500">
+                        {{ salvandoPublicacaoId() === publicacao.id ? 'Salvando...' : 'Salvar legenda' }}
+                      </button>
+                      <button mat-button type="button" [disabled]="salvandoPublicacaoId() !== null"
+                        (click)="cancelarEdicaoPublicacao()">Cancelar</button>
+                    </div>
+                  </form>
+                } @else {
+                  <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
+                  <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                }
               </div>
-              <button mat-button type="button" (click)="removerPublicacao(publicacao)"
-                [disabled]="removendoPublicacaoId !== null" [attr.aria-label]="'Remover publicação de ' + publicacao.criadoEm">
-                {{ removendoPublicacaoId === publicacao.id ? 'Removendo...' : 'Remover' }}
-              </button>
+              <div class="acoes-publicacao">
+                @if (editandoPublicacaoId() !== publicacao.id) {
+                  <button mat-button type="button" (click)="iniciarEdicaoPublicacao(publicacao)"
+                    [disabled]="salvandoPublicacaoId() !== null || removendoPublicacaoId !== null">
+                    Editar legenda
+                  </button>
+                }
+                <button mat-button type="button" (click)="removerPublicacao(publicacao)"
+                  [disabled]="removendoPublicacaoId !== null || salvandoPublicacaoId() !== null"
+                  [attr.aria-label]="'Remover publicação de ' + publicacao.criadoEm">
+                  {{ removendoPublicacaoId === publicacao.id ? 'Removendo...' : 'Remover' }}
+                </button>
+              </div>
             </article>
+          }
+          @if (totalPaginasPortfolio() > 1) {
+            <nav class="paginacao-portfolio" aria-label="Páginas das suas publicações">
+              <button mat-stroked-button type="button" [disabled]="carregandoPortfolio || paginaPortfolio() === 0"
+                (click)="mudarPaginaPortfolio(paginaPortfolio() - 1)">Anteriores</button>
+              <span>Página {{ paginaPortfolio() + 1 }} de {{ totalPaginasPortfolio() }} · {{ totalPublicacoesPortfolio() }} publicações</span>
+              <button mat-stroked-button type="button" [disabled]="carregandoPortfolio || paginaPortfolio() >= totalPaginasPortfolio() - 1"
+                (click)="mudarPaginaPortfolio(paginaPortfolio() + 1)">Próximas</button>
+            </nav>
           }
         }
       </div>

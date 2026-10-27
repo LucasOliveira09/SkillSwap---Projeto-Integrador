@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { appConfig } from '../../../../app.config';
 import { PerfilPublicoComponent } from './perfil-publico.component';
@@ -113,5 +114,49 @@ describe('PerfilPublicoComponent', () => {
     http.expectOne('/api/perfis/999').flush({}, { status: 404, statusText: 'Not Found' });
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Perfil não encontrado');
+  });
+
+  it('navega pelas páginas do portfólio usando a página solicitada pela API', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    const perfil = {
+      id: 12, nome: 'Ana Profissional', bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
+      quantidadeAvaliacoes: 0,
+    };
+    http.expectOne('/api/perfis/12').flush(perfil);
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    const primeira = http.expectOne((request) => request.url === '/api/perfis/12/publicacoes');
+    expect(primeira.request.params.get('pagina')).toBe('0');
+    primeira.flush({
+      itens: [{ id: 1, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+        anuncioTitulo: null, legenda: 'Primeira página', fotos: ['/api/uploads/1.png'], criadoEm: '2026-10-02T10:00:00' }],
+      pagina: 0, tamanho: 12, totalItens: 13, totalPaginas: 2,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    harness.detectChanges();
+
+    Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Próximas'))?.click();
+    await harness.fixture.whenStable();
+    const perfilAtualizado = http.expectOne('/api/perfis/12');
+    perfilAtualizado.flush(perfil);
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    const segunda = http.expectOne((request) => request.url === '/api/perfis/12/publicacoes');
+    expect(segunda.request.params.get('pagina')).toBe('1');
+    segunda.flush({
+      itens: [{ id: 13, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+        anuncioTitulo: null, legenda: 'Décima terceira publicação', fotos: ['/api/uploads/13.png'], criadoEm: '2026-10-14T10:00:00' }],
+      pagina: 1, tamanho: 12, totalItens: 13, totalPaginas: 2,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Décima terceira publicação');
+    expect(harness.routeNativeElement?.textContent).toContain('13 publicações');
+    expect(TestBed.inject(Router).url).toContain('portfolioPagina=1');
   });
 });
