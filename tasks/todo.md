@@ -37,7 +37,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Adicionar links públicos opcionais de LinkedIn, Instagram e site HTTPS, com validação no servidor.
 - [x] Permitir pausar e reativar a exposição do perfil, ofertas, portfólio, avaliações e imagens sem apagar dados da conta ou negociações.
 - [x] Validar perfil, foto e portfólio no MySQL 8.0.46 e persistência após reinício da API, em schema descartável da prévia Tailscale.
-- [ ] Repetir validação dos fluxos de perfil, fotos e portfólio no MySQL 8.4 local; o baseline e API básica já passaram em MySQL 8.4.11 descartável na VPS, mas o Docker Desktop local estava indisponível.
+- [x] Validar em MySQL 8.4.11 descartável na VPS os fluxos REST completos de perfil, foto, portfólio, descoberta, venda/troca, propostas, acordos, conversa, conclusão mútua e avaliações; confirmar dados após reinício e foto após recriação da API com volume persistente. O navegador integrado a MySQL 8.4 e a execução local continuam pendentes.
 
 ### Portfólio e descoberta
 
@@ -74,7 +74,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Entrega e fases seguintes
 
-- [ ] Completar validação operacional: axe/leitor de tela, cópia externa/retenção e restauração operacional de uploads, e decisão de migração para o schema ativo. Concorrência, migração integral, contestação e denúncia/moderação foram validadas em cópias isoladas MySQL 8.0.46; baseline e API básica passaram em MySQL 8.4.11 descartável na VPS. Os fluxos de venda e troca na interface, autorização básica e persistência após reinício passaram em MySQL 8.0.46.
+- [ ] Completar validação operacional: axe/leitor de tela, cópia externa/retenção e restauração operacional de uploads, e decisão de migração para o schema ativo. Concorrência, migração integral, contestação e denúncia/moderação foram validadas em cópias isoladas MySQL 8.0.46; os fluxos REST completos, incluindo upload durável, venda e troca passaram em MySQL 8.4.11 descartável na VPS. Os fluxos pela interface, moderação e persistência após reinício também passaram em MySQL 8.0.46.
 - [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
 - [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
