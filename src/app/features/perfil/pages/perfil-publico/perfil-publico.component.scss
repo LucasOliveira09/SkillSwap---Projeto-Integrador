@@ -131,6 +131,9 @@ h1 {
 .notas-avaliacao { display: flex; flex-wrap: wrap; gap: 16px; color: var(--ss-muted); font-size: 13px; }
 .notas-avaliacao b { color: #ad7600; font-size: 16px; letter-spacing: 1px; }
 .depoimento { margin: 0; white-space: pre-line; }
+.resposta-profissional { margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--ss-primary, #168b83); border-radius: 0 10px 10px 0; background: #f1f8f6; }
+.resposta-profissional p { margin: 7px 0; line-height: 1.55; white-space: pre-line; }
+.resposta-profissional time { color: var(--ss-muted, #65737d); font-size: 12px; }
 
 .lista-publicacoes {
   display: grid;

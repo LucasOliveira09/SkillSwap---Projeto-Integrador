@@ -38,4 +38,9 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
 .avaliacao-publicada span { color: #ad7600; }
 .avaliacao-publicada p { margin: 0; white-space: pre-line; }
+.responder-avaliacao { display: grid; gap: 8px; margin-top: 14px; }
+.responder-avaliacao mat-form-field { width: 100%; }
+.resposta-profissional { margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--ss-primary, #168b83); border-radius: 0 10px 10px 0; background: #f1f8f6; }
+.resposta-profissional p { margin: 7px 0; line-height: 1.55; white-space: pre-line; }
+.resposta-profissional time { color: var(--ss-muted, #65737d); font-size: 12px; }
 @media (max-width: 600px) { .pagina-acordo { padding: 20px 16px 48px; } .cabecalho-acordo, .conversa, .historico-acordo, .avaliacao, .estado { padding: 18px; } .mensagem { max-width: 94%; } .paginacao-mensagens { flex-wrap: wrap; } .paginacao-mensagens span { order: -1; width: 100%; text-align: center; } }

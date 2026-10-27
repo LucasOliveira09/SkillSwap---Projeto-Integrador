@@ -91,6 +91,8 @@ describe('PerfilPublicoComponent', () => {
       notaAnuncio: 4,
       depoimento: 'Serviço pontual e bem executado.',
       criadoEm: '2026-10-03T10:00:00',
+      respostaProfissional: 'Agradeço a confiança.',
+      respondidaEm: '2026-10-04T10:00:00',
     }]);
     harness.detectChanges();
 
@@ -105,6 +107,7 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('Avaliações após trabalhos concluídos');
     expect(texto).toContain('Bruno Cliente');
     expect(texto).toContain('Serviço pontual e bem executado.');
+    expect(texto).toContain('Agradeço a confiança.');
     expect(texto).toContain('Serviço:');
     expect(texto).not.toContain('ana@');
   });

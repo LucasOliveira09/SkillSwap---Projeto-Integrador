@@ -133,7 +133,7 @@ public class ModeracaoService {
         switch (denuncia.getTipoConteudo()) {
             case PUBLICACAO -> publicacaoRepository.findById(denuncia.getRecursoId())
                     .ifPresent(publicacao -> publicacao.setModeradaOculta(true));
-            case AVALIACAO -> avaliacaoRepository.findById(denuncia.getRecursoId())
+            case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(denuncia.getRecursoId())
                     .ifPresent(avaliacao -> avaliacao.setModeradaOculta(true));
         }
     }
@@ -142,7 +142,7 @@ public class ModeracaoService {
         switch (denuncia.getTipoConteudo()) {
             case PUBLICACAO -> publicacaoRepository.findById(denuncia.getRecursoId())
                     .ifPresent(publicacao -> publicacao.setModeradaOculta(false));
-            case AVALIACAO -> avaliacaoRepository.findById(denuncia.getRecursoId())
+            case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(denuncia.getRecursoId())
                     .ifPresent(avaliacao -> avaliacao.setModeradaOculta(false));
         }
     }

@@ -57,6 +57,8 @@ export interface Avaliacao {
   notaAnuncio?: number | null;
   depoimento: string | null;
   criadoEm: string;
+  respostaProfissional?: string | null;
+  respondidaEm?: string | null;
 }
 
 export interface Pagina<T> {

@@ -30,7 +30,11 @@ describe('AcordoDetalheComponent', () => {
     http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
       itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
     });
-    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/acordos/7/avaliacoes').flush([{
+      id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 5, notaAnuncio: 4, depoimento: 'Ótimo serviço', criadoEm: '2026-10-26T10:30:00',
+      respostaProfissional: null, respondidaEm: null,
+    }]);
     http.expectOne('/api/perfil').flush({
       id: 2, nome: 'Bruno', bio: null, cidade: null, fotoUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
@@ -55,7 +59,7 @@ describe('AcordoDetalheComponent', () => {
     expect(harness.routeNativeElement?.querySelector('.concluir')).toBeNull();
   });
 
-  it('não oferece avaliação ao profissional depois da conclusão', async () => {
+  it('permite ao profissional responder à avaliação sem avaliar o próprio acordo', async () => {
     TestBed.inject(SessaoService).entrar('profissional@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
 
@@ -73,7 +77,11 @@ describe('AcordoDetalheComponent', () => {
     http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
       itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
     });
-    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/acordos/7/avaliacoes').flush([{
+      id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 5, notaAnuncio: 4, depoimento: 'Ótimo serviço', criadoEm: '2026-10-26T10:30:00',
+      respostaProfissional: null, respondidaEm: null,
+    }]);
     http.expectOne('/api/perfil').flush({
       id: 1, nome: 'Ana', bio: null, cidade: null, fotoUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
@@ -82,7 +90,25 @@ describe('AcordoDetalheComponent', () => {
 
     const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
     expect(secao.textContent).toContain('O cliente que enviou a proposta poderá avaliar');
-    expect(secao.querySelector('form')).toBeNull();
+    expect(secao.querySelector('fieldset')).toBeNull();
+    const campoResposta = secao.querySelector<HTMLTextAreaElement>('.responder-avaliacao textarea')!;
+    campoResposta.value = '  Obrigado pelo retorno.  ';
+    campoResposta.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    const publicar = secao.querySelector<HTMLButtonElement>('.responder-avaliacao button')!;
+    expect(publicar.disabled).toBeFalse();
+    publicar.click();
+    const resposta = http.expectOne('/api/acordos/7/avaliacoes/12/resposta');
+    expect(resposta.request.method).toBe('PATCH');
+    expect(resposta.request.body).toEqual({ resposta: 'Obrigado pelo retorno.' });
+    resposta.flush({
+      id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 5, notaAnuncio: 4, depoimento: 'Ótimo serviço', criadoEm: '2026-10-26T10:30:00',
+      respostaProfissional: 'Obrigado pelo retorno.', respondidaEm: '2026-10-26T11:00:00',
+    });
+    harness.detectChanges();
+    expect(secao.textContent).toContain('Obrigado pelo retorno.');
+    expect(secao.querySelector('.responder-avaliacao')).toBeNull();
     expect(harness.routeNativeElement!.querySelector('.historico-acordo')?.textContent)
       .toContain('Confirmou que o trabalho foi concluído');
   });

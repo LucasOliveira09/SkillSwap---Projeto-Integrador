@@ -42,6 +42,8 @@ export class AcordoDetalheComponent {
   protected readonly avaliacoes = signal<readonly Avaliacao[]>([]);
   protected readonly eventos = signal<readonly EventoAcordo[]>([]);
   protected readonly mensagem = signal('');
+  protected respostas: Record<number, string> = {};
+  protected readonly respondendoAvaliacao = signal<number | null>(null);
   protected nota = 0;
   protected notaAnuncio = 0;
   protected depoimento = '';
@@ -224,5 +226,30 @@ export class AcordoDetalheComponent {
       },
       error: () => this.erro.set('Não foi possível enviar a avaliação. Verifique se este acordo já foi avaliado.'),
     });
+  }
+
+  protected responderAvaliacao(avaliacao: Avaliacao): void {
+    const resposta = (this.respostas[avaliacao.id] ?? '').trim();
+    if (!resposta || resposta.length > 1000 || this.respondendoAvaliacao() !== null
+        || avaliacao.respostaProfissional || this.perfil()?.id !== avaliacao.avaliadoId
+        || this.acordo()?.anuncianteId !== this.perfil()?.id) return;
+    this.respondendoAvaliacao.set(avaliacao.id);
+    this.erro.set('');
+    this.sucesso.set('');
+    this.api.responderAvaliacao(this.acordoId, avaliacao.id, resposta).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.respondendoAvaliacao.set(null)),
+    ).subscribe({
+      next: (atualizada) => {
+        this.avaliacoes.update((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
+        this.respostas[avaliacao.id] = '';
+        this.sucesso.set('Sua resposta foi publicada no perfil profissional.');
+      },
+      error: () => this.erro.set('Não foi possível publicar a resposta. Atualize o acordo e tente novamente.'),
+    });
+  }
+
+  protected atualizarResposta(avaliacaoId: number, resposta: string): void {
+    this.respostas = { ...this.respostas, [avaliacaoId]: resposta };
   }
 }

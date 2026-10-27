@@ -157,6 +157,22 @@ class NegociacaoControllerTest {
         mvc.perform(get("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}", acordoId, avaliacaoId)
                         .header("Authorization", "Bearer " + anuncianteToken))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(avaliacaoId));
+        mvc.perform(patch("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"resposta\":\"Obrigado pelo retorno.\"}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(patch("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"resposta\":\"  Obrigado pelo retorno.  \"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.respostaProfissional").value("Obrigado pelo retorno."))
+                .andExpect(jsonPath("$.respondidaEm").isNotEmpty());
+        mvc.perform(patch("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta", acordoId, avaliacaoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"resposta\":\"Outra resposta\"}"))
+                .andExpect(status().isConflict());
+        mvc.perform(get("/api/usuarios/{id}/avaliacoes", anuncianteId))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].respostaProfissional").value("Obrigado pelo retorno."));
         mvc.perform(get("/api/anuncios/{id}", anuncioId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mediaAvaliacoesAnuncio").value(4.0))

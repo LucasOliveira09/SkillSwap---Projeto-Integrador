@@ -79,6 +79,15 @@
                 }
               </p>
               @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }
+              @if (avaliacao.respostaProfissional) {
+                <aside class="resposta-profissional">
+                  <strong>Resposta de {{ avaliacao.avaliadoNome }}</strong>
+                  <p>{{ avaliacao.respostaProfissional }}</p>
+                  @if (avaliacao.respondidaEm) {
+                    <time [attr.datetime]="avaliacao.respondidaEm">{{ avaliacao.respondidaEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                  }
+                </aside>
+              }
               <app-denunciar [tipoConteudo]="'AVALIACAO'" [recursoId]="avaliacao.id" />
             </article>
           }

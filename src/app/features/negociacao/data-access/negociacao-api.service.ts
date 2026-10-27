@@ -49,4 +49,10 @@ export class NegociacaoApiService {
       nota, notaAnuncio, depoimento,
     });
   }
+
+  responderAvaliacao(acordoId: number, avaliacaoId: number, resposta: string) {
+    return this.http.patch<Avaliacao>(
+      `/api/acordos/${acordoId}/avaliacoes/${avaliacaoId}/resposta`, { resposta },
+    );
+  }
 }

@@ -206,7 +206,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
 
-**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. Ainda faltam resposta/edição, contestação e validação dos indicadores no MySQL.
+**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. O profissional avaliado pode publicar uma resposta única e imutável no perfil, com autoria verificada no servidor. Ainda faltam definir/implementar edição controlada, contestação formal e validação no MySQL.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 

@@ -40,6 +40,12 @@ public class Avaliacao {
     @Column(length = 1000)
     private String depoimento;
 
+    @Column(name = "resposta_profissional", length = 1000)
+    private String respostaProfissional;
+
+    @Column(name = "respondida_em")
+    private LocalDateTime respondidaEm;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 

@@ -12,5 +12,7 @@ public record AvaliacaoResponseDTO(
         int nota,
         Integer notaAnuncio,
         String depoimento,
-        LocalDateTime criadoEm
+        LocalDateTime criadoEm,
+        String respostaProfissional,
+        LocalDateTime respondidaEm
 ) {}

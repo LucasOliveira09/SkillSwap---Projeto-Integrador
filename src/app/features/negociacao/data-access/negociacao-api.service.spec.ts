@@ -57,5 +57,11 @@ describe('NegociacaoApiService', () => {
     expect(atualizacao.request.method).toBe('PATCH');
     expect(atualizacao.request.body).toEqual({ status: 'CONCLUIDO' });
     atualizacao.flush({ id: 3, status: 'CONCLUIDO' });
+
+    api.responderAvaliacao(3, 8, 'Obrigado pelo retorno.').subscribe();
+    const resposta = http.expectOne('/api/acordos/3/avaliacoes/8/resposta');
+    expect(resposta.request.method).toBe('PATCH');
+    expect(resposta.request.body).toEqual({ resposta: 'Obrigado pelo retorno.' });
+    resposta.flush({ id: 8, respostaProfissional: 'Obrigado pelo retorno.' });
   });
 });
