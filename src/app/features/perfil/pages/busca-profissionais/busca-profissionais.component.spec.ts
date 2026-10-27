@@ -35,8 +35,8 @@ describe('BuscaProfissionaisComponent', () => {
           capaUrl: null,
           especialidades: 'Eletricista, instalações',
           criadoEm: '2026-10-01T10:00:00',
-          mediaNotas: null,
-          quantidadeAvaliacoes: 0,
+          mediaNotas: 4.6,
+          quantidadeAvaliacoes: 7,
         },
       ],
       pagina: 0,
@@ -51,7 +51,11 @@ describe('BuscaProfissionaisComponent', () => {
     expect(texto).toContain('Eletricista residencial');
     expect(texto).toContain('Eletricista, instalações');
     expect(texto).toContain('Florianópolis');
-    expect(texto).toContain('Ainda sem avaliações');
+    expect(texto).toContain('4,6');
+    expect(texto).toContain('7 avaliações');
+    const reputacao = harness.routeNativeElement?.querySelector('.reputacao');
+    expect(reputacao?.hasAttribute('aria-label')).toBeFalse();
+    expect(reputacao?.textContent).toContain('7');
     expect(texto).not.toContain('@');
     expect(harness.routeNativeElement?.querySelector('a[href="/profissionais/12"]')).not.toBeNull();
   });

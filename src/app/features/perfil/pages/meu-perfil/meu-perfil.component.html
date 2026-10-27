@@ -260,7 +260,7 @@
           </button>
         </div>
         @if (previaFotosPortfolio().length) {
-          <div class="previas-portfolio" aria-label="Prévia das fotos selecionadas">
+          <div class="previas-portfolio" role="group" aria-label="Prévia das fotos selecionadas">
             @for (item of previaFotosPortfolio(); track item.url) {
               <img [src]="item.url" [alt]="'Prévia de ' + item.arquivo.name" />
             }

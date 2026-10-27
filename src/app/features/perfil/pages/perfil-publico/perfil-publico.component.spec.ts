@@ -112,6 +112,19 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('Atendo residências em Florianópolis.');
     expect(texto).toContain('4,8');
     expect(texto).toContain('5 avaliações');
+    const reputacao = harness.routeNativeElement?.querySelector('.reputacao');
+    expect(reputacao?.hasAttribute('aria-label')).toBeFalse();
+    expect(reputacao?.textContent).toContain('5 avaliações');
+    expect(
+      harness.routeNativeElement?.querySelector(
+        '[role="img"][aria-label="Nota do profissional: 5 de 5 estrelas"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      harness.routeNativeElement?.querySelector(
+        '[role="img"][aria-label="Nota do serviço: 4 de 5 estrelas"]',
+      ),
+    ).not.toBeNull();
     expect(texto).toContain('Instalação de luminária');
     expect(texto).toContain('Trabalhos e portfólio');
     expect(texto).toContain('Instalação concluída');

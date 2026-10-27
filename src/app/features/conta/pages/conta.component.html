@@ -32,7 +32,7 @@
                   <span>{{ notificacao.mensagem }}</span>
                   <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
                 </a>
-                @if (!notificacao.lida) { <span class="indicador-nao-lida" aria-label="Não lida"></span> }
+                @if (!notificacao.lida) { <span class="indicador-nao-lida" role="img" aria-label="Não lida"></span> }
               </li>
             }
           </ol>

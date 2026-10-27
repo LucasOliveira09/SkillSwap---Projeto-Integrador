@@ -92,6 +92,10 @@ describe('AcordoDetalheComponent', () => {
     const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
     expect(secao.textContent).toContain('O cliente que enviou a proposta poderá avaliar');
     expect(secao.querySelector('fieldset')).toBeNull();
+    expect(secao.querySelector('[role="img"][aria-label="Nota do profissional: 5 de 5 estrelas"]'))
+      .not.toBeNull();
+    expect(secao.querySelector('[role="img"][aria-label="Nota do anúncio: 4 de 5 estrelas"]'))
+      .not.toBeNull();
     const campoContestacao = secao.querySelector<HTMLTextAreaElement>('.contestar-avaliacao textarea')!;
     campoContestacao.value = 'O depoimento relata uma etapa que não fazia parte do combinado.';
     campoContestacao.dispatchEvent(new Event('input'));
@@ -162,6 +166,9 @@ describe('AcordoDetalheComponent', () => {
     secao.querySelector<HTMLButtonElement>('article.avaliacao-publicada > button')!.click();
     harness.detectChanges();
     expect(secao.textContent).toContain('Apenas uma edição é permitida nas primeiras 24 horas');
+    expect(secao.querySelectorAll('.editar-avaliacao fieldset .estrelas[aria-label]')).toHaveSize(0);
+    expect(secao.querySelectorAll('.editar-avaliacao fieldset legend').item(0).textContent)
+      .toContain('Nota atualizada do profissional');
     const notaProfissional = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[0].querySelectorAll('button');
     notaProfissional[4].click();
     const notaOferta = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[1].querySelectorAll('button');

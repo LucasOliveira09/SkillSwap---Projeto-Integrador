@@ -26,6 +26,8 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     avatar: 'images/legado/avatar-lucas.jpg',
     imagem: 'images/legado/aula-futebol.jpg',
     estrelas: 5,
+    mediaAvaliacoesAnuncio: 4.7,
+    quantidadeAvaliacoesAnuncio: 2,
     exemplo: false,
     criadoEm: '2026-10-26T12:00:00',
     disponibilidades: [{ diaSemana: 'SABADO' as const, periodo: 'TARDE' as const }],
@@ -56,6 +58,12 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     expect(texto).toContain('Disponibilidade semanal informada');
     expect(texto).toContain('Sábado · Tarde');
     expect(texto).toContain('confirme os horários na conversa');
+
+    const reputacao = harness.routeNativeElement?.querySelector('.reputacao-anuncio');
+    expect(reputacao?.hasAttribute('aria-label')).toBeFalse();
+    expect(reputacao?.textContent).toContain('4,7');
+    expect(reputacao?.textContent).toContain('2 avaliações do serviço');
+    expect(reputacao?.querySelector('.sr-only')?.textContent).toContain('trabalhos concluídos');
 
     const img = harness.routeNativeElement?.querySelector('.imagem-destaque') as HTMLImageElement;
     expect(img).toBeTruthy();

@@ -62,6 +62,11 @@ describe('DenunciasComponent', () => {
 
   it('apresenta a justificativa privada e pede uma fundamentação para a decisão', () => {
     const pagina = fixture.nativeElement as HTMLElement;
+    expect(pagina.querySelector('[role="list"][aria-label="Denúncias"]')).not.toBeNull();
+    expect(pagina.querySelector('[role="listitem"]')).not.toBeNull();
+    expect(
+      pagina.querySelector('[role="list"][aria-label="Contestações de avaliações"]'),
+    ).not.toBeNull();
     expect(pagina.textContent).toContain('Contestações de avaliações');
     expect(pagina.textContent).toContain(contestacao.justificativa);
     expect(pagina.textContent).toContain('Ocultar avaliação e notas');

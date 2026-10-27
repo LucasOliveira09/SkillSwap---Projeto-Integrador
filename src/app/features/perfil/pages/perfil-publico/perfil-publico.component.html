@@ -43,7 +43,7 @@
               <span><app-icone nome="local" /> {{ p.cidade }}</span>
             }
             @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
-              <span class="reputacao" [attr.aria-label]="p.mediaNotas | number: '1.1-1'">
+              <span class="reputacao">
                 <span aria-hidden="true">★</span>
                 {{ p.mediaNotas | number: '1.1-1' }}
                 ({{ p.quantidadeAvaliacoes }}
@@ -95,9 +95,23 @@
                 <time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
               </div>
               <p class="notas-avaliacao">
-                <span>Profissional: <b aria-label="Nota do profissional">{{ estrelas(avaliacao.nota) }}</b></span>
+                <span>
+                  Profissional:
+                  <b
+                    role="img"
+                    [attr.aria-label]="'Nota do profissional: ' + avaliacao.nota + ' de 5 estrelas'"
+                    >{{ estrelas(avaliacao.nota) }}</b
+                  >
+                </span>
                 @if (avaliacao.notaAnuncio) {
-                  <span>Serviço: <b aria-label="Nota do serviço">{{ estrelas(avaliacao.notaAnuncio) }}</b></span>
+                  <span>
+                    Serviço:
+                    <b
+                      role="img"
+                      [attr.aria-label]="'Nota do serviço: ' + avaliacao.notaAnuncio + ' de 5 estrelas'"
+                      >{{ estrelas(avaliacao.notaAnuncio) }}</b
+                    >
+                  </span>
                 }
               </p>
               @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }

@@ -24,7 +24,8 @@
       <span class="atual" aria-current="page">{{ a.titulo }}</span>
     </nav>
     @if ((a.quantidadeAvaliacoesAnuncio ?? 0) > 0 && a.mediaAvaliacoesAnuncio != null) {
-      <p class="reputacao-anuncio" aria-label="Avaliação baseada em trabalhos concluídos">
+      <p class="reputacao-anuncio">
+        <span class="sr-only">Média de avaliações de trabalhos concluídos: </span>
         <span aria-hidden="true">★</span> {{ a.mediaAvaliacoesAnuncio | number: '1.1-1' }}
         · {{ a.quantidadeAvaliacoesAnuncio }} {{ a.quantidadeAvaliacoesAnuncio === 1 ? 'avaliação do serviço' : 'avaliações do serviço' }}
       </p>

@@ -21,9 +21,9 @@
     } @else if (!denuncias().length) {
       <p class="estado">Não há denúncias neste filtro.</p>
     } @else {
-      <section class="lista" aria-label="Denúncias">
+      <div class="lista" role="list" aria-label="Denúncias">
         @for (denuncia of denuncias(); track denuncia.id) {
-          <article class="denuncia">
+          <article class="denuncia" role="listitem">
             <div class="topo-denuncia">
               <span>{{ denuncia.tipoConteudo === 'PUBLICACAO' ? 'Publicação de portfólio' : 'Avaliação' }}</span>
               <time [attr.datetime]="denuncia.criadaEm">{{ denuncia.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
@@ -67,7 +67,7 @@
             }
           </article>
         }
-      </section>
+      </div>
       @if (totalPaginas() > 1) {
         <nav class="paginacao" aria-label="Páginas de denúncias">
           <button mat-stroked-button type="button" [disabled]="carregando || pagina() === 0"
@@ -96,9 +96,9 @@
       } @else if (!contestacoes().length) {
         <p class="estado">Não há contestações neste filtro.</p>
       } @else {
-        <div class="lista" aria-label="Contestações de avaliações">
+        <div class="lista" role="list" aria-label="Contestações de avaliações">
           @for (contestacao of contestacoes(); track contestacao.id) {
-            <article class="denuncia">
+            <article class="denuncia" role="listitem">
               <div class="topo-denuncia">
                 <span>Avaliação de {{ contestacao.avaliadorNome }} sobre {{ contestacao.avaliadoNome }}</span>
                 <time [attr.datetime]="contestacao.criadaEm">{{ contestacao.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>

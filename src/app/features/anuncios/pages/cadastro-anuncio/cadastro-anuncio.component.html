@@ -1,4 +1,4 @@
-<div class="confianca" aria-label="Informações do cadastro">
+<div class="confianca" role="group" aria-label="Informações do cadastro">
   <div>
     <app-icone nome="estrela" /><span
       ><strong>Seu talento em destaque</strong><small>Serviços e aulas no mesmo lugar</small></span
@@ -35,7 +35,7 @@
       <div class="etapa">
         <span>1</span> Dados do anúncio <small>{{ anuncioId() ? 'Atualize os dados da sua oferta' : 'Preencha para visualizar sua oferta' }}</small>
       </div>
-      <div class="modos" aria-label="Modalidade do anúncio">
+      <div class="modos" role="group" aria-label="Modalidade do anúncio">
         <button
           type="button"
           [class.ativo]="dados.modalidade === 'venda'"

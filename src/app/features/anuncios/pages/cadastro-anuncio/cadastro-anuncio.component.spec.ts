@@ -28,6 +28,17 @@ describe('Cadastro persistente', () => {
   });
   afterEach(() => http.verify());
 
+  it('expõe as informações e as modalidades como grupos nomeados', () => {
+    const pagina = fixture.nativeElement as HTMLElement;
+    const informacoes = pagina.querySelector('.confianca');
+    const modalidades = pagina.querySelector('.modos');
+
+    expect(informacoes?.getAttribute('role')).toBe('group');
+    expect(informacoes?.getAttribute('aria-label')).toBe('Informações do cadastro');
+    expect(modalidades?.getAttribute('role')).toBe('group');
+    expect(modalidades?.getAttribute('aria-label')).toBe('Modalidade do anúncio');
+  });
+
   async function preencher() {
     for (const [nome, valor] of Object.entries({
       titulo: 'Aulas de violão',

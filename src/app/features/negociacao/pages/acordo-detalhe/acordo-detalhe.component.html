@@ -118,7 +118,7 @@
             <form (ngSubmit)="avaliar()">
               <fieldset>
                 <legend>Nota do profissional</legend>
-                <div class="estrelas" aria-label="Nota do profissional">
+                <div class="estrelas">
                   @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                     <button type="button" [attr.aria-pressed]="nota === estrela"
                       [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
@@ -128,7 +128,7 @@
               </fieldset>
               <fieldset>
                 <legend>Nota do anúncio ou serviço</legend>
-                <div class="estrelas" aria-label="Nota do anúncio ou serviço">
+                <div class="estrelas">
                   @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                     <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
                       [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
@@ -153,9 +153,19 @@
         @for (avaliacao of avaliacoes(); track avaliacao.id) {
           <article class="avaliacao-publicada">
             <strong>{{ avaliacao.avaliadorNome }}</strong>
-            <span aria-label="Nota do profissional">Profissional: {{ '★'.repeat(avaliacao.nota) }}</span>
+            <span
+              role="img"
+              [attr.aria-label]="'Nota do profissional: ' + avaliacao.nota + ' de 5 estrelas'"
+            >
+              Profissional: {{ '★'.repeat(avaliacao.nota) }}
+            </span>
             @if (avaliacao.notaAnuncio) {
-              <span aria-label="Nota do anúncio">Oferta: {{ '★'.repeat(avaliacao.notaAnuncio) }}</span>
+              <span
+                role="img"
+                [attr.aria-label]="'Nota do anúncio: ' + avaliacao.notaAnuncio + ' de 5 estrelas'"
+              >
+                Oferta: {{ '★'.repeat(avaliacao.notaAnuncio) }}
+              </span>
             }
             @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
             @if (avaliacao.editadaEm) {
@@ -166,7 +176,7 @@
                 <form class="editar-avaliacao" (ngSubmit)="salvarEdicaoAvaliacao(avaliacao)">
                   <fieldset>
                     <legend>Nota atualizada do profissional</legend>
-                    <div class="estrelas" aria-label="Nova nota do profissional">
+                    <div class="estrelas">
                       @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                         <button type="button" [attr.aria-pressed]="notaEdicao === estrela"
                           [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
@@ -176,7 +186,7 @@
                   </fieldset>
                   <fieldset>
                     <legend>Nota atualizada da oferta ou serviço</legend>
-                    <div class="estrelas" aria-label="Nova nota da oferta ou serviço">
+                    <div class="estrelas">
                       @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                         <button type="button" [attr.aria-pressed]="notaAnuncioEdicao === estrela"
                           [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
