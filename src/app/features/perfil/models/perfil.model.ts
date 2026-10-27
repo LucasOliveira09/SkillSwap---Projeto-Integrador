@@ -6,6 +6,9 @@ export interface PerfilProfissional {
   cidade: string | null;
   fotoUrl: string | null;
   capaUrl: string | null;
+  linkedinUrl?: string | null;
+  instagramUrl?: string | null;
+  siteUrl?: string | null;
   especialidades: string | null;
   criadoEm: string;
   mediaNotas: number | null;
@@ -24,6 +27,9 @@ export interface AtualizacaoPerfil {
   bio: string;
   cidade: string;
   especialidades: string;
+  linkedinUrl?: string;
+  instagramUrl?: string;
+  siteUrl?: string;
 }
 
 export interface PaginaPerfisProfissionais {

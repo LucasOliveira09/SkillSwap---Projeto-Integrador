@@ -71,6 +71,17 @@
       }
     </section>
 
+    @if (p.linkedinUrl || p.instagramUrl || p.siteUrl) {
+      <section class="links-publicos secao" aria-labelledby="titulo-links">
+        <h2 id="titulo-links">Links profissionais</h2>
+        <div class="lista-links">
+          @if (p.linkedinUrl) { <a [href]="p.linkedinUrl" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a> }
+          @if (p.instagramUrl) { <a [href]="p.instagramUrl" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a> }
+          @if (p.siteUrl) { <a [href]="p.siteUrl" target="_blank" rel="noopener noreferrer">Site profissional <span aria-hidden="true">↗</span></a> }
+        </div>
+      </section>
+    }
+
     <section class="avaliacoes secao" aria-labelledby="titulo-avaliacoes">
       <h2 id="titulo-avaliacoes">Avaliações após trabalhos concluídos</h2>
       @if (!avaliacoes().length) {

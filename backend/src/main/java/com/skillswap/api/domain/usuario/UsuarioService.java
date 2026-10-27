@@ -111,6 +111,9 @@ public class UsuarioService {
         if (dto.bio() != null) usuario.setBio(dto.bio().strip());
         if (dto.cidade() != null) usuario.setCidade(dto.cidade().strip());
         if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades().strip());
+        if (dto.linkedinUrl() != null) usuario.setLinkedinUrl(dto.linkedinUrl().strip());
+        if (dto.instagramUrl() != null) usuario.setInstagramUrl(dto.instagramUrl().strip());
+        if (dto.siteUrl() != null) usuario.setSiteUrl(dto.siteUrl().strip());
     }
 
     private String normalizarFiltro(String valor, int limite) {
@@ -135,7 +138,8 @@ public class UsuarioService {
         return new PerfilDTO(
                 u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
-                u.getCapaUrl(), u.getEspecialidades(), u.getCriadoEm(),
+                u.getCapaUrl(), u.getLinkedinUrl(), u.getInstagramUrl(), u.getSiteUrl(),
+                u.getEspecialidades(), u.getCriadoEm(),
                 getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())
         );
     }

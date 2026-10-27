@@ -154,6 +154,31 @@
         />
       </mat-form-field>
 
+      <fieldset class="links-perfil">
+        <legend>Links profissionais <span>· opcionais</span></legend>
+        <mat-form-field appearance="outline">
+          <mat-label>LinkedIn</mat-label>
+          <input matInput type="url" name="linkedinUrl" [(ngModel)]="dados.linkedinUrl"
+            maxlength="300" placeholder="https://www.linkedin.com/in/seu-perfil"
+            pattern="https://(www\.)?linkedin\.com/(in|company)/[A-Za-z0-9_.%-]+/?" [disabled]="salvando" />
+          <mat-hint>Endereço público do seu perfil ou página profissional.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Instagram</mat-label>
+          <input matInput type="url" name="instagramUrl" [(ngModel)]="dados.instagramUrl"
+            maxlength="300" placeholder="https://www.instagram.com/seu-perfil"
+            pattern="https://(www\.)?instagram\.com/[A-Za-z0-9_.]+/?" [disabled]="salvando" />
+          <mat-hint>Link para mostrar seus trabalhos.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Seu site</mat-label>
+          <input matInput type="url" name="siteUrl" [(ngModel)]="dados.siteUrl"
+            maxlength="300" placeholder="https://seusite.com.br"
+            pattern="https://([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}(:[0-9]{1,5})?(/[^\s]*)?" [disabled]="salvando" />
+          <mat-hint>Use um endereço HTTPS.</mat-hint>
+        </mat-form-field>
+      </fieldset>
+
       <mat-form-field appearance="outline">
         <mat-label>Sobre você</mat-label>
         <textarea

@@ -391,3 +391,16 @@ h1 {
 .paginacao-ofertas { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; }
 .paginacao-ofertas span { color: var(--ss-muted); font-size: 13px; }
 @media (max-width: 480px) { .paginacao-ofertas { gap: 8px; flex-wrap: wrap; } }
+.lista-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.lista-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  color: var(--ss-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+.lista-links a:hover { background: var(--ss-soft); }

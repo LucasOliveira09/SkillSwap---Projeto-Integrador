@@ -27,6 +27,9 @@ describe('PerfilPublicoComponent', () => {
       cidade: 'Florianópolis',
       fotoUrl: null,
       capaUrl: '/api/uploads/capa-profissional.png',
+      linkedinUrl: 'https://www.linkedin.com/in/ana-lima',
+      instagramUrl: null,
+      siteUrl: 'https://ana-profissional.com.br',
       especialidades: 'Elétrica residencial',
       criadoEm: '2026-10-01T10:00:00',
       mediaNotas: 4.8,
@@ -100,6 +103,9 @@ describe('PerfilPublicoComponent', () => {
 
     expect(harness.routeNativeElement?.querySelector('.capa-perfil img')?.getAttribute('src'))
       .toBe('/api/uploads/capa-profissional.png');
+    const linkedin = harness.routeNativeElement?.querySelector<HTMLAnchorElement>('.lista-links a');
+    expect(linkedin?.href).toBe('https://www.linkedin.com/in/ana-lima');
+    expect(linkedin?.rel).toContain('noopener');
 
     const texto = harness.routeNativeElement?.textContent || '';
     expect(texto).toContain('Ana Profissional');
@@ -113,6 +119,7 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('Bruno Cliente');
     expect(texto).toContain('Serviço pontual e bem executado.');
     expect(texto).toContain('Agradeço a confiança.');
+    expect(texto).toContain('Links profissionais');
     expect(texto).toContain('Serviço:');
     expect(texto).not.toContain('ana@');
   });

@@ -30,7 +30,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Permitir prévia, envio e remoção da foto profissional por fluxo autenticado.
 - [x] Adicionar título profissional opcional ao perfil, apresentá-lo publicamente e incluí-lo na busca.
 - [x] Adicionar capa opcional ao perfil, com upload autenticado, remoção, exibição pública e retenção do arquivo referenciado.
-- [ ] Avaliar e implementar links externos aprovados no perfil.
+- [x] Adicionar links públicos opcionais de LinkedIn, Instagram e site HTTPS, com validação no servidor.
 - [ ] Validar perfil/foto no MySQL local e após reinício da API; Docker Desktop precisa estar ativo.
 
 ### Portfólio e descoberta
@@ -98,7 +98,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
 - [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
 - [x] Filtrar profissionais por média mínima apenas com amostra de três avaliações visíveis, mantendo a ordenação estável por data.
-- [x] Adotar migrações Flyway versionadas (V1–V12).
+- [x] Adotar migrações Flyway versionadas (V1–V13).
 - [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
 
 ## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos

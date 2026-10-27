@@ -5,7 +5,7 @@ O SkillSwap apresenta profissionais publicamente para que clientes possam compar
 ## Visíveis sem login
 
 - ID do perfil e nome de exibição informado pela própria pessoa. O nome não comprova identidade.
-- Título profissional, data de criação da conta, biografia, cidade, foto, capa e especialidades quando preenchidos.
+- Título profissional, data de criação da conta, biografia, cidade, foto, capa, especialidades e links externos opcionais quando preenchidos.
 - Resumo das avaliações recebidas e avaliações não ocultadas, incluindo resposta pública do profissional.
 - Anúncios ativos e não demonstrativos, publicações de portfólio publicadas e imagens ligadas a esses conteúdos.
 

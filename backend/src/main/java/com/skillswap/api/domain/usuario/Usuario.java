@@ -39,6 +39,15 @@ public class Usuario {
     @Column(name = "capa_url", length = 120)
     private String capaUrl;
 
+    @Column(name = "linkedin_url", length = 300)
+    private String linkedinUrl;
+
+    @Column(name = "instagram_url", length = 300)
+    private String instagramUrl;
+
+    @Column(name = "site_url", length = 300)
+    private String siteUrl;
+
     @Column(length = 500)
     private String especialidades;
 

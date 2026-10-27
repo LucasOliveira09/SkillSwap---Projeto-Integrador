@@ -387,3 +387,16 @@ mat-form-field {
     margin-left: auto;
   }
 }
+.links-perfil {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 0 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 12px 0;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+}
+
+.links-perfil legend { padding: 0 6px; font-weight: 700; }
+.links-perfil legend span { color: var(--ss-muted); font-size: 0.875rem; font-weight: 400; }

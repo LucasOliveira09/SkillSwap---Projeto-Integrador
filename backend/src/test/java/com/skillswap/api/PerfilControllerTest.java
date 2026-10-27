@@ -87,6 +87,34 @@ class PerfilControllerTest {
     }
 
     @Test
+    void perfilPublicaLinksHttpsDoProfissionalERejeitaEsquemaInseguro() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"linkedinUrl":"https://www.linkedin.com/in/ana-lima",
+                                 "instagramUrl":"https://www.instagram.com/ana.profissional/",
+                                 "siteUrl":"https://ana-profissional.com.br"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.linkedinUrl").value("https://www.linkedin.com/in/ana-lima"))
+                .andExpect(jsonPath("$.instagramUrl").value("https://www.instagram.com/ana.profissional/"))
+                .andExpect(jsonPath("$.siteUrl").value("https://ana-profissional.com.br"));
+
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.linkedinUrl").value("https://www.linkedin.com/in/ana-lima"))
+                .andExpect(jsonPath("$.instagramUrl").value("https://www.instagram.com/ana.profissional/"))
+                .andExpect(jsonPath("$.siteUrl").value("https://ana-profissional.com.br"));
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"linkedinUrl\":\"javascript:alert(1)\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void consultaUsoDaContaEExigeAutenticacao() throws Exception {
         mvc.perform(get("/api/uploads/uso"))
                 .andExpect(status().isUnauthorized());

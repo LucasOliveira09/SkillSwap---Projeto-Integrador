@@ -92,7 +92,10 @@ describe('PerfilApiService', () => {
   });
 
   it('atualiza o próprio perfil pelo recurso autenticado', () => {
-    const dados = { nome: 'Ana Lima', tituloProfissional: 'Professora de violão', bio: 'Aulas com prática', cidade: 'São José', especialidades: 'Violão' };
+    const dados = {
+      nome: 'Ana Lima', tituloProfissional: 'Professora de violão', bio: 'Aulas com prática', cidade: 'São José',
+      especialidades: 'Violão', linkedinUrl: '', instagramUrl: '', siteUrl: 'https://ana-profissional.com.br',
+    };
     api.atualizarMeuPerfil(dados).subscribe((perfil) => expect(perfil.nome).toBe('Ana Lima'));
 
     const request = http.expectOne('/api/perfil');

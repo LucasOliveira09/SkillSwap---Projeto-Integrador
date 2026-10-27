@@ -19,6 +19,9 @@ const formularioVazio: AtualizacaoPerfil = {
   bio: '',
   cidade: '',
   especialidades: '',
+  linkedinUrl: '',
+  instagramUrl: '',
+  siteUrl: '',
 };
 
 @Component({
@@ -113,6 +116,9 @@ export class MeuPerfilComponent {
       bio: this.dados.bio.trim(),
       cidade: this.dados.cidade.trim(),
       especialidades: this.dados.especialidades.trim(),
+      linkedinUrl: (this.dados.linkedinUrl ?? '').trim(),
+      instagramUrl: (this.dados.instagramUrl ?? '').trim(),
+      siteUrl: (this.dados.siteUrl ?? '').trim(),
     };
 
     this.api
@@ -405,6 +411,9 @@ export class MeuPerfilComponent {
       bio: perfil.bio ?? '',
       cidade: perfil.cidade ?? '',
       especialidades: perfil.especialidades ?? '',
+      linkedinUrl: perfil.linkedinUrl ?? '',
+      instagramUrl: perfil.instagramUrl ?? '',
+      siteUrl: perfil.siteUrl ?? '',
     };
     this.carregarPortfolio(perfil.id);
     this.carregarOfertasPortfolio(perfil.id);
