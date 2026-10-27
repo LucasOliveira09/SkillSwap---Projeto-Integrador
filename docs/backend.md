@@ -39,6 +39,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | PUT | `/perfil/foto` | Exige JWT e multipart `file`; valida conteúdo JPG/PNG/GIF, até 5 MB, 5000 px por lado e 20 MP; associa a nova imagem ao perfil autenticado. |
 | DELETE | `/perfil/foto` | Exige JWT; remove a referência da foto atual do perfil e devolve 204. |
 | POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
+| GET | `/uploads/uso` | Exige JWT; informa bytes usados, quota da conta e limite por imagem. |
 | GET | `/uploads/{nomeArquivo}` | Serve somente nomes aleatórios gerados pelo backend, como imagem pública com `nosniff`. |
 | POST | `/publicacoes` | Exige JWT; cria publicação com legenda de até 500 caracteres e de 1 a 6 fotos existentes no armazenamento. Vínculo opcional é aceito somente para oferta ativa e própria. Responde 201 com Location. |
 | PATCH | `/publicacoes/{id}` | Exige o autor; altera a legenda (até 500 caracteres) e devolve a publicação atualizada, preservando suas fotos e vínculo. |
@@ -89,7 +90,7 @@ Os inserts ocorrem pela aplicação/JPA no MySQL, com chave estável `codigoLega
 
 A tela `/conta` permite registrar, entrar e sair; `/anuncios/novo` solicita login antes de salvar. O JWT fica somente em memória e é enviado apenas à API relativa da própria origem. Não há armazenamento em localStorage/sessionStorage. Recarregar encerra a sessão, mas não apaga anúncios; um 401 encerra a sessão local e a tela trata a falha.
 
-Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil e a troca da foto usam o JWT em memória. O backend confere o conteúdo decodificado e não confia no MIME/na extensão do arquivo; SVG e WebP não são aceitos. A aplicação usa `UPLOAD_DIR` (padrão `uploads`) e os Compose local/público montam volume de arquivos. Uma rotina diária às 03:30 UTC remove somente arquivos com nome hash gerado pela API, sem referência em perfil, anúncio ou publicação e com mais de 30 dias. Configure `UPLOAD_ORPHAN_RETENTION_DAYS` (mínimo 1) e `UPLOAD_CLEANUP_CRON` se necessário. A limpeza não substitui quota por conta, backup do volume nem a migração dos arquivos públicos existentes. Pagamentos integrados não estão disponíveis nesta fase.
+Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil e a troca da foto usam o JWT em memória. O backend confere o conteúdo decodificado e não confia no MIME/na extensão do arquivo; SVG e WebP não são aceitos. A aplicação usa `UPLOAD_DIR` (padrão `uploads`) e os Compose local/público montam volume de arquivos. Cada conta tem quota padrão de 100 MiB (`UPLOAD_USER_QUOTA_BYTES`) e cada imagem aceita até 5 MiB; `GET /api/uploads/uso` informa o consumo, incluindo arquivos enviados ainda sem referência. A migração V6 registra fotos já ligadas a perfil, anúncio e portfólio, mede tamanhos existentes no primeiro acesso e impede contagem duplicada quando a mesma conta reenvia o mesmo conteúdo. Uma rotina diária às 03:30 UTC remove somente arquivos com nome hash gerado pela API, sem referência em perfil, anúncio ou publicação e com mais de 30 dias, liberando também o registro de quota. Configure `UPLOAD_ORPHAN_RETENTION_DAYS` (mínimo 1) e `UPLOAD_CLEANUP_CRON` se necessário. Backup do volume e migração dos arquivos públicos existentes continuam pendentes. Pagamentos integrados não estão disponíveis nesta fase.
 
 ## Execução local
 
@@ -112,6 +113,7 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 | PORT / SERVER_ADDRESS | Padrões 8080 / 127.0.0.1; a imagem Docker usa 0.0.0.0 internamente. |
 | SEED_ENABLED | Padrão true; false não insere novos exemplos e não apaga dados existentes. |
 | UPLOAD_DIR | Diretório de arquivos enviados; padrão `uploads`. Deve estar em armazenamento persistente. |
+| UPLOAD_USER_QUOTA_BYTES | Quota de armazenamento por conta em bytes; padrão 104857600 (100 MiB), no mínimo 5 MiB. |
 | UPLOAD_ORPHAN_RETENTION_DAYS | Retenção mínima antes da remoção automática de uploads sem referência; padrão 30 dias. |
 | UPLOAD_CLEANUP_CRON | Expressão cron Spring, interpretada em UTC; padrão diário às 03:30. |
 

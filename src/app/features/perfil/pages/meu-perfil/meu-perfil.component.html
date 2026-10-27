@@ -52,6 +52,22 @@
         </div>
       </section>
 
+      <section class="armazenamento" aria-label="Uso do armazenamento de imagens">
+        @if (usoArmazenamento(); as uso) {
+          <div class="armazenamento-texto">
+            <strong>Imagens da sua conta</strong>
+            <span>{{ formatarTamanho(uso.usoBytes) }} de {{ formatarTamanho(uso.limiteBytes) }} usados</span>
+          </div>
+          <progress [value]="uso.usoBytes" [max]="uso.limiteBytes"
+            [attr.aria-label]="'Armazenamento de imagens: ' + formatarTamanho(uso.usoBytes) + ' de ' + formatarTamanho(uso.limiteBytes)"></progress>
+          <small>Até {{ formatarTamanho(uso.limitePorArquivoBytes) }} por imagem. Arquivos sem uso são removidos após 30 dias.</small>
+        } @else if (erroArmazenamento) {
+          <p role="status">{{ erroArmazenamento }} <button mat-button type="button" (click)="carregarUsoArmazenamento()">Tentar novamente</button></p>
+        } @else {
+          <p role="status">Consultando armazenamento...</p>
+        }
+      </section>
+
       <mat-form-field appearance="outline">
         <mat-label>Nome público</mat-label>
         <input

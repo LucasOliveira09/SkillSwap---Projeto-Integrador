@@ -22,7 +22,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [ ] Comparar e baselinar bancos existentes com backup; validar V1 e futuras migrações em MySQL 8.0/8.4 antes de qualquer promoção.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
-- [ ] Completar operação de upload: quota por conta, rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
+- [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
+- [ ] Completar operação de upload: rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
 - [x] Permitir prévia, envio e remoção da foto profissional por fluxo autenticado.

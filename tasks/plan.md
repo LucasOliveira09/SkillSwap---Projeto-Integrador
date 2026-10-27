@@ -153,7 +153,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** banco novo e prévia migram sem perda; uploads inválidos e excessivos são rejeitados; imagem continua acessível após recriação controlada da API; testes não usam arquivo falso como imagem válida.
 
-**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão e diretório configurável implementados; Compose local e público declaram volumes de mídia. Limpeza diária de arquivos hash sem referência após 30 dias considera perfis, anúncios e publicações. Ainda faltam quota por conta, rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
+**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão, quota por conta configurável (100 MiB padrão), consulta autenticada de uso, contabilização gradual de imagens legadas e diretório configurável implementados; Compose local e público declaram volumes de mídia. Limpeza diária de arquivos hash sem referência após 30 dias considera perfis, anúncios e publicações e remove os metadados associados. Ainda faltam rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
 
 ### Fase 2 — Perfil público editável
 

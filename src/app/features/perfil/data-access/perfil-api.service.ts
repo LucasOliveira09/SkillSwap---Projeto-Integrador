@@ -6,6 +6,7 @@ import {
   PerfilProfissional,
   PaginaPublicacoesPortfolio,
   PublicacaoPortfolio,
+  UsoArmazenamento,
 } from '../models/perfil.model';
 import { Avaliacao } from '../../negociacao/models/negociacao.model';
 
@@ -15,6 +16,10 @@ export class PerfilApiService {
 
   meuPerfil() {
     return this.http.get<PerfilProfissional>('/api/perfil');
+  }
+
+  usoArmazenamento() {
+    return this.http.get<UsoArmazenamento>('/api/uploads/uso');
   }
 
   publico(id: number | string) {

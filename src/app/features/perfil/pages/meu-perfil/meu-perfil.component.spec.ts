@@ -32,6 +32,7 @@ describe('MeuPerfilComponent', () => {
       mediaNotas: null,
       quantidadeAvaliacoes: 0,
     });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 4096, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
     http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
       itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
     });
@@ -84,6 +85,7 @@ describe('MeuPerfilComponent', () => {
       id: 12, nome: 'Ana Profissional', bio: null, cidade: null, fotoUrl: null,
       especialidades: null, criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
     http.expectOne((request) => request.urlWithParams === '/api/perfis/12/anuncios?pagina=0&tamanho=6')
       .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
     http.expectOne((request) => request.urlWithParams === '/api/perfis/12/publicacoes?pagina=0&tamanho=12').flush({
@@ -144,6 +146,7 @@ describe('MeuPerfilComponent', () => {
       mediaNotas: null,
       quantidadeAvaliacoes: 0,
     });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
     http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
       itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
     });
@@ -178,6 +181,7 @@ describe('MeuPerfilComponent', () => {
       mediaNotas: null,
       quantidadeAvaliacoes: 0,
     });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 1024, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
     harness.detectChanges();
 
     expect(componente.perfil()?.fotoUrl).toBe('/api/uploads/0123456789abcdef0123456789abcdef.png');

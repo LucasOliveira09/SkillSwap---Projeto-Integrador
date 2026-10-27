@@ -125,8 +125,8 @@ public class PerfilController {
     public ResponseEntity<PerfilDTO> atualizarMinhaFoto(
             @RequestPart("file") MultipartFile arquivo,
             Authentication authentication) {
-        var upload = uploadService.salvar(arquivo);
         String email = (String) authentication.getPrincipal();
+        var upload = uploadService.salvar(arquivo, email);
         return ResponseEntity.ok(usuarioService.atualizarFotoAtual(upload.url(), email));
     }
 

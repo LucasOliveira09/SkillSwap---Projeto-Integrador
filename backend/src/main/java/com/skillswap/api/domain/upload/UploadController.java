@@ -10,6 +10,8 @@ import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.Authentication;
+import com.skillswap.api.domain.upload.dto.UsoArmazenamentoDTO;
 
 @RestController
 @RequestMapping("/api/uploads")
@@ -20,9 +22,14 @@ public class UploadController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UploadResponseDTO> upload(
-            @RequestParam("file") MultipartFile file) {
-        var resposta = uploadService.salvar(file);
+            @RequestParam("file") MultipartFile file, Authentication authentication) {
+        var resposta = uploadService.salvar(file, (String) authentication.getPrincipal());
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+    }
+
+    @GetMapping("/uso")
+    public ResponseEntity<UsoArmazenamentoDTO> uso(Authentication authentication) {
+        return ResponseEntity.ok(uploadService.uso((String) authentication.getPrincipal()));
     }
 
     @GetMapping("/{nomeArquivo:.+}")

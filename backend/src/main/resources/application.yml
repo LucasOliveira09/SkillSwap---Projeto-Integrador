@@ -42,6 +42,7 @@ app:
 skillswap:
   upload:
     directory: ${UPLOAD_DIR:uploads}
+    user-quota-bytes: ${UPLOAD_USER_QUOTA_BYTES:104857600}
     orphan-retention-days: ${UPLOAD_ORPHAN_RETENTION_DAYS:30}
     cleanup-cron: ${UPLOAD_CLEANUP_CRON:0 30 3 * * *}
   seed:

@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class LimpezaUploadsAgendadaTest {
@@ -28,6 +29,7 @@ class LimpezaUploadsAgendadaTest {
     private UsuarioRepository usuarios;
     private AnuncioRepository anuncios;
     private PublicacaoPortfolioRepository publicacoes;
+    private UploadUsuarioRepository uploads;
     private LimpezaUploadsAgendada limpeza;
 
     @BeforeEach
@@ -35,10 +37,11 @@ class LimpezaUploadsAgendadaTest {
         usuarios = mock(UsuarioRepository.class);
         anuncios = mock(AnuncioRepository.class);
         publicacoes = mock(PublicacaoPortfolioRepository.class);
+        uploads = mock(UploadUsuarioRepository.class);
         when(usuarios.listarFotosDePerfil()).thenReturn(List.of("/api/uploads/" + "a".repeat(64) + ".jpg"));
         when(anuncios.listarImagens()).thenReturn(List.of("/api/uploads/" + "b".repeat(64) + ".png"));
         when(publicacoes.listarFotosReferenciadas()).thenReturn(List.of("/api/uploads/" + "c".repeat(64) + ".gif"));
-        limpeza = new LimpezaUploadsAgendada(usuarios, anuncios, publicacoes);
+        limpeza = new LimpezaUploadsAgendada(usuarios, anuncios, publicacoes, uploads);
         ReflectionTestUtils.setField(limpeza, "diretorioConfigurado", pasta.toString());
         ReflectionTestUtils.setField(limpeza, "diasRetencao", 30);
     }
@@ -57,6 +60,7 @@ class LimpezaUploadsAgendadaTest {
         assertFalse(Files.exists(orfaoAntigo));
         assertTrue(Files.exists(orfaoRecente));
         assertTrue(Files.exists(arquivoEstranho));
+        verify(uploads).deleteByNomeArquivo("d".repeat(64) + ".png");
     }
 
     private Path criarArquivo(String nome, int dias) throws Exception {

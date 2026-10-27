@@ -1,12 +1,16 @@
 package com.skillswap.api.domain.upload;
 
 import com.skillswap.api.domain.upload.dto.UploadResponseDTO;
+import com.skillswap.api.domain.upload.dto.UsoArmazenamentoDTO;
+import com.skillswap.api.domain.usuario.UsuarioRepository;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -24,19 +28,29 @@ import java.util.Iterator;
 import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 public class UploadService {
 
     private static final long TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
     private static final int DIMENSAO_MAXIMA = 5_000;
     private static final long PIXELS_MAXIMOS = 20_000_000;
 
+    private final UsuarioRepository usuarioRepository;
+    private final UploadUsuarioRepository uploadRepository;
+
     @Value("${skillswap.upload.directory:uploads}")
     private String diretorioConfigurado;
+
+    @Value("${skillswap.upload.user-quota-bytes:104857600}")
+    private long limitePorUsuarioBytes;
 
     private Path pastaUploads;
 
     @PostConstruct
     void inicializar() {
+        if (limitePorUsuarioBytes < TAMANHO_MAXIMO_BYTES) {
+            throw new IllegalStateException("A quota por conta deve comportar ao menos um upload máximo");
+        }
         pastaUploads = Path.of(diretorioConfigurado).toAbsolutePath().normalize();
         try {
             Files.createDirectories(pastaUploads);
@@ -45,7 +59,8 @@ public class UploadService {
         }
     }
 
-    public UploadResponseDTO salvar(MultipartFile arquivo) {
+    @Transactional
+    public UploadResponseDTO salvar(MultipartFile arquivo, String emailUsuario) {
         if (arquivo == null || arquivo.isEmpty()) {
             throw new IllegalArgumentException("Arquivo de imagem é obrigatório");
         }
@@ -61,6 +76,18 @@ public class UploadService {
             throw new IllegalStateException("Falha ao ler arquivo enviado", e);
         }
         String nomeSalvo = calcularHash(bytes) + formato.extensao();
+        var usuario = usuarioRepository.findByEmailForUpdate(emailUsuario)
+                .orElseThrow(() -> new NaoEncontradoException("Conta não encontrada"));
+        atualizarTamanhosLegados(usuario.getId());
+
+        var registro = uploadRepository.findByUsuarioIdAndNomeArquivo(usuario.getId(), nomeSalvo).orElse(null);
+        long incremento = registro == null || registro.getTamanhoBytes() == 0 ? bytes.length : 0;
+        long usoAtual = uploadRepository.somarTamanhoPorUsuario(usuario.getId());
+        if (incremento > limitePorUsuarioBytes - usoAtual) {
+            throw new IllegalArgumentException("Limite de armazenamento de imagens atingido. Uso atual: "
+                    + formatarMegabytes(usoAtual) + " MB de " + formatarMegabytes(limitePorUsuarioBytes)
+                    + " MB. Imagens sem referência são removidas após 30 dias.");
+        }
         Path destino = pastaUploads.resolve(nomeSalvo).normalize();
         if (!destino.startsWith(pastaUploads)) {
             throw new IllegalArgumentException("Nome de arquivo inválido");
@@ -72,10 +99,42 @@ public class UploadService {
             } catch (FileAlreadyExistsException arquivoJaSalvo) {
                 // O mesmo conteúdo enviado novamente pelo PUT conserva a mesma representação.
             }
-            return new UploadResponseDTO("/api/uploads/" + nomeSalvo, nomeSalvo);
+            if (registro == null) {
+                registro = UploadUsuario.builder().usuario(usuario).nomeArquivo(nomeSalvo).tamanhoBytes(bytes.length).build();
+                uploadRepository.save(registro);
+            } else if (incremento > 0) {
+                registro.setTamanhoBytes(bytes.length);
+            }
+            return new UploadResponseDTO("/api/uploads/" + nomeSalvo, nomeSalvo, bytes.length,
+                    usoAtual + incremento, limitePorUsuarioBytes);
         } catch (IOException e) {
             throw new IllegalStateException("Falha ao salvar arquivo no servidor", e);
         }
+    }
+
+    @Transactional
+    public UsoArmazenamentoDTO uso(String emailUsuario) {
+        var usuario = usuarioRepository.findByEmailForUpdate(emailUsuario)
+                .orElseThrow(() -> new NaoEncontradoException("Conta não encontrada"));
+        atualizarTamanhosLegados(usuario.getId());
+        return new UsoArmazenamentoDTO(uploadRepository.somarTamanhoPorUsuario(usuario.getId()),
+                limitePorUsuarioBytes, TAMANHO_MAXIMO_BYTES);
+    }
+
+    private void atualizarTamanhosLegados(Long usuarioId) {
+        for (UploadUsuario upload : uploadRepository.findByUsuarioIdAndTamanhoBytes(usuarioId, 0)) {
+            Path arquivo = pastaUploads.resolve(upload.getNomeArquivo()).normalize();
+            if (!arquivo.startsWith(pastaUploads) || !Files.isRegularFile(arquivo)) continue;
+            try {
+                upload.setTamanhoBytes(Files.size(arquivo));
+            } catch (IOException e) {
+                throw new IllegalStateException("Não foi possível medir o uso das imagens da conta", e);
+            }
+        }
+    }
+
+    private String formatarMegabytes(long bytes) {
+        return String.format(Locale.ROOT, "%.1f", bytes / (1024.0 * 1024.0));
     }
 
     private String calcularHash(byte[] bytes) {

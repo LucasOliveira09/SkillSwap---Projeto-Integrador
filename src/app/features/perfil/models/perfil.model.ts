@@ -10,6 +10,12 @@ export interface PerfilProfissional {
   quantidadeAvaliacoes: number;
 }
 
+export interface UsoArmazenamento {
+  usoBytes: number;
+  limiteBytes: number;
+  limitePorArquivoBytes: number;
+}
+
 export interface AtualizacaoPerfil {
   nome: string;
   bio: string;

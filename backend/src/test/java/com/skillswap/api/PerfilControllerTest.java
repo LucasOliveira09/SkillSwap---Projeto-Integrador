@@ -80,6 +80,37 @@ class PerfilControllerTest {
     }
 
     @Test
+    void consultaUsoDaContaEExigeAutenticacao() throws Exception {
+        mvc.perform(get("/api/uploads/uso"))
+                .andExpect(status().isUnauthorized());
+
+        mvc.perform(get("/api/uploads/uso").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usoBytes").value(0))
+                .andExpect(jsonPath("$.limiteBytes").value(104857600))
+                .andExpect(jsonPath("$.limitePorArquivoBytes").value(5242880));
+    }
+
+    @Test
+    void uploadContaNaQuotaUmaUnicaVezParaConteudoReenviado() throws Exception {
+        var foto = new org.springframework.mock.web.MockMultipartFile(
+                "file", "portfolio.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+
+        for (int tentativa = 0; tentativa < 2; tentativa++) {
+            mvc.perform(multipart("/api/uploads").file(foto).header("Authorization", "Bearer " + token))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.tamanhoBytes").value(foto.getSize()))
+                    .andExpect(jsonPath("$.usoBytes").value(foto.getSize()));
+        }
+
+        mvc.perform(get("/api/uploads/uso").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usoBytes").value(foto.getSize()));
+    }
+
+    @Test
     void perfilPublicoListaSomenteOfertasAtivasDoProfissional() throws Exception {
         mvc.perform(post("/api/anuncios")
                         .header("Authorization", "Bearer " + token)
@@ -131,6 +162,9 @@ class PerfilControllerTest {
         var upload = mvc.perform(multipart("/api/uploads").file(foto)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.tamanhoBytes").isNumber())
+                .andExpect(jsonPath("$.usoBytes").isNumber())
+                .andExpect(jsonPath("$.limiteBytes").value(104857600))
                 .andReturn();
         String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(upload.getResponse().getContentAsString()).get("url").asText();
@@ -215,6 +249,8 @@ class PerfilControllerTest {
                     return request;
                 }).header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fotoUrl").value(fotoUrl));
+        mvc.perform(get("/api/uploads/uso").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.usoBytes").isNumber());
         mvc.perform(multipart("/api/perfil/foto").file(foto).with(request -> {
                     request.setMethod("PUT");
                     return request;

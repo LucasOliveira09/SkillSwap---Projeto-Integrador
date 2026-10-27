@@ -28,6 +28,7 @@ public class LimpezaUploadsAgendada {
     private final UsuarioRepository usuarioRepository;
     private final AnuncioRepository anuncioRepository;
     private final PublicacaoPortfolioRepository publicacaoRepository;
+    private final UploadUsuarioRepository uploadRepository;
 
     @Value("${skillswap.upload.directory:uploads}")
     private String diretorioConfigurado;
@@ -38,10 +39,12 @@ public class LimpezaUploadsAgendada {
     public LimpezaUploadsAgendada(
             UsuarioRepository usuarioRepository,
             AnuncioRepository anuncioRepository,
-            PublicacaoPortfolioRepository publicacaoRepository) {
+            PublicacaoPortfolioRepository publicacaoRepository,
+            UploadUsuarioRepository uploadRepository) {
         this.usuarioRepository = usuarioRepository;
         this.anuncioRepository = anuncioRepository;
         this.publicacaoRepository = publicacaoRepository;
+        this.uploadRepository = uploadRepository;
     }
 
     @Scheduled(cron = "${skillswap.upload.cleanup-cron:0 30 3 * * *}", zone = "UTC")
@@ -78,6 +81,7 @@ public class LimpezaUploadsAgendada {
                 try {
                     if (Files.getLastModifiedTime(arquivo).toInstant().isBefore(limite)
                             && Files.deleteIfExists(arquivo)) {
+                        uploadRepository.deleteByNomeArquivo(nome);
                         removidos++;
                     }
                 } catch (IOException e) {

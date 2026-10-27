@@ -101,6 +101,27 @@ mat-form-field {
   gap: 8px;
 }
 
+.armazenamento {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--ss-soft);
+  color: var(--ss-muted);
+  font-size: 12px;
+}
+
+.armazenamento-texto {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.armazenamento-texto strong { color: var(--ss-text); }
+.armazenamento progress { width: 100%; height: 8px; accent-color: var(--ss-blue); }
+.armazenamento p { margin: 0; }
+
 .acoes {
   display: flex;
   align-items: center;

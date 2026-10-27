@@ -36,6 +36,16 @@ describe('PerfilApiService', () => {
     });
   });
 
+  it('consulta o uso de armazenamento da conta autenticada', () => {
+    api.usoArmazenamento().subscribe((uso) => {
+      expect(uso.usoBytes).toBe(4096);
+      expect(uso.limiteBytes).toBe(104857600);
+    });
+    const request = http.expectOne('/api/uploads/uso');
+    expect(request.request.method).toBe('GET');
+    request.flush({ usoBytes: 4096, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
+  });
+
   it('busca perfis profissionais com termo, cidade e paginação', () => {
     api.buscarProfissionais('Eletricista', 'Florianópolis', 1).subscribe((pagina) => {
       expect(pagina.totalItens).toBe(1);

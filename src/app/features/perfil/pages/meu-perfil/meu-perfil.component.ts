@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
-import { AtualizacaoPerfil, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
+import { AtualizacaoPerfil, PerfilProfissional, PublicacaoPortfolio, UsoArmazenamento } from '../../models/perfil.model';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
@@ -35,6 +35,8 @@ export class MeuPerfilComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly perfil = signal<PerfilProfissional | null>(null);
+  protected readonly usoArmazenamento = signal<UsoArmazenamento | null>(null);
+  protected erroArmazenamento = '';
   protected readonly previaFoto = signal<string | null>(null);
   protected dados: AtualizacaoPerfil = { ...formularioVazio };
   protected arquivoFoto: File | null = null;
@@ -74,6 +76,7 @@ export class MeuPerfilComponent {
       return;
     }
     this.carregar();
+    this.carregarUsoArmazenamento();
   }
 
   protected carregar(): void {
@@ -164,6 +167,7 @@ export class MeuPerfilComponent {
           this.arquivoFoto = null;
           this.limparPrevia();
           this.sucesso = 'Foto do perfil atualizada.';
+          this.carregarUsoArmazenamento();
         },
         error: () => (this.erro = 'Não foi possível enviar a foto. Tente novamente.'),
       });
@@ -243,7 +247,26 @@ export class MeuPerfilComponent {
         this.sucessoPortfolio = 'Publicação adicionada ao seu portfólio.';
         this.carregarPortfolio(this.perfil()!.id, 0, true);
       },
-      error: () => (this.erroPortfolio = 'Não foi possível publicar as fotos. Confira sua conexão e tente novamente.'),
+      error: () => {
+        this.erroPortfolio = 'Não foi possível publicar as fotos. Confira sua conexão e tente novamente.';
+        this.carregarUsoArmazenamento();
+      },
+      complete: () => this.carregarUsoArmazenamento(),
+    });
+  }
+
+  protected formatarTamanho(bytes: number): string {
+    if (bytes < 1024 * 1024) return `${Math.ceil(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} MB`;
+  }
+
+  protected carregarUsoArmazenamento(): void {
+    this.api.usoArmazenamento().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (uso) => {
+        this.usoArmazenamento.set(uso);
+        this.erroArmazenamento = '';
+      },
+      error: () => this.erroArmazenamento = 'Não foi possível consultar o armazenamento de imagens.',
     });
   }
 
