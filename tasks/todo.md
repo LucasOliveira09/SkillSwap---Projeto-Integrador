@@ -68,7 +68,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
 - [x] Validar pela API os fluxos de venda e troca, avaliações do profissional/serviço e persistência após reinício em MySQL 8.0.46 com Java 21.
 - [x] Validar pela interface Angular, contra MySQL 8.0.46 descartável, perfil, foto/portfólio, busca, venda, troca, proposta, aceite, conversa, conclusão mútua e avaliações. Foram usados dois participantes; não houve erros de console ou overflow em 360 px/1440 px, e os dados persistiram após reinício da API.
-- [ ] Complementar com verificação de acessibilidade por axe/leitor de tela e repetir em MySQL 8.4.
+- [ ] Completar verificação de acessibilidade com axe/leitor de tela e repetir em MySQL 8.4. A inspeção manual da árvore AX do catálogo encontrou e corrigiu o botão de conta sem nome no breakpoint de 800 px; Chromium confirmou nome acessível e sem overflow horizontal em 360, 760 e 1440 px. A integração local Angular não tinha API em `127.0.0.1:8080` durante essa checagem, portanto os erros das chamadas de catálogo/vitrine não são validados como fluxo funcional.
 
 ### Entrega e fases seguintes
 
