@@ -1,0 +1,25 @@
+@if (!sessao.autenticado()) {
+  <a class="acao-denunciar" [routerLink]="['/conta']" [queryParams]="{ retorno: retorno }">Entrar para denunciar</a>
+} @else if (enviado) {
+  <p class="confirmacao" role="status">Denúncia enviada para análise.</p>
+} @else {
+  <button class="acao-denunciar" type="button" (click)="aberto = !aberto" [attr.aria-expanded]="aberto">
+    {{ aberto ? 'Cancelar denúncia' : 'Denunciar conteúdo' }}
+  </button>
+  @if (aberto) {
+    <form class="form-denuncia" (ngSubmit)="enviar()">
+      <label>Motivo
+        <select name="motivo" [(ngModel)]="motivo" required>
+          @for (opcao of motivos; track opcao.valor) { <option [value]="opcao.valor">{{ opcao.rotulo }}</option> }
+        </select>
+      </label>
+      <label>Detalhes (opcional)
+        <textarea name="descricao" [(ngModel)]="descricao" maxlength="500" rows="3"></textarea>
+      </label>
+      @if (erro) { <p class="erro" role="alert">{{ erro }}</p> }
+      <button class="enviar" type="submit" [disabled]="enviando || descricao.length > 500">
+        {{ enviando ? 'Enviando...' : 'Enviar denúncia' }}
+      </button>
+    </form>
+  }
+}

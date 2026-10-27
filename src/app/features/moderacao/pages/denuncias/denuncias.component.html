@@ -1,0 +1,66 @@
+<main class="pagina-moderacao" aria-labelledby="titulo-moderacao">
+  <a class="voltar" routerLink="/conta">← Minha conta</a>
+  <header>
+    <p class="sobretitulo">Cuidado com a comunidade</p>
+    <h1 id="titulo-moderacao">Moderação de conteúdo</h1>
+    <p>Analise relatos de portfólio e avaliações. Ocultar remove o conteúdo das áreas públicas sem apagar o registro.</p>
+  </header>
+
+  @if (!podeModerar && !carregando) {
+    <p class="estado" role="alert">Esta área é restrita à equipe de moderação.</p>
+  } @else {
+    <nav class="filtros" aria-label="Filtrar denúncias">
+      <button mat-stroked-button type="button" [class.ativo]="status === 'ABERTA'" (click)="filtrar('ABERTA')">Abertas</button>
+      <button mat-stroked-button type="button" [class.ativo]="status === 'OCULTADA'" (click)="filtrar('OCULTADA')">Ocultadas</button>
+      <button mat-stroked-button type="button" [class.ativo]="status === 'DESCARTADA'" (click)="filtrar('DESCARTADA')">Descartadas</button>
+      <button mat-stroked-button type="button" [class.ativo]="status === 'REEXIBIDA'" (click)="filtrar('REEXIBIDA')">Reexibidas</button>
+    </nav>
+    @if (erro) { <p class="erro" role="alert">{{ erro }} <button mat-button (click)="carregar()">Tentar novamente</button></p> }
+    @if (carregando) {
+      <p class="estado" role="status">Carregando denúncias...</p>
+    } @else if (!denuncias().length) {
+      <p class="estado">Não há denúncias neste filtro.</p>
+    } @else {
+      <section class="lista" aria-label="Denúncias">
+        @for (denuncia of denuncias(); track denuncia.id) {
+          <article class="denuncia">
+            <div class="topo-denuncia">
+              <span>{{ denuncia.tipoConteudo === 'PUBLICACAO' ? 'Publicação de portfólio' : 'Avaliação' }}</span>
+              <time [attr.datetime]="denuncia.criadaEm">{{ denuncia.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
+            </div>
+            <p class="trecho">{{ denuncia.trechoConteudo || 'Conteúdo indisponível' }}</p>
+            <dl>
+              <div><dt>Motivo</dt><dd>{{ denuncia.motivo }}</dd></div>
+              <div><dt>Relato</dt><dd>{{ denuncia.descricao || 'Sem detalhes adicionais' }}</dd></div>
+              <div><dt>Enviado por</dt><dd>{{ denuncia.autorNome }}</dd></div>
+              <div><dt>Status</dt><dd>{{ denuncia.status }}</dd></div>
+              @if (denuncia.analisadaPor) { <div><dt>Analisada por</dt><dd>{{ denuncia.analisadaPor }}</dd></div> }
+            </dl>
+            @if (denuncia.status === 'ABERTA') {
+              <div class="acoes">
+                <button mat-flat-button color="primary" type="button" [disabled]="processandoId !== null"
+                  (click)="decidir(denuncia, 'OCULTAR')">{{ processandoId === denuncia.id ? 'Salvando...' : 'Ocultar conteúdo' }}</button>
+                <button mat-stroked-button type="button" [disabled]="processandoId !== null"
+                  (click)="decidir(denuncia, 'DESCARTAR')">Descartar denúncia</button>
+              </div>
+            } @else if (denuncia.status === 'OCULTADA') {
+              <div class="acoes">
+                <button mat-stroked-button type="button" [disabled]="processandoId !== null"
+                  (click)="decidir(denuncia, 'REEXIBIR')">{{ processandoId === denuncia.id ? 'Salvando...' : 'Reexibir conteúdo' }}</button>
+              </div>
+            }
+          </article>
+        }
+      </section>
+      @if (totalPaginas() > 1) {
+        <nav class="paginacao" aria-label="Páginas de denúncias">
+          <button mat-stroked-button type="button" [disabled]="carregando || pagina() === 0"
+            (click)="mudarPagina(pagina() - 1)">Anteriores</button>
+          <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+          <button mat-stroked-button type="button" [disabled]="carregando || pagina() >= totalPaginas() - 1"
+            (click)="mudarPagina(pagina() + 1)">Próximas</button>
+        </nav>
+      }
+    }
+  }
+</main>

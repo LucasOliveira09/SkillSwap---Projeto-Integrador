@@ -26,6 +26,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<Erro> autenticacao(Exception ex) { return resposta(401,"NAO_AUTENTICADO","Credenciais inválidas ou sessão expirada."); }
     @ExceptionHandler({NaoAutorizadoException.class,org.springframework.security.access.AccessDeniedException.class})
     ResponseEntity<Erro> proibido(Exception ex) { return resposta(403,"ACESSO_NEGADO","Você não tem permissão para esta operação."); }
+    @ExceptionHandler(ConflitoException.class)
+    ResponseEntity<Erro> conflito(ConflitoException ex) { return resposta(409,"CONFLITO",ex.getMessage()); }
     @ExceptionHandler(NaoEncontradoException.class)
     ResponseEntity<Erro> ausente(Exception ex) { return resposta(404,"NAO_ENCONTRADO","Recurso não encontrado."); }
     @ExceptionHandler(DataAccessException.class)

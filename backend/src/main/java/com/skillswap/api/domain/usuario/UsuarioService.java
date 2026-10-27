@@ -106,7 +106,7 @@ public class UsuarioService {
     }
 
     public Double getAverageRating(Long usuarioId) {
-        var avaliacoes = avaliacaoRepository.findByAvaliadoId(usuarioId);
+        var avaliacoes = avaliacaoRepository.findByAvaliadoIdAndModeradaOcultaFalse(usuarioId);
         if (avaliacoes.isEmpty()) return null;
         return avaliacoes.stream()
                 .mapToInt(a -> a.getNota())
@@ -119,7 +119,7 @@ public class UsuarioService {
                 u.getId(), u.getNome(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
                 u.getEspecialidades(), u.getCriadoEm(),
-                getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoId(u.getId())
+                getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())
         );
     }
 }

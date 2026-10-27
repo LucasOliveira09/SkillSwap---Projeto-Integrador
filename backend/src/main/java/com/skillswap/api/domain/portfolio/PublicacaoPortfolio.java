@@ -42,6 +42,10 @@ public class PublicacaoPortfolio {
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "moderada_oculta", nullable = false)
+    @Builder.Default
+    private boolean moderadaOculta = false;
+
     @PrePersist
     protected void aoCriar() {
         if (criadoEm == null) criadoEm = LocalDateTime.now();

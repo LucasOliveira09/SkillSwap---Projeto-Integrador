@@ -32,6 +32,12 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'moderacao/denuncias',
+    title: 'Moderação de conteúdo | SkillSwap',
+    loadComponent: () =>
+      import('./features/moderacao/pages/denuncias/denuncias.component').then((m) => m.DenunciasComponent),
+  },
+  {
     path: 'profissionais/:id',
     title: 'Perfil profissional | SkillSwap',
     loadComponent: () =>

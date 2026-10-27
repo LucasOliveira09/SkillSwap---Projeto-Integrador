@@ -69,7 +69,7 @@ public class AvaliacaoService {
 
     @Transactional(readOnly = true)
     public List<AvaliacaoResponseDTO> listarPorUsuario(Long usuarioId) {
-        return avaliacaoRepository.findByAvaliadoId(usuarioId).stream()
+        return avaliacaoRepository.findByAvaliadoIdAndModeradaOcultaFalse(usuarioId).stream()
                 .map(this::toResponseDTO)
                 .toList();
     }

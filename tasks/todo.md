@@ -33,23 +33,25 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Criar publicações persistidas com legenda, até seis fotos, vínculo opcional a oferta própria; mostrar no perfil e permitir remoção pelo autor.
 - [x] Permitir editar legenda de publicação e navegar pelas páginas do portfólio público e próprio.
-- [ ] Implementar denúncia/moderação para portfólio e definir regras de tratamento.
-- [ ] Ligar anúncios ao perfil e associar ofertas às publicações.
+- [x] Denunciar e moderar publicações/avaliações com acesso por allowlist, trilha de evidência e ocultação reversível.
+- [x] Ligar anúncios ao perfil e associar ofertas às publicações.
 - [x] Editar, pausar e reativar anúncios próprios com leitura autenticada, validação do proprietário e persistência pela API.
 - [x] Buscar profissionais por nome/especialidade e cidade com paginação, perfil público e reputação apenas quando há avaliações reais.
 - [x] Filtrar ofertas do catálogo por cidade, modalidade e faixa de preço combinadas, preservando trocas sem preço.
-- [ ] Descobrir ofertas por disponibilidade declarada.
+- [x] Descobrir ofertas por disponibilidade declarada.
 - [x] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.
 
 ### Negociação e reputação
 
 - [x] Serializar criação/aceite/recusa/cancelamento de propostas por anúncio; permitir cancelamento da própria proposta pendente.
-- [ ] Validar aceite concorrente com MySQL real e registrar histórico de eventos da negociação.
+- [x] Registrar histórico de eventos da negociação.
+- [ ] Validar aceite concorrente com MySQL real.
 - [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
 - [x] Adicionar navegação de páginas à conversa, abrir nas mensagens recentes e testar histórico extenso.
 - [x] Coletar e calcular nota separada para oferta/serviço após acordo concluído; exibir média/amostra no anúncio e avaliações no perfil.
-- [ ] Implementar denúncia/moderação e regras de resposta/edição das avaliações.
+- [x] Denunciar e moderar avaliações sem apagar evidências e sem agregar notas ocultas.
+- [ ] Implementar resposta/edição das avaliações e contestação.
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
 - [ ] Validar no navegador e MySQL os fluxos de venda e troca e a persistência após reinício.
 
@@ -87,8 +89,9 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Corrigir índice dos anúncios existentes e enum de categoria no MySQL 8.0 sem atribuir proprietários ou substituir dados.
 - [x] Validar 28 testes Angular, 13 testes Java, build, tipos e fluxo real no navegador/MySQL.
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
-- [ ] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
-- [ ] Adotar migrações versionadas e preparar sincronização dos dados antes de eventual promoção pública.
+- [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
+- [x] Adotar migrações Flyway versionadas (V1–V7).
+- [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
 
 ## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos
 

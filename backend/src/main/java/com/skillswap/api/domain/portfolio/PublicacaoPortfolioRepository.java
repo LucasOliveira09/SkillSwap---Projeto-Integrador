@@ -12,6 +12,12 @@ public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoP
     Page<PublicacaoPortfolio> findByUsuarioId(Long usuarioId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"usuario", "anuncio"})
+    Page<PublicacaoPortfolio> findByUsuarioIdAndModeradaOcultaFalse(Long usuarioId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario", "anuncio"})
+    Optional<PublicacaoPortfolio> findByIdAndModeradaOcultaFalse(Long id);
+
+    @EntityGraph(attributePaths = {"usuario", "anuncio"})
     Optional<PublicacaoPortfolio> findById(Long id);
 
     @Query("select distinct foto from PublicacaoPortfolio p join p.fotos foto")

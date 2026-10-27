@@ -1,0 +1,11 @@
+:host { display: grid; justify-items: start; gap: 8px; }
+.acao-denunciar { border: 0; padding: 4px 0; background: none; color: var(--ss-muted); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.form-denuncia { display: grid; width: min(100%, 320px); gap: 10px; padding: 12px; border: 1px solid var(--ss-line); border-radius: 10px; background: var(--ss-surface); }
+.form-denuncia label { display: grid; gap: 5px; color: var(--ss-text); font-size: 12px; font-weight: 600; }
+.form-denuncia select, .form-denuncia textarea { box-sizing: border-box; width: 100%; border: 1px solid var(--ss-line); border-radius: 6px; padding: 8px; color: var(--ss-text); background: white; font: inherit; font-weight: 400; }
+.form-denuncia textarea { resize: vertical; }
+.enviar { justify-self: start; border: 0; border-radius: 6px; padding: 8px 12px; background: var(--ss-blue); color: white; font: inherit; cursor: pointer; }
+.enviar:disabled { opacity: .55; cursor: not-allowed; }
+.confirmacao, .erro { margin: 0; font-size: 12px; }
+.confirmacao { color: #236b38; }
+.erro { color: #9f2525; }

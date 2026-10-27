@@ -31,12 +31,12 @@ public class PublicacaoPortfolioService {
 
     @Transactional(readOnly = true)
     public Page<PublicacaoPortfolioDTO> listar(Long usuarioId, Pageable pageable) {
-        return publicacaoRepository.findByUsuarioId(usuarioId, pageable).map(this::paraDTO);
+        return publicacaoRepository.findByUsuarioIdAndModeradaOcultaFalse(usuarioId, pageable).map(this::paraDTO);
     }
 
     @Transactional(readOnly = true)
     public PublicacaoPortfolioDTO buscar(Long id) {
-        return publicacaoRepository.findById(id)
+        return publicacaoRepository.findByIdAndModeradaOcultaFalse(id)
                 .map(this::paraDTO)
                 .orElseThrow(() -> new NaoEncontradoException("Publicação não encontrada"));
     }

@@ -79,6 +79,7 @@
                 }
               </p>
               @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }
+              <app-denunciar [tipoConteudo]="'AVALIACAO'" [recursoId]="avaliacao.id" />
             </article>
           }
         </div>
@@ -113,6 +114,7 @@
                   <a [routerLink]="['/anuncios', publicacao.anuncioId]">{{ publicacao.anuncioTitulo }}</a>
                 }
                 <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                <app-denunciar [tipoConteudo]="'PUBLICACAO'" [recursoId]="publicacao.id" />
               </div>
             </article>
           }

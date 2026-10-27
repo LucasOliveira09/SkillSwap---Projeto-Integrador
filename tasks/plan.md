@@ -171,7 +171,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 - Exibir feed compacto no perfil e grade responsiva com detalhes e acessibilidade.
 - Adicionar denúncia e estados `RASCUNHO`, `PUBLICADA`, `OCULTA` ou conjunto equivalente aprovado.
 
-**Progresso:** criação, edição de legenda, remoção e paginação de publicações autenticadas com até seis fotos JPG/PNG/GIF, além de vínculo opcional a oferta ativa do próprio autor. O perfil público pagina as publicações a partir da API. Ainda faltam denúncia/moderação e validação real no MySQL.
+**Progresso:** criação, edição de legenda, remoção e paginação de publicações autenticadas com até seis fotos JPG/PNG/GIF, além de vínculo opcional a oferta ativa do próprio autor. O perfil público pagina publicações e permite denunciar posts; a fila autenticada oferece descarte, ocultação reversível e preserva o trecho reportado. Ainda falta validar no MySQL real e definir resposta do autor/contestação.
 
 **Aceite:** criação, edição e remoção afetam somente conteúdo próprio; publicação aparece no perfil público; arquivo removido não deixa referência quebrada; falha de rede preserva o texto editável.
 
@@ -206,7 +206,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
 
-**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Ainda faltam janela de contestação, moderação, denúncia, resposta/edição e validação dos indicadores no MySQL.
+**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Denúncia e moderação podem ocultar/reexibir avaliações sem apagar evidências e recalculam as métricas públicas excluindo conteúdo oculto. Ainda faltam resposta/edição, contestação e validação dos indicadores no MySQL.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 

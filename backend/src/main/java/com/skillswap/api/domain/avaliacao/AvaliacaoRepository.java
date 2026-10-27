@@ -14,7 +14,12 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     @EntityGraph(attributePaths = {"avaliador", "avaliado", "acordo"})
     List<Avaliacao> findByAvaliadoId(Long avaliadoId);
 
+    @EntityGraph(attributePaths = {"avaliador", "avaliado", "acordo"})
+    List<Avaliacao> findByAvaliadoIdAndModeradaOcultaFalse(Long avaliadoId);
+
     long countByAvaliadoId(Long avaliadoId);
+
+    long countByAvaliadoIdAndModeradaOcultaFalse(Long avaliadoId);
 
     boolean existsByAcordoIdAndAvaliadorId(Long acordoId, Long avaliadorId);
 
@@ -25,7 +30,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     Optional<Avaliacao> findByIdAndAcordoId(Long id, Long acordoId);
 
     @Query("select new com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoAnuncioDTO(a.acordo.proposta.anuncio.id, avg(a.notaAnuncio), count(a)) " +
-            "from Avaliacao a where a.acordo.proposta.anuncio.id in :anuncioIds and a.notaAnuncio is not null " +
+            "from Avaliacao a where a.acordo.proposta.anuncio.id in :anuncioIds and a.notaAnuncio is not null and a.moderadaOculta = false " +
             "group by a.acordo.proposta.anuncio.id")
     List<ResumoAvaliacaoAnuncioDTO> resumirAnunciosAvaliados(@Param("anuncioIds") Collection<Long> anuncioIds);
 }

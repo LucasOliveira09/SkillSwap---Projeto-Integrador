@@ -4,7 +4,7 @@
 
 O usuário escolheu integrar o backend de `origin/main` (`6085271`) ao layout e ao cliente HTTP locais. Há uma aplicação Spring Boot 4.0.8 com Java 21, Maven Wrapper 3.10.0, JPA/Lombok e JWT em `com.skillswap.api`. A [ADR-004](decisions/004-integra-backend-github.md) registra a escolha; a ADR-003 documenta a etapa anterior.
 
-Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Catálogo, conta, perfil, portfólio, descoberta, propostas, acordos, conversa e reputação têm integração Angular/API. A validação completa com MySQL, regras de moderação e fluxos operacionais ainda está pendente; a presença de código não comprova o MVP inteiro.
+Os domínios de anúncios, usuários, propostas, acordos, mensagens e avaliações foram preservados. Catálogo, conta, perfil, portfólio, descoberta, propostas, acordos, conversa, reputação e moderação inicial têm integração Angular/API. A validação completa com MySQL e os fluxos operacionais ainda estão pendentes; a presença de código não comprova o MVP inteiro.
 
 ## Convenções REST
 
@@ -67,6 +67,11 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/acordos/{id}/avaliacoes` | Exige participante; lista avaliações vinculadas ao acordo. |
 | GET | `/acordos/{id}/avaliacoes/{avaliacaoId}` | Exige participante; 404 se a avaliação não pertencer ao acordo. |
 | GET | `/usuarios/{id}/avaliacoes` | Lista avaliações recebidas pelo perfil público, incluindo as duas notas e depoimento, quando fornecidos. |
+| POST | `/denuncias` | Exige JWT; cria denúncia de publicação ou avaliação visível, com motivo e detalhe opcional; a mesma conta só denuncia o mesmo conteúdo uma vez. Responde 201 com Location. |
+| GET | `/denuncias/{id}` | Exige JWT; consulta apenas denúncia própria ou para a qual o usuário esteja na allowlist de moderação. |
+| GET | `/moderacao/acesso` | Exige JWT; informa se o e-mail autenticado pertence à allowlist `MODERATOR_EMAILS`. |
+| GET | `/moderacao/denuncias?status=ABERTA&pagina=0&tamanho=20` | Exige JWT de moderador; lista denúncias paginadas, da mais antiga, preservando trecho do conteúdo reportado. |
+| PATCH | `/moderacao/denuncias/{id}` | Exige moderador; `{ "acao": "OCULTAR" }`, `{ "acao": "DESCARTAR" }` ou `{ "acao": "REEXIBIR" }`. Ocultação não apaga evidência e sai das páginas/médias públicas; reexibição só é permitida para denúncia ocultada. |
 
 Os endpoints legados `/propostas/minhas`, `/propostas/recebidas`, `/propostas/{id}/aceitar`, `/propostas/{id}/recusar`, `/acordos/meus`, `/acordos/{id}/concluir` e `/acordos/{id}/cancelar` continuam disponíveis para clientes antigos. A rota legada de conclusão segue a mesma regra de confirmação mútua. O Angular usa coleções de recursos, `PATCH` no recurso e query parameters para filtrar e paginar.
 
@@ -114,6 +119,7 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 | SEED_ENABLED | Padrão true; false não insere novos exemplos e não apaga dados existentes. |
 | UPLOAD_DIR | Diretório de arquivos enviados; padrão `uploads`. Deve estar em armazenamento persistente. |
 | UPLOAD_USER_QUOTA_BYTES | Quota de armazenamento por conta em bytes; padrão 104857600 (100 MiB), no mínimo 5 MiB. |
+| MODERATOR_EMAILS | E-mails de contas existentes, separados por vírgula, autorizados a consultar a fila e decidir denúncias; vazio por padrão, sem conta administrativa fixa. |
 | UPLOAD_ORPHAN_RETENTION_DAYS | Retenção mínima antes da remoção automática de uploads sem referência; padrão 30 dias. |
 | UPLOAD_CLEANUP_CRON | Expressão cron Spring, interpretada em UTC; padrão diário às 03:30. |
 

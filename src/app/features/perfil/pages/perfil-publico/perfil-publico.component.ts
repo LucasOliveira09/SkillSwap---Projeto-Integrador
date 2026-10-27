@@ -10,6 +10,7 @@ import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 import { Avaliacao } from '../../../negociacao/models/negociacao.model';
+import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 
 interface EstadoPerfil {
   carregando: boolean;
@@ -46,7 +47,7 @@ const estadoInicial: EstadoPerfil = {
 @Component({
   selector: 'app-perfil-publico',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, IconeComponent],
+  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, IconeComponent, DenunciarComponent],
   templateUrl: './perfil-publico.component.html',
   styleUrl: './perfil-publico.component.scss',
 })
