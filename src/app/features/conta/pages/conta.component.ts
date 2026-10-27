@@ -13,7 +13,11 @@ import { AnunciosApiService } from '../../anuncios/data-access/anuncios-api.serv
 const ROTA_DETALHE_ANUNCIO = /^\/anuncios\/[A-Za-z0-9_-]+$/;
 
 export function destinoPosLogin(destino: string | null): string {
-  if (destino === '/anuncios/novo' || (destino && ROTA_DETALHE_ANUNCIO.test(destino))) {
+  if (
+    destino === '/anuncios/novo' ||
+    destino === '/meu-perfil' ||
+    (destino && ROTA_DETALHE_ANUNCIO.test(destino))
+  ) {
     return destino;
   }
   return '/anuncios';

@@ -15,6 +15,10 @@ describe('destino após login', () => {
     expect(destinoPosLogin('/anuncios/novo')).toBe('/anuncios/novo');
   });
 
+  it('retorna ao editor de perfil profissional', () => {
+    expect(destinoPosLogin('/meu-perfil')).toBe('/meu-perfil');
+  });
+
   it('usa o catálogo quando o destino não é uma rota interna permitida', () => {
     for (const destino of [null, '', '//externo.example', '/conta', '/anuncios/42?x=1']) {
       expect(destinoPosLogin(destino)).toBe('/anuncios');
