@@ -220,6 +220,12 @@ A configuração é `docker compose -p skillswap-integracao -f compose.yaml -f c
 
 Prévia: [http://100.97.254.9:8088](http://100.97.254.9:8088), acessível com a rede Tailscale conectada. Web, API e MySQL passaram nos healthchecks. O volume da prévia é skillswap-integracao_mysql-20261021; os segredos ficam apenas no .env restrito do worktree.
 
+### Prévia isolada da versão atual (27/10/2026)
+
+Para disponibilizar a versão atual sem migrar a cópia antiga nem tocar no site público, foi criada a stack `/home/ubuntu/skillswap-preview-20261027`, construída do commit `9fcdb3c`. Ela usa o próprio MySQL 8.0.46 vazio, volumes `skillswap-preview-20261027_skillswap-mysql` e `skillswap-preview-20261027_skillswap-uploads` e credenciais aleatórias em `.env` com permissão restrita. A web escuta somente em `100.97.254.9:8089`, pela rede Tailscale; o MySQL não recebe porta pública. Não há proxy ou domínio público apontando para essa stack.
+
+Flyway aplicou V1–V14 no banco vazio e o Hibernate validou o schema. API e web passaram nos healthchecks, e `GET /api/anuncios` retornou 200 com exemplos persistidos pela carga inicial. O endereço é [http://100.97.254.9:8089](http://100.97.254.9:8089). Essa prévia não contém uma cópia dos dados do site nem substitui a preparação de uma cópia integral do schema legado antes de qualquer migração.
+
 A prévia é uma fotografia da base na data do backup. Nunca substituir o banco público por essa fotografia. A publicação descrita abaixo atualizou as imagens da aplicação diretamente sobre o banco ativo, preservando os dados atuais.
 
 ## Site público
