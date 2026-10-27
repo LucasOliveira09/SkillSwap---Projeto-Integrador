@@ -4,6 +4,8 @@ import com.skillswap.api.domain.acordo.dto.AcordoResponseDTO;
 import com.skillswap.api.domain.acordo.dto.AtualizarStatusAcordoDTO;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
+import com.skillswap.api.domain.notificacao.NotificacaoService;
+import com.skillswap.api.domain.notificacao.TipoNotificacao;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class AcordoService {
 
     private final AcordoRepository acordoRepository;
     private final UsuarioService usuarioService;
+    private final NotificacaoService notificacaoService;
 
     @Transactional(readOnly = true)
     public List<AcordoResponseDTO> listarMeus(String emailUsuario) {
@@ -76,6 +79,16 @@ public class AcordoService {
             acordo.setStatus(StatusAcordo.CONCLUIDO);
             acordo.setConcluidoEm(LocalDateTime.now());
         }
+        Usuario anunciante = acordo.getProposta().getAnuncio().getUsuario();
+        Usuario destinatario = anunciante.getId().equals(usuarioId)
+                ? acordo.getProposta().getProponente()
+                : anunciante;
+        boolean concluido = acordo.getStatus() == StatusAcordo.CONCLUIDO;
+        notificacaoService.criar(destinatario, TipoNotificacao.ACORDO_ATUALIZADO,
+                concluido ? "Acordo concluído" : "Confirmação de conclusão",
+                concluido ? "As duas pessoas confirmaram a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Avaliações liberadas."
+                        : "A outra pessoa confirmou a conclusão de “" + acordo.getProposta().getAnuncio().getTitulo() + "”. Confirme para concluir.",
+                "/acordos/" + acordo.getId());
         return acordoRepository.save(acordo);
     }
 
@@ -88,6 +101,14 @@ public class AcordoService {
             throw new IllegalArgumentException("Acordo não está em andamento");
         }
         acordo.setStatus(StatusAcordo.CANCELADO);
+        Usuario atual = usuarioService.findByEmail(emailUsuario);
+        Usuario anunciante = acordo.getProposta().getAnuncio().getUsuario();
+        Usuario destinatario = anunciante.getId().equals(atual.getId())
+                ? acordo.getProposta().getProponente()
+                : anunciante;
+        notificacaoService.criar(destinatario, TipoNotificacao.ACORDO_ATUALIZADO,
+                "Acordo cancelado", "O acordo para “" + acordo.getProposta().getAnuncio().getTitulo() + "” foi cancelado.",
+                "/acordos/" + acordo.getId());
         return acordoRepository.save(acordo);
     }
 

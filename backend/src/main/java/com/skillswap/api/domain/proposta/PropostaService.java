@@ -6,6 +6,8 @@ import com.skillswap.api.domain.anuncio.Anuncio;
 import com.skillswap.api.domain.anuncio.AnuncioRepository;
 import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.anuncio.StatusAnuncio;
+import com.skillswap.api.domain.notificacao.NotificacaoService;
+import com.skillswap.api.domain.notificacao.TipoNotificacao;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
 import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
@@ -31,6 +33,7 @@ public class PropostaService {
     private final AnuncioRepository anuncioRepository;
     private final UsuarioService usuarioService;
     private final AcordoRepository acordoRepository;
+    private final NotificacaoService notificacaoService;
 
     @Transactional
     public Proposta criar(Long anuncioId, PropostaRequestDTO dto, String emailUsuario) {
@@ -55,7 +58,11 @@ public class PropostaService {
                 .proponente(proponente)
                 .mensagemInicial(dto.mensagemInicial())
                 .build();
-        return propostaRepository.save(proposta);
+        proposta = propostaRepository.save(proposta);
+        notificacaoService.criar(anuncio.getUsuario(), TipoNotificacao.PROPOSTA_RECEBIDA,
+                "Nova proposta", proponente.getNome() + " demonstrou interesse em “" + anuncio.getTitulo() + "”.",
+                "/conta?aba=recebidas&propostaId=" + proposta.getId());
+        return proposta;
     }
 
     @Transactional(readOnly = true)
@@ -116,19 +123,23 @@ public class PropostaService {
         proposta.setStatus(StatusProposta.ACEITA);
         propostaRepository.save(proposta);
 
+        // Avisa a pessoa que enviou a proposta e aponta para a nova conversa.
+        var acordo = Acordo.builder().proposta(proposta).build();
+        acordoRepository.save(acordo);
+        notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
+                "Proposta aceita", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi aceita.",
+                "/acordos/" + acordo.getId());
+
         // Recusar outras propostas pendentes do mesmo anúncio
         propostaRepository.findByAnuncioId(proposta.getAnuncio().getId()).stream()
                 .filter(p -> !p.getId().equals(propostaId) && p.getStatus() == StatusProposta.PENDENTE)
                 .forEach(p -> {
                     p.setStatus(StatusProposta.RECUSADA);
                     propostaRepository.save(p);
+                    notificacaoService.criar(p.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
+                            "Proposta encerrada", "Outra proposta foi aceita para “" + p.getAnuncio().getTitulo() + "”.",
+                            "/conta?aba=enviadas&propostaId=" + p.getId());
                 });
-
-        // Criar acordo
-        var acordo = Acordo.builder()
-                .proposta(proposta)
-                .build();
-        acordoRepository.save(acordo);
 
         return proposta;
     }
@@ -143,6 +154,9 @@ public class PropostaService {
         }
 
         proposta.setStatus(StatusProposta.RECUSADA);
+        notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
+                "Proposta recusada", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi recusada.",
+                "/conta?aba=enviadas&propostaId=" + proposta.getId());
         return propostaRepository.save(proposta);
     }
 
@@ -156,6 +170,9 @@ public class PropostaService {
             throw new IllegalArgumentException("Somente propostas pendentes podem ser canceladas");
         }
         proposta.setStatus(StatusProposta.CANCELADA);
+        notificacaoService.criar(proposta.getAnuncio().getUsuario(), TipoNotificacao.PROPOSTA_RESPONDIDA,
+                "Proposta cancelada", proposta.getProponente().getNome() + " cancelou a proposta para “" + proposta.getAnuncio().getTitulo() + "”.",
+                "/conta?aba=recebidas&propostaId=" + proposta.getId());
         return propostaRepository.save(proposta);
     }
 

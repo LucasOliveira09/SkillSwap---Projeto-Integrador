@@ -66,6 +66,25 @@ class NegociacaoControllerTest {
         org.junit.jupiter.api.Assertions.assertEquals("/api/propostas/" + propostaId,
                 respostaProposta.getResponse().getHeader("Location"));
 
+        var respostaNotificacoes = mvc.perform(get("/api/notificacoes")
+                        .header("Authorization", "Bearer " + anuncianteToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].tipo").value("PROPOSTA_RECEBIDA"))
+                .andExpect(jsonPath("$.itens[0].lida").value(false)).andReturn();
+        long notificacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(respostaNotificacoes.getResponse().getContentAsString())
+                .get("itens").get(0).get("id").asLong();
+        var usuarioExterno = usuarios.register(new RegisterDTO("Pessoa externa", "notificacao-externa@skillswap.invalid", "senha-teste-123"));
+        String tokenExterno = jwt.generateToken(usuarioExterno.getEmail());
+        mvc.perform(patch("/api/notificacoes/{id}", notificacaoId)
+                        .header("Authorization", "Bearer " + tokenExterno)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"lida\":true}"))
+                .andExpect(status().isNotFound());
+        mvc.perform(patch("/api/notificacoes/{id}", notificacaoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"lida\":true}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.lida").value(true));
+
         mvc.perform(get("/api/propostas").param("direcao", "ENVIADAS")
                         .header("Authorization", "Bearer " + proponenteToken))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
@@ -146,6 +165,10 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itens[0].mediaAvaliacoesAnuncio").value(4.0))
                 .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoesAnuncio").value(1));
+        mvc.perform(get("/api/notificacoes").header("Authorization", "Bearer " + proponenteToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(2))
+                .andExpect(jsonPath("$.itens[0].tipo").value("ACORDO_ATUALIZADO"))
+                .andExpect(jsonPath("$.itens[1].tipo").value("PROPOSTA_RESPONDIDA"));
     }
 
     @Test

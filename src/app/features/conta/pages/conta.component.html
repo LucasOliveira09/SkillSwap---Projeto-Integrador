@@ -1,4 +1,4 @@
-<section class="pagina conta" aria-labelledby="conta-titulo">
+<section class="pagina conta" [class.autenticada]="sessao.autenticado()" aria-labelledby="conta-titulo">
   <a mat-button routerLink="/anuncios">Voltar ao catálogo</a>
   <img class="logo-acesso" src="images/legado/logo-skill-swap.png" alt="Skill Swap" width="320" height="133" />
   <h1 id="conta-titulo">
@@ -15,6 +15,30 @@
 
     <!-- SEÇÃO DE MENSAGENS E PROPOSTAS -->
     <section class="propostas-secao">
+      <section class="notificacoes-secao" aria-labelledby="titulo-notificacoes">
+        <h2 id="titulo-notificacoes">Notificações @if (naoLidas()) { <span>({{ naoLidas() }} não {{ naoLidas() === 1 ? 'lida' : 'lidas' }})</span> }</h2>
+        @if (carregandoNotificacoes()) {
+          <p role="status">Carregando notificações...</p>
+        } @else if (erroNotificacoes()) {
+          <p role="alert">{{ erroNotificacoes() }} <button mat-button type="button" (click)="carregarNotificacoes()">Tentar novamente</button></p>
+        } @else if (!notificacoes().length) {
+          <div class="vazio-card"><p>Suas propostas, mensagens e atualizações de acordos aparecerão aqui.</p></div>
+        } @else {
+          <ol class="lista-notificacoes">
+            @for (notificacao of notificacoes(); track notificacao.id) {
+              <li [class.nao-lida]="!notificacao.lida">
+                <a [href]="notificacao.recursoUrl" (click)="abrirNotificacao($event, notificacao)">
+                  <strong>{{ notificacao.titulo }}</strong>
+                  <span>{{ notificacao.mensagem }}</span>
+                  <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                </a>
+                @if (!notificacao.lida) { <span class="indicador-nao-lida" aria-label="Não lida"></span> }
+              </li>
+            }
+          </ol>
+        }
+      </section>
+
       <h2>Mensagens recebidas em seus anúncios</h2>
       @if (carregandoPropostas()) {
         <p class="status-msg">Carregando mensagens...</p>

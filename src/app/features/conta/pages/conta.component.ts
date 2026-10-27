@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -10,6 +10,8 @@ import { finalize } from 'rxjs';
 import { SessaoService } from '../data-access/sessao.service';
 import { NegociacaoApiService } from '../../negociacao/data-access/negociacao-api.service';
 import { Acordo, Proposta } from '../../negociacao/models/negociacao.model';
+import { NotificacoesApiService } from '../data-access/notificacoes-api.service';
+import { Notificacao } from '../models/notificacao.model';
 
 const ROTA_DETALHE_ANUNCIO = /^\/anuncios\/[A-Za-z0-9_-]+$/;
 const ROTA_EDICAO_ANUNCIO = /^\/anuncios\/\d+\/editar$/;
@@ -49,6 +51,7 @@ export class ContaComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(NegociacaoApiService);
+  private readonly notificacoesApi = inject(NotificacoesApiService);
 
   protected readonly registrar = signal(false);
   protected nome = '';
@@ -63,11 +66,49 @@ export class ContaComponent {
   protected readonly carregandoPropostas = signal(false);
   protected readonly erroPropostas = signal('');
   protected readonly erroAcordos = signal('');
+  protected readonly notificacoes = signal<readonly Notificacao[]>([]);
+  protected readonly carregandoNotificacoes = signal(false);
+  protected readonly erroNotificacoes = signal('');
+  protected readonly naoLidas = computed(() => this.notificacoes().filter((notificacao) => !notificacao.lida).length);
 
   constructor() {
     if (this.sessao.autenticado()) {
       this.carregarPropostas();
+      this.carregarNotificacoes();
     }
+  }
+
+  protected carregarNotificacoes(): void {
+    if (!this.sessao.autenticado()) return;
+    this.carregandoNotificacoes.set(true);
+    this.erroNotificacoes.set('');
+    this.notificacoesApi.listar().pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.carregandoNotificacoes.set(false)),
+    ).subscribe({
+      next: (pagina) => this.notificacoes.set(pagina.itens),
+      error: () => this.erroNotificacoes.set('Não foi possível carregar as notificações. Tente novamente.'),
+    });
+  }
+
+  protected abrirNotificacao(event: MouseEvent, notificacao: Notificacao): void {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (notificacao.lida) {
+      void this.router.navigateByUrl(notificacao.recursoUrl);
+      return;
+    }
+    this.notificacoesApi.atualizarLeitura(notificacao.id, true).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (atualizada) => this.notificacoes.update((itens) =>
+        itens.map((item) => item.id === atualizada.id ? atualizada : item)),
+      error: () => {
+        this.erroNotificacoes.set('Não foi possível atualizar esta notificação.');
+        void this.router.navigateByUrl(notificacao.recursoUrl);
+      },
+      complete: () => void this.router.navigateByUrl(notificacao.recursoUrl),
+    });
   }
 
   protected carregarPropostas(): void {

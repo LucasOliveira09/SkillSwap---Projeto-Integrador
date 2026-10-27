@@ -4,6 +4,8 @@ import com.skillswap.api.domain.acordo.Acordo;
 import com.skillswap.api.domain.acordo.AcordoService;
 import com.skillswap.api.domain.mensagem.dto.MensagemRequestDTO;
 import com.skillswap.api.domain.mensagem.dto.MensagemResponseDTO;
+import com.skillswap.api.domain.notificacao.NotificacaoService;
+import com.skillswap.api.domain.notificacao.TipoNotificacao;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
@@ -22,6 +24,7 @@ public class MensagemService {
     private final MensagemRepository mensagemRepository;
     private final AcordoService acordoService;
     private final UsuarioService usuarioService;
+    private final NotificacaoService notificacaoService;
 
     @Transactional
     public Mensagem enviar(Long acordoId, MensagemRequestDTO dto, String emailUsuario) {
@@ -34,7 +37,15 @@ public class MensagemService {
                 .remetente(remetente)
                 .conteudo(dto.conteudo())
                 .build();
-        return mensagemRepository.save(mensagem);
+        mensagem = mensagemRepository.save(mensagem);
+        Usuario anunciante = acordo.getProposta().getAnuncio().getUsuario();
+        Usuario destinatario = anunciante.getId().equals(remetente.getId())
+                ? acordo.getProposta().getProponente()
+                : anunciante;
+        notificacaoService.criar(destinatario, TipoNotificacao.NOVA_MENSAGEM,
+                "Nova mensagem", remetente.getNome() + " enviou uma mensagem sobre “" + acordo.getProposta().getAnuncio().getTitulo() + "”.",
+                "/acordos/" + acordo.getId());
+        return mensagem;
     }
 
     @Transactional(readOnly = true)

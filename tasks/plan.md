@@ -195,7 +195,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** comprador e anunciante completam um fluxo venda e um fluxo troca; usuários externos não leem nem alteram conversa; aceite concorrente não cria dois acordos; erro não aparece como lista vazia.
 
-**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, registra a confirmação de conclusão e permite cancelar proposta pendente enviada. A conversa paginada abre nas mensagens recentes e permite percorrer páginas anteriores e seguintes. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento de propostas bloqueiam a linha do anúncio; ao aceitar, propostas concorrentes são recusadas. Conclusão agora exige confirmação de cada participante, com bloqueio da linha do acordo para serializar confirmações/cancelamento; avaliação só fica disponível após a segunda confirmação. Ainda faltam validar concorrência e persistência no MySQL real, histórico de eventos, notificações e cenários de venda e troca no MySQL.
+**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, registra a confirmação de conclusão e permite cancelar proposta pendente enviada. A conversa paginada abre nas mensagens recentes e permite percorrer páginas anteriores e seguintes. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento de propostas bloqueiam a linha do anúncio; ao aceitar, propostas concorrentes são recusadas. Conclusão exige confirmação de cada participante, com bloqueio da linha do acordo para serializar confirmações/cancelamento; avaliação só fica disponível após a segunda confirmação. Notificações persistidas para novas propostas, respostas, mensagens e atualizações de acordo estão implementadas; a conta exibe as dez mais recentes e permite marcá-las como lidas. Ainda faltam validar concorrência e persistência no MySQL real, histórico de eventos e cenários de venda e troca no MySQL.
 
 ### Fase 6 — Conclusão, avaliações e reputação
 
@@ -261,7 +261,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
 6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
 
-A confirmação mútua para concluir acordos foi implementada e registrada na [ADR-005](../docs/decisions/005-confirmacao-mutua-acordo.md). Ainda faltam janela de contestação, notificações e processo de divergência.
+A confirmação mútua para concluir acordos foi implementada e registrada na [ADR-005](../docs/decisions/005-confirmacao-mutua-acordo.md). Notificações transacionais em tela foram implementadas; ainda faltam janela de contestação e processo de divergência.
 
 ## Referências do projeto
 
