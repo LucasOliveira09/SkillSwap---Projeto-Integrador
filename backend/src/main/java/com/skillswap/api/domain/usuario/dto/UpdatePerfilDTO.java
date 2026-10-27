@@ -8,6 +8,10 @@ public record UpdatePerfilDTO(
         @Pattern(regexp = ".*\\S.*", message = "Nome não pode conter apenas espaços")
         String nome,
 
+        @Size(max = 120, message = "Título profissional deve ter no máximo 120 caracteres")
+        @Pattern(regexp = "^$|.*\\S.*", message = "Título profissional não pode conter apenas espaços")
+        String tituloProfissional,
+
         @Size(max = 500, message = "Bio deve ter no máximo 500 caracteres")
         String bio,
 

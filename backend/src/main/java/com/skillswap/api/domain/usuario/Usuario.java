@@ -28,6 +28,9 @@ public class Usuario {
     @Column(length = 500)
     private String bio;
 
+    @Column(name = "titulo_profissional", length = 120)
+    private String tituloProfissional;
+
     @Column(length = 80)
     private String cidade;
 

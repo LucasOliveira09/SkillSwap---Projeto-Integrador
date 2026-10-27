@@ -24,6 +24,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne('/api/perfil').flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: 'Eletricista residencial',
       bio: 'Experiência com instalações residenciais.',
       cidade: 'Florianópolis',
       fotoUrl: null,
@@ -47,14 +48,17 @@ describe('MeuPerfilComponent', () => {
       salvar(form: { invalid: boolean; control: { markAllAsTouched(): void } }): void;
     };
     componente.dados.nome = 'Ana Lima';
+    componente.dados.tituloProfissional = 'Eletricista autônoma';
     componente.salvar({ invalid: false, control: { markAllAsTouched: () => undefined } });
 
     const requisicao = http.expectOne('/api/perfil');
     expect(requisicao.request.method).toBe('PATCH');
     expect(requisicao.request.body.nome).toBe('Ana Lima');
+    expect(requisicao.request.body.tituloProfissional).toBe('Eletricista autônoma');
     requisicao.flush({
       id: 12,
       nome: 'Ana Lima',
+      tituloProfissional: 'Eletricista autônoma',
       bio: 'Experiência com instalações residenciais.',
       cidade: 'Florianópolis',
       fotoUrl: null,
@@ -82,7 +86,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
     const harness = await RouterTestingHarness.create('/meu-perfil');
     http.expectOne('/api/perfil').flush({
-      id: 12, nome: 'Ana Profissional', bio: null, cidade: null, fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null,
       especialidades: null, criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
@@ -138,6 +142,7 @@ describe('MeuPerfilComponent', () => {
     http.expectOne('/api/perfil').flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: null,
       bio: null,
       cidade: null,
       fotoUrl: null,
@@ -173,6 +178,7 @@ describe('MeuPerfilComponent', () => {
     requisicao.flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: null,
       bio: null,
       cidade: null,
       fotoUrl: '/api/uploads/0123456789abcdef0123456789abcdef.png',

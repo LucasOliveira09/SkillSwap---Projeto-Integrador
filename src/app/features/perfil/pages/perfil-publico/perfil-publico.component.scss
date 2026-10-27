@@ -84,6 +84,13 @@ h1 {
   color: var(--ss-muted);
 }
 
+.titulo-profissional {
+  margin: 4px 0 8px;
+  color: var(--ss-text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .metadados {
   flex-wrap: wrap;
   color: var(--ss-muted);

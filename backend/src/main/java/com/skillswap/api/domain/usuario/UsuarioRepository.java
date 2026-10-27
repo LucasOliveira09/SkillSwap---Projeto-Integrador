@@ -24,8 +24,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query(value = """
             select u from Usuario u
-            where u.especialidades is not null and trim(u.especialidades) <> ''
+            where ((u.especialidades is not null and trim(u.especialidades) <> '')
+               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
+                   or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
                    or lower(u.especialidades) like lower(concat('%', :busca, '%')))
               and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
               and (:notaMinima is null or (
@@ -33,8 +35,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
                    and (select avg(av.nota) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :notaMinima))
             """, countQuery = """
             select count(u) from Usuario u
-            where u.especialidades is not null and trim(u.especialidades) <> ''
+            where ((u.especialidades is not null and trim(u.especialidades) <> '')
+               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
+                   or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
                    or lower(u.especialidades) like lower(concat('%', :busca, '%')))
               and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
               and (:notaMinima is null or (

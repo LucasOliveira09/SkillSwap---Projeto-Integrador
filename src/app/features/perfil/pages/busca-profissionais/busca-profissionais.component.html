@@ -8,7 +8,7 @@
   <header class="cabecalho-busca">
     <p class="sobretitulo">Talentos da sua região</p>
     <h1 id="titulo-busca">Encontre o profissional certo</h1>
-    <p>Pesquise por especialidade e cidade e compare avaliações de trabalhos concluídos. Os resultados não são ordenados por nota.</p>
+    <p>Pesquise por especialidade, título profissional e cidade. Compare avaliações de trabalhos concluídos; os resultados não são ordenados por nota.</p>
   </header>
 
   <form class="filtros" role="search" (ngSubmit)="pesquisar()">
@@ -78,6 +78,9 @@
 
               <div class="dados-profissional">
                 <h3><a [routerLink]="['/profissionais', profissional.id]">{{ profissional.nome }}</a></h3>
+                @if (profissional.tituloProfissional) {
+                  <p class="titulo-profissional">{{ profissional.tituloProfissional }}</p>
+                }
                 @if (profissional.especialidades) {
                   <p class="especialidades">{{ profissional.especialidades }}</p>
                 }

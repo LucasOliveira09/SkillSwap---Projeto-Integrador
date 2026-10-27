@@ -61,13 +61,20 @@ class PerfilControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"nome":"Ana Lima","bio":"Aulas e serviços locais","cidade":"Florianópolis",
-                                 "especialidades":"Aulas de violão, iniciação musical"}
+                                 "especialidades":"Aulas de violão, iniciação musical",
+                                 "tituloProfissional":"Instrutora de violão"}
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Ana Lima"))
                 .andExpect(jsonPath("$.bio").value("Aulas e serviços locais"))
                 .andExpect(jsonPath("$.cidade").value("Florianópolis"))
                 .andExpect(jsonPath("$.especialidades").value("Aulas de violão, iniciação musical"))
+                .andExpect(jsonPath("$.tituloProfissional").value("Instrutora de violão"))
+                .andExpect(jsonPath("$.email").doesNotExist());
+
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tituloProfissional").value("Instrutora de violão"))
                 .andExpect(jsonPath("$.email").doesNotExist());
     }
 
@@ -151,6 +158,42 @@ class PerfilControllerTest {
 
         mvc.perform(get("/api/profissionais").param("busca", "Eletricista").param("cidade", "Palhoça"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test
+    void profissionalSemEspecialidadePodeSerEncontradoPeloTituloProfissional() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tituloProfissional\":\"Instrutora de violão\"}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/api/profissionais").param("busca", "Instrutora de violão"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].tituloProfissional").value("Instrutora de violão"));
+    }
+
+    @Test
+    void tituloProfissionalEOpcionalTemLimiteERejeitaSomenteEspacos() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tituloProfissional\":\"%s\"}".formatted("x".repeat(121))))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tituloProfissional\":\"   \"}"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tituloProfissional\":\"\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tituloProfissional").value(""));
     }
 
     @Test

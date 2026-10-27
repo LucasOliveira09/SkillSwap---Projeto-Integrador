@@ -33,9 +33,9 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
 | GET | `/perfis/{id}/publicacoes?pagina=0&tamanho=12` | Publicações públicas de portfólio, com até 20 itens por página e fotos em ordem. |
-| GET | `/profissionais?busca=&cidade=&notaMinima=&pagina=0&tamanho=12` | Perfis públicos com especialidades preenchidas; filtra nome/especialidades, cidade e média mínima, e limita a página a 20. O filtro de nota só considera perfis com pelo menos três avaliações visíveis; a ordenação permanece estável por criação. |
+| GET | `/profissionais?busca=&cidade=&notaMinima=&pagina=0&tamanho=12` | Perfis públicos com título ou especialidades preenchidos; filtra nome/título/especialidades, cidade e média mínima, e limita a página a 20. O filtro de nota só considera perfis com pelo menos três avaliações visíveis; a ordenação permanece estável por criação. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
-| PATCH | `/perfil` | Exige JWT; altera nome público, biografia, cidade ou especialidades após validar o DTO. |
+| PATCH | `/perfil` | Exige JWT; altera nome público, título profissional opcional, biografia, cidade ou especialidades após validar o DTO. |
 | PUT | `/perfil/foto` | Exige JWT e multipart `file`; valida conteúdo JPG/PNG/GIF, até 5 MB, 5000 px por lado e 20 MP; associa a nova imagem ao perfil autenticado. |
 | DELETE | `/perfil/foto` | Exige JWT; remove a referência da foto atual do perfil e devolve 204. |
 | POST | `/uploads` | Exige JWT; recebe imagem validada e devolve URL relativa para uso em anúncio. |
@@ -135,7 +135,7 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 
 O schema versionado fica em `backend/src/main/resources/db/migration`. A migração `V1__baseline_skillswap.sql` cria as tabelas atuais em um banco vazio; o Hibernate usa `ddl-auto: validate` e não altera schema automaticamente. O Flyway também valida checksums e executa novas migrações versionadas uma vez, em ordem.
 
-As migrações V8–V10 acrescentam resposta profissional, contestação privada e histórico de edição às avaliações existentes. O cliente autor pode editar uma vez até 24 horas da publicação, desde que não haja resposta, denúncia ou contestação; a versão anterior só fica acessível pela rota autenticada de moderação. O profissional avaliado pode responder uma vez e contestar dentro de sete dias. Os fluxos e a migração foram cobertos com H2; MySQL 8.0/8.4 real segue pendente.
+As migrações V8–V10 acrescentam resposta profissional, contestação privada e histórico de edição às avaliações existentes. A V11 acrescenta título profissional opcional à tabela de usuários; a coluna é aditiva e preserva contas existentes. O cliente autor pode editar uma vez até 24 horas da publicação, desde que não haja resposta, denúncia ou contestação; a versão anterior só fica acessível pela rota autenticada de moderação. O profissional avaliado pode responder uma vez e contestar dentro de sete dias. Os fluxos e as migrações foram cobertos com H2; MySQL 8.0/8.4 real segue pendente.
 
 Testes usam H2 em modo MySQL, aplicam a mesma V1 e validam as entidades contra o resultado. Isso cobre o contrato ORM/schema, mas não substitui executar a migração em MySQL 8.0 e 8.4.
 

@@ -93,6 +93,7 @@ public class UsuarioService {
 
     private void aplicarAtualizacao(Usuario usuario, UpdatePerfilDTO dto) {
         if (dto.nome() != null) usuario.setNome(dto.nome().strip());
+        if (dto.tituloProfissional() != null) usuario.setTituloProfissional(dto.tituloProfissional().strip());
         if (dto.bio() != null) usuario.setBio(dto.bio().strip());
         if (dto.cidade() != null) usuario.setCidade(dto.cidade().strip());
         if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades().strip());
@@ -118,7 +119,7 @@ public class UsuarioService {
 
     public PerfilDTO toPerfilDTO(Usuario u) {
         return new PerfilDTO(
-                u.getId(), u.getNome(),
+                u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
                 u.getEspecialidades(), u.getCriadoEm(),
                 getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoIdAndModeradaOcultaFalse(u.getId())

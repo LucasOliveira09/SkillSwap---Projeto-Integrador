@@ -26,6 +26,7 @@ describe('PerfilApiService', () => {
     request.flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: null,
       bio: null,
       cidade: 'Florianópolis',
       fotoUrl: null,
@@ -65,6 +66,7 @@ describe('PerfilApiService', () => {
       itens: [{
         id: 12,
         nome: 'Ana Profissional',
+        tituloProfissional: null,
         bio: null,
         cidade: 'Florianópolis',
         fotoUrl: null,
@@ -88,7 +90,7 @@ describe('PerfilApiService', () => {
   });
 
   it('atualiza o próprio perfil pelo recurso autenticado', () => {
-    const dados = { nome: 'Ana Lima', bio: 'Aulas com prática', cidade: 'São José', especialidades: 'Violão' };
+    const dados = { nome: 'Ana Lima', tituloProfissional: 'Professora de violão', bio: 'Aulas com prática', cidade: 'São José', especialidades: 'Violão' };
     api.atualizarMeuPerfil(dados).subscribe((perfil) => expect(perfil.nome).toBe('Ana Lima'));
 
     const request = http.expectOne('/api/perfil');
@@ -97,6 +99,7 @@ describe('PerfilApiService', () => {
     request.flush({
       id: 12,
       nome: dados.nome,
+      tituloProfissional: dados.tituloProfissional,
       bio: dados.bio,
       cidade: dados.cidade,
       fotoUrl: null,
@@ -118,6 +121,7 @@ describe('PerfilApiService', () => {
     request.flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: null,
       bio: null,
       cidade: null,
       fotoUrl: '/api/uploads/foto.png',

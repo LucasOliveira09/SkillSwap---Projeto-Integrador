@@ -84,6 +84,19 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
+        <mat-label>Título profissional</mat-label>
+        <input
+          matInput
+          name="tituloProfissional"
+          [(ngModel)]="dados.tituloProfissional"
+          maxlength="120"
+          placeholder="Ex.: Instrutora de violão"
+          [disabled]="salvando"
+        />
+        <mat-hint>{{ dados.tituloProfissional.length }}/120 · Opcional</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Especialidades</mat-label>
         <input
           matInput

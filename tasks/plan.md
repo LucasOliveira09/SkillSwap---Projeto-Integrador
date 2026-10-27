@@ -165,6 +165,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Progresso:** contrato REST de leitura pública, edição do próprio perfil, foto por upload validado, listagem paginada das ofertas ativas e busca de profissionais por especialidade/cidade implementados. Integração real com MySQL e persistência após reinício ainda precisam ser concluídas e validadas.
 
+O perfil também aceita título profissional opcional; ele aparece no perfil público e nos resultados, e a busca por título inclui profissionais sem especialidades preenchidas. A migração aditiva V11 preserva os registros existentes. Capa e links externos aprovados continuam pendentes.
+
 ### Fase 3 — Portfólio com publicações e fotos
 
 - Criar CRUD de publicação e relação com o autor; múltiplas imagens ordenadas com limites; publicação no perfil.
@@ -184,7 +186,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** filtros combinados e paginação são consistentes; resultado identifica perfil e anúncio; estados vazios/erro/retry funcionam; sem notas ou contagens fictícias; navegação após login retorna ao destino interno original.
 
-**Progresso:** busca pública de profissionais por especialidade/nome e cidade, paginação, cartões com reputação derivada e navegação para o perfil implementadas. O catálogo combina cidade, modalidade, faixa de preço e disponibilidade semanal declarada na interface e API; trocas sem preço ficam fora da faixa monetária. O proprietário lista, edita, pausa e reativa seus anúncios pela API. A migração V2 armazena até 21 combinações de dia/período; anunciante edita a grade, clientes filtram ofertas, e detalhe esclarece que os horários são autodeclarados. O perfil público apresenta as próprias ofertas ativas, total real e navegação paginada. Validação com MySQL ainda falta.
+**Progresso:** busca pública de profissionais por nome, título/especialidade e cidade, paginação, cartões com reputação derivada e navegação para o perfil implementadas. O catálogo combina cidade, modalidade, faixa de preço e disponibilidade semanal declarada na interface e API; trocas sem preço ficam fora da faixa monetária. O proprietário lista, edita, pausa e reativa seus anúncios pela API. A migração V2 armazena até 21 combinações de dia/período; anunciante edita a grade, clientes filtram ofertas, e detalhe esclarece que os horários são autodeclarados. O perfil público apresenta as próprias ofertas ativas, total real e navegação paginada. Validação com MySQL ainda falta.
 
 ### Fase 5 — Negociação, acordo e mensagens
 
@@ -257,7 +259,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 1. Visibilidade de perfil: definida em [`politica-perfis.md`](../docs/politica-perfis.md). O perfil básico e conteúdos profissionais publicados são públicos; contato, conversa e negociação são privados. Controles por campo e exclusão da conta não existem nesta fase.
 2. Avaliações: uma ação do cliente registra nota do profissional e do serviço; o profissional não avalia o cliente nesta fase. Regras em [`politica-avaliacoes.md`](../docs/politica-avaliacoes.md).
 3. Moderação: somente e-mails na allowlist podem analisar, com justificativa obrigatória e trilha persistida; a allowlist operacional continua configurável por ambiente.
-4. Imagens: até seis fotos por publicação, armazenamento em volume configurável e limpeza de arquivos órfãos após retenção. Backup/migração e revogação imediata das URLs ao remover a última referência permanecem pendentes.
+4. Imagens: até seis fotos por publicação, armazenamento em volume configurável e limpeza de arquivos órfãos após retenção. A URL pública é revogada quando some a última referência publicada, e a resposta usa `no-store`; rotina de backup, migração dos arquivos públicos existentes e validação após reinício permanecem pendentes.
 5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
 6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
 

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record PerfilDTO(
         Long id,
         String nome,
+        String tituloProfissional,
         String bio,
         String cidade,
         String fotoUrl,

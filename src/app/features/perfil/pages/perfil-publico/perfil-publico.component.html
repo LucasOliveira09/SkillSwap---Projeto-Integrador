@@ -25,6 +25,9 @@
       <div class="identidade">
         <p class="sobretitulo">Profissional SkillSwap</p>
         <h1 id="titulo-perfil">{{ p.nome }}</h1>
+        @if (p.tituloProfissional) {
+          <p class="titulo-profissional">{{ p.tituloProfissional }}</p>
+        }
         @if (p.especialidades) {
           <p class="especialidades">{{ p.especialidades }}</p>
         }

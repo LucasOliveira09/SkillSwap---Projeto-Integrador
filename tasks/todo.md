@@ -24,10 +24,12 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
 - [x] Aplicar quota de 100 MiB por conta, endpoint autenticado de uso, backfill de imagens referenciadas e remoção dos registros junto à limpeza dos órfãos.
 - [ ] Completar operação de upload: rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
-- [ ] Revogar URLs públicas de imagem assim que a última referência de perfil, anúncio ou portfólio for removida.
+- [x] Revogar acesso público à imagem quando a última referência pública for removida; uploads órfãos ficam privados do proprietário e sem cache HTTP.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
 - [x] Permitir prévia, envio e remoção da foto profissional por fluxo autenticado.
+- [x] Adicionar título profissional opcional ao perfil, apresentá-lo publicamente e incluí-lo na busca.
+- [ ] Completar perfil profissional com capa e links externos aprovados.
 - [ ] Validar perfil/foto no MySQL local e após reinício da API; Docker Desktop precisa estar ativo.
 
 ### Portfólio e descoberta
@@ -95,7 +97,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Conferir catálogo, conta e formulário em quatro larguras e com axe.
 - [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
 - [x] Filtrar profissionais por média mínima apenas com amostra de três avaliações visíveis, mantendo a ordenação estável por data.
-- [x] Adotar migrações Flyway versionadas (V1–V10).
+- [x] Adotar migrações Flyway versionadas (V1–V11).
 - [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
 
 ## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos

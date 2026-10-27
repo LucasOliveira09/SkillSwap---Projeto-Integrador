@@ -1,6 +1,7 @@
 export interface PerfilProfissional {
   id: number;
   nome: string;
+  tituloProfissional: string | null;
   bio: string | null;
   cidade: string | null;
   fotoUrl: string | null;
@@ -18,6 +19,7 @@ export interface UsoArmazenamento {
 
 export interface AtualizacaoPerfil {
   nome: string;
+  tituloProfissional: string;
   bio: string;
   cidade: string;
   especialidades: string;

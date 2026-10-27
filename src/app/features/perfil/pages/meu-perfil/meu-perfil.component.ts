@@ -15,6 +15,7 @@ import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 
 const formularioVazio: AtualizacaoPerfil = {
   nome: '',
+  tituloProfissional: '',
   bio: '',
   cidade: '',
   especialidades: '',
@@ -105,6 +106,7 @@ export class MeuPerfilComponent {
     this.sucesso = '';
     const dados = {
       nome: this.dados.nome.trim(),
+      tituloProfissional: this.dados.tituloProfissional.trim(),
       bio: this.dados.bio.trim(),
       cidade: this.dados.cidade.trim(),
       especialidades: this.dados.especialidades.trim(),
@@ -333,6 +335,7 @@ export class MeuPerfilComponent {
     this.perfil.set(perfil);
     this.dados = {
       nome: perfil.nome,
+      tituloProfissional: perfil.tituloProfissional ?? '',
       bio: perfil.bio ?? '',
       cidade: perfil.cidade ?? '',
       especialidades: perfil.especialidades ?? '',

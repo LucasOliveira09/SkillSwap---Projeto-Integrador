@@ -22,6 +22,7 @@ describe('PerfilPublicoComponent', () => {
     http.expectOne('/api/perfis/12').flush({
       id: 12,
       nome: 'Ana Profissional',
+      tituloProfissional: 'Eletricista residencial',
       bio: 'Atendo residências em Florianópolis.',
       cidade: 'Florianópolis',
       fotoUrl: null,
@@ -122,7 +123,7 @@ describe('PerfilPublicoComponent', () => {
   it('navega pelas páginas do portfólio usando a página solicitada pela API', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     const perfil = {
-      id: 12, nome: 'Ana Profissional', bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null,
       especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
       quantidadeAvaliacoes: 0,
     };
@@ -166,7 +167,7 @@ describe('PerfilPublicoComponent', () => {
   it('pagina todas as ofertas do profissional e mostra a quantidade total', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     const perfil = {
-      id: 12, nome: 'Ana Profissional', bio: null, cidade: 'Florianópolis', fotoUrl: null,
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Florianópolis', fotoUrl: null,
       especialidades: 'Eletricista', criadoEm: '2026-10-01T10:00:00', mediaNotas: null,
       quantidadeAvaliacoes: 0,
     };

@@ -28,6 +28,7 @@ describe('BuscaProfissionaisComponent', () => {
         {
           id: 12,
           nome: 'Ana Profissional',
+          tituloProfissional: 'Eletricista residencial',
           bio: 'Atendo residências.',
           cidade: 'Florianópolis',
           fotoUrl: null,
@@ -46,6 +47,7 @@ describe('BuscaProfissionaisComponent', () => {
 
     const texto = harness.routeNativeElement?.textContent ?? '';
     expect(texto).toContain('Ana Profissional');
+    expect(texto).toContain('Eletricista residencial');
     expect(texto).toContain('Eletricista, instalações');
     expect(texto).toContain('Florianópolis');
     expect(texto).toContain('Ainda sem avaliações');
