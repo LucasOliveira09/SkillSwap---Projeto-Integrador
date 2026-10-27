@@ -195,7 +195,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** comprador e anunciante completam um fluxo venda e um fluxo troca; usuários externos não leem nem alteram conversa; aceite concorrente não cria dois acordos; erro não aparece como lista vazia.
 
-**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, confirma conclusão e permite cancelar proposta pendente enviada. A conversa paginada abre nas mensagens recentes e permite percorrer páginas anteriores e seguintes. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento bloqueiam a linha do anúncio para serializar transições; ao aceitar, as propostas concorrentes são recusadas. Testes MockMvc/JPA cobrem cancelamento e um teste com duas requisições simultâneas em H2 confirma que apenas uma é aceita e um acordo é criado. Ainda faltam validar o bloqueio no MySQL real, histórico de eventos, notificações e validar cenários de venda e troca no MySQL.
+**Progresso:** Angular lista propostas/acordos, apresenta e envia conversa por acordo, registra a confirmação de conclusão e permite cancelar proposta pendente enviada. A conversa paginada abre nas mensagens recentes e permite percorrer páginas anteriores e seguintes. A API oferece recursos REST paginados e autorização de participantes. Criação, aceite, recusa e cancelamento de propostas bloqueiam a linha do anúncio; ao aceitar, propostas concorrentes são recusadas. Conclusão agora exige confirmação de cada participante, com bloqueio da linha do acordo para serializar confirmações/cancelamento; avaliação só fica disponível após a segunda confirmação. Ainda faltam validar concorrência e persistência no MySQL real, histórico de eventos, notificações e cenários de venda e troca no MySQL.
 
 ### Fase 6 — Conclusão, avaliações e reputação
 
@@ -206,7 +206,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** apenas participante elegível de acordo concluído avalia uma vez; tentativa própria, duplicada ou sem acordo é rejeitada; nota e quantidade batem com registros; avaliação não altera texto original de terceiros.
 
-**Progresso:** a tela coleta nota separada do profissional e da oferta após concluir um acordo; o backend impede avaliação antes de concluir, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Ainda faltam confirmação mútua/janela, moderação, denúncia, resposta/edição e validação dos indicadores no MySQL.
+**Progresso:** a tela coleta nota separada do profissional e da oferta após as duas partes confirmarem a conclusão; o backend impede avaliação antes disso, por não participante, autoavaliação e duplicidade. Médias e contagens reais alimentam perfil e detalhe do anúncio, e o perfil lista os depoimentos. Ainda faltam janela de contestação, moderação, denúncia, resposta/edição e validação dos indicadores no MySQL.
 
 ### Checkpoint — Primeira entrega completa sem pagamentos integrados
 
@@ -256,11 +256,12 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 1. Quais dados do perfil são públicos por padrão e quais podem ser ocultados?
 2. Avaliação: o cliente dá uma nota ao profissional e outra ao anúncio na mesma ação? O profissional também avalia o cliente?
-3. Conclusão do acordo: basta uma confirmação com prazo de contestação, ou ambos precisam confirmar?
-4. Moderadores: quem poderá ocultar conteúdo, responder denúncias e tratar contestação de avaliação?
-5. Imagens: limite por publicação, retenção após excluir anúncio e provedor/volume durável.
-6. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
-7. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
+3. Moderadores: quem poderá ocultar conteúdo, responder denúncias e tratar contestação de avaliação?
+4. Imagens: limite por publicação, retenção após excluir anúncio e provedor/volume durável.
+5. Na fase de pagamento, quais meios, taxas e política de estorno serão aceitos? Não escolher fornecedor antes de mapear esses requisitos.
+6. Como migrar usuários e dados já existentes sem inventar perfis, propriedade ou avaliações?
+
+A confirmação mútua para concluir acordos foi implementada e registrada na [ADR-005](../docs/decisions/005-confirmacao-mutua-acordo.md). Ainda faltam janela de contestação, notificações e processo de divergência.
 
 ## Referências do projeto
 

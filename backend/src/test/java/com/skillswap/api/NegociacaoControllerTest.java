@@ -101,7 +101,24 @@ class NegociacaoControllerTest {
         mvc.perform(patch("/api/acordos/{id}", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CONCLUIDO"));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("EM_ANDAMENTO"))
+                .andExpect(jsonPath("$.conclusaoConfirmadaProponente").value(true))
+                .andExpect(jsonPath("$.conclusaoConfirmadaAnunciante").value(false));
+        mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nota\":5,\"notaAnuncio\":4}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(patch("/api/acordos/{id}", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("EM_ANDAMENTO"));
+        mvc.perform(patch("/api/acordos/{id}", acordoId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CONCLUIDO"))
+                .andExpect(jsonPath("$.conclusaoConfirmadaAnunciante").value(true))
+                .andExpect(jsonPath("$.conclusaoConfirmadaProponente").value(true));
         var respostaAvaliacao = mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON)

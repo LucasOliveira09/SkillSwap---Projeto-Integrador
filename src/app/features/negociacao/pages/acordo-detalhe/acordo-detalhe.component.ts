@@ -53,6 +53,24 @@ export class AcordoDetalheComponent {
     return acordo.anuncianteId === perfil.id ? acordo.proponenteNome : acordo.anuncianteNome;
   });
 
+  protected readonly minhaConclusaoConfirmada = computed(() => {
+    const acordo = this.acordo();
+    const perfil = this.perfil();
+    if (!acordo || !perfil) return false;
+    return acordo.anuncianteId === perfil.id
+      ? acordo.conclusaoConfirmadaAnunciante
+      : acordo.conclusaoConfirmadaProponente;
+  });
+
+  protected readonly outraConclusaoConfirmada = computed(() => {
+    const acordo = this.acordo();
+    const perfil = this.perfil();
+    if (!acordo || !perfil) return false;
+    return acordo.anuncianteId === perfil.id
+      ? acordo.conclusaoConfirmadaProponente
+      : acordo.conclusaoConfirmadaAnunciante;
+  });
+
   protected readonly jaAvaliou = computed(() => {
     const perfil = this.perfil();
     return perfil ? this.avaliacoes().some((avaliacao) => avaliacao.avaliadorId === perfil.id) : false;
@@ -165,7 +183,9 @@ export class AcordoDetalheComponent {
       next: (acordo) => {
         this.acordo.set(acordo);
         this.confirmandoConclusao.set(false);
-        this.sucesso.set('Acordo concluído. Você já pode avaliar sua experiência.');
+        this.sucesso.set(acordo.status === 'CONCLUIDO'
+          ? 'A conclusão foi confirmada pelas duas pessoas. Você já pode avaliar sua experiência.'
+          : 'Sua confirmação foi registrada. O acordo será concluído quando a outra pessoa também confirmar.');
       },
       error: () => this.erro.set('Não foi possível concluir o acordo. Atualize a página e tente novamente.'),
     });

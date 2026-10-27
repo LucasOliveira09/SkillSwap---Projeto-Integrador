@@ -58,19 +58,31 @@ public class AcordoService {
 
     @Transactional
     public Acordo concluir(Long id, String emailUsuario) {
-        Acordo acordo = findById(id);
+        Acordo acordo = acordoRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NaoEncontradoException("Acordo não encontrado"));
         checkParticipant(acordo, emailUsuario);
         if (acordo.getStatus() != StatusAcordo.EM_ANDAMENTO) {
             throw new IllegalArgumentException("Acordo não está em andamento");
         }
-        acordo.setStatus(StatusAcordo.CONCLUIDO);
-        acordo.setConcluidoEm(LocalDateTime.now());
+        Long anuncianteId = acordo.getProposta().getAnuncio().getUsuario().getId();
+        Long usuarioId = usuarioService.findByEmail(emailUsuario).getId();
+        if (anuncianteId.equals(usuarioId)) {
+            acordo.setConclusaoConfirmadaAnunciante(true);
+        } else {
+            acordo.setConclusaoConfirmadaProponente(true);
+        }
+        if (Boolean.TRUE.equals(acordo.getConclusaoConfirmadaAnunciante())
+                && Boolean.TRUE.equals(acordo.getConclusaoConfirmadaProponente())) {
+            acordo.setStatus(StatusAcordo.CONCLUIDO);
+            acordo.setConcluidoEm(LocalDateTime.now());
+        }
         return acordoRepository.save(acordo);
     }
 
     @Transactional
     public Acordo cancelar(Long id, String emailUsuario) {
-        Acordo acordo = findById(id);
+        Acordo acordo = acordoRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NaoEncontradoException("Acordo não encontrado"));
         checkParticipant(acordo, emailUsuario);
         if (acordo.getStatus() != StatusAcordo.EM_ANDAMENTO) {
             throw new IllegalArgumentException("Acordo não está em andamento");
@@ -106,7 +118,9 @@ public class AcordoService {
                 proposta.getProponente().getNome(),
                 a.getStatus(),
                 a.getCriadoEm(),
-                a.getConcluidoEm()
+                a.getConcluidoEm(),
+                a.getConclusaoConfirmadaAnunciante(),
+                a.getConclusaoConfirmadaProponente()
         );
     }
 }

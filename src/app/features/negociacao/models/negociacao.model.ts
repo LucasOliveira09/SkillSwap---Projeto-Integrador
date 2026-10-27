@@ -24,6 +24,8 @@ export interface Acordo {
   status: StatusAcordo;
   criadoEm: string;
   concluidoEm: string | null;
+  conclusaoConfirmadaAnunciante: boolean | null;
+  conclusaoConfirmadaProponente: boolean | null;
 }
 
 export interface Mensagem {

@@ -47,6 +47,15 @@
       }
 
       @if (a.status === 'EM_ANDAMENTO') {
+        @if (minhaConclusaoConfirmada()) {
+          <p class="confirmacao-pendente" role="status">
+            Sua confirmação foi registrada. O acordo será concluído quando {{ interlocutor() }} também confirmar.
+          </p>
+        } @else if (outraConclusaoConfirmada()) {
+          <p class="confirmacao-pendente" role="status">
+            {{ interlocutor() }} confirmou a conclusão. Confira o resultado e confirme também para liberar as avaliações.
+          </p>
+        }
         <form class="form-mensagem" (ngSubmit)="enviarMensagem()">
           <mat-form-field appearance="outline">
             <mat-label>Escreva uma mensagem</mat-label>
@@ -59,13 +68,13 @@
             {{ enviando() ? 'Enviando...' : 'Enviar mensagem' }}
           </button>
         </form>
-        @if (!confirmandoConclusao()) {
+        @if (!minhaConclusaoConfirmada() && !confirmandoConclusao()) {
           <button class="concluir" mat-stroked-button type="button" (click)="confirmandoConclusao.set(true)" [disabled]="enviando()">
-            Marcar trabalho como concluído
+            Confirmar conclusão do trabalho
           </button>
-        } @else {
+        } @else if (confirmandoConclusao()) {
           <div class="confirmacao-conclusao" role="group" aria-label="Confirmar conclusão do acordo">
-            <p>Confirme quando o serviço ou a troca tiver sido concluído. Isso libera a avaliação dos participantes.</p>
+            <p>O acordo só será concluído e liberará avaliações depois que ambas as pessoas confirmarem.</p>
             <button mat-flat-button color="primary" type="button" (click)="concluirAcordo()" [disabled]="enviando()">
               Confirmar conclusão
             </button>

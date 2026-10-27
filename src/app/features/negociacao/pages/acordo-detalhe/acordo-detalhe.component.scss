@@ -19,6 +19,7 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .concluir { margin-top: 14px; }
 .confirmacao-conclusao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--ss-soft); }
 .confirmacao-conclusao p { flex: 1 1 100%; margin: 0; color: var(--ss-muted); font-size: 13px; }
+.confirmacao-pendente { margin: 14px 0; padding: 12px; border-radius: 8px; background: var(--ss-soft); color: var(--ss-text); font-size: 13px; }
 .aviso { font-size: 12px; }
 .feedback { padding: 12px 14px; border-radius: 8px; }
 .erro { color: #9f2525; background: #fff1f0; }
