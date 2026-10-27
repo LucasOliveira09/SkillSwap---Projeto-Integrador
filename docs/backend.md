@@ -238,6 +238,8 @@ Para disponibilizar a versão atual sem migrar a cópia antiga nem tocar no site
 
 Flyway aplicou V1–V14 no banco vazio e o Hibernate validou o schema. API e web passaram nos healthchecks, e `GET /api/anuncios` retornou 200 com exemplos persistidos pela carga inicial. O endereço é [http://100.97.254.9:8089](http://100.97.254.9:8089). Essa prévia não contém uma cópia dos dados do site nem substitui a preparação de uma cópia integral do schema legado antes de qualquer migração.
 
+Em 27/10/2026, a imagem da API foi atualizada para o commit `0b61086` (projeção agregada de reputação por página). A API validou o schema V14 existente sem executar migrações; apenas o container da API foi recriado. Home, `GET /api/anuncios` e `GET /api/profissionais` responderam 200, e o healthcheck da API permaneceu saudável. A imagem anterior foi mantida na tag `skillswap-preview-20261027-api:rollback-0b61086`. A listagem de profissionais retornou vazia porque a base isolada não tem profissionais cadastrados.
+
 A prévia é uma fotografia da base na data do backup. Nunca substituir o banco público por essa fotografia. A publicação descrita abaixo atualizou as imagens da aplicação diretamente sobre o banco ativo, preservando os dados atuais.
 
 ## Site público
