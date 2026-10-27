@@ -28,6 +28,7 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     estrelas: 5,
     exemplo: false,
     criadoEm: '2026-10-26T12:00:00',
+    disponibilidades: [{ diaSemana: 'SABADO' as const, periodo: 'TARDE' as const }],
   };
 
   beforeEach(() => {
@@ -52,6 +53,9 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     expect(texto).toContain('Professor Carlos');
     expect(texto).toContain('Ourinhos / SP');
     expect(texto).toContain('120,00');
+    expect(texto).toContain('Disponibilidade semanal informada');
+    expect(texto).toContain('Sábado · Tarde');
+    expect(texto).toContain('confirme os horários na conversa');
 
     const img = harness.routeNativeElement?.querySelector('.imagem-destaque') as HTMLImageElement;
     expect(img).toBeTruthy();

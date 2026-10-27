@@ -60,10 +60,15 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
            "AND (:modalidade IS NULL OR a.modalidade = :modalidade) " +
            "AND (:precoMinimo IS NULL OR (a.preco IS NOT NULL AND a.preco >= :precoMinimo)) " +
            "AND (:precoMaximo IS NULL OR (a.preco IS NOT NULL AND a.preco <= :precoMaximo)) " +
+           "AND ((:diaSemana IS NULL AND :periodo IS NULL) OR EXISTS " +
+           "(select d.id from DisponibilidadeAnuncio d where d.anuncio = a " +
+           "and (:diaSemana IS NULL OR d.diaSemana = :diaSemana) " +
+           "and (:periodo IS NULL OR d.periodo = :periodo))) " +
            "AND a.textoBusca LIKE :busca ESCAPE '!'")
     Page<Anuncio> pesquisar(@Param("status") StatusAnuncio status,
         @Param("categoria") CategoriaAnuncio categoria, @Param("cidade") String cidade,
         @Param("modalidade") ModalidadeAnuncio modalidade,
         @Param("precoMinimo") BigDecimal precoMinimo, @Param("precoMaximo") BigDecimal precoMaximo,
+        @Param("diaSemana") DiaSemana diaSemana, @Param("periodo") PeriodoDia periodo,
         @Param("busca") String busca, Pageable pageable);
 }

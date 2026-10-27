@@ -49,6 +49,18 @@ describe('Cadastro persistente', () => {
     expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBeTrue();
   });
 
+  it('salva a disponibilidade semanal declarada junto do anúncio', async () => {
+    await preencher();
+    const segundaManha = fixture.nativeElement.querySelector('.grade-disponibilidade input') as HTMLInputElement;
+    segundaManha.checked = true;
+    segundaManha.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('button[type="submit"]').click();
+    const req = http.expectOne('/api/anuncios');
+    expect(req.request.body.disponibilidades).toEqual([{ diaSemana: 'SEGUNDA', periodo: 'MANHA' }]);
+    req.flush({ ...req.request.body, id: 18, exemplo: false });
+  });
+
   it('confirma somente após resposta da API e impede envio duplicado enquanto salva', async () => {
     await preencher();
     const botao = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;

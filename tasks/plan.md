@@ -184,7 +184,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** filtros combinados e paginação são consistentes; resultado identifica perfil e anúncio; estados vazios/erro/retry funcionam; sem notas ou contagens fictícias; navegação após login retorna ao destino interno original.
 
-**Progresso:** busca pública de profissionais por especialidade/nome e cidade, paginação, cartões com reputação derivada e navegação para o perfil implementadas. O catálogo combina cidade, modalidade e faixa de preço na interface e API; trocas sem preço ficam fora da faixa monetária. O proprietário lista, edita, pausa e reativa seus anúncios pela API. Disponibilidade declarada, associação de ofertas ao perfil e validação com MySQL ainda faltam.
+**Progresso:** busca pública de profissionais por especialidade/nome e cidade, paginação, cartões com reputação derivada e navegação para o perfil implementadas. O catálogo combina cidade, modalidade, faixa de preço e disponibilidade semanal declarada na interface e API; trocas sem preço ficam fora da faixa monetária. O proprietário lista, edita, pausa e reativa seus anúncios pela API. A migração V2 armazena até 21 combinações de dia/período; anunciante edita a grade, clientes filtram ofertas, e detalhe esclarece que os horários são autodeclarados. Associação visual de ofertas ao perfil e validação com MySQL ainda faltam.
 
 ### Fase 5 — Negociação, acordo e mensagens
 

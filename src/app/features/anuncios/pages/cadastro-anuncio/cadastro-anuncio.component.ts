@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
-import { DadosAnuncio } from '../../models/anuncio.model';
+import { DadosAnuncio, DIAS_SEMANA, DiaSemana, PERIODOS_DIA, PeriodoDia } from '../../models/anuncio.model';
 import { CategoriaApi } from '../../models/anuncio-api.model';
 import { validarAnuncio } from '../../models/anuncio.validation';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
@@ -34,6 +34,8 @@ import { SessaoService } from '../../../conta/data-access/sessao.service';
   styleUrl: './cadastro-anuncio.component.scss',
 })
 export class CadastroAnuncioComponent {
+  protected readonly dias = DIAS_SEMANA;
+  protected readonly periodos = PERIODOS_DIA;
   protected readonly sessao = inject(SessaoService);
   private readonly anuncios = inject(AnunciosApiService);
   private readonly route = inject(ActivatedRoute);
@@ -87,6 +89,7 @@ export class CadastroAnuncioComponent {
           preco: anuncio.preco,
           habilidadeDesejada: anuncio.habilidadeDesejada || '',
           imagem: anuncio.imagem,
+          disponibilidades: anuncio.disponibilidades ?? [],
         };
       },
       error: () => this.erro = 'Não foi possível carregar este anúncio. Confira se ele pertence à sua conta.',
@@ -193,6 +196,17 @@ export class CadastroAnuncioComponent {
     this.erroUpload.set(null);
   }
 
+  protected temDisponibilidade(diaSemana: DiaSemana, periodo: PeriodoDia): boolean {
+    return this.dados.disponibilidades?.some((item) => item.diaSemana === diaSemana && item.periodo === periodo) ?? false;
+  }
+
+  protected alternarDisponibilidade(diaSemana: DiaSemana, periodo: PeriodoDia, selecionado: boolean): void {
+    const atuais = this.dados.disponibilidades ?? [];
+    this.dados.disponibilidades = selecionado
+      ? [...atuais, { diaSemana, periodo }]
+      : atuais.filter((item) => item.diaSemana !== diaSemana || item.periodo !== periodo);
+  }
+
   protected limpar(form: NgForm): void {
     if (this.salvando) return;
     this.dados = this.novoFormulario();
@@ -212,6 +226,7 @@ export class CadastroAnuncioComponent {
       preco: null,
       habilidadeDesejada: '',
       imagem: undefined,
+      disponibilidades: [],
     };
   }
 }

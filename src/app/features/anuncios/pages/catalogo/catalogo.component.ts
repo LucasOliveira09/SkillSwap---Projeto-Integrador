@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { BehaviorSubject, catchError, combineLatest, map, of, startWith, switchMap } from 'rxjs';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
+import { DIAS_SEMANA, DiaSemana, PERIODOS_DIA, PeriodoDia } from '../../models/anuncio.model';
 import { BannerDestaquesComponent } from '../../ui/banner-destaques/banner-destaques.component';
 import { AnuncioCardComponent } from '../../ui/anuncio-card/anuncio-card.component';
 import { ColecaoVisualComponent } from '../../ui/colecao-visual/colecao-visual.component';
@@ -35,6 +36,8 @@ const carregando = { carregando: true, erro: false, dados: paginaVazia };
   styleUrl: './catalogo.component.scss',
 })
 export class CatalogoComponent {
+  protected readonly dias = DIAS_SEMANA;
+  protected readonly periodos = PERIODOS_DIA;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly api = inject(AnunciosApiService);
@@ -49,6 +52,7 @@ export class CatalogoComponent {
       this.parametros().get('cidade') ||
       this.parametros().get('modalidade') || this.parametros().get('precoMinimo') ||
       this.parametros().get('precoMaximo')
+      || this.parametros().get('diaSemana') || this.parametros().get('periodo')
     ),
   );
   protected readonly estado = toSignal(
@@ -63,6 +67,8 @@ export class CatalogoComponent {
             modalidade: parametros.get('modalidade') || '',
             precoMinimo: parametros.get('precoMinimo') || '',
             precoMaximo: parametros.get('precoMaximo') || '',
+            diaSemana: (parametros.get('diaSemana') || '') as DiaSemana | '',
+            periodo: (parametros.get('periodo') || '') as PeriodoDia | '',
             pagina: Number.isSafeInteger(pagina) && pagina >= 0 && pagina <= 1000000 ? pagina : 0,
           })
           .pipe(
@@ -110,6 +116,8 @@ export class CatalogoComponent {
     modalidade: string,
     precoMinimo: string,
     precoMaximo: string,
+    diaSemana: string,
+    periodo: string,
   ): void {
     evento.preventDefault();
     const minimo = precoMinimo.trim();
@@ -126,6 +134,8 @@ export class CatalogoComponent {
         modalidade: modalidade || null,
         precoMinimo: minimo || null,
         precoMaximo: maximo || null,
+        diaSemana: diaSemana || null,
+        periodo: periodo || null,
         pagina: 0,
       },
       queryParamsHandling: 'merge',

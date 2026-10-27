@@ -83,6 +83,18 @@
             }
           </div>
 
+          @if (a.disponibilidades?.length) {
+            <section class="disponibilidade-anuncio" aria-labelledby="disponibilidade-titulo">
+              <h3 id="disponibilidade-titulo">Disponibilidade semanal informada</h3>
+              <ul>
+                @for (item of a.disponibilidades; track item.diaSemana + item.periodo) {
+                  <li>{{ rotuloDia(item.diaSemana) }} · {{ rotuloPeriodo(item.periodo) }}</li>
+                }
+              </ul>
+              <small>Informação declarada pelo anunciante; confirme os horários na conversa.</small>
+            </section>
+          }
+
           <!-- SE FOR TROCA: DESTAQUE PARA HABILIDADE DESEJADA -->
           @if (a.modalidade === 'troca' && a.habilidadeDesejada) {
             <div class="box-troca">

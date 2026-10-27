@@ -383,3 +383,10 @@ button[type='submit'] {
   object-fit: cover;
   display: block;
 }
+.disponibilidade { min-width: 0; margin: 4px 0 18px; padding: 14px; border: 1px solid var(--ss-line); border-radius: 10px; }
+.disponibilidade legend { padding: 0 6px; font-weight: 700; color: var(--ss-text); }
+.disponibilidade > p { margin: 4px 0 12px; color: var(--ss-muted); font-size: 12px; line-height: 1.5; }
+.grade-disponibilidade { display: grid; gap: 8px; }
+.linha-disponibilidade { display: grid; grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(72px, auto)); align-items: center; gap: 10px; font-size: 13px; }
+.linha-disponibilidade label { display: flex; align-items: center; gap: 5px; }
+@media (max-width: 540px) { .linha-disponibilidade { grid-template-columns: 1fr; gap: 6px; padding: 8px 0; border-bottom: 1px solid var(--ss-line); } .linha-disponibilidade strong { margin-bottom: 2px; } }

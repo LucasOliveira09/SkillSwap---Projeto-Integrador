@@ -18,8 +18,8 @@ class SkillswapApiApplicationTests {
 
 	@Test
 	void aplicaBaselineVersionadoAntesDeValidarAsEntidades() {
-		assertEquals("1", jdbc.queryForObject(
-				"select max(\"version\") from \"flyway_schema_history\" where \"success\" = true", String.class));
+		assertEquals(2, jdbc.queryForObject(
+				"select max(cast(\"version\" as integer)) from \"flyway_schema_history\" where \"success\" = true", Integer.class));
 	}
 
 }

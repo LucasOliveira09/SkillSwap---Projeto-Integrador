@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "anuncios")
@@ -65,6 +67,20 @@ public class Anuncio {
     private boolean exemplo = false;
     @Column(length = 2200)
     private String textoBusca;
+
+    @OneToMany(mappedBy = "anuncio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<DisponibilidadeAnuncio> disponibilidades = new HashSet<>();
+
+    public void substituirDisponibilidades(Set<DisponibilidadeAnuncio> novas) {
+        disponibilidades.clear();
+        novas.forEach(disponibilidade -> {
+            disponibilidade.setAnuncio(this);
+            disponibilidades.add(disponibilidade);
+        });
+    }
 
     public static String normalizar(String texto) {
         return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)

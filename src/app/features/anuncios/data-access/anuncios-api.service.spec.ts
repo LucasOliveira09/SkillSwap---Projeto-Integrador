@@ -16,7 +16,7 @@ describe('AnunciosApiService', () => {
   afterEach(() => http.verify());
 
   it('envia busca, categoria e página para o backend', () => {
-    api.listar({ busca: 'violão', categoria: 'aulas', cidade: 'Florianópolis', pagina: 2, modalidade: 'VENDA', precoMinimo: '50', precoMaximo: '200' }).subscribe();
+    api.listar({ busca: 'violão', categoria: 'aulas', cidade: 'Florianópolis', pagina: 2, modalidade: 'VENDA', precoMinimo: '50', precoMaximo: '200', diaSemana: 'SABADO', periodo: 'TARDE' }).subscribe();
     const req = http.expectOne((r) => r.url === '/api/anuncios');
     expect(req.request.params.get('busca')).toBe('violão');
     expect(req.request.params.get('categoria')).toBe('aulas');
@@ -25,6 +25,8 @@ describe('AnunciosApiService', () => {
     expect(req.request.params.get('modalidade')).toBe('VENDA');
     expect(req.request.params.get('precoMinimo')).toBe('50');
     expect(req.request.params.get('precoMaximo')).toBe('200');
+    expect(req.request.params.get('diaSemana')).toBe('SABADO');
+    expect(req.request.params.get('periodo')).toBe('TARDE');
     req.flush({ itens: [], pagina: 2, tamanho: 5, totalItens: 0, totalPaginas: 0 });
   });
 
@@ -40,6 +42,7 @@ describe('AnunciosApiService', () => {
         modalidade: 'venda',
         preco: 90,
         habilidadeDesejada: '',
+        disponibilidades: [{ diaSemana: 'SEGUNDA', periodo: 'MANHA' }],
       })
       .subscribe({
         next: () => (concluido = true),
@@ -48,6 +51,7 @@ describe('AnunciosApiService', () => {
     expect(concluido).toBeFalse();
     const req = http.expectOne('/api/anuncios');
     expect(req.request.method).toBe('POST');
+    expect(req.request.body.disponibilidades).toEqual([{ diaSemana: 'SEGUNDA', periodo: 'MANHA' }]);
     req.flush({ mensagem: 'Indisponível' }, { status: 503, statusText: 'Unavailable' });
     expect(falhou).toBeTrue();
     expect(concluido).toBeFalse();

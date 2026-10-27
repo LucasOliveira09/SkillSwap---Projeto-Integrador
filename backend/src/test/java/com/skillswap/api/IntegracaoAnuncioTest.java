@@ -97,6 +97,44 @@ class IntegracaoAnuncioTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test void persisteEFiltraDisponibilidadeSemanalDeclaradaNaOferta() throws Exception {
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content("""
+                                {"titulo":"Aula de violão","descricao":"Aulas presenciais",
+                                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"VENDA",
+                                 "preco":90,"habilidadeDesejada":"",
+                                 "disponibilidades":[
+                                   {"diaSemana":"SEGUNDA","periodo":"MANHA"},
+                                   {"diaSemana":"QUARTA","periodo":"TARDE"}]}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.disponibilidades.length()").value(2))
+                .andExpect(jsonPath("$.disponibilidades[0].diaSemana").value("SEGUNDA"));
+
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content(venda("Aula sem horário informado", "90")))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.disponibilidades.length()").value(0));
+
+        mvc.perform(get("/api/anuncios").param("diaSemana", "SEGUNDA").param("periodo", "MANHA"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].titulo").value("Aula de violão"));
+        mvc.perform(get("/api/anuncios").param("diaSemana", "SEGUNDA").param("periodo", "TARDE"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get("/api/anuncios").param("diaSemana", "INVALIDO"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content("""
+                                {"titulo":"Aula com período repetido","descricao":"Aulas presenciais",
+                                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"VENDA",
+                                 "preco":90,"habilidadeDesejada":"",
+                                 "disponibilidades":[
+                                   {"diaSemana":"SEGUNDA","periodo":"MANHA"},
+                                   {"diaSemana":"SEGUNDA","periodo":"MANHA"}]}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test void proprietarioListaEditaEReativaSomenteSeusAnuncios() throws Exception {
         var criado = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
                         .contentType("application/json").content(venda("Aula de violão", "90")))

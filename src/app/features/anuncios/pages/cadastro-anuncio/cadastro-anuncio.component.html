@@ -212,6 +212,25 @@
                 <mat-error>Informe a habilidade que você procura.</mat-error>
               </mat-form-field>
             }
+            <fieldset class="disponibilidade">
+              <legend>Disponibilidade semanal informada (opcional)</legend>
+              <p>Marque os períodos em que costuma atender. Isso é uma informação do anunciante e não confirma uma vaga ou agendamento.</p>
+              <div class="grade-disponibilidade">
+                @for (dia of dias; track dia.valor) {
+                  <div class="linha-disponibilidade">
+                    <strong>{{ dia.rotulo }}</strong>
+                    @for (periodo of periodos; track periodo.valor) {
+                      <label>
+                        <input type="checkbox" [checked]="temDisponibilidade(dia.valor, periodo.valor)"
+                          [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
+                          (change)="alternarDisponibilidade(dia.valor, periodo.valor, $any($event.target).checked)" />
+                        {{ periodo.rotulo }}
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            </fieldset>
             <p class="orientacao" id="orientacao" aria-live="polite">
               {{ erroValidacao || 'Dados prontos para salvar.' }}
             </p>

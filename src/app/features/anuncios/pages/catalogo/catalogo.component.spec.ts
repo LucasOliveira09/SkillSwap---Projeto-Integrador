@@ -25,7 +25,7 @@ describe('Catálogo integrado ao backend', () => {
   });
 
   it('envia filtros por URL e cancela uma busca antiga ainda pendente', async () => {
-    const harness = await RouterTestingHarness.create('/anuncios?busca=violao&categoria=aulas&cidade=Florianopolis&modalidade=VENDA&precoMinimo=50&precoMaximo=200');
+    const harness = await RouterTestingHarness.create('/anuncios?busca=violao&categoria=aulas&cidade=Florianopolis&modalidade=VENDA&precoMinimo=50&precoMaximo=200&diaSemana=SABADO&periodo=TARDE');
     http.expectOne('/api/vitrine').flush({ categorias: [], destaques: [], servicos: [] });
     const antiga = http.expectOne((r) => r.url === '/api/anuncios');
     expect(antiga.request.params.get('busca')).toBe('violao');
@@ -34,6 +34,8 @@ describe('Catálogo integrado ao backend', () => {
     expect(antiga.request.params.get('modalidade')).toBe('VENDA');
     expect(antiga.request.params.get('precoMinimo')).toBe('50');
     expect(antiga.request.params.get('precoMaximo')).toBe('200');
+    expect(antiga.request.params.get('diaSemana')).toBe('SABADO');
+    expect(antiga.request.params.get('periodo')).toBe('TARDE');
     await harness.navigateByUrl('/anuncios?busca=pintura&pagina=1');
     expect(antiga.cancelled).toBeTrue();
     const atual = http.expectOne((r) => r.url === '/api/anuncios');

@@ -14,7 +14,7 @@
 }
 .filtros-ofertas {
   display: grid;
-  grid-template-columns: minmax(160px, 1.2fr) minmax(120px, 0.9fr) minmax(120px, 0.8fr) minmax(120px, 0.8fr) auto;
+  grid-template-columns: repeat(3, minmax(120px, 1fr)) auto;
   align-items: end;
   gap: 12px;
   margin: 16px 0;

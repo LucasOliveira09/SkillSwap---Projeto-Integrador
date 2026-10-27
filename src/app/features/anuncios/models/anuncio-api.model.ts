@@ -1,4 +1,4 @@
-import { DadosAnuncio } from './anuncio.model';
+import { DadosAnuncio, DiaSemana, PeriodoDia } from './anuncio.model';
 import { ItemColecao } from '../ui/vitrine.model';
 
 export interface CategoriaApi {
@@ -46,5 +46,7 @@ export interface FiltrosAnuncios {
   modalidade: string;
   precoMinimo: string;
   precoMaximo: string;
+  diaSemana: DiaSemana | '';
+  periodo: PeriodoDia | '';
   pagina: number;
 }

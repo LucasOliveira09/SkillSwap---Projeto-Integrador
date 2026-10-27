@@ -8,7 +8,9 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 
 public record AnuncioRequestDTO(
         @NotBlank(message = "Título é obrigatório")
@@ -36,5 +38,8 @@ public record AnuncioRequestDTO(
         String habilidadeDesejada,
 
         @Size(max = 500, message = "URL da imagem deve ter no máximo 500 caracteres")
-        String imagem
+        String imagem,
+
+        @Size(max = 21, message = "Informe até 21 períodos de disponibilidade")
+        List<@NotNull @Valid DisponibilidadeAnuncioDTO> disponibilidades
 ) {}

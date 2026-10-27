@@ -32,12 +32,14 @@ public class AnuncioController {
             @RequestParam(defaultValue = "") @Pattern(regexp = "(?i)|VENDA|TROCA") String modalidade,
             @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) BigDecimal precoMinimo,
             @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) BigDecimal precoMaximo,
+            @RequestParam(required = false) DiaSemana diaSemana,
+            @RequestParam(required = false) PeriodoDia periodo,
             @RequestParam(defaultValue = "") @Size(max = 100) String busca,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1000000) int pagina,
             @RequestParam(defaultValue = "5") @Min(1) @Max(50) int tamanho) {
         var pageable = PageRequest.of(pagina,tamanho, Sort.by(Sort.Direction.DESC,"criadoEm","id"));
         return ResponseEntity.ok(PaginaDTO.de(anuncioService.pesquisar(
-                categoria, cidade, modalidade, precoMinimo, precoMaximo, busca, pageable)));
+                categoria, cidade, modalidade, precoMinimo, precoMaximo, diaSemana, periodo, busca, pageable)));
     }
 
     @GetMapping("/{identificador}")

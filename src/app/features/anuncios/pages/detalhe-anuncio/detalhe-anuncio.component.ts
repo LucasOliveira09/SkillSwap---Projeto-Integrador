@@ -8,6 +8,7 @@ import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi } from '../../models/anuncio-api.model';
+import { DiaSemana, PeriodoDia } from '../../models/anuncio.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 
@@ -89,6 +90,14 @@ export class DetalheAnuncioComponent {
   protected estrelas(quantidade: number | null): string {
     if (quantidade === null) return '';
     return '★'.repeat(quantidade) + '☆'.repeat(5 - quantidade);
+  }
+
+  protected rotuloDia(dia: DiaSemana): string {
+    return ({ SEGUNDA: 'Segunda-feira', TERCA: 'Terça-feira', QUARTA: 'Quarta-feira', QUINTA: 'Quinta-feira', SEXTA: 'Sexta-feira', SABADO: 'Sábado', DOMINGO: 'Domingo' })[dia];
+  }
+
+  protected rotuloPeriodo(periodo: PeriodoDia): string {
+    return ({ MANHA: 'Manhã', TARDE: 'Tarde', NOITE: 'Noite' })[periodo];
   }
 
   protected rolarParaMensagens(): void {
