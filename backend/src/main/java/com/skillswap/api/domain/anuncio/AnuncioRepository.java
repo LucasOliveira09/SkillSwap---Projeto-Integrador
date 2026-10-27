@@ -45,6 +45,9 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
     boolean existsByCodigoLegado(String codigo);
 
+    @Query("select a.imagem from Anuncio a where a.imagem is not null")
+    List<String> listarImagens();
+
     @EntityGraph(attributePaths = {"usuario"})
     Optional<Anuncio> findByCodigoLegado(String codigoLegado);
 

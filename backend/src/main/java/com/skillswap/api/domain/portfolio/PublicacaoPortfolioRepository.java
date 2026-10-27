@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoPortfolio, Long> {
@@ -12,4 +13,7 @@ public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoP
 
     @EntityGraph(attributePaths = {"usuario", "anuncio"})
     Optional<PublicacaoPortfolio> findById(Long id);
+
+    @Query("select distinct foto from PublicacaoPortfolio p join p.fotos foto")
+    java.util.List<String> listarFotosReferenciadas();
 }

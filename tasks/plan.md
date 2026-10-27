@@ -153,7 +153,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** banco novo e prévia migram sem perda; uploads inválidos e excessivos são rejeitados; imagem continua acessível após recriação controlada da API; testes não usam arquivo falso como imagem válida.
 
-**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão e diretório configurável implementados; Compose local e público agora declaram volumes de mídia. Ainda faltam quota/limpeza, rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
+**Progresso:** validação do conteúdo real (JPG/PNG/GIF), limites por arquivo/dimensão e diretório configurável implementados; Compose local e público declaram volumes de mídia. Limpeza diária de arquivos hash sem referência após 30 dias considera perfis, anúncios e publicações. Ainda faltam quota por conta, rotina de backup, migração dos arquivos do container público atual e validação de reinício com MySQL. Não implantar a nova montagem pública sem essa migração.
 
 ### Fase 2 — Perfil público editável
 
@@ -171,7 +171,7 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 - Exibir feed compacto no perfil e grade responsiva com detalhes e acessibilidade.
 - Adicionar denúncia e estados `RASCUNHO`, `PUBLICADA`, `OCULTA` ou conjunto equivalente aprovado.
 
-**Progresso:** criação e remoção de publicações autenticadas, com até seis fotos JPG/PNG/GIF enviadas previamente, legenda e vínculo opcional a oferta ativa do próprio autor. O autor pode editar a legenda e navegar pelas páginas do próprio portfólio; o perfil público pagina as publicações a partir dos dados da API. Ainda faltam denúncia/moderação, limpeza dos arquivos sem referência e validação real no MySQL.
+**Progresso:** criação, edição de legenda, remoção e paginação de publicações autenticadas com até seis fotos JPG/PNG/GIF, além de vínculo opcional a oferta ativa do próprio autor. O perfil público pagina as publicações a partir da API. Ainda faltam denúncia/moderação e validação real no MySQL.
 
 **Aceite:** criação, edição e remoção afetam somente conteúdo próprio; publicação aparece no perfil público; arquivo removido não deixa referência quebrada; falha de rede preserva o texto editável.
 

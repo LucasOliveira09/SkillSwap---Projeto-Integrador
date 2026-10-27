@@ -20,7 +20,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [ ] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação.
 - [ ] Criar baseline e migrações versionadas não destrutivas para MySQL 8.0/8.4.
 - [x] Validar conteúdo real de upload, dimensões e tamanho; associar upload de foto ao perfil autenticado e declarar volume persistente no Compose.
-- [ ] Completar operação de upload: quota, limpeza, rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
+- [x] Limpar uploads sem referência após período de retenção configurável, preservando fotos ligadas a perfis, anúncios e publicações.
+- [ ] Completar operação de upload: quota por conta, rotina de backup, migração dos arquivos públicos atuais e persistência após reinício.
 - [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
 - [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
 - [x] Permitir prévia, envio e remoção da foto profissional por fluxo autenticado.
@@ -30,7 +31,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Criar publicações persistidas com legenda, até seis fotos, vínculo opcional a oferta própria; mostrar no perfil e permitir remoção pelo autor.
 - [x] Permitir editar legenda de publicação e navegar pelas páginas do portfólio público e próprio.
-- [ ] Implementar denúncia/moderação e definir retenção/limpeza de arquivos sem referência.
+- [ ] Implementar denúncia/moderação para portfólio e definir regras de tratamento.
 - [ ] Ligar anúncios ao perfil e associar ofertas às publicações.
 - [x] Editar, pausar e reativar anúncios próprios com leitura autenticada, validação do proprietário e persistência pela API.
 - [x] Buscar profissionais por nome/especialidade e cidade com paginação, perfil público e reputação apenas quando há avaliações reais.
