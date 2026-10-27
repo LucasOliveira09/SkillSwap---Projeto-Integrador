@@ -6,6 +6,16 @@ Fonte de domínio: [Documento de Visão e Escopo do grupo Saptura](referencias/s
 
 Conectar moradores a prestadores de manutenção e serviços manuais e a instrutores locais, com foco inicial em Florianópolis e região. A proposta combina descoberta de profissionais, portfólio e reputação com negociação por venda direta ou troca de habilidades entre duas pessoas.
 
+## Visão ampliada confirmada pelo usuário
+
+O SkillSwap deve combinar uma rede de apresentação profissional com um marketplace local: cada pessoa pode construir um perfil público e portfólio visual, divulgar ofertas e ser encontrada por clientes; clientes podem comparar profissionais, conversar, negociar e avaliar trabalhos concluídos. Publicações devem ajudar a mostrar a qualidade e o estilo do serviço, sem transformar o produto em uma rede social genérica.
+
+Uma conta pode atuar como profissional e cliente. A descoberta deve responder “quem atende ao que preciso e na minha região?” e sustentar a confiança com avaliações de operações reais, contexto e quantidade de avaliações. Não apresentar notas, selos, identidade verificada, popularidade ou pagamento protegido sem mecanismos implementados e evidências correspondentes.
+
+O usuário definiu que pagamentos dentro da plataforma ficam para uma fase posterior à validação de perfis, ofertas, descoberta, propostas, acordos, conversa e avaliações. Até lá, a plataforma organiza a negociação, mas não processa nem garante pagamento.
+
+O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências, riscos e decisões em aberto. Esta visão é a direção do produto; os critérios de cada fase ainda precisam ser validados antes da implementação.
+
 O documento relata dificuldade de descoberta, desconfiança na contratação e falta de vitrine para autônomos. As conclusões de pesquisa são relatos do documento; faltam amostra, roteiro e registros para sustentar percentuais em uma apresentação. Evitar prometer segurança total, identidade verificada ou proteção financeira antes de implementar e validar esses mecanismos.
 
 ## Seis capacidades do MVP planejado

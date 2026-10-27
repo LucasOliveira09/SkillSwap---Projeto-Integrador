@@ -10,6 +10,40 @@
 
 O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo-mvp.md); não fazem parte da conclusão desta inicialização.
 
+## Visão de rede profissional + marketplace (plano em validação)
+
+O plano completo e a definição de pronto estão em [plan.md](plan.md). Os itens abaixo são trabalho futuro; código parcial já existente deve ser revisado e completado, não tratado como funcionalidade pronta.
+
+### Fundação e perfis
+
+- [ ] Revisar os commits de detalhe/upload/propostas; corrigir retorno de login e documentar limites atuais.
+- [ ] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação.
+- [ ] Criar baseline e migrações versionadas não destrutivas para MySQL 8.0/8.4.
+- [ ] Completar upload seguro e durável: validação de conteúdo, limites sincronizados, armazenamento com backup, autorização, quota e remoção.
+- [ ] Criar perfil profissional público/editável com especialidades, região, biografia, foto e métricas derivadas reais.
+
+### Portfólio e descoberta
+
+- [ ] Criar publicações de portfólio com várias fotos, legenda, vínculo opcional com oferta e controle de moderação.
+- [ ] Ligar anúncios ao perfil, completar edição/pausa/reativação e associar ofertas às publicações.
+- [ ] Buscar profissionais e ofertas por serviço, região, modalidade, preço e disponibilidade declarada.
+- [ ] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.
+
+### Negociação e reputação
+
+- [ ] Definir e implementar máquina de estados de propostas/acordos, controle de concorrência e histórico de eventos.
+- [ ] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios corretos.
+- [ ] Criar conversa persistente por acordo com autorização estrita por participante e paginação.
+- [ ] Concluir o acordo e implementar avaliações elegíveis de profissional e oferta, com nota, amostra, denúncia e moderação.
+- [ ] Validar ponta a ponta: perfil/anúncio -> descoberta -> proposta -> conversa -> acordo -> conclusão -> avaliação.
+
+### Entrega e fases seguintes
+
+- [ ] Validar fluxos venda e troca, autorização, migrações, armazenamento, navegador, acessibilidade e persistência em reinício.
+- [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
+- [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
+- [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
+
 ## Adaptação do layout antigo
 
 - [x] Inspecionar o repositório indicado e comparar catálogo/cadastro no navegador.
