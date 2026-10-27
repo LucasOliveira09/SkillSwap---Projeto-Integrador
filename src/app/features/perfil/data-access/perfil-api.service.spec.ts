@@ -36,6 +36,40 @@ describe('PerfilApiService', () => {
     });
   });
 
+  it('busca perfis profissionais com termo, cidade e paginação', () => {
+    api.buscarProfissionais('Eletricista', 'Florianópolis', 1).subscribe((pagina) => {
+      expect(pagina.totalItens).toBe(1);
+      expect(pagina.itens[0].nome).toBe('Ana Profissional');
+    });
+
+    const request = http.expectOne(
+      (candidate) =>
+        candidate.url === '/api/profissionais' &&
+        candidate.params.get('busca') === 'Eletricista' &&
+        candidate.params.get('cidade') === 'Florianópolis' &&
+        candidate.params.get('pagina') === '1' &&
+        candidate.params.get('tamanho') === '12',
+    );
+    expect(request.request.method).toBe('GET');
+    request.flush({
+      itens: [{
+        id: 12,
+        nome: 'Ana Profissional',
+        bio: null,
+        cidade: 'Florianópolis',
+        fotoUrl: null,
+        especialidades: 'Eletricista',
+        criadoEm: '2026-10-01T10:00:00',
+        mediaNotas: null,
+        quantidadeAvaliacoes: 0,
+      }],
+      pagina: 1,
+      tamanho: 12,
+      totalItens: 1,
+      totalPaginas: 1,
+    });
+  });
+
   it('atualiza o próprio perfil pelo recurso autenticado', () => {
     const dados = { nome: 'Ana Lima', bio: 'Aulas com prática', cidade: 'São José', especialidades: 'Violão' };
     api.atualizarMeuPerfil(dados).subscribe((perfil) => expect(perfil.nome).toBe('Ana Lima'));

@@ -99,6 +99,30 @@ class PerfilControllerTest {
     }
 
     @Test
+    void buscaProfissionaisPorEspecialidadeECidadeSemIncluirPerfisVazios() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"bio":"Atendo residências","cidade":"Florianópolis - SC",
+                                 "especialidades":"Eletricista, instalações"}
+                                """))
+                .andExpect(status().isOk());
+
+        usuarios.register(new RegisterDTO("Conta sem perfil", "semperfil@skillswap.invalid", "senha-teste-123"));
+        mvc.perform(get("/api/profissionais").param("busca", "Eletricista").param("cidade", "Floria"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].id").value(usuarioId))
+                .andExpect(jsonPath("$.itens[0].especialidades").value("Eletricista, instalações"))
+                .andExpect(jsonPath("$.itens[0].email").doesNotExist())
+                .andExpect(jsonPath("$.itens[1]").doesNotExist());
+
+        mvc.perform(get("/api/profissionais").param("busca", "Eletricista").param("cidade", "Palhoça"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test
     void atualizaFotoDoPerfilSomentePorUploadAutenticado() throws Exception {
         var foto = new org.springframework.mock.web.MockMultipartFile(
                 "file", "perfil.png", "image/png",

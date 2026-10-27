@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +50,14 @@ public class UsuarioService {
         return toPerfilDTO(findByEmail(emailAutenticado));
     }
 
+    @Transactional(readOnly = true)
+    public Page<PerfilDTO> buscarProfissionais(String busca, String cidade, Pageable pageable) {
+        String termoSeguro = normalizarFiltro(busca, 100);
+        String cidadeSegura = normalizarFiltro(cidade, 80);
+        return usuarioRepository.buscarProfissionais(termoSeguro, cidadeSegura, pageable)
+                .map(this::toPerfilDTO);
+    }
+
     @Transactional
     public PerfilDTO atualizarPerfilAtual(UpdatePerfilDTO dto, String emailAutenticado) {
         Usuario usuario = findByEmail(emailAutenticado);
@@ -84,6 +94,15 @@ public class UsuarioService {
         if (dto.bio() != null) usuario.setBio(dto.bio().strip());
         if (dto.cidade() != null) usuario.setCidade(dto.cidade().strip());
         if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades().strip());
+    }
+
+    private String normalizarFiltro(String valor, int limite) {
+        if (valor == null || valor.isBlank()) return "";
+        String filtro = valor.strip().replaceAll("[%_\\\\]", "").replaceAll("\\s+", " ").strip();
+        if (filtro.length() > limite) {
+            throw new IllegalArgumentException("O filtro excede o limite permitido");
+        }
+        return filtro;
     }
 
     public Double getAverageRating(Long usuarioId) {

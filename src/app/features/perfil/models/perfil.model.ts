@@ -16,3 +16,11 @@ export interface AtualizacaoPerfil {
   cidade: string;
   especialidades: string;
 }
+
+export interface PaginaPerfisProfissionais {
+  itens: readonly PerfilProfissional[];
+  pagina: number;
+  tamanho: number;
+  totalItens: number;
+  totalPaginas: number;
+}

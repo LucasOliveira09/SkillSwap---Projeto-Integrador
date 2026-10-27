@@ -29,6 +29,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | DELETE | `/anuncios/{id}` | Exige proprietário; inativa e devolve 204. Exemplos não podem ser alterados. |
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
+| GET | `/profissionais?busca=&cidade=&pagina=0&tamanho=12` | Perfis públicos com especialidades preenchidas; filtra nome/especialidades e cidade e limita a página a 20. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
 | PATCH | `/perfil` | Exige JWT; altera nome público, biografia, cidade ou especialidades após validar o DTO. |
 | PUT | `/perfil/foto` | Exige JWT e multipart `file`; valida conteúdo JPG/PNG/GIF, até 5 MB, 5000 px por lado e 20 MP; associa a nova imagem ao perfil autenticado. |
@@ -93,6 +94,8 @@ Verificação da integração em 21/10/2026: 28 testes Angular, build e typechec
 Na restauração visual e ampliação da carga, o backend passou a 14 testes aprovados, incluindo a coerência das modalidades e localidades dos novos exemplos. Os 28 testes Angular, build e tipos continuaram aprovados.
 
 Na fatia inicial de perfil, a API pública e a edição autenticada foram cobertas por testes MockMvc/JPA; `GET /perfis/{id}` não expõe e-mail. A listagem pública limita-se a ofertas ativas e não demonstrativas. A suíte então passou com 43 testes Angular e 19 Java. Na fatia de fotos, testes cobrem upload, leitura, atualização/remoção da referência e rejeição de conteúdo falso; o total passou a 46 testes Angular e 21 Java, com build e typecheck aprovados. Chrome/Playwright conferiu perfil público e editor em 1440px e 360px sem overflow horizontal nem erros JavaScript. A inspeção de MySQL local não foi possível porque o Docker Desktop não estava ativo e a porta 3307 não respondeu; reinício/persistência real continuam pendentes. A configuração do volume público foi preparada, mas ainda exige migração controlada de arquivos já existentes antes de qualquer implantação.
+
+A descoberta pública também oferece `GET /profissionais`, com busca em nome/especialidades, filtro por cidade, paginação e ordenação estável por criação. Só entram perfis que declararam especialidades; resultados mostram avaliações apenas quando há registros reais e não retornam e-mail. Testes MockMvc confirmam os filtros e a exclusão de perfis vazios. O endpoint ainda precisa ser verificado com MySQL real.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

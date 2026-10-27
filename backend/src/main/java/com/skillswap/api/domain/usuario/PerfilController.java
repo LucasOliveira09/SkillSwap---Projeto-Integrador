@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,16 @@ public class PerfilController {
         usuarioService.findById(id);
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
         return ResponseEntity.ok(PaginaDTO.de(anuncioService.listarOfertasPublicasDoUsuario(id, pageable)));
+    }
+
+    @GetMapping("/profissionais")
+    public ResponseEntity<PaginaDTO<PerfilDTO>> buscarProfissionais(
+            @RequestParam(defaultValue = "") @Size(max = 100) String busca,
+            @RequestParam(defaultValue = "") @Size(max = 80) String cidade,
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "12") @Min(1) @Max(20) int tamanho) {
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(busca, cidade, pageable)));
     }
 
     @GetMapping("/perfil")

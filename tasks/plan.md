@@ -182,6 +182,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** filtros combinados e paginação são consistentes; resultado identifica perfil e anúncio; estados vazios/erro/retry funcionam; sem notas ou contagens fictícias; navegação após login retorna ao destino interno original.
 
+**Progresso:** busca pública de profissionais por especialidade/nome e cidade, paginação, cartões com reputação derivada e navegação para o perfil implementadas. A consulta pública inclui perfis com especialidades declaradas; integração MySQL e fluxo completo de anúncios ainda faltam.
+
 ### Fase 5 — Negociação, acordo e mensagens
 
 - Especificar e implementar transições de proposta/acordo com autorização por papel e concorrência segura.

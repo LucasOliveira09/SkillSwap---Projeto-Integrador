@@ -1,0 +1,221 @@
+.pagina-busca {
+  width: min(100% - 40px, 1080px);
+  margin: 0 auto;
+  padding: 26px 0 64px;
+}
+
+.caminho {
+  display: flex;
+  gap: 9px;
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.caminho a {
+  color: var(--ss-blue);
+  text-decoration: none;
+}
+
+.cabecalho-busca {
+  margin: 30px 0 24px;
+}
+
+.sobretitulo {
+  margin: 0 0 6px;
+  color: var(--ss-blue);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ss-text);
+}
+
+.cabecalho-busca h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.cabecalho-busca > p:last-child {
+  max-width: 680px;
+  color: var(--ss-muted);
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--ss-line);
+  border-radius: 14px;
+  background: var(--ss-surface);
+}
+
+.filtros mat-form-field {
+  width: 100%;
+}
+
+.filtros > button {
+  min-height: 56px;
+  margin-top: 0;
+}
+
+.linha-resultados {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 30px 0 14px;
+}
+
+.linha-resultados h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.lista-profissionais {
+  display: grid;
+  gap: 12px;
+}
+
+.cartao-profissional {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid var(--ss-line);
+  border-radius: 14px;
+  background: var(--ss-surface);
+}
+
+.foto,
+.foto-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.foto {
+  object-fit: cover;
+}
+
+.foto-placeholder {
+  display: grid;
+  place-items: center;
+  background: var(--ss-soft);
+  color: var(--ss-blue);
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.dados-profissional h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.dados-profissional h3 a {
+  color: var(--ss-blue);
+  text-decoration: none;
+}
+
+.dados-profissional p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+
+.especialidades {
+  color: var(--ss-text);
+  font-weight: 600;
+}
+
+.cidade,
+.bio,
+.sem-avaliacoes {
+  color: var(--ss-muted);
+}
+
+.reputacao {
+  color: #835c00;
+  font-weight: 600;
+}
+
+.estado {
+  margin: 16px 0;
+  padding: 22px;
+  border-radius: 12px;
+  background: var(--ss-soft);
+}
+
+.erro {
+  color: #9f2525;
+  background: #fff1f0;
+}
+
+.vazio {
+  text-align: center;
+}
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  color: var(--ss-muted);
+}
+
+@media (max-width: 760px) {
+  .pagina-busca {
+    width: min(100% - 32px, 560px);
+    padding-top: 20px;
+  }
+
+  .filtros {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 16px;
+  }
+
+  .filtros > button {
+    width: 100%;
+  }
+
+  .cartao-profissional {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .foto,
+  .foto-placeholder {
+    width: 56px;
+    height: 56px;
+  }
+
+  .cartao-profissional > a {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .linha-resultados {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .paginacao {
+    gap: 8px;
+  }
+
+  .paginacao span {
+    font-size: 13px;
+  }
+}

@@ -1,6 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AtualizacaoPerfil, PerfilProfissional } from '../models/perfil.model';
+import {
+  AtualizacaoPerfil,
+  PaginaPerfisProfissionais,
+  PerfilProfissional,
+} from '../models/perfil.model';
 
 @Injectable({ providedIn: 'root' })
 export class PerfilApiService {
@@ -12,6 +16,12 @@ export class PerfilApiService {
 
   publico(id: number | string) {
     return this.http.get<PerfilProfissional>(`/api/perfis/${encodeURIComponent(id)}`);
+  }
+
+  buscarProfissionais(busca: string, cidade: string, pagina: number) {
+    return this.http.get<PaginaPerfisProfissionais>('/api/profissionais', {
+      params: { busca, cidade, pagina, tamanho: 12 },
+    });
   }
 
   atualizarMeuPerfil(dados: AtualizacaoPerfil) {

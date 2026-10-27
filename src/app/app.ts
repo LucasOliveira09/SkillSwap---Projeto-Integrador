@@ -35,6 +35,13 @@ export class App {
     initialValue: this.route.snapshot.queryParamMap,
   });
 
+  protected get termoDeBuscaAtual(): string {
+    const rotaAtual = this.router.url.split('?')[0];
+    return rotaAtual.startsWith('/anuncios/') || rotaAtual === '/anuncios'
+      ? (this.parametros().get('busca') ?? '')
+      : '';
+  }
+
   protected pesquisar(event: Event, termo: string): void {
     event.preventDefault();
     void this.router.navigate(['/anuncios'], { queryParams: { busca: termo.trim() || null } });

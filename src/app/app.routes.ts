@@ -16,6 +16,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'profissionais',
+    title: 'Encontrar profissionais | SkillSwap',
+    loadComponent: () =>
+      import('./features/perfil/pages/busca-profissionais/busca-profissionais.component').then(
+        (m) => m.BuscaProfissionaisComponent,
+      ),
+  },
+  {
     path: 'profissionais/:id',
     title: 'Perfil profissional | SkillSwap',
     loadComponent: () =>
