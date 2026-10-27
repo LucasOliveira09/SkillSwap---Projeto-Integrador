@@ -44,6 +44,7 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
             Pageable pageable);
 
     boolean existsByCodigoLegado(String codigo);
+    boolean existsByImagemAndStatusAndExemploFalse(String imagem, StatusAnuncio status);
 
     @Query("select a.imagem from Anuncio a where a.imagem is not null")
     List<String> listarImagens();

@@ -17,8 +17,8 @@ O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, ac
 - Nome e avaliações públicas não podem ser ocultados por preferência nesta fase; uma avaliação sai da vitrine apenas pelas regras de moderação.
 - Não existe botão para tornar o perfil inteiro privado nem fluxo de exclusão/anônimização de conta. Esses recursos continuam pendentes e não devem ser prometidos pela interface.
 
-## Limite atual das URLs de imagem
+## URLs e remoção de imagens
 
-URLs em `/api/uploads/{hash}.{extensão}` são públicas e endereçadas pelo hash do conteúdo. Remover uma referência tira a imagem do perfil, anúncio ou portfólio, mas não invalida imediatamente uma URL já conhecida: arquivos sem referência são apagados pela rotina de limpeza após a retenção configurada, de 30 dias por padrão. O cache público pode conservar a representação por até 24 horas. Portanto, não enviar imagens sensíveis ou que precisem de revogação imediata. Revogar a URL assim que a última referência pública for removida segue como item de endurecimento.
+URLs em `/api/uploads/{hash}.{extensão}` são acessíveis sem login enquanto a imagem estiver ligada a uma foto de perfil, a um anúncio ativo não demonstrativo ou a uma publicação de portfólio visível. Quando a última referência pública é removida ou ocultada, a URL passa a retornar não encontrado. Até a limpeza dos arquivos sem referência (30 dias por padrão), a conta que enviou a imagem ainda pode acessá-la autenticada para prévia ou reutilização. As respostas usam `Cache-Control: no-store` para evitar cache HTTP controlado pelo navegador/proxy. Isso não apaga cópias que visitantes já baixaram ou capturaram.
 
 O SkillSwap não verifica documentos nem garante que uma pessoa, especialidade ou avaliação represente uma qualificação profissional. As notas descritas na [política de avaliações](politica-avaliacoes.md) vêm de acordos concluídos e seguem as regras de moderação.

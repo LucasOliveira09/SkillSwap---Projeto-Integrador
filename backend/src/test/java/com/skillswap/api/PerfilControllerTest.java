@@ -184,6 +184,9 @@ class PerfilControllerTest {
         String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(upload.getResponse().getContentAsString()).get("url").asText();
 
+        mvc.perform(get(fotoUrl)).andExpect(status().isNotFound());
+        mvc.perform(get(fotoUrl).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+
         var publicacao = mvc.perform(post("/api/publicacoes")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -228,6 +231,13 @@ class PerfilControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"legenda\":\"Alteração indevida\"}"))
                 .andExpect(status().isForbidden());
+        mvc.perform(get(fotoUrl)).andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header()
+                        .string("Cache-Control", "no-store"));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(
+                        "/api/publicacoes/{id}", publicacaoId).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+        mvc.perform(get(fotoUrl)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -276,5 +286,7 @@ class PerfilControllerTest {
                 .andExpect(status().isNoContent());
         mvc.perform(get("/api/perfil").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.fotoUrl").isEmpty());
+        mvc.perform(get(fotoUrl)).andExpect(status().isNotFound());
+        mvc.perform(get(fotoUrl).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
     }
 }

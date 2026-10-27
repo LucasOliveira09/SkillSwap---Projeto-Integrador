@@ -2,6 +2,9 @@ package com.skillswap.api.domain.upload;
 
 import com.skillswap.api.domain.upload.dto.UploadResponseDTO;
 import com.skillswap.api.domain.upload.dto.UsoArmazenamentoDTO;
+import com.skillswap.api.domain.anuncio.AnuncioRepository;
+import com.skillswap.api.domain.anuncio.StatusAnuncio;
+import com.skillswap.api.domain.portfolio.PublicacaoPortfolioRepository;
 import com.skillswap.api.domain.usuario.UsuarioRepository;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import jakarta.annotation.PostConstruct;
@@ -37,6 +40,8 @@ public class UploadService {
 
     private final UsuarioRepository usuarioRepository;
     private final UploadUsuarioRepository uploadRepository;
+    private final AnuncioRepository anuncioRepository;
+    private final PublicacaoPortfolioRepository portfolioRepository;
 
     @Value("${skillswap.upload.directory:uploads}")
     private String diretorioConfigurado;
@@ -146,7 +151,19 @@ public class UploadService {
         }
     }
 
-    public Resource carregarComoRecurso(String nomeArquivo) {
+    public Resource carregarComoRecurso(String nomeArquivo, String emailUsuario) {
+        Resource recurso = resolverArquivo(nomeArquivo);
+        String url = "/api/uploads/" + nomeArquivo;
+        boolean publicado = usuarioRepository.existsByFotoUrl(url)
+                || anuncioRepository.existsByImagemAndStatusAndExemploFalse(url, StatusAnuncio.ATIVO)
+                || portfolioRepository.existeFotoPublica(url);
+        if (publicado || (emailUsuario != null && uploadRepository.pertenceAoUsuario(emailUsuario, nomeArquivo))) {
+            return recurso;
+        }
+        throw new NaoEncontradoException("Arquivo não encontrado");
+    }
+
+    private Resource resolverArquivo(String nomeArquivo) {
         if (nomeArquivo == null || !nomeArquivo.matches("^[a-f0-9]{64}\\.(jpg|png|gif)$")) {
             throw new NaoEncontradoException("Arquivo não encontrado");
         }
@@ -169,7 +186,7 @@ public class UploadService {
         if (url == null || !url.startsWith("/api/uploads/")) {
             throw new IllegalArgumentException("A foto deve ser enviada para o SkillSwap");
         }
-        carregarComoRecurso(url.substring("/api/uploads/".length()));
+        resolverArquivo(url.substring("/api/uploads/".length()));
     }
 
     private FormatoImagem validarImagem(MultipartFile arquivo) {

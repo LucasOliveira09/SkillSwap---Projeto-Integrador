@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import com.skillswap.api.domain.upload.dto.UsoArmazenamentoDTO;
 
 @RestController
@@ -33,13 +34,16 @@ public class UploadController {
     }
 
     @GetMapping("/{nomeArquivo:.+}")
-    public ResponseEntity<Resource> obterArquivo(@PathVariable String nomeArquivo) {
-        Resource recurso = uploadService.carregarComoRecurso(nomeArquivo);
+    public ResponseEntity<Resource> obterArquivo(@PathVariable String nomeArquivo, Authentication authentication) {
+        String emailUsuario = authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)
+                ? authentication.getName() : null;
+        Resource recurso = uploadService.carregarComoRecurso(nomeArquivo, emailUsuario);
         MediaType mediaType = MediaTypeFactory.getMediaType(recurso)
                 .orElse(MediaType.APPLICATION_OCTET_STREAM);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                .header(HttpHeaders.CACHE_CONTROL, "no-store")
                 .header("X-Content-Type-Options", "nosniff")
                 .contentType(mediaType)
                 .body(recurso);

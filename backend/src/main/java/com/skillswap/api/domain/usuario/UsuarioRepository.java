@@ -13,6 +13,7 @@ import jakarta.persistence.LockModeType;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
+    boolean existsByFotoUrl(String fotoUrl);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Usuario u where u.email = :email")

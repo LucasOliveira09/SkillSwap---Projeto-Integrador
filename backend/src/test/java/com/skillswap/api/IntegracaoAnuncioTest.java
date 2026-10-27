@@ -258,7 +258,8 @@ class IntegracaoAnuncioTest {
         String url = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(resultadoUpload.getResponse().getContentAsString()).get("url").asText();
 
-        mvc.perform(get(url))
+        mvc.perform(get(url)).andExpect(status().isNotFound());
+        mvc.perform(get(url).header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
 
         String payloadComImagem = """
@@ -282,6 +283,7 @@ class IntegracaoAnuncioTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.imagem").value(url))
                 .andExpect(jsonPath("$.titulo").value("Fotografia Profissional"));
+        mvc.perform(get(url)).andExpect(status().isOk());
     }
 
     @Test

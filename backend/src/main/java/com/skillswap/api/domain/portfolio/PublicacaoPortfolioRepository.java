@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoPortfolio, Long> {
@@ -22,4 +23,9 @@ public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoP
 
     @Query("select distinct foto from PublicacaoPortfolio p join p.fotos foto")
     java.util.List<String> listarFotosReferenciadas();
+
+    @Query("select case when count(p) > 0 then true else false end " +
+            "from PublicacaoPortfolio p join p.fotos foto " +
+            "where foto = :fotoUrl and p.moderadaOculta = false")
+    boolean existeFotoPublica(@Param("fotoUrl") String fotoUrl);
 }

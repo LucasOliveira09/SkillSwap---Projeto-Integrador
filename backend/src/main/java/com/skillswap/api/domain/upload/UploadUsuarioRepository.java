@@ -14,6 +14,10 @@ public interface UploadUsuarioRepository extends JpaRepository<UploadUsuario, Lo
     @Query("select coalesce(sum(upload.tamanhoBytes), 0) from UploadUsuario upload where upload.usuario.id = :usuarioId")
     long somarTamanhoPorUsuario(@Param("usuarioId") Long usuarioId);
 
+    @Query("select case when count(upload) > 0 then true else false end from UploadUsuario upload " +
+            "where upload.usuario.email = :email and upload.nomeArquivo = :nomeArquivo")
+    boolean pertenceAoUsuario(@Param("email") String email, @Param("nomeArquivo") String nomeArquivo);
+
     @Transactional
     void deleteByNomeArquivo(String nomeArquivo);
 }
