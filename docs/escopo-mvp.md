@@ -14,7 +14,7 @@ Uma conta pode atuar como profissional e cliente. A descoberta deve responder �
 
 O usuário definiu que pagamentos dentro da plataforma ficam para uma fase posterior à validação de perfis, ofertas, descoberta, propostas, acordos, conversa e avaliações. Até lá, a plataforma organiza a negociação, mas não processa nem garante pagamento.
 
-O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências, riscos e decisões em aberto. Esta visão é a direção do produto; os critérios de cada fase ainda precisam ser validados antes da implementação.
+O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências, riscos e decisões em aberto. O usuário aprovou o plano em 26/10/2026 e a implementação está em andamento; pagamentos foram deixados para uma fase posterior.
 
 O documento relata dificuldade de descoberta, desconfiança na contratação e falta de vitrine para autônomos. As conclusões de pesquisa são relatos do documento; faltam amostra, roteiro e registros para sustentar percentuais em uma apresentação. Evitar prometer segurança total, identidade verificada ou proteção financeira antes de implementar e validar esses mecanismos.
 
@@ -50,6 +50,10 @@ Anúncios de venda/troca, categorias e coleções visuais agora são lidos do ba
 
 Por escolha do usuário, o backend novo do GitHub passou a ser a base canônica: Java 21, Spring Boot 4.0.8 e Maven Wrapper 3.10.0, mantendo MySQL. O Angular preserva o layout e agora possui conta, login JWT e cadastro autenticado. Catálogo e vitrine continuam vindo da API. Os módulos recebidos de propostas, acordos, mensagens e avaliações permanecem no backend, mas suas telas e validação integral ainda estão pendentes. A [ADR-004](decisions/004-integra-backend-github.md) substitui a organização inicial; o [contrato HTTP](backend.md) descreve o estado atual.
 
+## Implementação de perfis iniciada em 26/10/2026
+
+A API agora permite consultar campos públicos de um profissional, obter e atualizar o perfil da própria conta com JWT e listar suas ofertas ativas. O DTO público não retorna e-mail; a média e a quantidade de avaliações vêm de registros do backend. O Angular possui página pública responsiva e edição de nome, especialidades, cidade e biografia. O catálogo e os detalhes encaminham aos perfis dos autores de anúncios reais; exemplos continuam identificados como demonstração. Testes Java e Angular cobrem contratos e estados das telas. Ainda faltam foto de perfil, portfólio/publicações, validação dessa alteração com MySQL e persistência após reinício; não considerar o perfil completo até esses critérios serem verificados.
+
 ## Funcionalidades futuras
 
 O PDF propõe gateway PIX/cartão e retenção/liberação de valores, destaque pago, publicidade, galeria antes/depois, fotos em avaliações, geolocalização precisa, verificação documental e app/PWA. Permanecem fora desta inicialização. Pagamentos e verificação de identidade exigem decisões próprias de integração e operação; não serão simulados como garantias existentes.
@@ -59,7 +63,7 @@ O trecho do PDF que chama o MVP de “disponível na aplicação” descreve o e
 ## O que definir antes das próximas entregas
 
 1. Backend e banco: adotar migrações versionadas e evoluir o contrato dos demais domínios, conforme a [ADR-004](decisions/004-integra-backend-github.md).
-2. Contas: recuperação de acesso, perfil e edição pela interface. Registro/login e autorização de anúncios por proprietário já estão implementados.
+2. Contas: recuperação de acesso, foto de perfil, prévia e validação do perfil com persistência real. Registro/login, edição básica e autorização de anúncios por proprietário já estão implementados.
 3. Anúncios: categorias definitivas, cidade/bairro, limites, regras de imagens e moderação.
 4. Acordos: proposta, aceite, cancelamento, conclusão e resolução de divergências em vendas e trocas.
 5. Chat e reputação: participantes, retenção de mensagens, denúncia e critérios de avaliação.

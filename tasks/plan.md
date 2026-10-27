@@ -1,6 +1,6 @@
 # Plano de produto e implementação do SkillSwap
 
-**Estado:** proposta detalhada para validação do usuário antes da implementação.
+**Estado:** aprovado pelo usuário em 26/10/2026; implementação em andamento. Pagamentos ficam para fase posterior.
 
 ## Visão
 
@@ -142,6 +142,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 
 **Aceite:** regras de negócio e contratos REST revisados; nenhum dado do banco ativo é usado como sandbox; nenhuma promessa de pagamento/identidade está em texto sem recurso real.
 
+**Progresso:** retorno de login restrito a rotas internas, revisão de promessas da tela de detalhe e início da revisão de dados pessoais concluídos. Estados de negociação, avaliações, moderação e migrações continuam pendentes.
+
 ### Fase 1 — Fundação de persistência e segurança
 
 - Adotar migrações versionadas com baseline documentado para esquemas MySQL 8.0/8.4; retirar dependência de `ddl-auto:update` para evolução normal depois da transição validada.
@@ -158,6 +160,8 @@ Todos os endpoints mutáveis validam DTOs no servidor, autorização por recurso
 - Ligar conta, anúncios e avaliações ao perfil; manter contas existentes com perfil mínimo sem inventar biografia, nota ou especialidade.
 
 **Aceite:** usuário edita somente seu perfil; visitante consulta a versão pública; campos privados não saem na API pública; dados persistem em reinício e erros têm feedback claro.
+
+**Progresso:** contrato REST de leitura pública, leitura/edição do próprio perfil e listagem paginada das ofertas ativas implementado. As telas públicas e de edição estão conectadas à API; foto de perfil, portfólio, integração real com MySQL e persistência após reinício ainda precisam ser concluídos e validados.
 
 ### Fase 3 — Portfólio com publicações e fotos
 

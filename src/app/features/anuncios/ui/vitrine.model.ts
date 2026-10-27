@@ -14,6 +14,7 @@ export interface CartaoAnuncio {
   quando: string;
   cidade: string;
   exemplo: boolean;
+  autorId?: number;
 }
 
 export interface ItemColecao {

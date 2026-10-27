@@ -117,6 +117,7 @@ export class CatalogoComponent {
         : new Date(anuncio.criadoEm).toLocaleDateString('pt-BR'),
       cidade: anuncio.cidade,
       exemplo: anuncio.exemplo,
+      autorId: anuncio.usuarioId,
     };
   }
 }

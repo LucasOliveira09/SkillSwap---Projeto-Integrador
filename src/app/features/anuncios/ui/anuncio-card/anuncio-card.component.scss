@@ -159,6 +159,18 @@ h3 {
   font-size: 13px;
   line-height: 1.15;
 }
+.autor-link {
+  width: fit-content;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-decoration: none;
+}
+.autor-link:hover {
+  color: var(--ss-blue);
+  text-decoration: underline;
+}
 .autor small {
   font-size: 11px;
   color: var(--ss-muted);

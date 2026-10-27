@@ -26,6 +26,19 @@ export class AnunciosApiService {
       );
   }
 
+  listarDoUsuario(usuarioId: number, pagina = 0) {
+    return this.http
+      .get<PaginaAnuncios>(`/api/perfis/${usuarioId}/anuncios`, {
+        params: { pagina, tamanho: 6 },
+      })
+      .pipe(
+        map((resultado) => ({
+          ...resultado,
+          itens: resultado.itens.map((anuncio) => this.converter(anuncio)),
+        })),
+      );
+  }
+
   obter(id: string | number) {
     return this.http
       .get<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`)

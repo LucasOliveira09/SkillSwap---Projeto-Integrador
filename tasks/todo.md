@@ -10,24 +10,26 @@
 
 O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo-mvp.md); não fazem parte da conclusão desta inicialização.
 
-## Visão de rede profissional + marketplace (plano em validação)
+## Visão de rede profissional + marketplace (plano aprovado em 26/10/2026)
 
-O plano completo e a definição de pronto estão em [plan.md](plan.md). Os itens abaixo são trabalho futuro; código parcial já existente deve ser revisado e completado, não tratado como funcionalidade pronta.
+O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamentos ficam para fase posterior. Os itens abaixo acompanham a implementação; código parcial já existente deve ser revisado e completado, não tratado como funcionalidade pronta.
 
 ### Fundação e perfis
 
-- [ ] Revisar os commits de detalhe/upload/propostas; corrigir retorno de login e documentar limites atuais.
+- [x] Revisar detalhe existente, corrigir retorno de login para rota interna permitida e remover promessas sem suporte real da tela de anúncio.
 - [ ] Fechar regras de perfil público, privacidade, avaliações, conclusão de acordo e moderação.
 - [ ] Criar baseline e migrações versionadas não destrutivas para MySQL 8.0/8.4.
 - [ ] Completar upload seguro e durável: validação de conteúdo, limites sincronizados, armazenamento com backup, autorização, quota e remoção.
-- [ ] Criar perfil profissional público/editável com especialidades, região, biografia, foto e métricas derivadas reais.
+- [x] Criar API pública e API autenticada para ler/editar o próprio perfil sem expor e-mail, além de contar avaliações reais.
+- [x] Criar páginas de perfil público e edição, listar apenas ofertas ativas reais e ligar perfil a conta, catálogo e anúncio.
+- [ ] Completar foto de perfil, prévia, integração validada com MySQL e persistência após reinício.
 
 ### Portfólio e descoberta
 
 - [ ] Criar publicações de portfólio com várias fotos, legenda, vínculo opcional com oferta e controle de moderação.
 - [ ] Ligar anúncios ao perfil, completar edição/pausa/reativação e associar ofertas às publicações.
 - [ ] Buscar profissionais e ofertas por serviço, região, modalidade, preço e disponibilidade declarada.
-- [ ] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.
+- [x] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.
 
 ### Negociação e reputação
 

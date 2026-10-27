@@ -43,16 +43,12 @@
       <span class="avatar"><app-icone nome="usuario" /></span>
     }
     <div class="autor">
-      <strong>{{ anuncio().autor }}</strong>
-      @if (anuncio().estrelas !== null) {
-        <span
-          class="estrelas"
-          [attr.aria-label]="'Avaliação ilustrativa: ' + anuncio().estrelas + ' de 5'"
-          >{{ estrelas(anuncio().estrelas!) }}</span
-        >
+      @if (!anuncio().exemplo && anuncio().autorId) {
+        <a class="autor-link" [routerLink]="['/profissionais', anuncio().autorId]">{{ anuncio().autor }}</a>
       } @else {
-        <small>Sem avaliação</small>
+        <strong>{{ anuncio().autor }}</strong>
       }
+      <small>{{ anuncio().exemplo ? 'Perfil ilustrativo' : 'Ver perfil profissional' }}</small>
     </div>
     <div class="local">
       <span><app-icone nome="relogio" /> {{ anuncio().quando }}</span

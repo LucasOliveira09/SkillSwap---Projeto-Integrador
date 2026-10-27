@@ -1,0 +1,89 @@
+<main class="pagina-edicao" aria-labelledby="titulo-edicao">
+  <a class="voltar" routerLink="/conta">← Minha conta</a>
+  <header>
+    <p class="sobretitulo">Sua presença profissional</p>
+    <h1 id="titulo-edicao">Apresente seu trabalho</h1>
+    <p class="introducao">Estas informações ajudam clientes a conhecer sua experiência e região de atendimento.</p>
+  </header>
+
+  @if (carregando) {
+    <p class="estado" role="status">Carregando seus dados...</p>
+  } @else if (erro && !perfil()) {
+    <div class="estado erro" role="alert">
+      <p>{{ erro }}</p>
+      <button mat-stroked-button type="button" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else {
+    <form #form="ngForm" (ngSubmit)="salvar(form)" [attr.aria-busy]="salvando">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome público</mat-label>
+        <input
+          matInput
+          name="nome"
+          [(ngModel)]="dados.nome"
+          required
+          maxlength="100"
+          pattern=".*\S.*"
+          autocomplete="name"
+          [disabled]="salvando"
+        />
+        <mat-hint>{{ dados.nome.length }}/100</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Especialidades</mat-label>
+        <input
+          matInput
+          name="especialidades"
+          [(ngModel)]="dados.especialidades"
+          maxlength="500"
+          placeholder="Ex.: elétrica residencial, manutenção de chuveiro"
+          [disabled]="salvando"
+        />
+        <mat-hint>Separe as áreas de atuação por vírgula.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cidade ou região atendida</mat-label>
+        <input
+          matInput
+          name="cidade"
+          [(ngModel)]="dados.cidade"
+          maxlength="80"
+          autocomplete="address-level2"
+          [disabled]="salvando"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Sobre você</mat-label>
+        <textarea
+          matInput
+          name="bio"
+          [(ngModel)]="dados.bio"
+          maxlength="500"
+          rows="5"
+          placeholder="Conte como trabalha, sua experiência e o que o cliente pode esperar."
+          [disabled]="salvando"
+        ></textarea>
+        <mat-hint>{{ dados.bio.length }}/500</mat-hint>
+      </mat-form-field>
+
+      @if (erro) {
+        <p class="feedback erro" role="alert">{{ erro }}</p>
+      }
+      @if (sucesso) {
+        <p class="feedback sucesso" role="status">{{ sucesso }}</p>
+      }
+
+      <div class="acoes">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || salvando">
+          {{ salvando ? 'Salvando...' : 'Salvar perfil' }}
+        </button>
+        @if (perfil()) {
+          <a mat-button [routerLink]="['/profissionais', perfil()!.id]">Ver perfil público</a>
+        }
+      </div>
+    </form>
+  }
+</main>

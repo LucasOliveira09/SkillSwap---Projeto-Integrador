@@ -7,6 +7,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/conta/pages/conta.component').then((m) => m.ContaComponent),
   },
+  {
+    path: 'meu-perfil',
+    title: 'Editar perfil profissional | SkillSwap',
+    loadComponent: () =>
+      import('./features/perfil/pages/meu-perfil/meu-perfil.component').then(
+        (m) => m.MeuPerfilComponent,
+      ),
+  },
+  {
+    path: 'profissionais/:id',
+    title: 'Perfil profissional | SkillSwap',
+    loadComponent: () =>
+      import('./features/perfil/pages/perfil-publico/perfil-publico.component').then(
+        (m) => m.PerfilPublicoComponent,
+      ),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'anuncios' },
   {
     path: 'anuncios',

@@ -1,0 +1,104 @@
+<main class="pagina-perfil" aria-labelledby="titulo-perfil">
+  @if (estado().carregando) {
+    <p class="estado" role="status">Carregando perfil profissional...</p>
+  } @else if (estado().erro || !perfil()) {
+    <section class="estado erro" role="alert">
+      <h1 id="titulo-perfil">Perfil não encontrado</h1>
+      <p>Este perfil não está disponível no momento.</p>
+      <a mat-flat-button color="primary" routerLink="/anuncios">Voltar ao catálogo</a>
+    </section>
+  } @else {
+    @let p = perfil()!;
+    <nav class="caminho" aria-label="Navegação estrutural">
+      <a routerLink="/anuncios">Início</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">Perfil profissional</span>
+    </nav>
+
+    <section class="cabecalho-perfil" aria-labelledby="titulo-perfil">
+      @if (p.fotoUrl) {
+        <img class="foto-perfil" [src]="p.fotoUrl" [alt]="'Foto de ' + p.nome" />
+      } @else {
+        <div class="foto-vazia" aria-hidden="true"><app-icone nome="usuario" /></div>
+      }
+
+      <div class="identidade">
+        <p class="sobretitulo">Profissional SkillSwap</p>
+        <h1 id="titulo-perfil">{{ p.nome }}</h1>
+        @if (p.especialidades) {
+          <p class="especialidades">{{ p.especialidades }}</p>
+        }
+        <div class="metadados">
+          @if (p.cidade) {
+            <span><app-icone nome="local" /> {{ p.cidade }}</span>
+          }
+          @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
+            <span class="reputacao" [attr.aria-label]="p.mediaNotas | number: '1.1-1'">
+              <span aria-hidden="true">★</span>
+              {{ p.mediaNotas | number: '1.1-1' }}
+              ({{ p.quantidadeAvaliacoes }}
+              {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
+            </span>
+          } @else {
+            <span class="sem-avaliacoes">Ainda sem avaliações</span>
+          }
+        </div>
+        <p class="desde">No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</p>
+      </div>
+
+      <a mat-stroked-button color="primary" routerLink="/anuncios" [queryParams]="{ busca: p.especialidades || p.nome }">
+        Encontrar serviços
+      </a>
+    </section>
+
+    <section class="sobre secao" aria-labelledby="titulo-sobre">
+      <h2 id="titulo-sobre">Sobre o profissional</h2>
+      @if (p.bio) {
+        <p>{{ p.bio }}</p>
+      } @else {
+        <p class="vazio">Este profissional ainda não adicionou uma apresentação.</p>
+      }
+    </section>
+
+    <section class="ofertas secao" aria-labelledby="titulo-ofertas">
+      <div class="titulo-ofertas">
+        <div>
+          <h2 id="titulo-ofertas">Serviços e aulas</h2>
+          <p>Ofertas publicadas por {{ p.nome }}.</p>
+        </div>
+        <span>{{ ofertas().length }} {{ ofertas().length === 1 ? 'oferta' : 'ofertas' }}</span>
+      </div>
+
+      @if (ofertas().length === 0) {
+        <p class="vazio">Este profissional ainda não tem ofertas ativas.</p>
+      } @else {
+        <div class="lista-ofertas">
+          @for (oferta of ofertas(); track oferta.id) {
+            <article class="oferta">
+              <div class="imagem-oferta">
+                @if (oferta.imagem) {
+                  <img [src]="oferta.imagem" [alt]="oferta.titulo" loading="lazy" />
+                } @else {
+                  <app-icone nome="troca" />
+                }
+              </div>
+              <div class="dados-oferta">
+                <p>{{ oferta.categoriaRotulo }}</p>
+                <h3><a [routerLink]="['/anuncios', oferta.id]">{{ oferta.titulo }}</a></h3>
+                <span>{{ oferta.cidade }}</span>
+              </div>
+              <strong class="preco-oferta">
+                @if (oferta.modalidade === 'troca') {
+                  Troca
+                } @else if (oferta.preco !== null) {
+                  {{ oferta.preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+                  <small>{{ oferta.unidade }}</small>
+                }
+              </strong>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</main>

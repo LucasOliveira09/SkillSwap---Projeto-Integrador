@@ -7,6 +7,7 @@
   @if (sessao.autenticado()) {
     <p>Sua sessão está ativa.</p>
     <div class="acoes-topo">
+      <a mat-stroked-button routerLink="/meu-perfil">Editar perfil profissional</a>
       <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar novo anúncio</a>
       <button mat-stroked-button (click)="sessao.sair()">Sair da conta</button>
     </div>

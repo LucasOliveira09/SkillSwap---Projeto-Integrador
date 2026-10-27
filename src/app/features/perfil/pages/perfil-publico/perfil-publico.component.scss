@@ -1,0 +1,280 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.pagina-perfil {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 32px 64px;
+}
+
+.caminho,
+.metadados,
+.metadados span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.caminho {
+  margin-bottom: 20px;
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.caminho a {
+  color: var(--ss-blue);
+  text-decoration: none;
+}
+
+.cabecalho-perfil,
+.secao {
+  border: 1px solid var(--ss-line);
+  border-radius: 16px;
+  background: var(--ss-surface);
+}
+
+.cabecalho-perfil {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px;
+}
+
+.foto-perfil,
+.foto-vazia {
+  width: 112px;
+  height: 112px;
+  flex: 0 0 112px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.foto-vazia {
+  display: grid;
+  place-items: center;
+  background: var(--ss-soft);
+  color: var(--ss-blue);
+  font-size: 42px;
+}
+
+.identidade {
+  flex: 1;
+  min-width: 0;
+}
+
+.sobretitulo {
+  margin: 0 0 4px;
+  color: var(--ss-blue);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+h1 {
+  margin: 0;
+  color: var(--ss-text);
+  font-size: clamp(25px, 4vw, 34px);
+}
+
+.especialidades {
+  margin: 4px 0 12px;
+  color: var(--ss-muted);
+}
+
+.metadados {
+  flex-wrap: wrap;
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.metadados span {
+  gap: 5px;
+}
+
+.reputacao span {
+  color: #ad7600;
+}
+
+.sem-avaliacoes,
+.desde,
+.vazio {
+  color: var(--ss-muted);
+}
+
+.desde {
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+.secao {
+  margin-top: 20px;
+  padding: 24px 28px;
+}
+
+.secao h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.sobre p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.titulo-ofertas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.titulo-ofertas h2,
+.titulo-ofertas p {
+  margin: 0;
+}
+
+.titulo-ofertas p {
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.titulo-ofertas > span {
+  color: var(--ss-blue);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lista-ofertas {
+  display: grid;
+  gap: 12px;
+}
+
+.oferta {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+}
+
+.imagem-oferta {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--ss-soft);
+  color: var(--ss-blue);
+}
+
+.imagem-oferta img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dados-oferta {
+  min-width: 0;
+}
+
+.dados-oferta p,
+.dados-oferta h3 {
+  margin: 0;
+}
+
+.dados-oferta p,
+.dados-oferta > span {
+  color: var(--ss-muted);
+  font-size: 12px;
+}
+
+.dados-oferta h3 {
+  margin: 3px 0;
+  font-size: 16px;
+}
+
+.dados-oferta h3 a {
+  color: var(--ss-blue);
+  text-decoration: none;
+}
+
+.dados-oferta h3 a:hover {
+  text-decoration: underline;
+}
+
+.preco-oferta {
+  color: var(--ss-blue);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.preco-oferta small {
+  color: var(--ss-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.estado {
+  padding: 20px;
+  border: 1px solid var(--ss-line);
+  border-radius: 12px;
+  background: var(--ss-soft);
+}
+
+.estado.erro {
+  background: #fff;
+}
+
+@media (max-width: 720px) {
+  .pagina-perfil {
+    padding: 20px 16px 48px;
+  }
+
+  .cabecalho-perfil {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .foto-perfil,
+  .foto-vazia {
+    width: 80px;
+    height: 80px;
+    flex-basis: 80px;
+  }
+
+  .identidade {
+    flex-basis: calc(100% - 100px);
+  }
+
+  .cabecalho-perfil > a {
+    width: 100%;
+  }
+
+  .secao {
+    padding: 20px;
+  }
+
+  .oferta {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 10px 12px;
+  }
+
+  .imagem-oferta {
+    width: 72px;
+  }
+
+  .preco-oferta {
+    grid-column: 2;
+    text-align: left;
+  }
+}

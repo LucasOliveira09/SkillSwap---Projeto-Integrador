@@ -27,6 +27,10 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | POST | `/anuncios` | Exige Bearer JWT; 201 com Location após persistir. |
 | PUT | `/anuncios/{id}` | Exige proprietário autenticado e entrada completa. |
 | DELETE | `/anuncios/{id}` | Exige proprietário; inativa e devolve 204. Exemplos não podem ser alterados. |
+| GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
+| GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
+| GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
+| PATCH | `/perfil` | Exige JWT; altera nome público, biografia, cidade ou especialidades após validar o DTO. |
 
 O backend usa enums `MANUTENCAO`, `AULAS`, `TRANSPORTE` e `VENDA`/`TROCA`. O cliente HTTP converte os códigos para os valores internos do formulário e o envio para os enums do servidor.
 
@@ -46,7 +50,7 @@ Os inserts ocorrem pela aplicação/JPA no MySQL, com chave estável `codigoLega
 
 A tela `/conta` permite registrar, entrar e sair; `/anuncios/novo` solicita login antes de salvar. O JWT fica somente em memória e é enviado apenas à API relativa da própria origem. Não há armazenamento em localStorage/sessionStorage. Recarregar encerra a sessão, mas não apaga anúncios; um 401 encerra a sessão local e a tela trata a falha.
 
-Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. Upload e pagamentos não estão disponíveis.
+Sair remove a credencial da memória. O token no servidor expira em uma hora; esta etapa não implementa revogação individual. A edição básica do perfil usa o JWT em memória. Upload de foto para perfil/portfólio ainda não está pronto; pagamentos integrados não estão disponíveis nesta fase.
 
 ## Execução local
 
@@ -83,6 +87,8 @@ Na pasta backend, com JAVA_HOME apontando para JDK 21: `./mvnw.cmd test` ou `./m
 Verificação da integração em 21/10/2026: 28 testes Angular, build e typecheck aprovados; 13 testes do backend com Spring/MockMvc/JPA para contrato, autenticação, propriedade, validação, paginação, busca, carga inicial e índice dos registros antigos.
 
 Na restauração visual e ampliação da carga, o backend passou a 14 testes aprovados, incluindo a coerência das modalidades e localidades dos novos exemplos. Os 28 testes Angular, build e tipos continuaram aprovados.
+
+Na primeira fatia de perfis, a API pública e a edição autenticada foram cobertas por testes MockMvc/JPA; `GET /perfis/{id}` não expõe e-mail. A listagem pública limita-se a ofertas ativas e não demonstrativas. As páginas Angular cobrem leitura, edição, estados de erro e acesso sem sessão; a página pública foi inspecionada em Chrome a 1440px e 360px, sem overflow horizontal ou erros JavaScript. A suíte completa passou com 43 testes Angular e 19 Java; build e typecheck também passaram. O perfil ainda não foi validado contra MySQL local nem após reinício.
 
 Na prévia MySQL, foram confirmados os oito inserts (cinco vendas e três trocas), totalizando 13 exemplos e um anúncio real já existente. A verificação comparou o hash dos registros reais antes/depois e confirmou sua preservação. O navegador validou busca sem acentos, paginação, estado vazio, preço ausente nas trocas e menu com Escape, sem erros JavaScript/rede. As três telas passaram novamente nas quatro larguras e no axe. Antes da alteração foi criado backup restrito em `/home/ubuntu/backups/skillswap-layout-20261022T014042Z`.
 

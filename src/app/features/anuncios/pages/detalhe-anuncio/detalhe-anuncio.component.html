@@ -159,15 +159,6 @@
           <span class="tag-status">{{ a.exemplo ? 'Exemplo ilustrativo' : 'Anúncio ativo' }}</span>
           <h1 class="titulo-anuncio">{{ a.titulo }}</h1>
 
-          @if (a.estrelas !== null) {
-            <div class="reputacao-resumo">
-              <span class="estrelas-ouro" [attr.aria-label]="a.estrelas + ' estrelas'">
-                {{ estrelas(a.estrelas) }}
-              </span>
-              <span class="nota-numero">{{ a.estrelas }}.0</span>
-            </div>
-          }
-
           <div class="preco-container">
             @if (a.modalidade === 'venda' && a.preco !== null) {
               <div class="preco-valor">
@@ -189,15 +180,15 @@
             <li>
               <app-icone nome="correto" />
               <div>
-                <strong>Negociação direta e segura</strong>
-                <small>Combine datas e condições com o profissional</small>
+                <strong>Converse pelo SkillSwap</strong>
+                <small>Esclareça o escopo antes de enviar uma proposta</small>
               </div>
             </li>
             <li>
               <app-icone nome="relogio" />
               <div>
-                <strong>Resposta ágil</strong>
-                <small>Notificação enviada em tempo real</small>
+                <strong>Proposta registrada</strong>
+                <small>Acompanhe a resposta na sua conta</small>
               </div>
             </li>
             <li>
@@ -240,6 +231,11 @@
               <small>{{ a.cidade }}</small>
             </div>
           </div>
+          @if (!a.exemplo) {
+            <a mat-button color="primary" [routerLink]="['/profissionais', a.usuarioId]">
+              Ver perfil e avaliações
+            </a>
+          }
 
           <div class="meta-vendedor">
             <div class="meta-item">

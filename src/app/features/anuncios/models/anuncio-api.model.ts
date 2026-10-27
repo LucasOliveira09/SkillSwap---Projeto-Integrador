@@ -8,6 +8,7 @@ export interface CategoriaApi {
 
 export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   id: number;
+  usuarioId: number;
   categoria: string;
   categoriaRotulo: string;
   criadoEm: string;
