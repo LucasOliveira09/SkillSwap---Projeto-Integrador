@@ -66,11 +66,12 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Implementar contestação privada pelo profissional avaliado em até sete dias, com decisão fundamentada por moderador, fila de análise e preservação de evidências.
 - [x] Conectar conclusão do acordo a avaliação elegível do participante; validar ponta a ponta da API.
 - [x] Validar pela API os fluxos de venda e troca, avaliações do profissional/serviço e persistência após reinício em MySQL 8.0.46 com Java 21.
-- [ ] Validar os mesmos fluxos pela interface Angular no navegador, incluindo autorização e acessibilidade.
+- [x] Validar pela interface Angular, contra MySQL 8.0.46 descartável, perfil, foto/portfólio, busca, venda, troca, proposta, aceite, conversa, conclusão mútua e avaliações. Foram usados dois participantes; não houve erros de console ou overflow em 360 px/1440 px, e os dados persistiram após reinício da API.
+- [ ] Complementar com verificação de acessibilidade por axe/leitor de tela e repetir em MySQL 8.4.
 
 ### Entrega e fases seguintes
 
-- [ ] Validar fluxos venda e troca, autorização, migrações, armazenamento, navegador, acessibilidade e persistência em reinício.
+- [ ] Completar validação operacional: concorrência, MySQL 8.4, moderação em MySQL, axe/leitor de tela, backup/restauração de uploads e migração segura do schema/arquivos existentes. Os fluxos de venda e troca na interface, autorização básica, persistência de perfil/foto/publicações/avaliações e reinício da API passaram em MySQL 8.0.46.
 - [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
 - [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
