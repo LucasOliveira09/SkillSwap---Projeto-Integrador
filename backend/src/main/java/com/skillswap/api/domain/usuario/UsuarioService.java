@@ -43,18 +43,34 @@ public class UsuarioService {
                 .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
     }
 
+    @Transactional(readOnly = true)
+    public PerfilDTO perfilAtual(String emailAutenticado) {
+        return toPerfilDTO(findByEmail(emailAutenticado));
+    }
+
+    @Transactional
+    public PerfilDTO atualizarPerfilAtual(UpdatePerfilDTO dto, String emailAutenticado) {
+        Usuario usuario = findByEmail(emailAutenticado);
+        aplicarAtualizacao(usuario, dto);
+        return toPerfilDTO(usuarioRepository.save(usuario));
+    }
+
     @Transactional
     public Usuario updateProfile(Long id, UpdatePerfilDTO dto, String emailAutenticado) {
         var usuario = findById(id);
         if (!usuario.getEmail().equals(emailAutenticado)) {
             throw new com.skillswap.api.infra.exception.NaoAutorizadoException("Não autorizado a editar este perfil");
         }
-        if (dto.nome() != null) usuario.setNome(dto.nome());
-        if (dto.bio() != null) usuario.setBio(dto.bio());
-        if (dto.cidade() != null) usuario.setCidade(dto.cidade());
-        if (dto.fotoUrl() != null) usuario.setFotoUrl(dto.fotoUrl());
-        if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades());
+        aplicarAtualizacao(usuario, dto);
         return usuarioRepository.save(usuario);
+    }
+
+    private void aplicarAtualizacao(Usuario usuario, UpdatePerfilDTO dto) {
+        if (dto.nome() != null) usuario.setNome(dto.nome().strip());
+        if (dto.bio() != null) usuario.setBio(dto.bio().strip());
+        if (dto.cidade() != null) usuario.setCidade(dto.cidade().strip());
+        if (dto.fotoUrl() != null) usuario.setFotoUrl(dto.fotoUrl().strip());
+        if (dto.especialidades() != null) usuario.setEspecialidades(dto.especialidades().strip());
     }
 
     public Double getAverageRating(Long usuarioId) {
@@ -68,10 +84,10 @@ public class UsuarioService {
 
     public PerfilDTO toPerfilDTO(Usuario u) {
         return new PerfilDTO(
-                u.getId(), u.getNome(), u.getEmail(),
+                u.getId(), u.getNome(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
                 u.getEspecialidades(), u.getCriadoEm(),
-                getAverageRating(u.getId())
+                getAverageRating(u.getId()), avaliacaoRepository.countByAvaliadoId(u.getId())
         );
     }
 }

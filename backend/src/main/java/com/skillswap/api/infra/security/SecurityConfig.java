@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/vitrine").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/anuncios/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/perfis/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
