@@ -14,6 +14,60 @@ describe('AcordoDetalheComponent', () => {
 
   afterEach(() => http.verify());
 
+  it('permite cancelar um acordo em andamento após confirmação explícita', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+
+    const harness = await RouterTestingHarness.create('/acordos/7');
+    const acordo = {
+      id: 7, propostaId: 5, anuncioId: 3, anuncioTitulo: 'Aula de violão',
+      anuncianteId: 1, anuncianteNome: 'Ana', proponenteId: 2, proponenteNome: 'Bruno',
+      status: 'EM_ANDAMENTO', criadoEm: '2026-10-26T10:00:00', concluidoEm: null,
+      conclusaoConfirmadaAnunciante: false, conclusaoConfirmadaProponente: false,
+    };
+    http.expectOne('/api/acordos/7').flush(acordo);
+    http.expectOne('/api/acordos/7/eventos').flush([]);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/perfil').flush({
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.cancelar-acordo')!.click();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.textContent).toContain('O cancelamento impede novas mensagens neste acordo');
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.confirmar-cancelamento')!.click();
+    const cancelamento = http.expectOne('/api/acordos/7');
+    expect(cancelamento.request.method).toBe('PATCH');
+    expect(cancelamento.request.body).toEqual({ status: 'CANCELADO' });
+    cancelamento.flush({ ...acordo, status: 'CANCELADO' });
+
+    http.expectOne('/api/acordos/7').flush({ ...acordo, status: 'CANCELADO' });
+    http.expectOne('/api/acordos/7/eventos').flush([{
+      id: 1, tipo: 'ACORDO_CANCELADO', atorId: 2, atorNome: 'Bruno', criadoEm: '2026-10-28T10:00:00',
+    }]);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/perfil').flush({
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement!.textContent).toContain('Cancelado');
+    expect(harness.routeNativeElement!.textContent).toContain('Acordo cancelado.');
+    expect(harness.routeNativeElement!.querySelector('.form-mensagem')).toBeNull();
+    expect(harness.routeNativeElement!.querySelector('.confirmar-cancelamento')).toBeNull();
+  });
+
   it('não anuncia novamente todo o histórico e confirma o envio em uma região de status', async () => {
     TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });

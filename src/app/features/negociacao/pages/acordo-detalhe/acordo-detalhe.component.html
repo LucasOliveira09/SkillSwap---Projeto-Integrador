@@ -81,6 +81,21 @@
             <button mat-button type="button" (click)="confirmandoConclusao.set(false)" [disabled]="enviando()">Voltar</button>
           </div>
         }
+        @if (!confirmandoConclusao() && !confirmandoCancelamento()) {
+          <button class="cancelar-acordo" mat-stroked-button color="warn" type="button"
+            (click)="confirmandoCancelamento.set(true)" [disabled]="enviando()">
+            Cancelar acordo
+          </button>
+        } @else if (confirmandoCancelamento()) {
+          <div class="confirmacao-conclusao confirmacao-cancelamento" role="group" aria-label="Confirmar cancelamento do acordo">
+            <p>O cancelamento impede novas mensagens neste acordo e não pode ser desfeito.</p>
+            <button class="confirmar-cancelamento" mat-flat-button color="warn" type="button"
+              (click)="cancelarAcordo()" [disabled]="enviando()">
+              {{ enviando() ? 'Cancelando...' : 'Confirmar cancelamento' }}
+            </button>
+            <button mat-button type="button" (click)="confirmandoCancelamento.set(false)" [disabled]="enviando()">Voltar</button>
+          </div>
+        }
         <p class="aviso">O SkillSwap organiza a conversa. Pagamentos ainda são combinados fora da plataforma.</p>
       }
     </section>

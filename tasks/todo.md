@@ -66,6 +66,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Validar aceite concorrente com MySQL 8.0.46 real: o cenário original reproduziu dois HTTP 200 para o mesmo anúncio; após a correção, requisições simultâneas resultaram em um HTTP 200, um HTTP 400 e apenas um acordo.
 - [x] Criar área de propostas/acordos com erros visíveis, carregamento, nova tentativa e estados vazios.
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
+- [x] Disponibilizar cancelamento de acordo após confirmação explícita e bloquear novos envios pela API quando o acordo estiver concluído ou cancelado. Testes de API reproduziram as mensagens aceitas após ambos estados terminais; após a regra, a tela, os 9 testes Java de negociação e os 5 testes do detalhe do acordo passaram.
 - [x] Adicionar navegação de páginas à conversa, abrir nas mensagens recentes e testar histórico extenso.
 - [x] Coletar e calcular nota separada para oferta/serviço após acordo concluído; exibir média/amostra no anúncio e avaliações no perfil.
 - [x] Denunciar e moderar avaliações sem apagar evidências e sem agregar notas ocultas.

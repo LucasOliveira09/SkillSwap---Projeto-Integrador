@@ -23,6 +23,7 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .form-mensagem, .avaliacao form { display: grid; gap: 12px; margin-top: 18px; }
 .form-mensagem mat-form-field, .avaliacao mat-form-field { width: 100%; }
 .concluir { margin-top: 14px; }
+.cancelar-acordo { margin: 12px 0; }
 .confirmacao-conclusao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--ss-soft); }
 .confirmacao-conclusao p { flex: 1 1 100%; margin: 0; color: var(--ss-muted); font-size: 13px; }
 .confirmacao-pendente { margin: 14px 0; padding: 12px; border-radius: 8px; background: var(--ss-soft); color: var(--ss-text); font-size: 13px; }

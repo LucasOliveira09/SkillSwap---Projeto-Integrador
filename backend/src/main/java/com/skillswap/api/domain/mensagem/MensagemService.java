@@ -2,6 +2,7 @@ package com.skillswap.api.domain.mensagem;
 
 import com.skillswap.api.domain.acordo.Acordo;
 import com.skillswap.api.domain.acordo.AcordoService;
+import com.skillswap.api.domain.acordo.StatusAcordo;
 import com.skillswap.api.domain.mensagem.dto.MensagemRequestDTO;
 import com.skillswap.api.domain.mensagem.dto.MensagemResponseDTO;
 import com.skillswap.api.domain.notificacao.NotificacaoService;
@@ -30,6 +31,9 @@ public class MensagemService {
     public Mensagem enviar(Long acordoId, MensagemRequestDTO dto, String emailUsuario) {
         Acordo acordo = acordoService.findById(acordoId);
         checkParticipant(acordo, emailUsuario);
+        if (acordo.getStatus() != StatusAcordo.EM_ANDAMENTO) {
+            throw new IllegalArgumentException("Não é possível enviar mensagens em um acordo encerrado");
+        }
         Usuario remetente = usuarioService.findByEmail(emailUsuario);
 
         var mensagem = Mensagem.builder()

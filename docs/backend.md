@@ -64,7 +64,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/acordos/{id}/eventos` | Exige participante; lista em ordem cronológica o início do acordo, confirmações, conclusão e cancelamento, com ator e data. |
 | PATCH | `/acordos/{id}` | Exige participante; status pode ser `CONCLUIDO` ou `CANCELADO`, somente a partir de `EM_ANDAMENTO`. `CONCLUIDO` registra a confirmação de quem chamou e só muda o status depois que os dois participantes confirmarem; a resposta identifica a confirmação de cada lado. `CANCELADO` continua disponível enquanto estiver em andamento. |
 | GET | `/acordos/{id}/mensagens?pagina=0&tamanho=50` | Exige participante; mensagens em ordem cronológica, até 100 por página. |
-| POST | `/acordos/{id}/mensagens` | Exige participante; grava mensagem de até 2.000 caracteres, 201 com Location. |
+| POST | `/acordos/{id}/mensagens` | Exige participante e acordo em andamento; grava mensagem de até 2.000 caracteres, 201 com Location. Responde 400 se o acordo estiver concluído ou cancelado. |
 | GET | `/acordos/{id}/mensagens/{mensagemId}` | Exige participante; 404 se a mensagem não pertencer ao acordo informado. |
 | POST | `/acordos/{id}/avaliacoes` | Exige participante e acordo concluído; uma avaliação por participante, sem autoavaliação. Recebe `nota` (profissional, 1–5), `notaAnuncio` (oferta/serviço, 1–5) e depoimento opcional. `notaAnuncio` é opcional para compatibilidade com clientes antigos. Responde 201. |
 | GET | `/acordos/{id}/avaliacoes` | Exige participante; lista avaliações vinculadas ao acordo. |

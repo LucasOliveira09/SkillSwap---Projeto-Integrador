@@ -32,6 +32,7 @@ export class AcordoDetalheComponent {
   protected readonly carregando = signal(true);
   protected readonly enviando = signal(false);
   protected readonly confirmandoConclusao = signal(false);
+  protected readonly confirmandoCancelamento = signal(false);
   protected readonly erro = signal('');
   protected readonly sucesso = signal('');
   protected readonly acordo = signal<Acordo | null>(null);
@@ -221,6 +222,24 @@ export class AcordoDetalheComponent {
           : 'Sua confirmação foi registrada. O acordo será concluído quando a outra pessoa também confirmar.');
       },
       error: () => this.erro.set('Não foi possível concluir o acordo. Atualize a página e tente novamente.'),
+    });
+  }
+
+  protected cancelarAcordo(): void {
+    if (this.enviando() || this.acordo()?.status !== 'EM_ANDAMENTO') return;
+    this.enviando.set(true);
+    this.erro.set('');
+    this.sucesso.set('');
+    this.api.atualizarAcordo(this.acordoId, 'CANCELADO').pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.enviando.set(false)),
+    ).subscribe({
+      next: () => {
+        this.confirmandoCancelamento.set(false);
+        this.sucesso.set('Acordo cancelado.');
+        this.carregar();
+      },
+      error: () => this.erro.set('Não foi possível cancelar o acordo. Atualize os dados e tente novamente.'),
     });
   }
 

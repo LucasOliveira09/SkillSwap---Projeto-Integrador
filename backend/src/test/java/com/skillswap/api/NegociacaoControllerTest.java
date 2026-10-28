@@ -274,6 +274,10 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CONCLUIDO"))
                 .andExpect(jsonPath("$.conclusaoConfirmadaAnunciante").value(true))
                 .andExpect(jsonPath("$.conclusaoConfirmadaProponente").value(true));
+        mvc.perform(post("/api/acordos/{id}/mensagens", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"Mensagem após conclusão\"}"))
+                .andExpect(status().isBadRequest());
         mvc.perform(post("/api/acordos/{id}/avaliacoes", acordoId)
                         .header("Authorization", "Bearer " + anuncianteToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -371,6 +375,29 @@ class NegociacaoControllerTest {
         mvc.perform(patch("/api/propostas/{id}", propostaId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void participantesNaoPodemEnviarMensagensDepoisDeCancelarAcordo() throws Exception {
+        long propostaId = criarProposta(proponenteToken);
+        mvc.perform(patch("/api/propostas/{id}", propostaId)
+                        .header("Authorization", "Bearer " + anuncianteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACEITA\"}"))
+                .andExpect(status().isOk());
+        var respostaAcordos = mvc.perform(get("/api/acordos")
+                        .header("Authorization", "Bearer " + proponenteToken))
+                .andExpect(status().isOk()).andReturn();
+        long acordoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(respostaAcordos.getResponse().getContentAsString()).get("itens").get(0).get("id").asLong();
+
+        mvc.perform(patch("/api/acordos/{id}", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADO\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CANCELADO"));
+        mvc.perform(post("/api/acordos/{id}/mensagens", acordoId)
+                        .header("Authorization", "Bearer " + proponenteToken)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"Mensagem após cancelamento\"}"))
                 .andExpect(status().isBadRequest());
     }
 
