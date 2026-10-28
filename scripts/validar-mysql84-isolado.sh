@@ -112,7 +112,7 @@ esperar_saude "$api"
 
 docker exec "$api" sh -ec 'wget -q -O /dev/null http://127.0.0.1:8080/api/anuncios'
 
-# Exercita a notificação criada por uma proposta e sua leitura persistida no MySQL descartável.
+# Exercita descoberta, negociação, conversa e reputação no MySQL descartável.
 docker exec "$api" sh -ec '
   set -eu
   base=http://127.0.0.1:8080
@@ -133,15 +133,27 @@ docker exec "$api" sh -ec '
     printf "%s" "$token"
   }
 
+  patch_json() {
+    caminho=$1
+    bearer=$2
+    corpo=$3
+    tamanho=$(printf "%s" "$corpo" | wc -c | tr -d "[:space:]")
+    printf "PATCH %s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s" \
+      "$caminho" "$bearer" "$tamanho" "$corpo" | busybox nc 127.0.0.1 8080
+  }
+
   token_profissional=$(registrar "Profissional de validação" "profissional-$sufixo@skillswap.invalid")
   token_cliente=$(registrar "Cliente de validação" "cliente-$sufixo@skillswap.invalid")
   token_externo=$(registrar "Conta externa de validação" "externo-$sufixo@skillswap.invalid")
 
   perfil_json="{\"tituloProfissional\":\"Marceneiro profissional\",\"bio\":\"Móveis sob medida.\",\"cidade\":\"Joinville\",\"especialidades\":\"marcenaria, móveis planejados\",\"perfilPublico\":true}"
-  perfil_tamanho=$(printf "%s" "$perfil_json" | wc -c | tr -d " ")
-  resposta_perfil=$(printf "PATCH /api/perfil HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s" \
-    "$token_profissional" "$perfil_tamanho" "$perfil_json" | busybox nc 127.0.0.1 8080)
+  resposta_perfil=$(patch_json /api/perfil "$token_profissional" "$perfil_json")
   printf "%s" "$resposta_perfil" | grep -q "HTTP/1.1 200"
+  profissional_id=$(printf "%s" "$resposta_perfil" | sed -n "s/.*\\\"id\\\":\\([0-9][0-9]*\\),\\\"nome\\\".*/\\1/p")
+  if [ -z "$profissional_id" ]; then
+    echo "A API não devolveu o identificador do perfil atualizado." >&2
+    exit 1
+  fi
   profissionais=$(wget -qO- "$base/api/profissionais?busca=marceneiro&cidade=Joinville")
   printf "%s" "$profissionais" | grep -q "\"totalItens\":1"
   printf "%s" "$profissionais" | grep -q "\"tituloProfissional\":\"Marceneiro profissional\""
@@ -149,6 +161,8 @@ docker exec "$api" sh -ec '
     echo "A busca pública de profissionais expôs um endereço de e-mail." >&2
     exit 1
   fi
+  busca_com_poucas_avaliacoes=$(wget -qO- "$base/api/profissionais?busca=marceneiro&cidade=Joinville&notaMinima=4.5")
+  printf "%s" "$busca_com_poucas_avaliacoes" | grep -q "\"totalItens\":0"
 
   anuncio=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_profissional" \
@@ -160,10 +174,15 @@ docker exec "$api" sh -ec '
     exit 1
   fi
 
-  wget -qO- --header="Content-Type: application/json" \
+  proposta=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_cliente" \
     --post-data="{\"mensagemInicial\":\"Tenho interesse nesta oferta de validação.\"}" \
-    "$base/api/anuncios/$anuncio_id/propostas" >/dev/null
+    "$base/api/anuncios/$anuncio_id/propostas")
+  proposta_id=$(printf "%s" "$proposta" | sed -n "s/.*\\\"id\\\":\\([0-9][0-9]*\\),\\\"anuncioId\\\".*/\\1/p")
+  if [ -z "$proposta_id" ]; then
+    echo "A API não devolveu o identificador da proposta temporária." >&2
+    exit 1
+  fi
 
   notificacoes=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
@@ -175,28 +194,78 @@ docker exec "$api" sh -ec '
     exit 1
   fi
 
-  resposta_nao_autorizada=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 13\r\nConnection: close\r\n\r\n{\"lida\":true}" \
-    "$notificacao_id" "$token_externo" | busybox nc 127.0.0.1 8080)
+  resposta_nao_autorizada=$(patch_json "/api/notificacoes/$notificacao_id" "$token_externo" "{\"lida\":true}")
   printf "%s" "$resposta_nao_autorizada" | grep -q "HTTP/1.1 404"
   notificacoes_inalteradas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
   printf "%s" "$notificacoes_inalteradas" | grep -q "\"lida\":false"
 
-  resposta_patch=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 13\r\nConnection: close\r\n\r\n{\"lida\":true}" \
-    "$notificacao_id" "$token_profissional" | busybox nc 127.0.0.1 8080)
+  resposta_patch=$(patch_json "/api/notificacoes/$notificacao_id" "$token_profissional" "{\"lida\":true}")
   printf "%s" "$resposta_patch" | grep -q "HTTP/1.1 200"
   printf "%s" "$resposta_patch" | grep -q "\"lida\":true"
   notificacoes_atualizadas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
   printf "%s" "$notificacoes_atualizadas" | grep -q "\"lida\":true"
-  resposta_reabertura=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 14\r\nConnection: close\r\n\r\n{\"lida\":false}" \
-    "$notificacao_id" "$token_profissional" | busybox nc 127.0.0.1 8080)
+  resposta_reabertura=$(patch_json "/api/notificacoes/$notificacao_id" "$token_profissional" "{\"lida\":false}")
   printf "%s" "$resposta_reabertura" | grep -q "HTTP/1.1 200"
   printf "%s" "$resposta_reabertura" | grep -q "\"lida\":false"
   notificacoes_reabertas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
   printf "%s" "$notificacoes_reabertas" | grep -q "\"lida\":false"
-  echo "Perfil foi encontrado pela busca sem expor e-mail; notificação foi criada, listada, protegida contra outra conta, marcada como lida e reaberta no MySQL descartável."
+
+  proposta_aceita=$(patch_json "/api/propostas/$proposta_id" "$token_profissional" "{\"status\":\"ACEITA\"}")
+  printf "%s" "$proposta_aceita" | grep -q "\"status\":\"ACEITA\""
+  acordos=$(wget -qO- --header="Authorization: Bearer $token_cliente" "$base/api/acordos?pagina=0&tamanho=20")
+  acordo_id=$(printf "%s" "$acordos" | sed -n "s/.*\\\"itens\\\":\\[{\\\"id\\\":\\([0-9][0-9]*\\),\\\"propostaId\\\".*/\\1/p")
+  if [ -z "$acordo_id" ]; then
+    echo "A proposta aceita não criou um acordo para as partes." >&2
+    exit 1
+  fi
+  wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_cliente" \
+    --post-data="{\"conteudo\":\"Vamos agendar para sexta-feira.\"}" \
+    "$base/api/acordos/$acordo_id/mensagens" >/dev/null
+  mensagens=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
+    "$base/api/acordos/$acordo_id/mensagens?pagina=0&tamanho=20")
+  printf "%s" "$mensagens" | grep -q "Vamos agendar para sexta-feira."
+
+  confirmacao_cliente=$(patch_json "/api/acordos/$acordo_id" "$token_cliente" "{\"status\":\"CONCLUIDO\"}")
+  printf "%s" "$confirmacao_cliente" | grep -q "\"status\":\"EM_ANDAMENTO\""
+  confirmacao_profissional=$(patch_json "/api/acordos/$acordo_id" "$token_profissional" "{\"status\":\"CONCLUIDO\"}")
+  printf "%s" "$confirmacao_profissional" | grep -q "\"status\":\"CONCLUIDO\""
+  wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_cliente" \
+    --post-data="{\"nota\":5,\"notaAnuncio\":4,\"depoimento\":\"Trabalho cuidadoso e pontual.\"}" \
+    "$base/api/acordos/$acordo_id/avaliacoes" >/dev/null
+  perfil_publico=$(wget -qO- "$base/api/perfis/$profissional_id")
+  printf "%s" "$perfil_publico" | grep -q "\"mediaNotas\":5.0"
+  printf "%s" "$perfil_publico" | grep -q "\"quantidadeAvaliacoes\":1"
+  anuncio_publico=$(wget -qO- "$base/api/anuncios/$anuncio_id")
+  printf "%s" "$anuncio_publico" | grep -q "\"mediaAvaliacoesAnuncio\":4.0"
+  printf "%s" "$anuncio_publico" | grep -q "\"quantidadeAvaliacoesAnuncio\":1"
+  busca_com_reputacao=$(wget -qO- "$base/api/profissionais?busca=marceneiro&cidade=Joinville")
+  printf "%s" "$busca_com_reputacao" | grep -q "\"mediaNotas\":5.0"
+  if printf "%s" "$busca_com_reputacao" | grep -q "\"email\""; then
+    echo "A busca pública expôs e-mail após a avaliação." >&2
+    exit 1
+  fi
+  printf "%s %s\n" "$profissional_id" "$anuncio_id" > /tmp/skillswap-validation-ids
+  echo "Perfil, descoberta, reputação mínima, proposta, notificação, acordo, conversa, conclusão mútua e avaliação passaram em MySQL descartável."
+'
+
+docker restart "$api" >/dev/null
+esperar_saude "$api"
+docker exec "$api" sh -ec '
+  set -- $(cat /tmp/skillswap-validation-ids)
+  perfil=$(wget -qO- "http://127.0.0.1:8080/api/perfis/$1")
+  printf "%s" "$perfil" | grep -q "\"mediaNotas\":5.0"
+  printf "%s" "$perfil" | grep -q "\"quantidadeAvaliacoes\":1"
+  anuncio=$(wget -qO- "http://127.0.0.1:8080/api/anuncios/$2")
+  printf "%s" "$anuncio" | grep -q "\"mediaAvaliacoesAnuncio\":4.0"
+  printf "%s" "$anuncio" | grep -q "\"quantidadeAvaliacoesAnuncio\":1"
+  busca=$(wget -qO- "http://127.0.0.1:8080/api/profissionais?busca=marceneiro&cidade=Joinville")
+  printf "%s" "$busca" | grep -q "\"mediaNotas\":5.0"
+  echo "Avaliação, médias públicas e busca persistiram após reinício da API."
 '
 
 versao_mysql=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT VERSION()"')
@@ -207,4 +276,4 @@ if [ "$versao_flyway" != 14 ]; then
   exit 1
 fi
 
-echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate e API GET /api/anuncios aprovados."
+echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate, descoberta e fluxo REST de venda/reputação aprovados."
