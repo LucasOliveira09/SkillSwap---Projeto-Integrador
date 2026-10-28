@@ -170,7 +170,10 @@ export class AcordoDetalheComponent {
       takeUntilDestroyed(this.destroyRef),
       finalize(() => this.carregandoMensagens.set(false)),
     ).subscribe({
-      next: (resposta) => this.aplicarPaginaMensagens(resposta),
+      next: (resposta) => {
+        this.aplicarPaginaMensagens(resposta);
+        this.sucesso.set('Mensagem enviada.');
+      },
       error: () => this.erro.set('A mensagem foi enviada, mas não foi possível atualizar a conversa.'),
     });
   }

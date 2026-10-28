@@ -26,7 +26,7 @@
       @if (!mensagens().length) {
         <p class="vazio">Ainda não há mensagens. Combine os detalhes do serviço por aqui.</p>
       } @else {
-        <ol class="lista-mensagens" aria-live="polite">
+        <ol class="lista-mensagens">
           @for (item of mensagens(); track item.id) {
             <li class="mensagem" [class.propria]="item.remetenteId === perfil()?.id">
               <p>{{ item.conteudo }}</p>

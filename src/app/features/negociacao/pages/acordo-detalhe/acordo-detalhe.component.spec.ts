@@ -14,6 +14,69 @@ describe('AcordoDetalheComponent', () => {
 
   afterEach(() => http.verify());
 
+  it('não anuncia novamente todo o histórico e confirma o envio em uma região de status', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+
+    const harness = await RouterTestingHarness.create('/acordos/7');
+    http.expectOne('/api/acordos/7').flush({
+      id: 7, propostaId: 5, anuncioId: 3, anuncioTitulo: 'Aula de violão',
+      anuncianteId: 1, anuncianteNome: 'Ana', proponenteId: 2, proponenteNome: 'Bruno',
+      status: 'EM_ANDAMENTO', criadoEm: '2026-10-26T10:00:00', concluidoEm: null,
+      conclusaoConfirmadaAnunciante: false, conclusaoConfirmadaProponente: false,
+    });
+    http.expectOne('/api/acordos/7/eventos').flush([]);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [{
+        id: 8, acordoId: 7, remetenteId: 1, remetenteNome: 'Ana',
+        conteudo: 'Vamos combinar os detalhes.', enviadoEm: '2026-10-27T10:00:00',
+      }], pagina: 0, tamanho: 50, totalItens: 1, totalPaginas: 1,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/perfil').flush({
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    const mensagens = harness.routeNativeElement!.querySelector('.lista-mensagens');
+    expect(mensagens?.hasAttribute('aria-live')).toBeFalse();
+    const componente = harness.routeDebugElement!.componentInstance as {
+      mensagem: { set(valor: string): void };
+    };
+    componente.mensagem.set('  Combinamos para amanhã.  ');
+    harness.detectChanges();
+    const enviar = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.form-mensagem button')!;
+    expect(enviar.disabled).toBeFalse();
+    enviar.click();
+    const envio = http.expectOne('/api/acordos/7/mensagens');
+    expect(envio.request.method).toBe('POST');
+    expect(envio.request.body).toEqual({ conteudo: 'Combinamos para amanhã.' });
+    envio.flush({
+      id: 9, acordoId: 7, remetenteId: 2, remetenteNome: 'Bruno',
+      conteudo: 'Combinamos para amanhã.', enviadoEm: '2026-10-28T10:00:00',
+    });
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [{
+        id: 9, acordoId: 7, remetenteId: 2, remetenteNome: 'Bruno',
+        conteudo: 'Combinamos para amanhã.', enviadoEm: '2026-10-28T10:00:00',
+      }],
+      pagina: 0, tamanho: 50, totalItens: 1, totalPaginas: 1,
+    });
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [{
+        id: 9, acordoId: 7, remetenteId: 2, remetenteNome: 'Bruno',
+        conteudo: 'Combinamos para amanhã.', enviadoEm: '2026-10-28T10:00:00',
+      }],
+      pagina: 0, tamanho: 50, totalItens: 1, totalPaginas: 1,
+    });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement!.querySelector('[role="status"]')?.textContent)
+      .toContain('Mensagem enviada.');
+  });
+
   it('aguarda a confirmação da outra parte antes de liberar avaliações', async () => {
     TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
