@@ -81,6 +81,12 @@ h3 {
   margin-top: 0;
 }
 
+@media (min-width: 1100px) {
+  .filtros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .linha-resultados {
   display: flex;
   align-items: center;
