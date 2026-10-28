@@ -41,6 +41,16 @@ describe('App', () => {
     expect(links[2].getAttribute('href')).toBe('/anuncios/novo');
   });
 
+  it('ordena o campo de busca antes do botão de envio', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const formulario = fixture.nativeElement.querySelector('form.busca') as HTMLFormElement;
+    const campo = formulario.querySelector('input[type="search"]')!;
+    const botao = formulario.querySelector('button[type="submit"]')!;
+
+    expect(campo.compareDocumentPosition(botao) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('mantém nome acessível para o botão de conta quando o texto visual está oculto', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

@@ -72,7 +72,6 @@
           /></a>
         </div>
         <form class="busca" role="search" (submit)="pesquisar($event, busca.value)">
-          <button type="submit" aria-label="Pesquisar"><app-icone nome="busca" /></button>
           <input
             #busca
             type="search"
@@ -81,6 +80,7 @@
             placeholder="Procure..."
             [value]="termoDeBuscaAtual"
           />
+          <button type="submit" aria-label="Pesquisar"><app-icone nome="busca" /></button>
         </form>
         <div class="acoes-cabecalho">
           <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo">Anunciar</a>
