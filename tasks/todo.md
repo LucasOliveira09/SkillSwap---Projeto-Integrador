@@ -89,7 +89,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [ ] Reconciliar a publicação antes da próxima promoção: em 28/10 o domínio público ainda servia `skillswap-api/web:495a696` e `/profissionais` redirecionava ao catálogo; a prévia Tailscale está em `984f4c4`. Promoção pública segue pendente de solicitação explícita e das verificações de release.
   - Em 28/10, o fluxo de busca, perfil público, foto e publicação de portfólio foi conferido em Chromium a 390 e 1440 px, ligado a MySQL 8.4.11 descartável. Dados sintéticos, containers, volumes e credenciais temporárias foram removidos. Filtro por média mínima excluiu corretamente o perfil sem avaliações; nenhum dado de reputação fictício foi criado.
   - A inspeção identificou que a expressão regular de arquivos estáticos do Nginx capturava URLs `/api/uploads/*.png`, retornando 404. `location ^~ /api/` corrige a prioridade; `nginx -t`, respostas 200 de imagens no teste integrado e healthcheck da prévia passaram. API, bancos, domínio e proxy público não foram alterados.
-- [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
+- [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada. Em 28/10, Chromium 149 a 390 px na prévia Tailscale confirmou o estado vazio acessível da busca: zero profissionais reais cadastrados e CTA para apresentar o próprio trabalho. A carga inicial não cria perfis nem avaliações fictícias; ainda não há linha de base de uso.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.
 - [ ] Só promover a versão pública após revisão, backup, validação em cópia isolada e plano de reversão.
 
