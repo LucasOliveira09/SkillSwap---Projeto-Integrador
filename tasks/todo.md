@@ -39,6 +39,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Validar perfil, foto e portfólio no MySQL 8.0.46 e persistência após reinício da API, em schema descartável da prévia Tailscale.
 - [x] Validar em MySQL 8.4.11 descartável na VPS os fluxos REST completos de perfil, foto, portfólio, descoberta, venda/troca, propostas, acordos, conversa, conclusão mútua e avaliações; confirmar dados após reinício e foto após recriação da API com volume persistente. O navegador integrado a MySQL 8.4 e a execução local continuam pendentes.
 - [x] Mostrar o acesso à moderação no cabeçalho somente após confirmação de `/api/moderacao/acesso`; falha de rede mantém a opção oculta. Teste de componente cobre contas comuns e moderadores.
+- [x] Validar na prévia Tailscale restaurada o cadastro, login, edição e busca pública de perfil em Chromium a 390 px; pausar o perfil sintético depois do teste. Confirmar que conta comum não recebe acesso/moderação no cabeçalho. A imagem web anterior está preservada para rollback.
 
 ### Portfólio e descoberta
 
