@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, combineLatest, forkJoin, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, of, startWith, Subject, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
@@ -15,6 +15,8 @@ import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.co
 interface EstadoPerfil {
   carregando: boolean;
   erro: boolean;
+  erroOfertas: boolean;
+  erroAvaliacoes: boolean;
   perfil: PerfilProfissional | null;
   ofertas: readonly AnuncioApi[];
   paginaOfertas: number;
@@ -31,6 +33,8 @@ interface EstadoPerfil {
 const estadoInicial: EstadoPerfil = {
   carregando: true,
   erro: false,
+  erroOfertas: false,
+  erroAvaliacoes: false,
   perfil: null,
   ofertas: [],
   paginaOfertas: 0,
@@ -56,9 +60,14 @@ export class PerfilPublicoComponent {
   private readonly router = inject(Router);
   private readonly perfilApi = inject(PerfilApiService);
   private readonly anunciosApi = inject(AnunciosApiService);
+  private readonly atualizacao = new Subject<void>();
 
   protected readonly estado = toSignal(
-    combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
+    combineLatest([
+      this.route.paramMap,
+      this.route.queryParamMap,
+      this.atualizacao.pipe(startWith(undefined)),
+    ]).pipe(
       switchMap(([params, query]) => {
         const id = params.get('id');
         if (!id || !/^\d+$/.test(id)) {
@@ -79,24 +88,26 @@ export class PerfilPublicoComponent {
         return this.perfilApi.publico(usuarioId).pipe(
           switchMap((perfil) =>
             forkJoin({
-              ofertas: this.anunciosApi.listarDoUsuario(perfil.id, paginaOfertas),
+              ofertas: this.anunciosApi.listarDoUsuario(perfil.id, paginaOfertas).pipe(catchError(() => of(null))),
               publicacoes: this.perfilApi.publicacoes(perfil.id, pagina).pipe(catchError(() => of(null))),
-              avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of([]))),
+              avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of(null))),
             }).pipe(
               map(({ ofertas, publicacoes, avaliacoes }) => ({
                 carregando: false,
                 erro: false,
+                erroOfertas: ofertas === null,
+                erroAvaliacoes: avaliacoes === null,
                 perfil,
-                ofertas: ofertas.itens,
-                paginaOfertas: ofertas.pagina,
-                totalPaginasOfertas: ofertas.totalPaginas,
-                totalOfertas: ofertas.totalItens,
+                ofertas: ofertas?.itens ?? [],
+                paginaOfertas: ofertas?.pagina ?? 0,
+                totalPaginasOfertas: ofertas?.totalPaginas ?? 0,
+                totalOfertas: ofertas?.totalItens ?? 0,
                 publicacoes: publicacoes?.itens ?? [],
                 erroPublicacoes: publicacoes === null,
                 paginaPublicacoes: publicacoes?.pagina ?? 0,
                 totalPaginasPublicacoes: publicacoes?.totalPaginas ?? 0,
                 totalPublicacoes: publicacoes?.totalItens ?? 0,
-                avaliacoes,
+                avaliacoes: avaliacoes ?? [],
               })),
             ),
           ),
@@ -112,6 +123,10 @@ export class PerfilPublicoComponent {
   protected readonly ofertas = computed(() => this.estado().ofertas);
   protected readonly publicacoes = computed(() => this.estado().publicacoes);
   protected readonly avaliacoes = computed(() => this.estado().avaliacoes);
+
+  protected tentarNovamente(): void {
+    this.atualizacao.next();
+  }
 
   protected mudarPaginaPublicacoes(pagina: number): void {
     const atual = this.estado();

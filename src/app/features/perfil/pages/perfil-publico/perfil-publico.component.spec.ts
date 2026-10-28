@@ -144,6 +144,54 @@ describe('PerfilPublicoComponent', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Perfil não encontrado');
   });
 
+  it('mantém o perfil público disponível quando as ofertas falham e permite tentar novamente', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    http.expectOne('/api/perfis/12').flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: 'Eletricista', bio: null, cidade: 'Florianópolis',
+      fotoUrl: null, capaUrl: null, especialidades: 'Elétrica', criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios')
+      .flush({}, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes')
+      .flush({}, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/usuarios/12/avaliacoes')
+      .flush({}, { status: 503, statusText: 'Service Unavailable' });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Ana Profissional');
+    expect(harness.routeNativeElement?.textContent).toContain('Não foi possível carregar as ofertas');
+    expect(harness.routeNativeElement?.textContent).toContain('Não foi possível carregar o portfólio');
+    expect(harness.routeNativeElement?.textContent).toContain('Não foi possível carregar as avaliações');
+    expect(harness.routeNativeElement?.textContent).not.toContain('0 ofertas');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Ainda não publicou fotos de trabalhos');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Ainda não há avaliações de trabalhos concluídos');
+
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.erro-ofertas button')!.click();
+    const perfil = http.expectOne('/api/perfis/12');
+    perfil.flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: 'Eletricista', bio: null, cidade: 'Florianópolis',
+      fotoUrl: null, capaUrl: null, especialidades: 'Elétrica', criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).not.toContain('Não foi possível carregar as ofertas');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Não foi possível carregar o portfólio');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Não foi possível carregar as avaliações');
+    expect(harness.routeNativeElement?.textContent).toContain('Este profissional ainda não tem ofertas ativas.');
+    expect(harness.routeNativeElement?.textContent).toContain('Este profissional ainda não publicou fotos de trabalhos.');
+    expect(harness.routeNativeElement?.textContent).toContain('Ainda não há avaliações de trabalhos concluídos.');
+  });
+
   it('navega pelas páginas do portfólio usando a página solicitada pela API', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     const perfil = {

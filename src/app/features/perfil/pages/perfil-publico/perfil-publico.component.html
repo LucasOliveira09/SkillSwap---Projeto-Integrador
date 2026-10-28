@@ -84,7 +84,12 @@
 
     <section class="avaliacoes secao" aria-labelledby="titulo-avaliacoes">
       <h2 id="titulo-avaliacoes">Avaliações após trabalhos concluídos</h2>
-      @if (!avaliacoes().length) {
+      @if (estado().erroAvaliacoes) {
+        <p class="vazio erro" role="alert">
+          Não foi possível carregar as avaliações agora.
+          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+        </p>
+      } @else if (!avaliacoes().length) {
         <p class="vazio">Ainda não há avaliações de trabalhos concluídos.</p>
       } @else {
         <div class="lista-avaliacoes">
@@ -137,11 +142,16 @@
           <h2 id="titulo-portfolio">Trabalhos e portfólio</h2>
           <p>Fotos de serviços e projetos apresentados por {{ p.nome }}.</p>
         </div>
-        <span>{{ estado().totalPublicacoes }} {{ estado().totalPublicacoes === 1 ? 'publicação' : 'publicações' }}</span>
+        @if (!estado().erroPublicacoes) {
+          <span>{{ estado().totalPublicacoes }} {{ estado().totalPublicacoes === 1 ? 'publicação' : 'publicações' }}</span>
+        }
       </div>
 
       @if (estado().erroPublicacoes) {
-        <p class="vazio" role="status">Não foi possível carregar o portfólio agora.</p>
+        <p class="vazio erro" role="alert">
+          Não foi possível carregar o portfólio agora.
+          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+        </p>
       } @else if (publicacoes().length === 0) {
         <p class="vazio">Este profissional ainda não publicou fotos de trabalhos.</p>
       } @else {
@@ -183,10 +193,17 @@
           <h2 id="titulo-ofertas">Serviços e aulas</h2>
           <p>Ofertas publicadas por {{ p.nome }}.</p>
         </div>
-        <span>{{ estado().totalOfertas }} {{ estado().totalOfertas === 1 ? 'oferta' : 'ofertas' }}</span>
+        @if (!estado().erroOfertas) {
+          <span>{{ estado().totalOfertas }} {{ estado().totalOfertas === 1 ? 'oferta' : 'ofertas' }}</span>
+        }
       </div>
 
-      @if (ofertas().length === 0) {
+      @if (estado().erroOfertas) {
+        <p class="vazio erro erro-ofertas" role="alert">
+          Não foi possível carregar as ofertas agora.
+          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+        </p>
+      } @else if (ofertas().length === 0) {
         <p class="vazio">Este profissional ainda não tem ofertas ativas.</p>
       } @else {
         <div class="lista-ofertas">
