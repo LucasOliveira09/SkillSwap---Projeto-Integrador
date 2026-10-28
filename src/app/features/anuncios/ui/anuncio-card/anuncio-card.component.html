@@ -43,10 +43,15 @@
     </ul>
   </div>
   <div class="perfil">
-    @if (anuncio().avatar) {
-      <img [src]="anuncio().avatar" alt="" width="28" height="28" loading="lazy" />
+    @if (!anuncio().exemplo && anuncio().autorId) {
+      <a class="avatar-link" [routerLink]="['/profissionais', anuncio().autorId]"
+        [attr.aria-label]="'Ver perfil de ' + anuncio().autor">
+        @if (anuncio().avatar) {
+          <img [src]="anuncio().avatar" alt="" width="36" height="36" loading="lazy" />
+        } @else { <span class="avatar"><app-icone nome="usuario" /></span> }
+      </a>
     } @else {
-      <span class="avatar"><app-icone nome="usuario" /></span>
+      <span class="avatar" aria-hidden="true"><app-icone nome="usuario" /></span>
     }
     <div class="autor">
       @if (!anuncio().exemplo && anuncio().autorId) {

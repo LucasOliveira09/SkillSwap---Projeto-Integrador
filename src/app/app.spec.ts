@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { SessaoService } from './features/conta/data-access/sessao.service';
@@ -66,7 +66,7 @@ describe('App', () => {
     TestBed.inject(HttpTestingController).expectOne('/api/moderacao/acesso').flush(false);
     fixture.detectChanges();
 
-    expect(botaoConta?.getAttribute('aria-label')).toBe('Minha conta');
+    expect(botaoConta?.getAttribute('aria-label')).toBe('Meu perfil');
   });
 
   it('exibe a navegação de moderação somente após confirmação do servidor', () => {
@@ -103,4 +103,17 @@ describe('App', () => {
     expect(getComputedStyle(linkCabecalho!).display).toBe('none');
     expect(linkMenu).not.toBeNull();
   });
+  it('abre o próprio perfil pelo ícone após consultar a identidade na API', () => {
+    const fixture = TestBed.createComponent(App);
+    autenticado.set(true);
+    credencial.set('token-teste');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/moderacao/acesso').flush(false);
+    const navegar = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture.nativeElement.querySelector('header .conta').click();
+    http.expectOne('/api/perfil').flush({ id: 42, perfilPublico: true });
+    expect(navegar).toHaveBeenCalledWith(['/profissionais', 42]);
+  });
+
 });

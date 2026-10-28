@@ -21,7 +21,7 @@ describe('Navegação do SkillSwap', () => {
       .flush({ itens: [], pagina: 0, tamanho: 5, totalItens: 0, totalPaginas: 0 });
   }
 
-  it('abre o catálogo a partir da raiz e permite navegar até o cadastro', async () => {
+  it('abre o catálogo e exige login antes do cadastro de anúncio', async () => {
     const harness = await RouterTestingHarness.create('/');
     expect(TestBed.inject(Router).url).toBe('/anuncios');
     carregarCatalogo();
@@ -29,10 +29,11 @@ describe('Navegação do SkillSwap', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Nenhum resultado encontrado');
     await harness.navigateByUrl('/anuncios/novo');
     expect(harness.routeNativeElement?.querySelector('form')).not.toBeNull();
-    TestBed.inject(HttpTestingController)
-      .expectOne('/api/categorias')
-      .flush([{ valor: 'aulas', rotulo: 'Aulas' }]);
-    expect(harness.routeNativeElement?.textContent).toContain('Cadastro no banco de dados');
+    const url = TestBed.inject(Router).parseUrl(TestBed.inject(Router).url);
+    expect(url.root.children['primary'].segments[0].path).toBe('conta');
+    expect(url.queryParams['retorno']).toBe('/anuncios/novo');
+    TestBed.inject(HttpTestingController).expectNone('/api/categorias');
+
   });
 
   it('retorna ao catálogo para um endereço desconhecido', async () => {

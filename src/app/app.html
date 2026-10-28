@@ -78,7 +78,7 @@
             type="search"
             maxlength="100"
             aria-label="Buscar serviços e aulas"
-            placeholder="Procure..."
+            placeholder="Encontre serviços, aulas e talentos"
             [value]="termoDeBuscaAtual"
           />
           <button type="submit" aria-label="Pesquisar"><app-icone nome="busca" /></button>
@@ -88,26 +88,15 @@
           @if (moderador()) {
             <a mat-button routerLink="/moderacao/denuncias">Moderação</a>
           }
-          <button
-            mat-button
-            class="carrinho"
-            (click)="
-              informar(
-                'Carrinho',
-                'O carrinho ainda não está disponível nesta demonstração. Explore os anúncios ou experimente criar o seu.'
-              )
-            "
-          >
-            <app-icone nome="carrinho" /> Carrinho
-          </button>
+          <a mat-button class="carrinho" routerLink="/mensagens">Mensagens</a>
           <button
             mat-stroked-button
             class="conta"
-            (click)="abrirConta()"
-            [attr.aria-label]="sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'"
+            (click)="abrirPerfil()"
+            [attr.aria-label]="sessao.autenticado() ? 'Meu perfil' : 'Entrar/Registrar-se'"
           >
             <app-icone nome="usuario" /><span>{{
-              sessao.autenticado() ? 'Minha conta' : 'Entrar/Registrar-se'
+              sessao.autenticado() ? 'Meu perfil' : 'Entrar/Registrar-se'
             }}</span>
           </button>
         </div>

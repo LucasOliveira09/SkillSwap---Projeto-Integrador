@@ -13,6 +13,7 @@ import { IconeComponent } from './shared/ui/icone/icone.component';
 import { SessaoService } from './features/conta/data-access/sessao.service';
 import { ModeracaoApiService } from './features/moderacao/data-access/moderacao-api.service';
 import { catchError, of } from 'rxjs';
+import { PerfilApiService } from './features/perfil/data-access/perfil-api.service';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ import { catchError, of } from 'rxjs';
 })
 export class App {
   protected readonly sessao = inject(SessaoService);
+  private readonly perfilApi = inject(PerfilApiService);
   protected readonly moderador = signal(false);
   private readonly moderacaoApi = inject(ModeracaoApiService);
   private readonly verificarAcessoModeracao = effect((onCleanup) => {
@@ -62,6 +64,18 @@ export class App {
   protected pesquisar(event: Event, termo: string): void {
     event.preventDefault();
     void this.router.navigate(['/anuncios'], { queryParams: { busca: termo.trim() || null } });
+  }
+
+  protected abrirPerfil(): void {
+    if (!this.sessao.autenticado()) {
+      this.abrirConta();
+      return;
+    }
+    this.perfilApi.meuPerfil().subscribe({
+      next: (perfil) => void this.router.navigate(perfil.perfilPublico === false
+        ? ['/meu-perfil'] : ['/profissionais', perfil.id]),
+      error: () => this.abrirConta(),
+    });
   }
 
   protected abrirConta(): void {

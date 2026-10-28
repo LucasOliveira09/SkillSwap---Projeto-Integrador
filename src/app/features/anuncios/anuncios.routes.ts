@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
+import { sessaoGuard } from '../conta/data-access/sessao.guard';
 
 export const ANUNCIOS_ROUTES: Routes = [
   {
     path: 'novo',
+    canActivate: [sessaoGuard],
     title: 'Novo anúncio | SkillSwap',
     loadComponent: () =>
       import('./pages/cadastro-anuncio/cadastro-anuncio.component').then(
