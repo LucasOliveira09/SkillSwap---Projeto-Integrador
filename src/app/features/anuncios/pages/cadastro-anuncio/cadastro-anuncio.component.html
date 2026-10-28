@@ -222,6 +222,7 @@
                     @for (periodo of periodos; track periodo.valor) {
                       <label>
                         <input type="checkbox" [checked]="temDisponibilidade(dia.valor, periodo.valor)"
+                          [attr.aria-label]="dia.rotulo + ', ' + periodo.rotulo"
                           [disabled]="salvando || carregandoCategorias || carregandoAnuncio()"
                           (change)="alternarDisponibilidade(dia.valor, periodo.valor, $any($event.target).checked)" />
                         {{ periodo.rotulo }}

@@ -39,6 +39,19 @@ describe('Cadastro persistente', () => {
     expect(modalidades?.getAttribute('aria-label')).toBe('Modalidade do anúncio');
   });
 
+  it('dá nome acessível distinto a cada período de cada dia', () => {
+    const nomes = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLInputElement>(
+        '.grade-disponibilidade input[type="checkbox"]',
+      ),
+      (campo) => campo.getAttribute('aria-label'),
+    );
+
+    expect(nomes).toContain('Segunda-feira, Manhã');
+    expect(nomes).toContain('Domingo, Noite');
+    expect(new Set(nomes).size).toBe(21);
+  });
+
   async function preencher() {
     for (const [nome, valor] of Object.entries({
       titulo: 'Aulas de violão',
