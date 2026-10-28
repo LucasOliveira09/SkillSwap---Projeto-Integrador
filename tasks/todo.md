@@ -12,6 +12,8 @@ O MVP completo e as decisões em aberto estão em [escopo-mvp.md](../docs/escopo
 
 ## Visão de rede profissional + marketplace (plano aprovado em 26/10/2026)
 
+- [x] Em 28/10, corrigir a regra Spring Security que deixava os GETs `/api/anuncios/meus` e `/api/anuncios/meus/{id}` caírem no matcher público abrangente; ambos agora exigem autenticação. Testes de regressão confirmam HTTP 401 sem JWT; suíte Java completa: 56 testes, sem falhas ou erros.
+
 O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamentos ficam para fase posterior. Os itens abaixo acompanham a implementação; código parcial já existente deve ser revisado e completado, não tratado como funcionalidade pronta.
 
 ### Fundação e perfis

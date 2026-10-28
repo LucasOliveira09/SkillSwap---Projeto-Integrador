@@ -22,8 +22,8 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/vitrine` | Categorias visuais, destaques e serviços persistidos no banco. |
 | GET | `/anuncios?busca=&categoria=&cidade=&modalidade=VENDA&precoMinimo=&precoMaximo=&diaSemana=&periodo=&pagina=0&tamanho=5` | `{itens,pagina,tamanho,totalItens,totalPaginas}`; filtros são opcionais, cidade até 80 caracteres, página até 1.000.000, tamanho 1–50 e busca até 100 caracteres. `modalidade` aceita `VENDA` ou `TROCA`; faixa de preço se aplica a vendas com preço, e nunca inclui trocas. `diaSemana` aceita `SEGUNDA` a `DOMINGO` e `periodo` aceita `MANHA`, `TARDE` ou `NOITE`; quando ambos são enviados, devem corresponder ao mesmo período cadastrado. Mínimo não pode exceder máximo. Ordem por data/ID decrescente. |
 | GET | `/anuncios/{id}` | Anúncio ativo ou 404; inclui `mediaAvaliacoesAnuncio` e `quantidadeAvaliacoesAnuncio`, derivados de avaliações existentes de acordos concluídos. |
-| GET | `/anuncios/meus?pagina=0&tamanho=20` | Exige JWT; lista somente anúncios da conta autenticada, inclusive pausados, sem exemplos demonstrativos; paginação até 50. |
-| GET | `/anuncios/meus/{id}` | Exige JWT do proprietário; permite carregar para edição anúncio ativo ou pausado. |
+| GET | `/anuncios/meus?pagina=0&tamanho=20` | Exige JWT; sem autenticação responde 401. Lista somente anúncios da conta autenticada, inclusive pausados, sem exemplos demonstrativos; paginação até 50. |
+| GET | `/anuncios/meus/{id}` | Exige JWT do proprietário; sem autenticação responde 401. Permite carregar para edição anúncio ativo ou pausado. |
 | POST | `/usuarios` | Criar conta, 201 com Location e JWT; alias antigo `/auth/registrar`. |
 | POST | `/sessoes` | Autenticar com e-mail/senha e receber JWT; alias antigo `/auth/login`. |
 | POST | `/anuncios` | Exige Bearer JWT; 201 com Location após persistir. |

@@ -57,6 +57,14 @@ class PerfilControllerTest {
     }
 
     @Test
+    void rotasDeAnunciosPropriosExigemAutenticacao() throws Exception {
+        mvc.perform(get("/api/anuncios/meus"))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/anuncios/meus/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void buscaProfissionaisCarregaAReputacaoDaPaginaEmUmaAgregacao() throws Exception {
         var outraProfissional = usuarios.register(new RegisterDTO(
                 "Bia Profissional", "bia-perfil@skillswap.invalid", "senha-teste-123"));
