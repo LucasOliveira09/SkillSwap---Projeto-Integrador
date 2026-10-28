@@ -52,6 +52,19 @@ describe('Cadastro persistente', () => {
     expect(new Set(nomes).size).toBe(21);
   });
 
+  it('anuncia o envio de uma foto do anúncio enquanto o servidor processa o upload', () => {
+    const entrada = fixture.nativeElement.querySelector('#input-foto') as HTMLInputElement;
+    const arquivo = new File(['imagem'], 'servico.png', { type: 'image/png' });
+    Object.defineProperty(entrada, 'files', { configurable: true, value: [arquivo] });
+    entrada.dispatchEvent(new Event('change', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.upload-bloco [role="status"]')?.textContent)
+      .toContain('Enviando foto do anúncio...');
+
+    http.expectOne('/api/uploads').flush({ url: '/api/uploads/servico.png', nomeArquivo: 'servico.png' });
+  });
+
   async function preencher() {
     for (const [nome, valor] of Object.entries({
       titulo: 'Aulas de violão',

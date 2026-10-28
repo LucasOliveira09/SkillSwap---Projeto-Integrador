@@ -215,6 +215,8 @@ Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu
 
 **Carregamento das mensagens na conta (28/10/2026):** a mensagem de carregamento agora usa `role="status"` para ser anunciada por tecnologias assistivas. Um teste reproduziu a ausência do status e cobre o estado pendente; a suíte completa de 101 testes, `npm run typecheck` e `npm run build` passaram. A leitura manual com leitor de tela segue pendente.
 
+**Feedback acessível de upload (28/10/2026):** o perfil anuncia envio e remoção da foto e da capa, e o portfólio e o cadastro de anúncio anunciam o envio das imagens enquanto a API processa a solicitação. Testes de regressão cobrem esses estados; a suíte Angular completa chegou a 102 testes, e `npm run typecheck` e `npm run build` passaram. A inspeção com leitor de tela permanece pendente.
+
 ### Fase 6 — Conclusão, avaliações e reputação
 
 - Definir confirmação unilateral ou mútua de conclusão e janela de avaliação; resolver conflito de confirmação antes de liberar avaliação.

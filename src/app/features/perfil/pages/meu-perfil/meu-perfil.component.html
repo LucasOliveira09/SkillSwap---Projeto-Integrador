@@ -52,6 +52,9 @@
               </button>
             }
           </div>
+          @if (statusOperacaoFoto()) {
+            <p class="feedback" role="status">{{ statusOperacaoFoto() }}</p>
+          }
         </div>
       </section>
 
@@ -82,6 +85,9 @@
                 [disabled]="enviandoCapa || salvando">Remover capa</button>
             }
           </div>
+          @if (statusOperacaoCapa()) {
+            <p class="feedback" role="status">{{ statusOperacaoCapa() }}</p>
+          }
         </div>
       </section>
 
@@ -259,6 +265,9 @@
             {{ enviandoPortfolio ? 'Enviando fotos...' : 'Publicar no portfólio' }}
           </button>
         </div>
+        @if (enviandoPortfolio) {
+          <p class="feedback" role="status">Enviando fotos para o portfólio...</p>
+        }
         @if (previaFotosPortfolio().length) {
           <div class="previas-portfolio" role="group" aria-label="Prévia das fotos selecionadas">
             @for (item of previaFotosPortfolio(); track item.url) {

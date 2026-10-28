@@ -171,7 +171,11 @@ describe('MeuPerfilComponent', () => {
     const componente = harness.routeDebugElement!.componentInstance as unknown as {
       arquivoFoto: File | null;
       selecionarFoto(evento: Event): void;
+      selecionarCapa(evento: Event): void;
       enviarFoto(): void;
+      enviarCapa(): void;
+      removerFoto(): void;
+      removerCapa(): void;
       perfil(): { fotoUrl: string | null } | null;
     };
     const arquivo = new File(['imagem'], 'perfil.png', { type: 'image/png' });
@@ -179,6 +183,10 @@ describe('MeuPerfilComponent', () => {
     componente.selecionarFoto({ target: campo } as unknown as Event);
     expect(componente.arquivoFoto).toBe(arquivo);
     componente.enviarFoto();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement!.querySelector('.foto-editor [role="status"]')?.textContent)
+      .toContain('Enviando foto profissional...');
 
     const requisicao = http.expectOne('/api/perfil/foto');
     expect(requisicao.request.method).toBe('PUT');
@@ -201,6 +209,41 @@ describe('MeuPerfilComponent', () => {
 
     expect(componente.perfil()?.fotoUrl).toBe('/api/uploads/0123456789abcdef0123456789abcdef.png');
     expect(harness.routeNativeElement?.textContent).toContain('Foto do perfil atualizada.');
+
+    componente.removerFoto();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.foto-editor [role="status"]')?.textContent)
+      .toContain('Removendo foto profissional...');
+    const removerFoto = http.expectOne('/api/perfil/foto');
+    expect(removerFoto.request.method).toBe('DELETE');
+    removerFoto.flush(null);
+    harness.detectChanges();
+
+    const arquivoCapa = new File(['capa'], 'capa.png', { type: 'image/png' });
+    const campoCapa = { files: [arquivoCapa], value: 'capa.png' } as unknown as HTMLInputElement;
+    componente.selecionarCapa({ target: campoCapa } as unknown as Event);
+    componente.enviarCapa();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.capa-editor [role="status"]')?.textContent)
+      .toContain('Enviando capa profissional...');
+
+    const enviarCapa = http.expectOne('/api/perfil/capa');
+    expect(enviarCapa.request.method).toBe('PUT');
+    enviarCapa.flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: '/api/uploads/capa.png', especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 2048, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
+    harness.detectChanges();
+
+    componente.removerCapa();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.capa-editor [role="status"]')?.textContent)
+      .toContain('Removendo capa profissional...');
+    const removerCapa = http.expectOne('/api/perfil/capa');
+    expect(removerCapa.request.method).toBe('DELETE');
+    removerCapa.flush(null);
   });
 
   it('retenta uma publicação sem reenviar as fotos já aceitas pelo servidor', async () => {
@@ -234,6 +277,9 @@ describe('MeuPerfilComponent', () => {
     const publicar = () => Array.from(raiz.querySelectorAll<HTMLButtonElement>('.acoes-portfolio button'))
       .find((botao) => botao.textContent?.includes('Publicar no portfólio'))!;
     publicar().click();
+    harness.detectChanges();
+    expect(raiz.querySelector('.portfolio-editor [role="status"]')?.textContent)
+      .toContain('Enviando fotos para o portfólio...');
     const primeiroEnvio = http.expectOne('/api/uploads');
     expect((primeiroEnvio.request.body as FormData).get('file')).toBe(primeiraFoto);
     primeiroEnvio.flush({ url: '/api/uploads/primeira.png' });

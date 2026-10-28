@@ -45,6 +45,8 @@ export class MeuPerfilComponent {
   protected erroArmazenamento = '';
   protected readonly previaFoto = signal<string | null>(null);
   protected readonly previaCapa = signal<string | null>(null);
+  protected readonly statusOperacaoFoto = signal('');
+  protected readonly statusOperacaoCapa = signal('');
   protected dados: AtualizacaoPerfil = { ...formularioVazio };
   protected arquivoFoto: File | null = null;
   protected arquivoCapa: File | null = null;
@@ -192,11 +194,15 @@ export class MeuPerfilComponent {
     if (!this.arquivoCapa || this.enviandoCapa || this.salvando || this.enviandoFoto) return;
 
     this.enviandoCapa = true;
+    this.statusOperacaoCapa.set('Enviando capa profissional...');
     this.erro = '';
     this.sucesso = '';
     this.api.atualizarCapa(this.arquivoCapa).pipe(
       takeUntilDestroyed(this.destroyRef),
-      finalize(() => (this.enviandoCapa = false)),
+      finalize(() => {
+        this.enviandoCapa = false;
+        this.statusOperacaoCapa.set('');
+      }),
     ).subscribe({
       next: (perfil) => {
         this.perfil.set(perfil);
@@ -213,11 +219,15 @@ export class MeuPerfilComponent {
     if (this.enviandoCapa || this.enviandoFoto || this.salvando || !this.perfil()?.capaUrl) return;
 
     this.enviandoCapa = true;
+    this.statusOperacaoCapa.set('Removendo capa profissional...');
     this.erro = '';
     this.sucesso = '';
     this.api.removerCapa().pipe(
       takeUntilDestroyed(this.destroyRef),
-      finalize(() => (this.enviandoCapa = false)),
+      finalize(() => {
+        this.enviandoCapa = false;
+        this.statusOperacaoCapa.set('');
+      }),
     ).subscribe({
       next: () => {
         this.perfil.update((perfil) => (perfil ? { ...perfil, capaUrl: null } : null));
@@ -233,13 +243,17 @@ export class MeuPerfilComponent {
     if (!this.arquivoFoto || this.enviandoFoto || this.enviandoCapa || this.salvando) return;
 
     this.enviandoFoto = true;
+    this.statusOperacaoFoto.set('Enviando foto profissional...');
     this.erro = '';
     this.sucesso = '';
     this.api
       .atualizarFoto(this.arquivoFoto)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => (this.enviandoFoto = false)),
+        finalize(() => {
+          this.enviandoFoto = false;
+          this.statusOperacaoFoto.set('');
+        }),
       )
       .subscribe({
         next: (perfil) => {
@@ -257,13 +271,17 @@ export class MeuPerfilComponent {
     if (this.enviandoFoto || this.enviandoCapa || this.salvando || !this.perfil()?.fotoUrl) return;
 
     this.enviandoFoto = true;
+    this.statusOperacaoFoto.set('Removendo foto profissional...');
     this.erro = '';
     this.sucesso = '';
     this.api
       .removerFoto()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => (this.enviandoFoto = false)),
+        finalize(() => {
+          this.enviandoFoto = false;
+          this.statusOperacaoFoto.set('');
+        }),
       )
       .subscribe({
         next: () => {

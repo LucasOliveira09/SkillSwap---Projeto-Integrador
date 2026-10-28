@@ -138,6 +138,9 @@
                   <small class="upload-dica">JPG, PNG ou WEBP até 5 MB</small>
                 </div>
               }
+              @if (enviandoImagem()) {
+                <p class="upload-feedback" role="status">Enviando foto do anúncio...</p>
+              }
               @if (erroUpload()) {
                 <p class="alerta-erro-upload" role="alert">{{ erroUpload() }}</p>
               }

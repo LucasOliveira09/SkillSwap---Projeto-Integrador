@@ -344,6 +344,11 @@ button[type='submit'] {
   color: var(--ss-muted);
   margin-top: 6px;
 }
+.upload-feedback {
+  margin: 10px 0 0;
+  color: var(--ss-ink);
+  font-size: 13px;
+}
 .upload-preview {
   display: flex;
   align-items: center;
