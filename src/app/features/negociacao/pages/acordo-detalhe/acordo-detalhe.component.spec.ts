@@ -330,10 +330,26 @@ describe('AcordoDetalheComponent', () => {
     expect(secao.querySelectorAll('.editar-avaliacao fieldset .estrelas[aria-label]')).toHaveSize(0);
     expect(secao.querySelectorAll('.editar-avaliacao fieldset legend').item(0).textContent)
       .toContain('Nota atualizada do profissional');
-    const notaProfissional = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[0].querySelectorAll('button');
+    const camposDeEstrelas = secao.querySelectorAll<HTMLFieldSetElement>('.editar-avaliacao fieldset');
+    const notaProfissional = camposDeEstrelas[0].querySelectorAll<HTMLButtonElement>('button');
+    const notaOferta = camposDeEstrelas[1].querySelectorAll<HTMLButtonElement>('button');
+    expect(Array.from(notaProfissional, (estrela) => estrela.textContent?.trim()))
+      .toEqual(['★', '★', '★', '☆', '☆']);
+    expect(Array.from(notaOferta, (estrela) => estrela.textContent?.trim()))
+      .toEqual(['★', '★', '★', '★', '☆']);
+
     notaProfissional[4].click();
-    const notaOferta = secao.querySelectorAll<HTMLButtonElement>('.editar-avaliacao fieldset')[1].querySelectorAll('button');
+    notaOferta[0].click();
+    harness.detectChanges();
+    expect(Array.from(notaProfissional, (estrela) => estrela.textContent?.trim()))
+      .toEqual(['★', '★', '★', '★', '★']);
+    expect(Array.from(notaOferta, (estrela) => estrela.textContent?.trim()))
+      .toEqual(['★', '☆', '☆', '☆', '☆']);
     notaOferta[3].click();
+    harness.detectChanges();
+    expect(Array.from(notaOferta, (estrela) => estrela.textContent?.trim()))
+      .toEqual(['★', '★', '★', '★', '☆']);
+
     const depoimento = secao.querySelector<HTMLTextAreaElement>('.editar-avaliacao textarea')!;
     depoimento.value = 'Relato com contexto revisado';
     depoimento.dispatchEvent(new Event('input'));
