@@ -39,13 +39,13 @@
         }
       </section>
 
-      <h2>Mensagens recebidas em seus anúncios</h2>
       @if (erroAcaoProposta()) {
         <p role="alert">
           {{ erroAcaoProposta() }}
           <button mat-button type="button" (click)="erroAcaoProposta.set(''); carregarPropostas()">Atualizar lista</button>
         </p>
       }
+      <h2>Mensagens recebidas em seus anúncios</h2>
       @if (carregandoPropostas()) {
         <p class="status-msg">Carregando mensagens...</p>
       } @else if (erroPropostas()) {
@@ -114,7 +114,11 @@
                 <small>Enviado em {{ p.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
                 <a mat-button [routerLink]="['/anuncios', p.anuncioId]">Ver anúncio</a>
                 @if (p.status === 'PENDENTE') {
-                  <button mat-button color="warn" type="button" (click)="cancelarProposta(p.id)">Cancelar proposta</button>
+                  <button mat-button color="warn" type="button"
+                    [disabled]="acaoPropostaEmAndamento() !== null"
+                    (click)="cancelarProposta(p.id)">
+                    {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'CANCELADA' ? 'Cancelando...' : 'Cancelar proposta' }}
+                  </button>
                 }
               </div>
             </div>

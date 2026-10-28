@@ -5,7 +5,7 @@ import { appConfig } from '../../../app.config';
 import { SessaoService } from '../data-access/sessao.service';
 import { destinoPosLogin } from './conta.component';
 
-describe('ações sobre propostas recebidas', () => {
+describe('ações sobre propostas', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
@@ -38,9 +38,34 @@ describe('ações sobre propostas recebidas', () => {
     expect(aceitar.disabled).toBeFalse();
     http.expectNone('/api/propostas/5');
   });
+
+  it('informa falha ao cancelar e bloqueia cliques repetidos na proposta enviada', async () => {
+    const harness = await abrirContaComProposta(http, 'ENVIADAS');
+    const cancelar = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.proposta-card button')!;
+
+    cancelar.click();
+    harness.detectChanges();
+
+    const pedido = http.expectOne('/api/propostas/6');
+    expect(pedido.request.method).toBe('PATCH');
+    expect(pedido.request.body).toEqual({ status: 'CANCELADA' });
+    expect(cancelar.disabled).toBeTrue();
+    expect(cancelar.textContent).toContain('Cancelando...');
+    cancelar.click();
+    pedido.flush({ mensagem: 'Falha temporária' }, { status: 503, statusText: 'Service Unavailable' });
+
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent)
+      .toContain('Não foi possível cancelar esta proposta. Atualize a lista e tente novamente.');
+    expect(cancelar.disabled).toBeFalse();
+    http.expectNone('/api/propostas/6');
+  });
 });
 
-async function abrirContaComProposta(http: HttpTestingController): Promise<RouterTestingHarness> {
+async function abrirContaComProposta(
+  http: HttpTestingController,
+  direcao: 'RECEBIDAS' | 'ENVIADAS' = 'RECEBIDAS',
+): Promise<RouterTestingHarness> {
   TestBed.inject(SessaoService).entrar('anunciante@teste.invalid', 'senha').subscribe();
   http.expectOne('/api/sessoes').flush({ token: 'token-teste' });
 
@@ -49,7 +74,7 @@ async function abrirContaComProposta(http: HttpTestingController): Promise<Route
     request.url === '/api/propostas' && request.params.get('direcao') === 'RECEBIDAS',
   );
   recebidas.flush({
-    itens: [{
+    itens: direcao === 'RECEBIDAS' ? [{
       id: 5,
       anuncioId: 3,
       anuncioTitulo: 'Aula de violão',
@@ -58,7 +83,7 @@ async function abrirContaComProposta(http: HttpTestingController): Promise<Route
       mensagemInicial: 'Tenho interesse no anúncio.',
       status: 'PENDENTE',
       criadoEm: '2026-10-28T10:00:00',
-    }],
+    }] : [],
     pagina: 0,
     tamanho: 20,
     totalItens: 1,
@@ -66,7 +91,22 @@ async function abrirContaComProposta(http: HttpTestingController): Promise<Route
   });
   http.expectOne((request) =>
     request.url === '/api/propostas' && request.params.get('direcao') === 'ENVIADAS',
-  ).flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+  ).flush({
+    itens: direcao === 'ENVIADAS' ? [{
+      id: 6,
+      anuncioId: 3,
+      anuncioTitulo: 'Aula de violão',
+      proponenteId: 1,
+      proponenteNome: 'Anunciante',
+      mensagemInicial: 'Tenho interesse neste anúncio.',
+      status: 'PENDENTE',
+      criadoEm: '2026-10-28T10:00:00',
+    }] : [],
+    pagina: 0,
+    tamanho: 20,
+    totalItens: direcao === 'ENVIADAS' ? 1 : 0,
+    totalPaginas: direcao === 'ENVIADAS' ? 1 : 0,
+  });
   http.expectOne('/api/acordos?pagina=0&tamanho=20')
     .flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
   http.expectOne('/api/notificacoes?pagina=0&tamanho=10')

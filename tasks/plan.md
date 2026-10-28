@@ -205,6 +205,8 @@ Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu
 
 **Cancelamento do acordo (28/10/2026):** participantes podem cancelar um acordo em andamento após confirmação explícita; o estado e o evento são recarregados da API. A API passou a rejeitar novas mensagens depois de cancelamento ou conclusão, mantendo o contrato de envio alinhado ao formulário, que só aparece durante o acordo em andamento. Testes de regressão reproduziram os dois envios indevidos e passaram após a correção.
 
+**Ações de propostas na conta (28/10/2026):** o cancelamento de proposta enviada compartilha o bloqueio de ações concorrentes com aceitar e recusar. Falhas são apresentadas como erro da ação, sem se misturar a falhas de carregamento, e a interface libera nova tentativa depois da resposta 503. O teste reproduziu cliques repetidos antes da alteração e passou com um único PATCH.
+
 ### Fase 6 — Conclusão, avaliações e reputação
 
 - Definir confirmação unilateral ou mútua de conclusão e janela de avaliação; resolver conflito de confirmação antes de liberar avaliação.
