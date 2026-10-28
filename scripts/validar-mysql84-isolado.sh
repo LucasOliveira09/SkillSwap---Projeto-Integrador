@@ -111,6 +111,73 @@ docker run -d \
 esperar_saude "$api"
 
 docker exec "$api" sh -ec 'wget -q -O /dev/null http://127.0.0.1:8080/api/anuncios'
+
+# Exercita a notificação criada por uma proposta e sua leitura persistida no MySQL descartável.
+docker exec "$api" sh -ec '
+  set -eu
+  base=http://127.0.0.1:8080
+  sufixo="$(date +%s)-$$"
+  senha=validacao-temporaria-123
+
+  registrar() {
+    nome=$1
+    email=$2
+    resposta=$(wget -qO- --header="Content-Type: application/json" \
+      --post-data="{\"nome\":\"$nome\",\"email\":\"$email\",\"senha\":\"$senha\"}" \
+      "$base/api/usuarios")
+    token=$(printf "%s" "$resposta" | sed -n "s/.*\"token\":\"\\([^\"]*\\)\".*/\\1/p")
+    if [ -z "$token" ]; then
+      echo "A API não devolveu o token da conta temporária." >&2
+      exit 1
+    fi
+    printf "%s" "$token"
+  }
+
+  token_profissional=$(registrar "Profissional de validação" "profissional-$sufixo@skillswap.invalid")
+  token_cliente=$(registrar "Cliente de validação" "cliente-$sufixo@skillswap.invalid")
+
+  anuncio=$(wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_profissional" \
+    --post-data="{\"titulo\":\"Aula de validação MySQL\",\"descricao\":\"Oferta descartável para validar notificações.\",\"categoria\":\"AULAS\",\"cidade\":\"Florianópolis\",\"modalidade\":\"VENDA\",\"preco\":10.00,\"disponibilidades\":[]}" \
+    "$base/api/anuncios")
+  anuncio_id=$(printf "%s" "$anuncio" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"titulo\".*/\\1/p")
+  if [ -z "$anuncio_id" ]; then
+    echo "A API não devolveu o anúncio temporário." >&2
+    exit 1
+  fi
+
+  wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_cliente" \
+    --post-data="{\"mensagemInicial\":\"Tenho interesse nesta oferta de validação.\"}" \
+    "$base/api/anuncios/$anuncio_id/propostas" >/dev/null
+
+  notificacoes=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
+    "$base/api/notificacoes?pagina=0&tamanho=20")
+  printf "%s" "$notificacoes" | grep -q "PROPOSTA_RECEBIDA"
+  printf "%s" "$notificacoes" | grep -q "\"lida\":false"
+  notificacao_id=$(printf "%s" "$notificacoes" | sed -n "s/.*\"itens\":\\[{\"id\":\\([0-9][0-9]*\\),\"tipo\":\"PROPOSTA_RECEBIDA\".*/\\1/p")
+  if [ -z "$notificacao_id" ]; then
+    echo "A notificação da proposta não foi encontrada na página do destinatário." >&2
+    exit 1
+  fi
+
+  resposta_patch=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 13\r\nConnection: close\r\n\r\n{\"lida\":true}" \
+    "$notificacao_id" "$token_profissional" | busybox nc 127.0.0.1 8080)
+  printf "%s" "$resposta_patch" | grep -q "HTTP/1.1 200"
+  printf "%s" "$resposta_patch" | grep -q "\"lida\":true"
+  notificacoes_atualizadas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
+    "$base/api/notificacoes?pagina=0&tamanho=20")
+  printf "%s" "$notificacoes_atualizadas" | grep -q "\"lida\":true"
+  resposta_reabertura=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 14\r\nConnection: close\r\n\r\n{\"lida\":false}" \
+    "$notificacao_id" "$token_profissional" | busybox nc 127.0.0.1 8080)
+  printf "%s" "$resposta_reabertura" | grep -q "HTTP/1.1 200"
+  printf "%s" "$resposta_reabertura" | grep -q "\"lida\":false"
+  notificacoes_reabertas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
+    "$base/api/notificacoes?pagina=0&tamanho=20")
+  printf "%s" "$notificacoes_reabertas" | grep -q "\"lida\":false"
+  echo "Notificação de proposta criada, listada, marcada como lida e reaberta no MySQL descartável."
+'
+
 versao_mysql=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT VERSION()"')
 versao_flyway=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT version FROM skillswap.flyway_schema_history WHERE success = 1 ORDER BY installed_rank DESC LIMIT 1"')
 if [ "$versao_flyway" != 14 ]; then
