@@ -72,6 +72,7 @@ public class SecurityConfig {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
+                "http://100.97.254.9:8089",
                 "https://skillswap.vizihub.com.br",
                 "http://skillswap.163-176-204-48.sslip.io",
                 "https://skillswap.163-176-204-48.sslip.io"
