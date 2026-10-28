@@ -250,6 +250,8 @@ Em 28/10/2026, a verificação da descoberta em MySQL 8.4.11 descartável encont
 
 Em 28/10/2026, uma instância MySQL 8.4.11 descartável validou pela interface a contestação de avaliação em duas decisões: MANTER e OCULTAR. O teste criou acordos concluídos e avaliações verificadas via API, abriu a fila pela conta moderadora e registrou a fundamentação na interface a 390 px. Depois da decisão de ocultação, a média pública mudou de 1,5/2 para 2,0/1; a avaliação ocultada saiu da listagem pública e a contestação permaneceu disponível ao profissional. Reiniciar a API não perdeu status, decisão ou métricas. Containers, volumes e dados sintéticos foram removidos; a prévia Tailscale e o site público não foram alterados.\n\nA prévia é uma fotografia da base na data do backup. Nunca substituir o banco público por essa fotografia. A publicação descrita abaixo atualizou as imagens da aplicação diretamente sobre o banco ativo, preservando os dados atuais.
 
+Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu cadastro, login, edição do perfil e leitura do portfólio. Um upload e uma publicação foram criados pela API; a edição da legenda foi feita pela interface e apareceu no perfil público junto à foto. Após a remoção da publicação pela API, a imagem retornou 404 sem autenticação e 200 para o proprietário. A seleção/envio do arquivo pelo controle do navegador não foi coberta nesse percurso. O banco, uploads, conta de teste, containers e arquivos temporários foram removidos; a prévia 8.0.46 e o site público permaneceram sem alteração.
+
 ## Site público
 
 O registro da rotação de credenciais da VPS em 28/10/2026 e suas verificações está em [remediacao-credenciais-2026-10-28.md](remediacao-credenciais-2026-10-28.md).
