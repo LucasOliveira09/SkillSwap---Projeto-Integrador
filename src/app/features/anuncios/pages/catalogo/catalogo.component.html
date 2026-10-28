@@ -1,18 +1,52 @@
-<app-banner-destaques />
+@if (!temFiltro()) {
+  <div class="inicio-topo">
+    <section class="hero pagina" aria-labelledby="inicio-titulo">
+      <div class="hero-texto">
+        <span class="sobretitulo">GENTE BOA NO QUE FAZ</span>
+        <h1 id="inicio-titulo">Seu próximo projeto<br />começa com um <em>talento.</em></h1>
+        <p>Encontre serviços, aprenda algo novo ou troque habilidades. Conheça quem faz antes de combinar.</p>
+        <div class="hero-acoes">
+          <a class="acao-principal" href="#lista-anuncios">Explorar serviços <span aria-hidden="true">↗</span></a>
+          <a class="acao-secundaria" routerLink="/profissionais">Conhecer profissionais</a>
+        </div>
+        <span class="hero-nota"><app-icone nome="local" /> Conexões que começam perto de você</span>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <img src="images/legado/servico-eletricista.webp" alt="" width="420" height="320" fetchpriority="high" />
+        <span class="selo-visual"><app-icone nome="troca" /> Um talento. Muitas possibilidades.</span>
+        <span class="imagem-ilustrativa">Imagem ilustrativa</span>
+      </div>
+    </section>
+  </div>
+}
+
 <div class="pagina catalogo">
+  @if (!temFiltro()) {
+    <nav class="atalhos" aria-label="Como você quer começar?">
+      <a routerLink="/anuncios" [queryParams]="{ modalidade: 'VENDA' }"><span class="atalho-icone"><app-icone nome="busca" /></span><div><strong>Preciso de um serviço</strong><span>Explore ofertas para o seu dia a dia</span></div><span aria-hidden="true">↗</span></a>
+      <a routerLink="/anuncios" [queryParams]="{ modalidade: 'TROCA' }"><span class="atalho-icone verde"><app-icone nome="troca" /></span><div><strong>Quero trocar habilidades</strong><span>Compartilhe o que você faz bem</span></div><span aria-hidden="true">↗</span></a>
+      <a routerLink="/anuncios/novo"><span class="atalho-icone"><app-icone nome="usuario" /></span><div><strong>Quero divulgar meu trabalho</strong><span>Crie seu anúncio e seja encontrado</span></div><span aria-hidden="true">↗</span></a>
+    </nav>
+    @if (vitrine().dados; as colecoes) {
+      <app-colecao-visual titulo="O que você precisa hoje?" [itens]="colecoes.servicos" formato="circulo" />
+    }
+  }
+
   <section aria-labelledby="ultimos-titulo" id="lista-anuncios">
     <div class="linha-titulo">
       <h2 class="titulo-secao" id="ultimos-titulo">
-        {{ temFiltro() ? 'Resultados da busca' : 'Últimos postados...' }}
+        {{ temFiltro() ? 'Resultados da busca' : 'Explore novas possibilidades' }}
       </h2>
       @if (temFiltro()) {
         <a mat-button routerLink="/anuncios">Limpar filtros</a>
       }
     </div>
-    <p class="nota-demo">
-      Exemplos ilustrativos do protótipo. Perfis, notas e ofertas não representam contratações
-      reais.
-    </p>
+    <p class="introducao-lista">{{ temFiltro() ? 'Compare as ofertas e conheça o perfil de quem anuncia.' : 'Serviços, aulas e trocas reunidos em um só lugar.' }}</p>
+    @if (temExemplos()) {
+      <p class="nota-demo">Os cartões marcados como “Exemplo” são ilustrativos e não estão disponíveis para contratação.</p>
+    }
+    <details class="painel-filtros">
+      <summary><app-icone nome="busca" /> Refinar minha busca <span>Cidade, preço e disponibilidade</span></summary>
     <form class="filtros-ofertas" aria-label="Filtros de ofertas"
       (submit)="submeterFiltros($event, cidade.value, modalidade.value, precoMinimo.value, precoMaximo.value, diaSemana.value, periodo.value)">
       <label>
@@ -55,6 +89,7 @@
       <button mat-stroked-button type="submit">Aplicar filtros</button>
       <p class="ajuda-filtros">A faixa de preço vale para vendas; ofertas de troca não têm preço.</p>
     </form>
+    </details>
     @if (erroFiltro()) { <p class="erro-filtro" role="alert">{{ erroFiltro() }}</p> }
     <div class="barra-lista">
       <p class="sessao">
@@ -75,13 +110,13 @@
         @for (indice of paginas(); track indice) {
           <button
             type="button"
-            class="ponto"
+            class="numero-pagina"
             [class.ativo]="paginaAtual() === indice"
             [attr.aria-label]="'Página ' + (indice + 1)"
             [attr.aria-pressed]="paginaAtual() === indice"
             (click)="irPara(indice)"
             [disabled]="estado().carregando"
-          ></button>
+          >{{ indice + 1 }}</button>
         }
         <button
           type="button"
@@ -104,11 +139,22 @@
         </button>
       </div>
     } @else if (visiveis().length) {
-      <div class="vitrine-anuncios">
-        @for (anuncio of visiveis(); track anuncio.id) {
-          <app-anuncio-card [anuncio]="anuncio" />
+      @if (temFiltro()) {
+        <div class="vitrine-anuncios">
+          @for (anuncio of visiveis(); track anuncio.id) { <app-anuncio-card [anuncio]="anuncio" /> }
+        </div>
+      } @else {
+        @for (secao of secoes(); track secao.modalidade) {
+          <section class="prateleira" [attr.aria-label]="secao.titulo">
+            <div class="cabecalho-prateleira"><div><h3>{{ secao.titulo }}</h3><p>{{ secao.descricao }}</p></div>
+              <a routerLink="/anuncios" [queryParams]="{ modalidade: secao.modalidade }">Ver todas <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="vitrine-anuncios">
+              @for (anuncio of secao.itens; track anuncio.id) { <app-anuncio-card [anuncio]="anuncio" /> }
+            </div>
+          </section>
         }
-      </div>
+      }
     } @else {
       <div class="vazio" role="status">
         <app-icone nome="busca" />
@@ -118,25 +164,15 @@
       </div>
     }
   </section>
-  @if (vitrine().dados; as colecoes) {
-    <app-colecao-visual titulo="Talvez você esteja procurando..." [itens]="colecoes.categorias" />
-    <app-colecao-visual
-      titulo="Produtos mais pesquisados..."
-      [itens]="colecoes.destaques"
-      formato="banner"
-    />
-    <p class="nota-colecao">
-      Seleção visual do projeto antigo, sem dados de popularidade em tempo real.
-    </p>
-    <app-colecao-visual
-      titulo="Serviços mais procurados..."
-      [itens]="colecoes.servicos"
-      formato="servico"
-    />
-  } @else if (vitrine().erro) {
-    <p role="alert">
-      Não foi possível carregar as coleções.
-      <button mat-button type="button" (click)="recarregar()">Tentar novamente</button>
-    </p>
+  @if (!temFiltro()) {
+    <section class="convite" aria-labelledby="convite-titulo">
+      <div><span class="sobretitulo">MOSTRE O QUE VOCÊ FAZ</span><h2 id="convite-titulo">Seu trabalho merece ser visto.</h2><p>Reúna suas ofertas, publique fotos dos seus projetos e construa seu perfil profissional.</p></div>
+      <a class="acao-principal" routerLink="/anuncios/novo">Criar meu anúncio <span aria-hidden="true">↗</span></a>
+    </section>
+    <section class="como-funciona" aria-label="Como funciona o SkillSwap">
+      <div><span>01</span><h3>Encontre seu talento</h3><p>Busque pelo serviço ou pela habilidade que você precisa.</p></div>
+      <div><span>02</span><h3>Conheça quem faz</h3><p>Explore o perfil, as publicações e as avaliações disponíveis.</p></div>
+      <div><span>03</span><h3>Combine os detalhes</h3><p>Envie uma proposta e organize a negociação pela plataforma.</p></div>
+    </section>
   }
 </div>

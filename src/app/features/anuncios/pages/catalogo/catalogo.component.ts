@@ -6,7 +6,6 @@ import { BehaviorSubject, catchError, combineLatest, map, of, startWith, switchM
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
 import { DIAS_SEMANA, DiaSemana, PERIODOS_DIA, PeriodoDia } from '../../models/anuncio.model';
-import { BannerDestaquesComponent } from '../../ui/banner-destaques/banner-destaques.component';
 import { AnuncioCardComponent } from '../../ui/anuncio-card/anuncio-card.component';
 import { ColecaoVisualComponent } from '../../ui/colecao-visual/colecao-visual.component';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
@@ -27,7 +26,6 @@ const carregando = { carregando: true, erro: false, dados: paginaVazia };
   imports: [
     RouterLink,
     MatButtonModule,
-    BannerDestaquesComponent,
     AnuncioCardComponent,
     ColecaoVisualComponent,
     IconeComponent,
@@ -61,6 +59,7 @@ export class CatalogoComponent {
         const pagina = Number(parametros.get('pagina') || 0);
         return this.api
           .listar({
+            tamanho: 12,
             busca: parametros.get('busca') || '',
             categoria: parametros.get('categoria') || '',
             cidade: parametros.get('cidade') || '',
@@ -99,6 +98,14 @@ export class CatalogoComponent {
     return Array.from({ length: Math.min(5, total) }, (_, i) => inicio + i);
   });
   protected readonly visiveis = computed(() => this.estado().dados.itens.map(this.cartao));
+
+  protected readonly temExemplos = computed(() => this.estado().dados.itens.some(a => a.exemplo));
+  protected readonly secoes = computed(() => [
+    { titulo: 'Serviços e aulas para contratar', descricao: 'Encontre a ajuda certa para o seu próximo projeto.', modalidade: 'VENDA',
+      itens: this.estado().dados.itens.filter(a => a.modalidade === 'venda').map(this.cartao) },
+    { titulo: 'Troque o que você sabe', descricao: 'Seu talento pode ser o que outra pessoa procura.', modalidade: 'TROCA',
+      itens: this.estado().dados.itens.filter(a => a.modalidade === 'troca').map(this.cartao) },
+  ].filter(secao => secao.itens.length));
 
   protected recarregar(): void {
     this.repetir.next(this.repetir.value + 1);

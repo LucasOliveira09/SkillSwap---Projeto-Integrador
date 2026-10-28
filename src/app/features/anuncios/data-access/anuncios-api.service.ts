@@ -21,7 +21,7 @@ export class AnunciosApiService {
       fromObject: {
         ...filtros,
         pagina: String(filtros.pagina),
-        tamanho: '5',
+        tamanho: String(filtros.tamanho ?? 5),
       },
     });
     return this.http

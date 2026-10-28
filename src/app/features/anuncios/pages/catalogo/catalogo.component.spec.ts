@@ -61,4 +61,24 @@ describe('Catálogo integrado ao backend', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement?.querySelector('[role="alert"]')).toBeNull();
   });
+  it('separa venda e troca a partir dos dados persistidos, sem inventar ofertas', async () => {
+    const harness = await RouterTestingHarness.create('/anuncios');
+    http.expectOne('/api/vitrine').flush({ categorias: [], destaques: [], servicos: [] });
+    const req = http.expectOne(r => r.url === '/api/anuncios');
+    expect(req.request.params.get('tamanho')).toBe('12');
+    const base = { categoria: 'AULAS', categoriaRotulo: 'Aulas', descricao: 'Aula individual',
+      criadoEm: '2026-10-28', autor: 'Ana', usuarioId: 7, exemplo: false, cidade: 'Ourinhos' };
+    req.flush({ ...resposta, totalItens: 2, itens: [
+      { ...base, id: 1, titulo: 'Piano', modalidade: 'VENDA', preco: 90 },
+      { ...base, id: 2, titulo: 'Violão', modalidade: 'TROCA', preco: null },
+    ] });
+    harness.detectChanges();
+    const secoes = harness.routeNativeElement!.querySelectorAll('.prateleira');
+    expect(secoes.length).toBe(2);
+    expect(secoes[0].textContent).toContain('Piano');
+    expect(secoes[0].textContent).not.toContain('Violão');
+    expect(secoes[1].textContent).toContain('Violão');
+    expect(harness.routeNativeElement!.querySelector('.nota-demo')).toBeNull();
+  });
+
 });

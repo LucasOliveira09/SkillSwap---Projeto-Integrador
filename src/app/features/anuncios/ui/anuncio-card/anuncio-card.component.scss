@@ -2,17 +2,16 @@
   display: block;
   min-width: 0;
   height: 100%;
-  font: 400 16px/1.4 Arial, sans-serif;
+  font: inherit;
 }
 .anuncio-card {
   height: 100%;
   min-width: 0;
-  border-radius: 20px;
+  border-radius: 10px;
   overflow: hidden;
   background: white;
-  box-shadow:
-    0 10px 18px #00000024,
-    0 4px 8px #0000000d;
+  border: 1px solid #dfe6ed;
+  box-shadow: 0 2px 4px #17365f06;
 }
 .foto {
   position: relative;
@@ -221,4 +220,31 @@ h3 {
 }
 .sem-foto span {
   font-size: 12px;
+}
+
+.avatar-link { display: grid; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; }
+.avatar-link img, .avatar-link .avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.avatar-link:hover { outline: 2px solid var(--ss-blue); outline-offset: 2px; }
+.perfil { flex-wrap: wrap; }
+.local { flex-basis: 100%; margin-top: 6px; }
+.autor { flex: 1; }
+.detalhes li { font-size: 12px; }
+.titulo-preco { display: block; }
+h3 { font-size: 15px; }
+.preco { font-size: 20px; margin-top: 10px; }
+.preco small { margin-left: 3px; font-size: 11px; }
+@media (max-width: 600px) {
+  .corpo { padding: 12px 10px; min-height: 0; }
+  h3 { font-size: 13px; }
+  .preco { font-size: 17px; white-space: normal; }
+  .preco small { display: block; margin: 3px 0 0; }
+  .detalhes { display: none; }
+  .troca { font-size: 10px; padding: 5px; border-radius: 5px; }
+  .perfil { padding: 10px; gap: 6px; }
+  .autor-link, .autor strong { font-size: 11px; }
+  .autor small, .local { font-size: 10px; }
+  .categoria { position: static; display: block; border-radius: 0; font-size: 9px; }
+  .foto { aspect-ratio: auto; }
+  .foto > img, .sem-foto { height: 115px; }
+  .origem { top: 8px; }
 }

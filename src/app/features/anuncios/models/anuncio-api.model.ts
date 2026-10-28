@@ -40,6 +40,7 @@ export interface VitrineApi {
 }
 
 export interface FiltrosAnuncios {
+  tamanho?: number;
   busca: string;
   categoria: string;
   cidade: string;
