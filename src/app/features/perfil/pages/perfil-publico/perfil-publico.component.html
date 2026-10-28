@@ -1,4 +1,4 @@
-<main class="pagina-perfil" aria-labelledby="titulo-perfil">
+<section class="pagina-perfil" aria-labelledby="titulo-perfil">
   @if (estado().carregando) {
     <p class="estado" role="status">Carregando perfil profissional...</p>
   } @else if (estado().erro || !perfil()) {
@@ -228,4 +228,4 @@
       }
     </section>
   }
-</main>
+</section>
