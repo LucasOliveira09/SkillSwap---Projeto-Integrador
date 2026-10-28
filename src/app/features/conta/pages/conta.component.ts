@@ -65,6 +65,8 @@ export class ContaComponent {
   protected readonly acordos = signal<readonly Acordo[]>([]);
   protected readonly carregandoPropostas = signal(false);
   protected readonly erroPropostas = signal('');
+  protected readonly acaoPropostaEmAndamento = signal<{ id: number; status: 'ACEITA' | 'RECUSADA' } | null>(null);
+  protected readonly erroAcaoProposta = signal('');
   protected readonly erroAcordos = signal('');
   protected readonly notificacoes = signal<readonly Notificacao[]>([]);
   protected readonly carregandoNotificacoes = signal(false);
@@ -142,20 +144,28 @@ export class ContaComponent {
   }
 
   protected aceitarProposta(id: number): void {
-    this.api
-      .atualizarProposta(id, 'ACEITA')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => this.carregarPropostas(),
-      });
+    this.atualizarStatusProposta(id, 'ACEITA');
   }
 
   protected recusarProposta(id: number): void {
+    this.atualizarStatusProposta(id, 'RECUSADA');
+  }
+
+  private atualizarStatusProposta(id: number, status: 'ACEITA' | 'RECUSADA'): void {
+    if (this.acaoPropostaEmAndamento()) return;
+    this.erroAcaoProposta.set('');
+    this.acaoPropostaEmAndamento.set({ id, status });
     this.api
-      .atualizarProposta(id, 'RECUSADA')
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .atualizarProposta(id, status)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.acaoPropostaEmAndamento.set(null)),
+      )
       .subscribe({
         next: () => this.carregarPropostas(),
+        error: () => this.erroAcaoProposta.set(
+          `Não foi possível ${status === 'ACEITA' ? 'aceitar' : 'recusar'} esta proposta. Atualize a lista e tente novamente.`,
+        ),
       });
   }
 

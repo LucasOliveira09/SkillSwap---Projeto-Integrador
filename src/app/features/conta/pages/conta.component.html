@@ -40,6 +40,12 @@
       </section>
 
       <h2>Mensagens recebidas em seus anúncios</h2>
+      @if (erroAcaoProposta()) {
+        <p role="alert">
+          {{ erroAcaoProposta() }}
+          <button mat-button type="button" (click)="erroAcaoProposta.set(''); carregarPropostas()">Atualizar lista</button>
+        </p>
+      }
       @if (carregandoPropostas()) {
         <p class="status-msg">Carregando mensagens...</p>
       } @else if (erroPropostas()) {
@@ -66,11 +72,15 @@
                 <small>{{ p.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
                 @if (p.status === 'PENDENTE') {
                   <div class="proposta-acoes">
-                    <button mat-flat-button color="primary" (click)="aceitarProposta(p.id)">
-                      Aceitar
+                    <button mat-flat-button color="primary" type="button"
+                      [disabled]="acaoPropostaEmAndamento() !== null"
+                      (click)="aceitarProposta(p.id)">
+                      {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'ACEITA' ? 'Aceitando...' : 'Aceitar' }}
                     </button>
-                    <button mat-button color="warn" (click)="recusarProposta(p.id)">
-                      Recusar
+                    <button mat-button color="warn" type="button"
+                      [disabled]="acaoPropostaEmAndamento() !== null"
+                      (click)="recusarProposta(p.id)">
+                      {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'RECUSADA' ? 'Recusando...' : 'Recusar' }}
                     </button>
                   </div>
                 }

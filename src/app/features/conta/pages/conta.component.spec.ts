@@ -1,4 +1,79 @@
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { appConfig } from '../../../app.config';
+import { SessaoService } from '../data-access/sessao.service';
 import { destinoPosLogin } from './conta.component';
+
+describe('ações sobre propostas recebidas', () => {
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [...appConfig.providers, provideHttpClientTesting()] });
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => http.verify());
+
+  it('informa falha ao aceitar e impede ações repetidas enquanto a resposta está pendente', async () => {
+    const harness = await abrirContaComProposta(http);
+    const aceitar = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.proposta-acoes button')!;
+    const recusar = harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('.proposta-acoes button')[1];
+
+    aceitar.click();
+    harness.detectChanges();
+
+    const pedido = http.expectOne('/api/propostas/5');
+    expect(pedido.request.method).toBe('PATCH');
+    expect(pedido.request.body).toEqual({ status: 'ACEITA' });
+    expect(aceitar.disabled).toBeTrue();
+    expect(recusar.disabled).toBeTrue();
+    aceitar.click();
+    recusar.click();
+    pedido.flush({ mensagem: 'Falha temporária' }, { status: 500, statusText: 'Server Error' });
+
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent)
+      .toContain('Não foi possível aceitar esta proposta. Atualize a lista e tente novamente.');
+    expect(aceitar.disabled).toBeFalse();
+    http.expectNone('/api/propostas/5');
+  });
+});
+
+async function abrirContaComProposta(http: HttpTestingController): Promise<RouterTestingHarness> {
+  TestBed.inject(SessaoService).entrar('anunciante@teste.invalid', 'senha').subscribe();
+  http.expectOne('/api/sessoes').flush({ token: 'token-teste' });
+
+  const harness = await RouterTestingHarness.create('/conta');
+  const recebidas = http.expectOne((request) =>
+    request.url === '/api/propostas' && request.params.get('direcao') === 'RECEBIDAS',
+  );
+  recebidas.flush({
+    itens: [{
+      id: 5,
+      anuncioId: 3,
+      anuncioTitulo: 'Aula de violão',
+      proponenteId: 2,
+      proponenteNome: 'Cliente',
+      mensagemInicial: 'Tenho interesse no anúncio.',
+      status: 'PENDENTE',
+      criadoEm: '2026-10-28T10:00:00',
+    }],
+    pagina: 0,
+    tamanho: 20,
+    totalItens: 1,
+    totalPaginas: 1,
+  });
+  http.expectOne((request) =>
+    request.url === '/api/propostas' && request.params.get('direcao') === 'ENVIADAS',
+  ).flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+  http.expectOne('/api/acordos?pagina=0&tamanho=20')
+    .flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+  http.expectOne('/api/notificacoes?pagina=0&tamanho=10')
+    .flush({ itens: [], pagina: 0, tamanho: 10, totalItens: 0, totalPaginas: 0 });
+  harness.detectChanges();
+  return harness;
+}
 
 describe('destino após login', () => {
   it('retorna ao anúncio solicitado', () => {
