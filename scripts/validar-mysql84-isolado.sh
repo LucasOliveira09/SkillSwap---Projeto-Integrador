@@ -137,6 +137,19 @@ docker exec "$api" sh -ec '
   token_cliente=$(registrar "Cliente de validação" "cliente-$sufixo@skillswap.invalid")
   token_externo=$(registrar "Conta externa de validação" "externo-$sufixo@skillswap.invalid")
 
+  perfil_json="{\"tituloProfissional\":\"Marceneiro profissional\",\"bio\":\"Móveis sob medida.\",\"cidade\":\"Joinville\",\"especialidades\":\"marcenaria, móveis planejados\",\"perfilPublico\":true}"
+  perfil_tamanho=$(printf "%s" "$perfil_json" | wc -c | tr -d " ")
+  resposta_perfil=$(printf "PATCH /api/perfil HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s" \
+    "$token_profissional" "$perfil_tamanho" "$perfil_json" | busybox nc 127.0.0.1 8080)
+  printf "%s" "$resposta_perfil" | grep -q "HTTP/1.1 200"
+  profissionais=$(wget -qO- "$base/api/profissionais?busca=marceneiro&cidade=Joinville")
+  printf "%s" "$profissionais" | grep -q "\"totalItens\":1"
+  printf "%s" "$profissionais" | grep -q "\"tituloProfissional\":\"Marceneiro profissional\""
+  if printf "%s" "$profissionais" | grep -q "\"email\""; then
+    echo "A busca pública de profissionais expôs um endereço de e-mail." >&2
+    exit 1
+  fi
+
   anuncio=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_profissional" \
     --post-data="{\"titulo\":\"Aula de validação MySQL\",\"descricao\":\"Oferta descartável para validar notificações.\",\"categoria\":\"AULAS\",\"cidade\":\"Florianópolis\",\"modalidade\":\"VENDA\",\"preco\":10.00,\"disponibilidades\":[]}" \
@@ -183,7 +196,7 @@ docker exec "$api" sh -ec '
   notificacoes_reabertas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
   printf "%s" "$notificacoes_reabertas" | grep -q "\"lida\":false"
-  echo "Notificação criada, listada, protegida contra outra conta, marcada como lida e reaberta no MySQL descartável."
+  echo "Perfil foi encontrado pela busca sem expor e-mail; notificação foi criada, listada, protegida contra outra conta, marcada como lida e reaberta no MySQL descartável."
 '
 
 versao_mysql=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT VERSION()"')
