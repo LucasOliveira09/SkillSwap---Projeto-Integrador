@@ -298,3 +298,8 @@ A confirmação mútua para concluir acordos foi implementada e registrada na [A
 - [Layout legado](../docs/layout-legado.md)
 - [ADR-001: Angular standalone](../docs/decisions/001-angular-standalone.md)
 - [ADR-004: backend adotado](../docs/decisions/004-integra-backend-github.md)
+
+
+## Atualização da home e acesso aos perfis (28/10/2026)
+
+Concluídos e publicados em `05b1557`: atalhos para contratação, troca e anúncio; categorias vindas da vitrine; grids responsivos de ofertas de venda/troca; filtros recolhíveis e paginação numerada. As seções refletem a página atual da API, sem dados locais de fallback. Avatar real e nome abrem o perfil público com portfólio e anúncios. O ícone de conta abre o próprio perfil após login, ou sua edição se estiver pausado. A criação de anúncio exige sessão antes de abrir o formulário e preserva o retorno depois do login. 110 testes Angular, tipos e build passaram; Chromium conferiu desktop/celular e o redirecionamento no domínio público. API, banco e uploads não precisaram de alteração. A verificação visual de perfil com sessão real e a revisão manual com leitor de tela seguem pendentes.
