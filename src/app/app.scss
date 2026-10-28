@@ -257,6 +257,13 @@ mat-sidenav-content {
     min-width: 40px;
     padding-inline: 10px;
   }
+  .acoes-cabecalho {
+    justify-self: end;
+    min-width: 0;
+  }
+  .acoes-cabecalho > a:not(.botao-anunciar) {
+    display: none;
+  }
   .conta app-icone {
     margin: 0;
   }
@@ -273,6 +280,8 @@ mat-sidenav-content {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
     padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .marca-area {
     min-width: 0;
@@ -287,6 +296,8 @@ mat-sidenav-content {
     gap: 6px;
   }
   .acoes-cabecalho .botao-anunciar {
+    min-width: 0;
+    max-width: 100%;
     padding-inline: 8px;
     font-size: 12px;
   }

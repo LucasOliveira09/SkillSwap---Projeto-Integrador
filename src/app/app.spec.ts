@@ -72,4 +72,24 @@ describe('App', () => {
     const links = fixture.nativeElement.querySelectorAll('a[href="/moderacao/denuncias"]');
     expect(links.length).toBe(2);
   });
+
+  it('mantém a moderação no menu lateral em telas compactas', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    autenticado.set(true);
+    credencial.set('token-moderador');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne('/api/moderacao/acesso').flush(true);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const linkCabecalho = compiled.querySelector('header a[href="/moderacao/denuncias"]');
+    const linkMenu = compiled.querySelector('mat-sidenav a[href="/moderacao/denuncias"]');
+
+    expect(window.innerWidth).toBeLessThanOrEqual(800);
+    expect(linkCabecalho).not.toBeNull();
+    expect(getComputedStyle(linkCabecalho!).display).toBe('none');
+    expect(linkMenu).not.toBeNull();
+  });
 });
