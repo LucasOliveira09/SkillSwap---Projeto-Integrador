@@ -176,6 +176,40 @@ describe('AcordoDetalheComponent', () => {
     expect(harness.routeNativeElement?.querySelector('.concluir')).toBeNull();
   });
 
+  it('distingue estrelas selecionadas das não selecionadas também pela forma', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+
+    const harness = await RouterTestingHarness.create('/acordos/7');
+    http.expectOne('/api/acordos/7').flush({
+      id: 7, propostaId: 5, anuncioId: 3, anuncioTitulo: 'Aula de violão',
+      anuncianteId: 1, anuncianteNome: 'Ana', proponenteId: 2, proponenteNome: 'Bruno',
+      status: 'CONCLUIDO', criadoEm: '2026-10-26T10:00:00', concluidoEm: '2026-10-26T11:00:00',
+      conclusaoConfirmadaAnunciante: true, conclusaoConfirmadaProponente: true,
+    });
+    http.expectOne('/api/acordos/7/eventos').flush([]);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({
+      itens: [], pagina: 0, tamanho: 50, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne('/api/acordos/7/avaliacoes').flush([]);
+    http.expectOne('/api/perfil').flush({
+      id: 2, nome: 'Bruno', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: null,
+      criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    harness.detectChanges();
+
+    const estrelas = harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>(
+      '.avaliacao form fieldset:first-of-type .estrelas button',
+    );
+    expect(Array.from(estrelas, (estrela) => estrela.textContent?.trim())).toEqual(['☆', '☆', '☆', '☆', '☆']);
+
+    estrelas[2].click();
+    harness.detectChanges();
+
+    expect(Array.from(estrelas, (estrela) => estrela.textContent?.trim())).toEqual(['★', '★', '★', '☆', '☆']);
+  });
+
   it('permite ao profissional responder à avaliação sem avaliar o próprio acordo', async () => {
     TestBed.inject(SessaoService).entrar('profissional@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });

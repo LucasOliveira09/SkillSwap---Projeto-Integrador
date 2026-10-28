@@ -137,7 +137,9 @@
                   @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                     <button type="button" [attr.aria-pressed]="nota === estrela"
                       [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                      [class.selecionada]="nota >= estrela" (click)="nota = estrela">★</button>
+                      [class.selecionada]="nota >= estrela" (click)="nota = estrela">
+                      {{ nota >= estrela ? '★' : '☆' }}
+                    </button>
                   }
                 </div>
               </fieldset>
@@ -147,7 +149,9 @@
                   @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                     <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
                       [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                      [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">★</button>
+                      [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">
+                      {{ notaAnuncio >= estrela ? '★' : '☆' }}
+                    </button>
                   }
                 </div>
               </fieldset>
@@ -195,7 +199,9 @@
                       @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                         <button type="button" [attr.aria-pressed]="notaEdicao === estrela"
                           [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                          [class.selecionada]="notaEdicao >= estrela" (click)="notaEdicao = estrela">★</button>
+                          [class.selecionada]="notaEdicao >= estrela" (click)="notaEdicao = estrela">
+                          {{ notaEdicao >= estrela ? '★' : '☆' }}
+                        </button>
                       }
                     </div>
                   </fieldset>
@@ -205,7 +211,9 @@
                       @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
                         <button type="button" [attr.aria-pressed]="notaAnuncioEdicao === estrela"
                           [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
-                          [class.selecionada]="notaAnuncioEdicao >= estrela" (click)="notaAnuncioEdicao = estrela">★</button>
+                          [class.selecionada]="notaAnuncioEdicao >= estrela" (click)="notaAnuncioEdicao = estrela">
+                          {{ notaAnuncioEdicao >= estrela ? '★' : '☆' }}
+                        </button>
                       }
                     </div>
                   </fieldset>
