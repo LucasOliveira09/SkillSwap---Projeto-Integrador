@@ -149,3 +149,10 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Criar simulação e poda com retenção móvel de 30 dias e até 12 cópias mensais; validar checksum e formato antes de qualquer remoção; exigir confirmação da restauração mais recente de MySQL e uploads.
 - [ ] Instalar agendamento somente depois de configurar cópia externa em outro local e ensaiar o processo no destino definitivo.
+- [x] Em 28/10, inspeção somente de leitura confirmou que não há tarefa SkillSwap em crontab ou systemd timers. Backups permanecem organizados por snapshot; o script ainda não está instalado na VPS.
+
+## Estado da publicação e do schema (28/10/2026)
+
+- [x] Revalidar por HTTP a prévia Tailscale e o site público (200). Os três containers da prévia e os dois containers SkillSwap públicos estão saudáveis.
+- [x] Consultar somente leitura o MySQL público: sete tabelas e nenhuma `flyway_schema_history`; a migração para o schema Flyway ainda não foi aplicada ao banco ativo.
+- [ ] Aguardar decisão sobre a migração do banco ativo e promoção da API/web. A cópia de backup e o ensaio de baseline em banco isolado estão documentados; nenhuma alteração foi feita nesta inspeção.
