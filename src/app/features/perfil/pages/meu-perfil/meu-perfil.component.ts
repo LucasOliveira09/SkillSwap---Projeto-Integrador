@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, finalize, from, switchMap, toArray } from 'rxjs';
+import { concatMap, finalize, from, of, switchMap, tap, toArray } from 'rxjs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -71,6 +71,7 @@ export class MeuPerfilComponent {
   protected erroPortfolio = '';
   protected sucessoPortfolio = '';
   private arquivosPortfolio: File[] = [];
+  private urlsFotosPortfolio: (string | null)[] = [];
 
   private readonly urlsTemporarias = new Set<string>();
   private portfolioCarregadoParaId: number | null = null;
@@ -296,6 +297,7 @@ export class MeuPerfilComponent {
     }
     this.limparPreviaPortfolio();
     this.arquivosPortfolio = arquivos;
+    this.urlsFotosPortfolio = arquivos.map(() => null);
     this.previaFotosPortfolio.set(arquivos.map((arquivo) => {
       const url = URL.createObjectURL(arquivo);
       this.urlsTemporarias.add(url);
@@ -308,8 +310,14 @@ export class MeuPerfilComponent {
     this.enviandoPortfolio = true;
     this.erroPortfolio = '';
     this.sucessoPortfolio = '';
-    from(this.arquivosPortfolio).pipe(
-      concatMap((arquivo) => this.api.enviarFotoPortfolio(arquivo)),
+    from(this.arquivosPortfolio.entries()).pipe(
+      concatMap(([indice, arquivo]) => {
+        const urlPersistida = this.urlsFotosPortfolio[indice];
+        if (urlPersistida) return of({ url: urlPersistida });
+        return this.api.enviarFotoPortfolio(arquivo).pipe(
+          tap((upload) => this.urlsFotosPortfolio[indice] = upload.url),
+        );
+      }),
       toArray(),
       switchMap((uploads) => this.api.criarPublicacao(
         this.legendaPortfolio.trim(), uploads.map((upload) => upload.url),
@@ -320,6 +328,7 @@ export class MeuPerfilComponent {
     ).subscribe({
       next: () => {
         this.arquivosPortfolio = [];
+        this.urlsFotosPortfolio = [];
         this.legendaPortfolio = '';
         this.anuncioPortfolioId = '';
         this.limparPreviaPortfolio();

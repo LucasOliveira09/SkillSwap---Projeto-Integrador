@@ -48,6 +48,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 ### Portfólio e descoberta
 
 - [x] Criar publicações persistidas com legenda, até seis fotos, vínculo opcional a oferta própria; mostrar no perfil e permitir remoção pelo autor.
+- [x] Evitar reenvio de fotos aceitas quando outro upload da publicação falha; a nova tentativa envia apenas arquivos pendentes e mantém as URLs persistidas para concluir o post. Teste cobre erro 503 na segunda foto e publicação posterior com as duas URLs; typecheck, build e 90 testes Angular passaram em 28/10.
 - [x] Permitir editar legenda de publicação e navegar pelas páginas do portfólio público e próprio.
 - [x] Denunciar e moderar publicações/avaliações com acesso por allowlist, trilha de evidência e ocultação reversível.
 - [x] Ligar anúncios ao perfil e associar ofertas às publicações.

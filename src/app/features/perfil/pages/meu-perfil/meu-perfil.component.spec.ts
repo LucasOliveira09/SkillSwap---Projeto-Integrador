@@ -199,4 +199,77 @@ describe('MeuPerfilComponent', () => {
     expect(componente.perfil()?.fotoUrl).toBe('/api/uploads/0123456789abcdef0123456789abcdef.png');
     expect(harness.routeNativeElement?.textContent).toContain('Foto do perfil atualizada.');
   });
+
+  it('retenta uma publicação sem reenviar as fotos já aceitas pelo servidor', async () => {
+    TestBed.inject(SessaoService).entrar('ana@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/meu-perfil');
+    http.expectOne('/api/perfil').flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: null, criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0,
+    });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 0, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios').flush({
+      itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne((request) => request.urlWithParams === '/api/publicacoes?pagina=0&tamanho=12').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
+    harness.detectChanges();
+
+    const raiz = harness.routeNativeElement!;
+    const entrada = raiz.querySelector<HTMLInputElement>('input[type="file"][multiple]')!;
+    const primeiraFoto = new File(['primeira'], 'primeira.png', { type: 'image/png' });
+    const segundaFoto = new File(['segunda'], 'segunda.jpg', { type: 'image/jpeg' });
+    const arquivoLista = [primeiraFoto, segundaFoto];
+    Object.defineProperty(entrada, 'files', { configurable: true, value: arquivoLista });
+    entrada.dispatchEvent(new Event('change', { bubbles: true }));
+    harness.detectChanges();
+    expect(raiz.querySelectorAll('.previas-portfolio img')).toHaveSize(2);
+
+    const publicar = () => Array.from(raiz.querySelectorAll<HTMLButtonElement>('.acoes-portfolio button'))
+      .find((botao) => botao.textContent?.includes('Publicar no portfólio'))!;
+    publicar().click();
+    const primeiroEnvio = http.expectOne('/api/uploads');
+    expect((primeiroEnvio.request.body as FormData).get('file')).toBe(primeiraFoto);
+    primeiroEnvio.flush({ url: '/api/uploads/primeira.png' });
+    const segundoEnvioFalho = http.expectOne('/api/uploads');
+    expect((segundoEnvioFalho.request.body as FormData).get('file')).toBe(segundaFoto);
+    segundoEnvioFalho.flush({}, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 7, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
+    harness.detectChanges();
+    expect(raiz.textContent).toContain('Não foi possível publicar as fotos');
+    expect(raiz.querySelectorAll('.previas-portfolio img')).toHaveSize(2);
+
+    publicar().click();
+    const retentativa = http.expectOne('/api/uploads');
+    expect((retentativa.request.body as FormData).get('file')).toBe(segundaFoto);
+    retentativa.flush({ url: '/api/uploads/segunda.jpg' });
+    const criar = http.expectOne('/api/publicacoes');
+    expect(criar.request.method).toBe('POST');
+    expect(criar.request.body).toEqual({
+      legenda: '', fotos: ['/api/uploads/primeira.png', '/api/uploads/segunda.jpg'],
+    });
+    criar.flush({
+      id: 20, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+      anuncioTitulo: null, legenda: '', fotos: ['/api/uploads/primeira.png', '/api/uploads/segunda.jpg'],
+      criadoEm: '2026-10-28T10:00:00',
+    });
+    http.expectOne((request) => request.urlWithParams === '/api/publicacoes?pagina=0&tamanho=12').flush({
+      itens: [{
+        id: 20, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+        anuncioTitulo: null, legenda: '', fotos: ['/api/uploads/primeira.png', '/api/uploads/segunda.jpg'],
+        criadoEm: '2026-10-28T10:00:00',
+      }],
+      pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
+    });
+    http.expectOne('/api/uploads/uso').flush({ usoBytes: 14, limiteBytes: 104857600, limitePorArquivoBytes: 5242880 });
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+
+    expect(raiz.textContent).toContain('Publicação adicionada ao seu portfólio.');
+    expect(raiz.querySelectorAll('.previas-portfolio img')).toHaveSize(0);
+    expect(raiz.textContent).toContain('Suas publicações');
+  });
 });
