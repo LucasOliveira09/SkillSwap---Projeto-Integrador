@@ -135,6 +135,7 @@ docker exec "$api" sh -ec '
 
   token_profissional=$(registrar "Profissional de validação" "profissional-$sufixo@skillswap.invalid")
   token_cliente=$(registrar "Cliente de validação" "cliente-$sufixo@skillswap.invalid")
+  token_externo=$(registrar "Conta externa de validação" "externo-$sufixo@skillswap.invalid")
 
   anuncio=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_profissional" \
@@ -161,6 +162,13 @@ docker exec "$api" sh -ec '
     exit 1
   fi
 
+  resposta_nao_autorizada=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 13\r\nConnection: close\r\n\r\n{\"lida\":true}" \
+    "$notificacao_id" "$token_externo" | busybox nc 127.0.0.1 8080)
+  printf "%s" "$resposta_nao_autorizada" | grep -q "HTTP/1.1 404"
+  notificacoes_inalteradas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
+    "$base/api/notificacoes?pagina=0&tamanho=20")
+  printf "%s" "$notificacoes_inalteradas" | grep -q "\"lida\":false"
+
   resposta_patch=$(printf "PATCH /api/notificacoes/%s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: 13\r\nConnection: close\r\n\r\n{\"lida\":true}" \
     "$notificacao_id" "$token_profissional" | busybox nc 127.0.0.1 8080)
   printf "%s" "$resposta_patch" | grep -q "HTTP/1.1 200"
@@ -175,7 +183,7 @@ docker exec "$api" sh -ec '
   notificacoes_reabertas=$(wget -qO- --header="Authorization: Bearer $token_profissional" \
     "$base/api/notificacoes?pagina=0&tamanho=20")
   printf "%s" "$notificacoes_reabertas" | grep -q "\"lida\":false"
-  echo "Notificação de proposta criada, listada, marcada como lida e reaberta no MySQL descartável."
+  echo "Notificação criada, listada, protegida contra outra conta, marcada como lida e reaberta no MySQL descartável."
 '
 
 versao_mysql=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT VERSION()"')
