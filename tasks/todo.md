@@ -45,6 +45,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Preservar o perfil público quando uma API secundária de ofertas, portfólio ou avaliações falhar; mostrar erro por seção e permitir nova tentativa sem exibir falha como lista vazia. Teste reproduz falhas 503 simultâneas nos três recursos, confirma perfil visível, erros individualizados e conteúdo vazio correto após nova tentativa; 5 testes da tela, typecheck, build e suíte Angular completa (89 testes) passaram em 28/10.
 - [x] Mostrar o acesso à moderação no cabeçalho somente após confirmação de `/api/moderacao/acesso`; falha de rede mantém a opção oculta. Teste de componente cobre contas comuns e moderadores.
 - [x] Validar na prévia Tailscale restaurada o cadastro, login, edição e busca pública de perfil em Chromium a 390 px; pausar o perfil sintético depois do teste. Confirmar que conta comum não recebe acesso/moderação no cabeçalho. A imagem web anterior está preservada para rollback.
+- [x] Em 28/10, validar na prévia o preflight de cadastro da origem Tailscale (200) e negar origem não autorizada (403); Chromium 149 confirmou cadastro, login, acesso a Minha conta, edição/pausa do próprio perfil e estado vazio de Meus anúncios a 390 px, sem erros de console/página. O perfil sintético ficou pausado; seu endpoint público retorna 404 e a busca retorna zero resultados para o nome de teste. API e MySQL permaneceram saudáveis.
 
 ### Portfólio e descoberta
 
