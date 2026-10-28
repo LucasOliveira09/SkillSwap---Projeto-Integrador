@@ -1,8 +1,10 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { appConfig } from '../../../app.config';
 import { SessaoService } from '../data-access/sessao.service';
+import { Notificacao } from '../models/notificacao.model';
 import { destinoPosLogin } from './conta.component';
 
 describe('ações sobre propostas', () => {
@@ -60,11 +62,46 @@ describe('ações sobre propostas', () => {
     expect(cancelar.disabled).toBeFalse();
     http.expectNone('/api/propostas/6');
   });
+
+  it('mantém a conta aberta quando falha ao marcar uma notificação como lida', async () => {
+    const notificacao: Notificacao = {
+      id: 12,
+      tipo: 'NOVA_MENSAGEM',
+      titulo: 'Nova mensagem',
+      mensagem: 'Você recebeu uma mensagem.',
+      recursoUrl: '/acordos/15',
+      lida: false,
+      criadaEm: '2026-10-28T10:00:00',
+    };
+    const harness = await abrirContaComProposta(http, 'RECEBIDAS', [notificacao]);
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    const component = harness.routeDebugElement!.componentInstance as {
+      abrirNotificacao(event: MouseEvent, item: Notificacao): void;
+    };
+
+    component.abrirNotificacao(new MouseEvent('click', { button: 0 }), notificacao);
+    http.expectOne('/api/notificacoes/12')
+      .flush({ mensagem: 'Falha temporária' }, { status: 503, statusText: 'Service Unavailable' });
+    harness.detectChanges();
+
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    expect(harness.routeNativeElement!.textContent).toContain('Minha conta');
+    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent)
+      .toContain('Não foi possível atualizar esta notificação.');
+    expect(harness.routeNativeElement!.querySelector('.lista-notificacoes')).not.toBeNull();
+
+    component.abrirNotificacao(new MouseEvent('click', { button: 0 }), notificacao);
+    http.expectOne('/api/notificacoes/12').flush({ ...notificacao, lida: true });
+    harness.detectChanges();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/acordos/15');
+  });
 });
 
 async function abrirContaComProposta(
   http: HttpTestingController,
   direcao: 'RECEBIDAS' | 'ENVIADAS' = 'RECEBIDAS',
+  notificacoes: readonly Notificacao[] = [],
 ): Promise<RouterTestingHarness> {
   TestBed.inject(SessaoService).entrar('anunciante@teste.invalid', 'senha').subscribe();
   http.expectOne('/api/sessoes').flush({ token: 'token-teste' });
@@ -109,8 +146,13 @@ async function abrirContaComProposta(
   });
   http.expectOne('/api/acordos?pagina=0&tamanho=20')
     .flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
-  http.expectOne('/api/notificacoes?pagina=0&tamanho=10')
-    .flush({ itens: [], pagina: 0, tamanho: 10, totalItens: 0, totalPaginas: 0 });
+  http.expectOne('/api/notificacoes?pagina=0&tamanho=10').flush({
+    itens: notificacoes,
+    pagina: 0,
+    tamanho: 10,
+    totalItens: notificacoes.length,
+    totalPaginas: notificacoes.length ? 1 : 0,
+  });
   harness.detectChanges();
   return harness;
 }

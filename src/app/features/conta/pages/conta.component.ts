@@ -74,6 +74,7 @@ export class ContaComponent {
   protected readonly notificacoes = signal<readonly Notificacao[]>([]);
   protected readonly carregandoNotificacoes = signal(false);
   protected readonly erroNotificacoes = signal('');
+  protected readonly erroLeituraNotificacao = signal('');
   protected readonly naoLidas = computed(() => this.notificacoes().filter((notificacao) => !notificacao.lida).length);
 
   constructor() {
@@ -103,14 +104,14 @@ export class ContaComponent {
       void this.router.navigateByUrl(notificacao.recursoUrl);
       return;
     }
+    this.erroLeituraNotificacao.set('');
     this.notificacoesApi.atualizarLeitura(notificacao.id, true).pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
       next: (atualizada) => this.notificacoes.update((itens) =>
         itens.map((item) => item.id === atualizada.id ? atualizada : item)),
       error: () => {
-        this.erroNotificacoes.set('Não foi possível atualizar esta notificação.');
-        void this.router.navigateByUrl(notificacao.recursoUrl);
+        this.erroLeituraNotificacao.set('Não foi possível atualizar esta notificação.');
       },
       complete: () => void this.router.navigateByUrl(notificacao.recursoUrl),
     });

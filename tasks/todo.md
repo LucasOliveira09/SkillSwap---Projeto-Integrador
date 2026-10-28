@@ -68,6 +68,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Persistir mensagens por acordo, validar participantes e limitar consultas com paginação na API.
 - [x] Disponibilizar cancelamento de acordo após confirmação explícita e bloquear novos envios pela API quando o acordo estiver concluído ou cancelado. Testes de API reproduziram as mensagens aceitas após ambos estados terminais; após a regra, a tela, os 9 testes Java de negociação e os 5 testes do detalhe do acordo passaram.
 - [x] Tratar o cancelamento de proposta enviada com o mesmo estado pendente, bloqueio de cliques repetidos e feedback de falha de aceitar/recusar propostas; teste confirmou PATCH único, botão desabilitado e nova tentativa após erro 503.
+- [x] Manter a notificação visível e permitir nova tentativa quando falhar ao marcá-la como lida; navegar ao acordo somente depois da confirmação da API.
 - [x] Adicionar navegação de páginas à conversa, abrir nas mensagens recentes e testar histórico extenso.
 - [x] Coletar e calcular nota separada para oferta/serviço após acordo concluído; exibir média/amostra no anúncio e avaliações no perfil.
 - [x] Denunciar e moderar avaliações sem apagar evidências e sem agregar notas ocultas.

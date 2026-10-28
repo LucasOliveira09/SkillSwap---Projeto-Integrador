@@ -207,6 +207,8 @@ Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu
 
 **Ações de propostas na conta (28/10/2026):** o cancelamento de proposta enviada compartilha o bloqueio de ações concorrentes com aceitar e recusar. Falhas são apresentadas como erro da ação, sem se misturar a falhas de carregamento, e a interface libera nova tentativa depois da resposta 503. O teste reproduziu cliques repetidos antes da alteração e passou com um único PATCH.
 
+**Notificações (28/10/2026):** se a API não conseguir marcar uma notificação como lida, o painel preserva a linha não lida, exibe o erro e deixa a pessoa tentar novamente. A navegação ocorre após a confirmação do PATCH; o teste cobriu falha 503 seguida de sucesso.
+
 ### Fase 6 — Conclusão, avaliações e reputação
 
 - Definir confirmação unilateral ou mútua de conclusão e janela de avaliação; resolver conflito de confirmação antes de liberar avaliação.

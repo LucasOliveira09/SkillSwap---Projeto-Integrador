@@ -21,21 +21,26 @@
           <p role="status">Carregando notificações...</p>
         } @else if (erroNotificacoes()) {
           <p role="alert">{{ erroNotificacoes() }} <button mat-button type="button" (click)="carregarNotificacoes()">Tentar novamente</button></p>
-        } @else if (!notificacoes().length) {
-          <div class="vazio-card"><p>Suas propostas, mensagens e atualizações de acordos aparecerão aqui.</p></div>
         } @else {
-          <ol class="lista-notificacoes">
-            @for (notificacao of notificacoes(); track notificacao.id) {
-              <li [class.nao-lida]="!notificacao.lida">
-                <a [href]="notificacao.recursoUrl" (click)="abrirNotificacao($event, notificacao)">
-                  <strong>{{ notificacao.titulo }}</strong>
-                  <span>{{ notificacao.mensagem }}</span>
-                  <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
-                </a>
-                @if (!notificacao.lida) { <span class="indicador-nao-lida" role="img" aria-label="Não lida"></span> }
-              </li>
-            }
-          </ol>
+          @if (erroLeituraNotificacao()) {
+            <p role="alert">{{ erroLeituraNotificacao() }} Selecione a notificação novamente para tentar outra vez.</p>
+          }
+          @if (!notificacoes().length) {
+            <div class="vazio-card"><p>Suas propostas, mensagens e atualizações de acordos aparecerão aqui.</p></div>
+          } @else {
+            <ol class="lista-notificacoes">
+              @for (notificacao of notificacoes(); track notificacao.id) {
+                <li [class.nao-lida]="!notificacao.lida">
+                  <a [href]="notificacao.recursoUrl" (click)="abrirNotificacao($event, notificacao)">
+                    <strong>{{ notificacao.titulo }}</strong>
+                    <span>{{ notificacao.mensagem }}</span>
+                    <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                  </a>
+                  @if (!notificacao.lida) { <span class="indicador-nao-lida" role="img" aria-label="Não lida"></span> }
+                </li>
+              }
+            </ol>
+          }
         }
       </section>
 
