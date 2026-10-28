@@ -106,6 +106,9 @@ describe('MeuPerfilComponent', () => {
     });
     harness.detectChanges();
 
+    const fotoPortfolio = harness.routeNativeElement!.querySelector('.publicacoes-proprias .miniaturas img');
+    expect(fotoPortfolio?.getAttribute('alt')).toBe('Foto 1 do trabalho de Ana Profissional');
+
     const publicacao = {
       id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
       anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],

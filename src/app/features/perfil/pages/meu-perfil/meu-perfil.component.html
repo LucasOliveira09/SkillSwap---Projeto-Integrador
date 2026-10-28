@@ -280,7 +280,13 @@
           @for (publicacao of publicacoes(); track publicacao.id) {
             <article class="item-publicacao">
               <div class="miniaturas">
-                @for (foto of publicacao.fotos; track foto) { <img [src]="foto" alt="" loading="lazy" /> }
+                @for (foto of publicacao.fotos; track foto; let indice = $index) {
+                  <img
+                    [src]="foto"
+                    [alt]="'Foto ' + (indice + 1) + ' do trabalho de ' + (perfil()?.nome || 'seu perfil')"
+                    loading="lazy"
+                  />
+                }
               </div>
               <div class="item-publicacao-texto">
                 @if (editandoPublicacaoId() === publicacao.id) {
