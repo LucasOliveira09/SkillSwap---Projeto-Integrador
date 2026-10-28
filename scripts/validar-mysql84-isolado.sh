@@ -167,13 +167,35 @@ docker exec "$api" sh -ec '
 
   anuncio=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_profissional" \
-    --post-data="{\"titulo\":\"Aula de validação MySQL\",\"descricao\":\"Oferta descartável para validar notificações.\",\"categoria\":\"AULAS\",\"cidade\":\"Florianópolis\",\"modalidade\":\"VENDA\",\"preco\":10.00,\"disponibilidades\":[]}" \
+    --post-data="{\"titulo\":\"Aula de validação MySQL\",\"descricao\":\"Oferta descartável para validar notificações.\",\"categoria\":\"AULAS\",\"cidade\":\"Florianópolis\",\"modalidade\":\"VENDA\",\"preco\":10.00,\"disponibilidades\":[{\"diaSemana\":\"SEXTA\",\"periodo\":\"NOITE\"}]}" \
     "$base/api/anuncios")
   anuncio_id=$(printf "%s" "$anuncio" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"titulo\".*/\\1/p")
   if [ -z "$anuncio_id" ]; then
     echo "A API não devolveu o anúncio temporário." >&2
     exit 1
   fi
+
+  anuncios_venda=$(wget -qO- "$base/api/anuncios?categoria=AULAS&cidade=Florian&modalidade=VENDA&precoMinimo=9.99&precoMaximo=10.00&diaSemana=SEXTA&periodo=NOITE&busca=validacao")
+  printf "%s" "$anuncios_venda" | grep -q "\"totalItens\":1"
+  printf "%s" "$anuncios_venda" | grep -q "\"id\":$anuncio_id"
+  [ "$(wget -qO- "$base/api/anuncios?categoria=AULAS" | sed -n "s/.*\"totalItens\":\\([0-9][0-9]*\\).*/\\1/p")" = 1 ]
+  [ "$(wget -qO- "$base/api/anuncios?cidade=Florian" | sed -n "s/.*\"totalItens\":\\([0-9][0-9]*\\).*/\\1/p")" = 1 ]
+  [ "$(wget -qO- "$base/api/anuncios?precoMinimo=10.01" | sed -n "s/.*\"totalItens\":\\([0-9][0-9]*\\).*/\\1/p")" = 0 ]
+
+  anuncio_troca=$(wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_profissional" \
+    --post-data="{\"titulo\":\"Troca de pequenos reparos\",\"descricao\":\"Oferta descartável de troca.\",\"categoria\":\"MANUTENCAO\",\"cidade\":\"Joinville\",\"modalidade\":\"TROCA\",\"habilidadeDesejada\":\"Cuidado de plantas\",\"disponibilidades\":[{\"diaSemana\":\"TERCA\",\"periodo\":\"MANHA\"}]}" \
+    "$base/api/anuncios")
+  anuncio_troca_id=$(printf "%s" "$anuncio_troca" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"titulo\".*/\\1/p")
+  if [ -z "$anuncio_troca_id" ]; then
+    echo "A API não devolveu o anúncio de troca temporário." >&2
+    exit 1
+  fi
+  anuncios_troca=$(wget -qO- "$base/api/anuncios?categoria=MANUTENCAO&cidade=Joinville&modalidade=TROCA&diaSemana=TERCA&periodo=MANHA&busca=reparos")
+  printf "%s" "$anuncios_troca" | grep -q "\"totalItens\":1"
+  printf "%s" "$anuncios_troca" | grep -q "\"id\":$anuncio_troca_id"
+  [ "$(wget -qO- "$base/api/anuncios?diaSemana=QUARTA&periodo=MANHA" | sed -n "s/.*\"totalItens\":\\([0-9][0-9]*\\).*/\\1/p")" = 0 ]
+  [ "$(wget -qO- "$base/api/anuncios?modalidade=VENDA&precoMaximo=10.00" | sed -n "s/.*\"totalItens\":\\([0-9][0-9]*\\).*/\\1/p")" = 1 ]
 
   proposta=$(wget -qO- --header="Content-Type: application/json" \
     --header="Authorization: Bearer $token_cliente" \
@@ -251,7 +273,7 @@ docker exec "$api" sh -ec '
     exit 1
   fi
   printf "%s %s\n" "$profissional_id" "$anuncio_id" > /tmp/skillswap-validation-ids
-  echo "Perfil, descoberta, reputação mínima, proposta, notificação, acordo, conversa, conclusão mútua e avaliação passaram em MySQL descartável."
+  echo "Perfil, busca de profissionais, filtros de catálogo para venda/troca, preço, disponibilidade, proposta, notificação, acordo, conversa, conclusão mútua e avaliação passaram em MySQL descartável."
 '
 
 docker restart "$api" >/dev/null
@@ -397,4 +419,4 @@ if [ "$versao_flyway" != 14 ]; then
   exit 1
 fi
 
-echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate, venda/troca/reputação e moderação de publicação aprovados."
+echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate, filtros de catálogo, venda/troca/reputação e moderação de publicação aprovados."
