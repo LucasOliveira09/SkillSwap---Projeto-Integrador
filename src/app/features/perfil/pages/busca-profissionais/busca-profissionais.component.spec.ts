@@ -81,6 +81,8 @@ describe('BuscaProfissionaisComponent', () => {
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.textContent).toContain('pelo menos 3 avaliações');
+    expect(harness.routeNativeElement?.textContent).toContain('correspondência com o serviço');
+    expect(harness.routeNativeElement?.textContent).toContain('avaliações não definem a posição');
     expect(harness.routeNativeElement?.querySelector<HTMLSelectElement>('[name="notaMinima"]')?.value).toBe('4.5');
   });
 });

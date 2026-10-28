@@ -304,6 +304,52 @@ class PerfilControllerTest {
     }
 
     @Test
+    void buscaProfissionaisOrdenaPorCorrespondenciaSemUsarAvaliacaoComoRanking() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"tituloProfissional":"Eletricista residencial", "cidade":"Florianópolis - SC",
+                                 "especialidades":"Instalações"}
+                                """))
+                .andExpect(status().isOk());
+
+        var especialista = usuarios.register(new RegisterDTO(
+                "Profissional Correspondente", "especialista@skillswap.invalid", "senha-teste-123"));
+        var especialistaToken = jwt.generateToken(especialista.getEmail());
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + especialistaToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"cidade":"Florianópolis", "especialidades":"Eletricista"}
+                                """))
+                .andExpect(status().isOk());
+
+        var nomeCorrespondente = usuarios.register(new RegisterDTO(
+                "Eletricista Costa", "nome@skillswap.invalid", "senha-teste-123"));
+        var nomeToken = jwt.generateToken(nomeCorrespondente.getEmail());
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + nomeToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"cidade":"Florianópolis", "tituloProfissional":"Encanador",
+                                 "especialidades":"Desentupimento"}
+                                """))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/api/profissionais")
+                        .param("busca", "Eletricista")
+                        .param("cidade", "Florianópolis")
+                        .param("pagina", "0")
+                        .param("tamanho", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(3))
+                .andExpect(jsonPath("$.itens[0].id").value(especialista.getId()))
+                .andExpect(jsonPath("$.itens[1].id").value(usuarioId))
+                .andExpect(jsonPath("$.itens[2].id").value(nomeCorrespondente.getId()));
+    }
+
+    @Test
     void profissionalSemEspecialidadePodeSerEncontradoPeloTituloProfissional() throws Exception {
         mvc.perform(patch("/api/perfil")
                         .header("Authorization", "Bearer " + token)

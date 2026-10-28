@@ -69,6 +69,7 @@ Uma pessoa cria e apresenta seu perfil, publica ofertas e fotos de portfólio; o
 - Criar resultados próprios de profissionais e de ofertas, sem depender somente do catálogo atual de anúncios.
 - Permitir comparação por adequação ao termo/categoria/região, modalidade, preço informado e reputação sustentada.
 - Explicar filtros e sinais apresentados. Qualquer ordenação patrocinada futura deve ser identificada como anúncio pago e não misturada a avaliações orgânicas.
+- Na busca MVP, ordenar por correspondência exata, inicial e parcial no título/especialidades; depois correspondência no nome, cidade exata e cadastro mais recente, com ID como desempate. A nota é somente filtro opcional com amostra mínima e nunca determina posição.
 - Registrar eventos de uso agregados e mínimos para medir busca sem expor mensagens privadas ou dados sensíveis.
 
 ### 5. Propostas, acordos e conversa

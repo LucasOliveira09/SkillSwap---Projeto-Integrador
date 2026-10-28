@@ -116,7 +116,7 @@ public class PerfilController {
             @RequestParam(required = false) @DecimalMin("1.0") @DecimalMax("5.0") Double notaMinima,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
             @RequestParam(defaultValue = "12") @Min(1) @Max(20) int tamanho) {
-        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        var pageable = PageRequest.of(pagina, tamanho);
         return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(busca, cidade, notaMinima, pageable)));
     }
 

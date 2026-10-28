@@ -40,6 +40,23 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
               and (:notaMinima is null or (
                    (select count(av.id) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :amostraMinima
                    and (select avg(av.nota) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :notaMinima))
+            order by
+              case
+                when :busca <> '' and (
+                    lower(coalesce(u.tituloProfissional, '')) = lower(:busca)
+                    or lower(coalesce(u.especialidades, '')) = lower(:busca)) then 5
+                when :busca <> '' and (
+                    lower(coalesce(u.tituloProfissional, '')) like lower(concat(:busca, '%'))
+                    or lower(coalesce(u.especialidades, '')) like lower(concat(:busca, '%'))) then 4
+                when :busca <> '' and (
+                    lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
+                    or lower(coalesce(u.especialidades, '')) like lower(concat('%', :busca, '%'))) then 3
+                when :busca <> '' and lower(u.nome) = lower(:busca) then 2
+                when :busca <> '' and lower(u.nome) like lower(concat(:busca, '%')) then 1
+                else 0
+              end desc,
+              case when :cidade <> '' and lower(coalesce(u.cidade, '')) = lower(:cidade) then 1 else 0 end desc,
+              u.criadoEm desc, u.id desc
             """, countQuery = """
             select count(u) from Usuario u
             where u.perfilPublico = true
