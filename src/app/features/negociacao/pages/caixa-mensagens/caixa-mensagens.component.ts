@@ -43,6 +43,7 @@ export class CaixaMensagensComponent {
   protected readonly totalPaginasMensagens = signal(0);
   protected readonly carregandoMensagens = signal(false);
   protected texto = '';
+  private geracaoSelecao = 0;
 
   constructor() {
     if (!this.sessao.autenticado()) {
@@ -90,6 +91,7 @@ export class CaixaMensagensComponent {
   }
 
   protected selecionar(acordo: Acordo, atualizarUrl = true): void {
+    const geracao = ++this.geracaoSelecao;
     this.acordoSelecionado.set(acordo);
     this.mensagens.set([]);
     this.erro.set('');
@@ -106,6 +108,7 @@ export class CaixaMensagensComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (primeiraPagina) => {
+          if (geracao !== this.geracaoSelecao) return;
           if (primeiraPagina.totalPaginas <= 1) {
             this.aplicarMensagens(primeiraPagina);
             this.carregandoMensagens.set(false);
@@ -113,29 +116,56 @@ export class CaixaMensagensComponent {
           }
           const paginaAtual = Math.max(0, primeiraPagina.totalPaginas - 1);
           this.api.mensagens(acordo.id, paginaAtual)
-            .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoMensagens.set(false)))
+            .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+              if (geracao === this.geracaoSelecao) this.carregandoMensagens.set(false);
+            }))
             .subscribe({
-              next: (pagina) => this.aplicarMensagens(pagina),
-              error: () => this.erro.set('Não foi possível carregar as mensagens desta conversa.'),
+              next: (pagina) => {
+                if (geracao === this.geracaoSelecao) this.aplicarMensagens(pagina);
+              },
+              error: () => {
+                if (geracao === this.geracaoSelecao) this.erro.set('Não foi possível carregar as mensagens desta conversa.');
+              },
             });
         },
         error: () => {
-          this.carregandoMensagens.set(false);
-          this.erro.set('Não foi possível carregar as mensagens desta conversa.');
+          if (geracao === this.geracaoSelecao) {
+            this.carregandoMensagens.set(false);
+            this.erro.set('Não foi possível carregar as mensagens desta conversa.');
+          }
         },
       });
+  }
+
+  protected voltarLista(): void {
+    ++this.geracaoSelecao;
+    this.acordoSelecionado.set(null);
+    this.mensagens.set([]);
+    this.carregandoMensagens.set(false);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { acordo: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   protected carregarMensagensAnteriores(): void {
     const acordo = this.acordoSelecionado();
     const pagina = this.paginaMensagens() - 1;
     if (!acordo || pagina < 0 || this.carregandoMensagens()) return;
+    const geracao = this.geracaoSelecao;
     this.carregandoMensagens.set(true);
     this.api.mensagens(acordo.id, pagina)
-      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoMensagens.set(false)))
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+        if (geracao === this.geracaoSelecao) this.carregandoMensagens.set(false);
+      }))
       .subscribe({
-        next: (resposta) => this.aplicarMensagens(resposta),
-        error: () => this.erro.set('Não foi possível carregar mensagens anteriores.'),
+        next: (resposta) => {
+          if (geracao === this.geracaoSelecao) this.aplicarMensagens(resposta);
+        },
+        error: () => {
+          if (geracao === this.geracaoSelecao) this.erro.set('Não foi possível carregar mensagens anteriores.');
+        },
       });
   }
 

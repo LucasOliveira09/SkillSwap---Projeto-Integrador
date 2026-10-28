@@ -14,7 +14,7 @@
   @if (carregando()) {
     <p class="estado" role="status">Carregando suas conversas...</p>
   } @else {
-    <div class="mensageiro" [class.com-conversa]="acordoSelecionado()">
+    <div class="mensageiro" [class.com-conversa]="acordoSelecionado()" [class.sem-conversas]="!acordos().length">
       <aside class="lista-conversas" aria-label="Lista de conversas">
         <div class="lista-topo">
           <h2>Conversas</h2>
@@ -54,7 +54,7 @@
       @if (acordoSelecionado(); as acordo) {
         <section class="painel-chat" aria-label="Conversa selecionada">
           <header class="cabecalho-chat">
-            <button class="voltar-lista" type="button" (click)="acordoSelecionado.set(null)">← Conversas</button>
+            <button class="voltar-lista" type="button" (click)="voltarLista()">← Conversas</button>
             <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
             <div class="dados-chat">
               <strong>{{ interlocutor(acordo) }}</strong>

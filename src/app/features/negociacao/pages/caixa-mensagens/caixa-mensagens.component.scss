@@ -6,6 +6,8 @@
 .topo-caixa > div > p:last-child { margin-top: 5px; color: var(--ss-muted); }
 .sobretitulo { color: var(--ss-blue); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .mensageiro { display: grid; grid-template-columns: 340px minmax(0, 1fr); min-height: min(690px, calc(100vh - 220px)); overflow: hidden; border: 1px solid var(--ss-line); border-radius: 18px; background: var(--ss-surface); box-shadow: 0 12px 36px #20394c0d; }
+.mensageiro.sem-conversas { grid-template-columns: minmax(0, 1fr); min-height: 280px; }
+.mensageiro.sem-conversas .lista-conversas { border-right: 0; }
 .lista-conversas { display: flex; min-height: 0; flex-direction: column; border-right: 1px solid var(--ss-line); }
 .lista-topo { display: flex; align-items: center; justify-content: space-between; padding: 20px 18px; border-bottom: 1px solid var(--ss-line); }
 .lista-topo h2 { margin: 0; font-size: 18px; }
