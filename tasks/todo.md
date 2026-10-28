@@ -77,6 +77,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 ### Entrega e fases seguintes
 
+- [x] Conter exposição acidental de credenciais operacionais: rotacionar contas MySQL, manter o volume de dados, atualizar a API e redigir cópias operacionais; validações e limites registrados em [remediacao-credenciais-2026-10-28.md](../docs/remediacao-credenciais-2026-10-28.md).
 - [ ] Completar validação operacional: leitor de tela e contraste, cópia para outro local/provedor, automatização de retenção e decisão de migração para o schema ativo. Concorrência, migração integral, contestação e denúncia/moderação foram validadas em cópias isoladas MySQL 8.0.46; os fluxos REST completos, incluindo upload durável, venda e troca passaram em MySQL 8.4.11 descartável na VPS. Os fluxos pela interface passaram em MySQL 8.0.46 e 8.4.11; moderação e persistência após reinício também passaram em MySQL 8.0.46. O backup da base e dos uploads foi restaurado em instância descartável na VPS e copiado cifrado para a estação Windows, conforme a retenção manual definida acima. A execução local permanece pendente enquanto o Docker Desktop estiver indisponível.
 - [ ] Fazer piloto regional com dados reais consentidos; definir métricas após linha de base observada.
 - [ ] Planejar pagamentos integrados em fase seguinte: selecionar provedor e operar sandbox antes de dinheiro real.

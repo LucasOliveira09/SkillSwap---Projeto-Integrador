@@ -248,15 +248,17 @@ A prévia é uma fotografia da base na data do backup. Nunca substituir o banco 
 
 ## Site público
 
-Em 21/10/2026, o usuário esclareceu que o destino do retorno ao layout original era [skillswap.vizihub.com.br](https://skillswap.vizihub.com.br). O domínio ainda servia o primeiro frontend demonstrativo em memória. Foram publicados o Angular com o layout antigo e a API compatível, validados antes na prévia. O Caddy, o container MySQL, seu volume e suas credenciais permaneceram preservados.
+O registro da rotação de credenciais da VPS em 28/10/2026 e suas verificações está em [remediacao-credenciais-2026-10-28.md](remediacao-credenciais-2026-10-28.md).
 
-O Compose ativo de API/web fica em `/home/ubuntu/skillswap-publicacao/compose.yaml`, baseado em `compose.publico.yaml`. O `.env` restrito reutiliza a conexão real do banco e configura um JWT_SECRET aleatório fora do Git. As imagens são `skillswap-api:3a01b4c` e `skillswap-web:3a01b4c`, compiladas para ARM na própria VPS. Não há portas adicionais publicadas. O Nginx usa o nome explícito skillswap-api para evitar colisão com serviços de outros projetos na rede do proxy.
+Em 21/10/2026, o usuário esclareceu que o destino do retorno ao layout original era [skillswap.vizihub.com.br](https://skillswap.vizihub.com.br). O domínio ainda servia o primeiro frontend demonstrativo em memória. Foram publicados o Angular com o layout antigo e a API compatível, validados antes na prévia. O Caddy e os dados no volume MySQL foram preservados. Em 28/10/2026, as credenciais MySQL foram rotacionadas e a API foi recriada; o registro está em [remediacao-credenciais-2026-10-28.md](remediacao-credenciais-2026-10-28.md).
+
+O Compose ativo de API/web fica em `/home/ubuntu/skillswap-publicacao/compose.yaml`, baseado em `compose.publico.yaml`. O `.env` com permissão `0600` contém o usuário e a senha novos do banco, além do JWT_SECRET, fora do Git. As imagens atualmente em execução são `skillswap-api:495a696` e `skillswap-web:495a696`, compiladas para ARM na própria VPS. Não há portas adicionais publicadas. O Nginx usa o nome explícito skillswap-api para evitar colisão com serviços de outros projetos na rede do proxy.
 
 ```bash
-docker compose -p skillswap-integrador -f /home/ubuntu/skillswap-publicacao/compose.yaml up -d --no-deps --wait api web
+docker compose -p skillswap-integrador -f /home/ubuntu/skillswap-publicacao/compose.yaml --env-file /home/ubuntu/skillswap-publicacao/.env up -d --no-deps --wait api web
 ```
 
-Essa configuração administra somente API e web; o MySQL existente aparece como órfão para o Compose e deve permanecer ativo. Não usar `--remove-orphans` nem executar `down` no conjunto original. O repositório `/home/ubuntu/skillswap-integrador` e suas configurações anteriores foram preservados para reversão; executá-los novamente repõe a versão antiga da aplicação.
+Essa configuração administra somente API e web; o MySQL aparece como órfão nesse arquivo e deve permanecer ativo. Não usar `--remove-orphans` nem executar `down` no conjunto original. O repositório `/home/ubuntu/skillswap-integrador` mantém Compose com credenciais via `.env` restrito e pode ser usado para administrar apenas o MySQL no volume existente; não execute `up` para API/web por esse Compose, pois ele contém versões antigas da aplicação.
 
 Backup transacional da base ativa e configurações anteriores: `/home/ubuntu/backups/skillswap-publico-20261022T014719Z`, com permissões restritas. O script `reverter.sh` nesse diretório repõe as imagens/configurações anteriores de API/web, sem apagar ou restaurar o banco. A comparação dos campos preexistentes confirmou a preservação dos dois usuários, um anúncio, uma proposta, um acordo, uma mensagem e uma avaliação existentes. A carga acrescentou 13 exemplos identificados, sem substituir esses registros.
 
