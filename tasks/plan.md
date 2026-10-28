@@ -241,6 +241,8 @@ Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu
 - Auditoria de autorização, dados pessoais, upload, abuso e acessibilidade; validação de navegador e mobile; cópia de segurança e reversão praticadas em prévia isolada.
 - Não publicar na VPS/site público até aprovação explícita do usuário, cópia verificada, imagem/tag testada e plano de reversão preparado.
 
+**Publicação autorizada (28/10/2026):** após solicitação explícita, `ea297d1` está no site público. O backup SQL e o arquivo de uploads tiveram checksums conferidos, a migração do schema legado foi validada até Flyway V14, e as imagens anteriores ficaram preservadas para reversão. API, web e MySQL estão saudáveis. A verificação pública cobriu catálogo e perfil em viewport móvel; o chat autenticado ainda depende de conta de teste, e a cópia operacional recente permanece no mesmo VPS.
+
 ### Fase 7 — Pagamentos integrados
 
 - Selecionar provedor e definir taxas, split, cancelamento, reembolso, disputa e suporte operacional.
