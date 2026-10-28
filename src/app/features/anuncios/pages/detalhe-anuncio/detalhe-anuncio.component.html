@@ -6,7 +6,7 @@
     </div>
   } @else if (estado().erro || !anuncio()) {
     <div class="estado-erro" role="alert">
-      <h2>Anúncio não encontrado</h2>
+      <h1>Anúncio não encontrado</h1>
       <p>O anúncio que você procura pode ter sido finalizado ou não existe.</p>
       <a mat-flat-button color="primary" routerLink="/anuncios">
         <app-icone nome="esquerda" /> Voltar ao catálogo
@@ -14,6 +14,8 @@
     </div>
   } @else {
     @let a = anuncio()!;
+
+    <h1 class="sr-only">{{ a.titulo }}</h1>
 
     <!-- BREADCRUMB ESTILO MERCADO LIVRE -->
     <nav class="breadcrumb" aria-label="Navegação estrutural">
@@ -115,7 +117,7 @@
           <div class="mensagens-header">
             <app-icone nome="email" />
             <div>
-              <h3>Converse com o anunciante</h3>
+              <h2>Converse com o anunciante</h2>
               <p>Envie sua dúvida sobre horários, disponibilidade ou faça uma proposta.</p>
             </div>
           </div>
@@ -178,7 +180,7 @@
         <!-- CARD DE COMPRA / PREÇO (MERCADO LIVRE STYLE) -->
         <div class="card-compra">
           <span class="tag-status">{{ a.exemplo ? 'Exemplo ilustrativo' : 'Anúncio ativo' }}</span>
-          <h1 class="titulo-anuncio">{{ a.titulo }}</h1>
+          <p class="titulo-anuncio">{{ a.titulo }}</p>
 
           <div class="preco-container">
             @if (a.modalidade === 'venda' && a.preco !== null) {
@@ -238,7 +240,7 @@
 
         <!-- CARD DO PERFIL DO ANUNCIANTE -->
         <div class="card-vendedor">
-          <h3>Informações do anunciante</h3>
+          <h2>Informações do anunciante</h2>
           <div class="perfil-linha">
             @if (a.avatar) {
               <img [src]="a.avatar" [alt]="a.autor || 'Anunciante'" class="avatar-img" />

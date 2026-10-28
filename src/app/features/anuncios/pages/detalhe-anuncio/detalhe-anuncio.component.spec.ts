@@ -59,6 +59,14 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     expect(texto).toContain('Sábado · Tarde');
     expect(texto).toContain('confirme os horários na conversa');
 
+    const titulos = Array.from(
+      harness.routeNativeElement?.querySelectorAll('h1, h2, h3') ?? [],
+    );
+    expect(titulos[0]?.tagName).toBe('H1');
+    expect(titulos[0]?.textContent?.trim()).toBe('Aula de Violão Avançada');
+    expect(titulos.map((titulo) => titulo.tagName)).toEqual(['H1', 'H2', 'H3', 'H2', 'H2']);
+    expect(harness.routeNativeElement?.querySelectorAll('h1').length).toBe(1);
+
     const reputacao = harness.routeNativeElement?.querySelector('.reputacao-anuncio');
     expect(reputacao?.hasAttribute('aria-label')).toBeFalse();
     expect(reputacao?.textContent).toContain('4,7');
@@ -91,7 +99,9 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     http.expectOne('/api/anuncios/999').flush({}, { status: 404, statusText: 'Not Found' });
     harness.detectChanges();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Anúncio não encontrado');
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain(
+      'Anúncio não encontrado',
+    );
   });
 
   it('permite enviar mensagem quando usuário estiver autenticado', async () => {
