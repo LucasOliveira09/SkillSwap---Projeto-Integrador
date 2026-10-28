@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -201,10 +202,23 @@ export class ContaComponent {
           const retorno = this.route.snapshot.queryParamMap.get('retorno');
           void this.router.navigateByUrl(destinoPosLogin(retorno));
         },
-        error: () => {
+        error: (erro: unknown) => {
           this.senha = '';
-          this.erro = 'Não foi possível entrar. Confira os dados ou tente novamente.';
+          this.erro = this.mensagemErroAutenticacao(erro);
         },
       });
+  }
+
+  private mensagemErroAutenticacao(erro: unknown): string {
+    if (erro instanceof HttpErrorResponse && erro.status === 429) {
+      const segundos = Number(erro.headers.get('Retry-After'));
+      if (Number.isFinite(segundos) && segundos > 0) {
+        const minutos = Math.ceil(segundos / 60);
+        const unidade = minutos === 1 ? 'minuto' : 'minutos';
+        return `Limite de tentativas atingido. Aguarde ${minutos} ${unidade} antes de tentar novamente.`;
+      }
+      return 'Limite de tentativas atingido. Aguarde um pouco antes de tentar novamente.';
+    }
+    return 'Não foi possível entrar. Confira os dados ou tente novamente.';
   }
 }

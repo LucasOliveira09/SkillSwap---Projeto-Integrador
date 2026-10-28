@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -6,6 +7,44 @@ import { appConfig } from '../../../app.config';
 import { SessaoService } from '../data-access/sessao.service';
 import { Notificacao } from '../models/notificacao.model';
 import { destinoPosLogin } from './conta.component';
+
+describe('feedback de autenticação', () => {
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [...appConfig.providers, provideHttpClientTesting()] });
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => http.verify());
+
+  it('informa o tempo de espera indicado pelo limite de tentativas', async () => {
+    const harness = await RouterTestingHarness.create('/conta');
+    const raiz = harness.routeNativeElement!;
+    const email = raiz.querySelector<HTMLInputElement>('input[name="email"]')!;
+    const senha = raiz.querySelector<HTMLInputElement>('input[name="senha"]')!;
+
+    email.value = 'pessoa@example.test';
+    email.dispatchEvent(new Event('input'));
+    senha.value = 'senha-incorreta';
+    senha.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    raiz.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+
+    http.expectOne('/api/sessoes').flush(
+      { mensagem: 'Limite de tentativas excedido.' },
+      {
+        status: 429,
+        statusText: 'Too Many Requests',
+        headers: new HttpHeaders({ 'Retry-After': '900' }),
+      },
+    );
+
+    harness.detectChanges();
+    expect(raiz.querySelector('[role="alert"]')?.textContent)
+      .toContain('Limite de tentativas atingido. Aguarde 15 minutos antes de tentar novamente.');
+  });
+});
 
 describe('ações sobre propostas', () => {
   let http: HttpTestingController;

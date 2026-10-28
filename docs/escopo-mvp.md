@@ -46,7 +46,7 @@ Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” 
 
 ## Integração do backend em 20/10/2026
 
-Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API. Migrações e integração foram validadas em MySQL 8.0.46 e 8.4.11 descartáveis; a integração local continua pendente porque o serviço Docker Desktop está parado. Consulte o [contrato e a execução](backend.md).
+Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API. Migrações e integração foram validadas em MySQL 8.0.46 e 8.4.11 descartáveis; em 28/10/2026 a integração local também passou em schema MySQL 8.4.11 separado, preservando o schema legado. Chromium local percorreu cadastro, perfil, anúncio, proposta, aceite, conversa e conclusão mútua; avaliação local por interface e outras telas autenticadas ainda precisam de replay completo. Consulte o [contrato e a execução](backend.md).
 
 ## Integração do GitHub em 21/10/2026
 
