@@ -36,7 +36,7 @@
         >Criar anúncio</a
       >
       <button mat-button (click)="menu.close(); abrirConta()">Minha conta</button>
-      @if (sessao.autenticado()) {
+      @if (moderador()) {
         <a mat-button routerLink="/moderacao/denuncias" (click)="menu.close()">Moderação</a>
       }
       <button
@@ -84,7 +84,7 @@
         </form>
         <div class="acoes-cabecalho">
           <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo">Anunciar</a>
-          @if (sessao.autenticado()) {
+          @if (moderador()) {
             <a mat-button routerLink="/moderacao/denuncias">Moderação</a>
           }
           <button

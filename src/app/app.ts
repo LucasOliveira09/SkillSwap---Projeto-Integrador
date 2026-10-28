@@ -1,4 +1,4 @@
-import { Component, Injector, inject } from '@angular/core';
+import { Component, Injector, effect, inject, signal } from '@angular/core';
 import {
   ActivatedRoute,
   Router,
@@ -11,6 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { IconeComponent } from './shared/ui/icone/icone.component';
 import { SessaoService } from './features/conta/data-access/sessao.service';
+import { ModeracaoApiService } from './features/moderacao/data-access/moderacao-api.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +30,21 @@ import { SessaoService } from './features/conta/data-access/sessao.service';
 })
 export class App {
   protected readonly sessao = inject(SessaoService);
+  protected readonly moderador = signal(false);
+  private readonly moderacaoApi = inject(ModeracaoApiService);
+  private readonly verificarAcessoModeracao = effect((onCleanup) => {
+    if (!this.sessao.credencial()) {
+      this.moderador.set(false);
+      return;
+    }
+
+    this.moderador.set(false);
+    const subscription = this.moderacaoApi
+      .acesso()
+      .pipe(catchError(() => of(false)))
+      .subscribe((autorizado) => this.moderador.set(autorizado));
+    onCleanup(() => subscription.unsubscribe());
+  });
   private readonly router = inject(Router);
   private readonly injector = inject(Injector);
   private readonly route = inject(ActivatedRoute);

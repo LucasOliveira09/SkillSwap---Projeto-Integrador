@@ -4,18 +4,22 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { SessaoService } from './features/conta/data-access/sessao.service';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('App', () => {
   const autenticado = signal(false);
+  const credencial = signal<string | null>(null);
 
   beforeEach(async () => {
     autenticado.set(false);
+    credencial.set(null);
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
         provideRouter([]),
         provideHttpClient(),
-        { provide: SessaoService, useValue: { autenticado, sair: () => undefined } },
+        provideHttpClientTesting(),
+        { provide: SessaoService, useValue: { autenticado, credencial: () => credencial(), sair: () => undefined } },
       ],
     }).compileComponents();
   });
@@ -46,8 +50,26 @@ describe('App', () => {
     expect(botaoConta?.getAttribute('aria-label')).toBe('Entrar/Registrar-se');
 
     autenticado.set(true);
+    credencial.set('token-teste');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne('/api/moderacao/acesso').flush(false);
     fixture.detectChanges();
 
     expect(botaoConta?.getAttribute('aria-label')).toBe('Minha conta');
+  });
+
+  it('exibe a navegação de moderação somente após confirmação do servidor', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain('Moderação');
+
+    autenticado.set(true);
+    credencial.set('token-moderador');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne('/api/moderacao/acesso').flush(true);
+    fixture.detectChanges();
+
+    const links = fixture.nativeElement.querySelectorAll('a[href="/moderacao/denuncias"]');
+    expect(links.length).toBe(2);
   });
 });

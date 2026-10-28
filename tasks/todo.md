@@ -38,6 +38,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Permitir pausar e reativar a exposição do perfil, ofertas, portfólio, avaliações e imagens sem apagar dados da conta ou negociações.
 - [x] Validar perfil, foto e portfólio no MySQL 8.0.46 e persistência após reinício da API, em schema descartável da prévia Tailscale.
 - [x] Validar em MySQL 8.4.11 descartável na VPS os fluxos REST completos de perfil, foto, portfólio, descoberta, venda/troca, propostas, acordos, conversa, conclusão mútua e avaliações; confirmar dados após reinício e foto após recriação da API com volume persistente. O navegador integrado a MySQL 8.4 e a execução local continuam pendentes.
+- [x] Mostrar o acesso à moderação no cabeçalho somente após confirmação de `/api/moderacao/acesso`; falha de rede mantém a opção oculta. Teste de componente cobre contas comuns e moderadores.
 
 ### Portfólio e descoberta
 
