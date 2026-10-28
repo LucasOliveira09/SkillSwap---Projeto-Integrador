@@ -254,6 +254,8 @@ Em 28/10/2026, uma instância MySQL 8.4.11 descartável validou pela interface a
 
 Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu cadastro, login, edição do perfil e leitura do portfólio. Um upload e uma publicação foram criados pela API; a edição da legenda foi feita pela interface e apareceu no perfil público junto à foto. Após a remoção da publicação pela API, a imagem retornou 404 sem autenticação e 200 para o proprietário. A seleção/envio do arquivo pelo controle do navegador não foi coberta nesse percurso. O banco, uploads, conta de teste, containers e arquivos temporários foram removidos; a prévia 8.0.46 e o site público permaneceram sem alteração.
 
+Em 28/10/2026, a interface da prévia foi atualizada para o commit `830069e`, em `/home/ubuntu/skillswap-preview-20261027/releases/830069e`. O arquivo Git transferido continha somente fontes e dependências versionadas do frontend, sem `.env`; o SHA-256 `30fd794983c6cfaf74dc1663d1d9e2fed29e7e6665cb2dfd584efbd700f02397` coincidiu nos dois lados. O build Angular passou na VPS e gerou a imagem `skillswap-preview-20261027-web:830069e` (`sha256:046d478208c99e9a4db3a22988e8a613a66ec2e359bf1574e0e4dc78848b6ac6`). A imagem anterior foi preservada como `rollback-pre-830069e`. Somente o container web foi recriado; API (`9b16b2e0…`) e MySQL 8.0.46 (`30f48e91…`) mantiveram seus containers e ficaram saudáveis. O healthcheck web passou e home, `/api/anuncios` e `/api/profissionais` responderam HTTP 200 em `100.97.254.9:8089`. Site público, proxy e dados não foram alterados.
+
 ## Site público
 
 O registro da rotação de credenciais da VPS em 28/10/2026 e suas verificações está em [remediacao-credenciais-2026-10-28.md](remediacao-credenciais-2026-10-28.md).
