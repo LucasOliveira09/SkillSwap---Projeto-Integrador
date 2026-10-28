@@ -76,7 +76,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | PUT | `/acordos/{acordoId}/avaliacoes/{avaliacaoId}` | Exige o cliente que escreveu a avaliação; substitui as duas notas e o depoimento em uma edição nas primeiras 24 horas. Repete o mesmo conteúdo com segurança; conteúdo diferente após a edição, resposta, denúncia ou contestação retorna 409. A versão substituída fica disponível à moderação. |
 | GET | `/moderacao/avaliacoes/{avaliacaoId}/historico` | Exige moderador da allowlist; retorna a versão substituída, sem expor esse histórico ao público ou ao outro participante. 404 quando não houve edição. |
 | GET | `/usuarios/{id}/avaliacoes` | Lista avaliações recebidas pelo perfil público, incluindo as duas notas e depoimento, quando fornecidos. |
-| POST | `/denuncias` | Exige JWT; cria denúncia de publicação ou avaliação visível, com motivo e detalhe opcional; a mesma conta só denuncia o mesmo conteúdo uma vez. Responde 201 com Location. |
+| POST | `/denuncias` | Exige JWT; cria denúncia de publicação ou avaliação visível, com motivo e detalhe opcional; publicações e avaliações de perfis pausados retornam 404 sem revelar trecho; a mesma conta só denuncia o mesmo conteúdo uma vez. Responde 201 com Location. |
 | GET | `/denuncias/{id}` | Exige JWT; consulta apenas denúncia própria ou para a qual o usuário esteja na allowlist de moderação. |
 | GET | `/moderacao/acesso` | Exige JWT; informa se o e-mail autenticado pertence à allowlist `MODERATOR_EMAILS`. |
 | GET | `/moderacao/denuncias?status=ABERTA&pagina=0&tamanho=20` | Exige JWT de moderador; lista denúncias paginadas, da mais antiga, preservando trecho do conteúdo reportado. |

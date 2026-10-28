@@ -116,6 +116,31 @@ class ModeracaoControllerTest {
     }
 
     @Test
+    void denunciaNaoExpõePublicacaoDePerfilPausado() throws Exception {
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(post("/api/denuncias").header("Authorization", "Bearer " + tokenDenunciante)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"tipoConteudo\":\"PUBLICACAO\",\"recursoId\":%d,\"motivo\":\"OUTRO\"}").formatted(publicacaoId)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void denunciaNaoExpõeAvaliacaoDePerfilPausado() throws Exception {
+        long avaliacaoId = criarAvaliacao();
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(post("/api/denuncias").header("Authorization", "Bearer " + tokenModerador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"tipoConteudo\":\"AVALIACAO\",\"recursoId\":%d,\"motivo\":\"OUTRO\"}").formatted(avaliacaoId)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void avaliacaoOcultadaSaiDasMediasPublicasMasPodeSerReexibida() throws Exception {
         var respostaAnuncio = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)

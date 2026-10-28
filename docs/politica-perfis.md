@@ -17,6 +17,7 @@ O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, ac
 
 - A pessoa pode apagar o título, a biografia, a cidade e as especialidades, remover a foto e a capa, pausar seus anúncios e excluir publicações próprias.
 - A pessoa pode pausar ou reativar a exibição pública do perfil; isso retira anúncios, portfólio, avaliações, fotos e capa das páginas públicas sem alterar negociações existentes.
+- Denúncias só podem apontar para conteúdo atualmente público. Se o perfil do autor estiver pausado, a API retorna 404 e não revela trecho de publicações ou avaliações a quem tentar denunciá-las pelo ID.
 - Nome e avaliações públicas não podem ser ocultados individualmente por preferência; uma avaliação sai da vitrine pelas regras de moderação ou quando o perfil é pausado.
 - Não existe fluxo de exclusão/anônimização de conta. Esse recurso continua pendente e não deve ser prometido pela interface.
 

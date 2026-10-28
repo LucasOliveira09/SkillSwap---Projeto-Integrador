@@ -112,6 +112,7 @@ public class ModeracaoService {
     private String validarEObterTrecho(TipoConteudoDenunciado tipo, Long recursoId, Long autorId) {
         return switch (tipo) {
             case PUBLICACAO -> publicacaoRepository.findByIdAndModeradaOcultaFalse(recursoId)
+                    .filter(publicacao -> publicacao.getUsuario().isPerfilPublico())
                     .map(publicacao -> {
                         if (publicacao.getUsuario().getId().equals(autorId)) {
                             throw new IllegalArgumentException("Não é possível denunciar seu próprio conteúdo.");
@@ -120,6 +121,7 @@ public class ModeracaoService {
                     }).orElseThrow(() -> new NaoEncontradoException("Publicação não encontrada"));
             case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(recursoId)
                     .filter(avaliacao -> !avaliacao.isModeradaOculta())
+                    .filter(avaliacao -> avaliacao.getAvaliado().isPerfilPublico())
                     .map(avaliacao -> {
                         if (avaliacao.getAvaliador().getId().equals(autorId)) {
                             throw new IllegalArgumentException("Não é possível denunciar sua própria avaliação.");
