@@ -14,7 +14,7 @@ Uma conta pode atuar como profissional e cliente. A descoberta deve responder �
 
 O usuário definiu que pagamentos dentro da plataforma ficam para uma fase posterior à validação de perfis, ofertas, descoberta, propostas, acordos, conversa e avaliações. Até lá, a plataforma organiza a negociação, mas não processa nem garante pagamento.
 
-O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências, riscos e decisões em aberto. O usuário aprovou o plano em 26/10/2026 e a implementação está em andamento; pagamentos foram deixados para uma fase posterior. A visibilidade atual dos dados está registrada em [politica-perfis.md](politica-perfis.md).
+O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências e riscos. O usuário aprovou o plano em 26/10/2026 e definiu pagamentos para uma fase posterior. Perfis, portfólio, descoberta, anúncios, propostas, acordos, conversa e avaliações verificadas estão implementados; os fluxos passaram pela interface e pela API em bancos MySQL descartáveis 8.0.46 e 8.4.11. Permanecem pendentes a revisão manual com leitor de tela, a integração MySQL local, a automação e cópia externa dos backups e uma eventual migração do schema público. O estado detalhado está no plano e em [politica-perfis.md](politica-perfis.md).
 
 O documento relata dificuldade de descoberta, desconfiança na contratação e falta de vitrine para autônomos. As conclusões de pesquisa são relatos do documento; faltam amostra, roteiro e registros para sustentar percentuais em uma apresentação. Evitar prometer segurança total, identidade verificada ou proteção financeira antes de implementar e validar esses mecanismos.
 
@@ -29,7 +29,7 @@ O documento relata dificuldade de descoberta, desconfiança na contratação e f
 | Comunicação | Conversa entre participantes de uma negociação, com controle de acesso e mensagens associadas ao acordo. |
 | Reputação e histórico | Avaliação de 1 a 5 e depoimento associados a serviço concluído; impedir avaliação de operação inexistente e autoavaliação. |
 
-Esta decomposição organiza o documento em seis capacidades para planejamento. Autenticação, estados de acordo e regras contra abuso são definições técnicas propostas para viabilizar o domínio, ainda dependentes do contrato do backend.
+Esta decomposição organiza o documento em seis capacidades. As regras de autenticação, estados de acordo e prevenção de abuso foram incorporadas ao contrato REST e à implementação. Os resultados e limitações da validação estão descritos em [tasks/plan.md](../tasks/plan.md) e [backend.md](backend.md).
 
 O perfil do MVP inclui nome, título profissional, foto, capa opcional, biografia, cidade, especialidades e portfólio visual. A capa e a foto são enviadas pelo próprio usuário autenticado.
 
@@ -46,7 +46,7 @@ Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” 
 
 ## Integração do backend em 20/10/2026
 
-Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API; a validação real em MySQL das novas migrações continua pendente. Consulte o [contrato e a execução](backend.md).
+Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API. Migrações e integração foram validadas em MySQL 8.0.46 e 8.4.11 descartáveis; a integração local continua pendente porque o serviço Docker Desktop está parado. Consulte o [contrato e a execução](backend.md).
 
 ## Integração do GitHub em 21/10/2026
 
@@ -66,13 +66,13 @@ O PDF propõe gateway PIX/cartão e retenção/liberação de valores, destaque 
 
 O trecho do PDF que chama o MVP de “disponível na aplicação” descreve o escopo de referência, não comprova implementação neste repositório.
 
-## O que definir antes das próximas entregas
+## Pendências e decisões para as próximas etapas
 
-1. Backend e banco: adotar migrações versionadas e evoluir o contrato dos demais domínios, conforme a [ADR-004](decisions/004-integra-backend-github.md).
-2. Contas: recuperação de acesso, foto de perfil, prévia e validação do perfil com persistência real. Registro/login, edição básica e autorização de anúncios por proprietário já estão implementados.
-3. Anúncios: categorias definitivas, cidade/bairro, limites, regras de imagens e moderação.
-4. Acordos: proposta, aceite, cancelamento, conclusão e resolução de divergências em vendas e trocas.
-5. Chat e reputação: participantes, retenção de mensagens, denúncia e critérios de avaliação.
-6. Entrega acadêmica: cronograma, divisão de responsabilidades e evidências da pesquisa.
+- Concluir a auditoria de acessibilidade com tecnologia assistiva, incluindo o uso manual do leitor de tela; as árvores de acessibilidade do Chromium e os testes automatizados não substituem essa revisão.
+- Reativar o Docker Desktop e validar a integração Angular/API/MySQL localmente, preservando os volumes existentes.
+- Automatizar a retenção definida para os backups e replicar a cópia cifrada para outro local físico ou provedor; praticar a restauração operacional.
+- Antes de migrar o schema público, repetir a comparação e a restauração em cópia isolada, preparar rollback e obter solicitação explícita para a publicação.
+- Pilotar a busca com profissionais reais da região somente com consentimento, identificando conteúdo de demonstração e medindo uma linha de base antes de definir metas.
+- Planejar recuperação de conta e fechar as decisões acadêmicas de cronograma, responsabilidades e evidências da pesquisa.
 
-Modelo conceitual inicial: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. O backend recebido contém esses domínios; somente catálogo, conta e cadastro de anúncios tiveram o fluxo Angular/MySQL validado nesta integração.
+Modelo conceitual implementado: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. Venda e troca foram percorridas em interface com MySQL 8.0.46 e 8.4.11 descartáveis, e os fluxos REST também passaram nessas versões. A plataforma não processa nem garante pagamento; integração de pagamentos permanece explicitamente fora desta entrega.
