@@ -213,6 +213,8 @@ Em 28/10/2026, Chromium a 390 px integrado a MySQL 8.4.11 descartável percorreu
 
 **Notificações (28/10/2026):** se a API não conseguir marcar uma notificação como lida, o painel preserva a linha não lida, exibe o erro e deixa a pessoa tentar novamente. A navegação ocorre após a confirmação do PATCH; o teste cobriu falha 503 seguida de sucesso.
 
+**Carregamento das mensagens na conta (28/10/2026):** a mensagem de carregamento agora usa `role="status"` para ser anunciada por tecnologias assistivas. Um teste reproduziu a ausência do status e cobre o estado pendente; a suíte completa de 101 testes, `npm run typecheck` e `npm run build` passaram. A leitura manual com leitor de tela segue pendente.
+
 ### Fase 6 — Conclusão, avaliações e reputação
 
 - Definir confirmação unilateral ou mútua de conclusão e janela de avaliação; resolver conflito de confirmação antes de liberar avaliação.

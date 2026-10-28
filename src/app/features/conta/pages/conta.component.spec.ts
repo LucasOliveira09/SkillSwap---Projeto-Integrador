@@ -56,6 +56,28 @@ describe('ações sobre propostas', () => {
 
   afterEach(() => http.verify());
 
+  it('anuncia o carregamento das mensagens para tecnologias assistivas', async () => {
+    TestBed.inject(SessaoService).entrar('anunciante@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-teste' });
+
+    const harness = await RouterTestingHarness.create('/conta');
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement!.querySelector('.status-msg[role="status"]')?.textContent)
+      .toContain('Carregando mensagens...');
+
+    http.expectOne((request) =>
+      request.url === '/api/propostas' && request.params.get('direcao') === 'RECEBIDAS',
+    ).flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+    http.expectOne((request) =>
+      request.url === '/api/propostas' && request.params.get('direcao') === 'ENVIADAS',
+    ).flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+    http.expectOne('/api/acordos?pagina=0&tamanho=20')
+      .flush({ itens: [], pagina: 0, tamanho: 20, totalItens: 0, totalPaginas: 0 });
+    http.expectOne('/api/notificacoes?pagina=0&tamanho=10')
+      .flush({ itens: [], pagina: 0, tamanho: 10, totalItens: 0, totalPaginas: 0 });
+  });
+
   it('informa falha ao aceitar e impede ações repetidas enquanto a resposta está pendente', async () => {
     const harness = await abrirContaComProposta(http);
     const aceitar = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.proposta-acoes button')!;

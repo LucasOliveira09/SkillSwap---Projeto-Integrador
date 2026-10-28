@@ -52,7 +52,7 @@
       }
       <h2>Mensagens recebidas em seus anúncios</h2>
       @if (carregandoPropostas()) {
-        <p class="status-msg">Carregando mensagens...</p>
+        <p class="status-msg" role="status">Carregando mensagens...</p>
       } @else if (erroPropostas()) {
         <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
       } @else if (propostasRecebidas().length === 0) {
