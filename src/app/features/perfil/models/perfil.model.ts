@@ -16,6 +16,26 @@ export interface PerfilProfissional {
   quantidadeAvaliacoes: number;
 }
 
+export interface ResumoOfertaProfissional {
+  profissionalId: number;
+  categoria: string;
+  modalidade: 'VENDA' | 'TROCA';
+  quantidade: number;
+  precoMinimo: number | null;
+  precoMaximo: number | null;
+}
+
+export interface FiltrosBuscaProfissionais {
+  categoria?: string;
+  modalidade?: 'VENDA' | 'TROCA';
+  precoMinimo?: number;
+  precoMaximo?: number;
+}
+
+export interface ProfissionalEncontrado extends PerfilProfissional {
+  resumoOfertas?: readonly ResumoOfertaProfissional[];
+}
+
 export interface UsoArmazenamento {
   usoBytes: number;
   limiteBytes: number;
@@ -35,7 +55,7 @@ export interface AtualizacaoPerfil {
 }
 
 export interface PaginaPerfisProfissionais {
-  itens: readonly PerfilProfissional[];
+  itens: readonly ProfissionalEncontrado[];
   pagina: number;
   tamanho: number;
   totalItens: number;

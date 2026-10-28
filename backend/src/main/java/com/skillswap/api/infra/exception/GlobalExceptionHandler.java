@@ -20,7 +20,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new Erro("DADOS_INVALIDOS","Revise os campos informados.",campos));
     }
     @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class,
-        HandlerMethodValidationException.class, MethodArgumentTypeMismatchException.class})
+        HandlerMethodValidationException.class, MethodArgumentTypeMismatchException.class,
+        jakarta.validation.ConstraintViolationException.class})
     ResponseEntity<Erro> invalido(Exception ex) { return resposta(400,"DADOS_INVALIDOS","Revise os dados informados."); }
     @ExceptionHandler(AuthenticationException.class)
     ResponseEntity<Erro> autenticacao(Exception ex) { return resposta(401,"NAO_AUTENTICADO","Credenciais inválidas ou sessão expirada."); }

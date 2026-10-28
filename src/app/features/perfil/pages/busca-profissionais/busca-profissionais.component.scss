@@ -54,7 +54,7 @@ h3 {
 
 .filtros {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(180px, 1fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   align-items: start;
   gap: 12px;
   padding: 20px;
@@ -164,6 +164,20 @@ h3 {
 .reputacao {
   color: #835c00;
   font-weight: 600;
+}
+
+.resumo-ofertas {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 0;
+  color: var(--ss-muted);
+  font-size: 13px;
+  list-style: none;
+}
+
+.resumo-ofertas strong {
+  color: var(--ss-text);
 }
 
 .estado {

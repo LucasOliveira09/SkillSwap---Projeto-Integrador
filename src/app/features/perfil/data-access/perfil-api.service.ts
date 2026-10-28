@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AtualizacaoPerfil,
+  FiltrosBuscaProfissionais,
   PaginaPerfisProfissionais,
   PerfilProfissional,
   PaginaPublicacoesPortfolio,
@@ -26,9 +27,25 @@ export class PerfilApiService {
     return this.http.get<PerfilProfissional>(`/api/perfis/${encodeURIComponent(id)}`);
   }
 
-  buscarProfissionais(busca: string, cidade: string, pagina: number, notaMinima?: number) {
+  buscarProfissionais(
+    busca: string,
+    cidade: string,
+    pagina: number,
+    notaMinima?: number,
+    filtros: FiltrosBuscaProfissionais = {},
+  ) {
     return this.http.get<PaginaPerfisProfissionais>('/api/profissionais', {
-      params: { busca, cidade, pagina, tamanho: 12, ...(notaMinima ? { notaMinima } : {}) },
+      params: {
+        busca,
+        cidade,
+        pagina,
+        tamanho: 12,
+        ...(notaMinima ? { notaMinima } : {}),
+        ...(filtros.categoria ? { categoria: filtros.categoria } : {}),
+        ...(filtros.modalidade ? { modalidade: filtros.modalidade } : {}),
+        ...(filtros.precoMinimo !== undefined ? { precoMinimo: filtros.precoMinimo } : {}),
+        ...(filtros.precoMaximo !== undefined ? { precoMaximo: filtros.precoMaximo } : {}),
+      },
     });
   }
 

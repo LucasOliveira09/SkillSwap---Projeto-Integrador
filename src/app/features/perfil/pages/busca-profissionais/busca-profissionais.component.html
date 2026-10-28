@@ -8,7 +8,7 @@
   <header class="cabecalho-busca">
     <p class="sobretitulo">Talentos da sua região</p>
     <h1 id="titulo-busca">Encontre o profissional certo</h1>
-    <p>Pesquise por especialidade, título profissional e cidade. A ordem prioriza a correspondência com o serviço, depois a cidade exata e o cadastro mais recente; avaliações não definem a posição.</p>
+    <p>Pesquise por especialidade e cidade e compare ofertas atuais. A ordem prioriza a correspondência com o serviço, depois a cidade exata e o cadastro mais recente; avaliações não definem a posição.</p>
   </header>
 
   <form class="filtros" role="search" (ngSubmit)="pesquisar()">
@@ -31,6 +31,31 @@
         maxlength="80"
         placeholder="Ex.: Florianópolis"
       />
+    </mat-form-field>
+    <label class="filtro-nota">
+      <span>Categoria do serviço</span>
+      <select name="categoria" [(ngModel)]="categoria">
+        <option value="">Todas as categorias</option>
+        @for (opcao of categorias(); track opcao.valor) {
+          <option [value]="opcao.valor.toUpperCase()">{{ opcao.rotulo }}</option>
+        }
+      </select>
+    </label>
+    <label class="filtro-nota">
+      <span>Tipo de negociação</span>
+      <select name="modalidade" [(ngModel)]="modalidade">
+        <option value="">Venda ou troca</option>
+        <option value="VENDA">Venda</option>
+        <option value="TROCA">Troca</option>
+      </select>
+    </label>
+    <mat-form-field appearance="outline">
+      <mat-label>Preço mínimo</mat-label>
+      <input matInput type="number" name="precoMinimo" [(ngModel)]="precoMinimo" min="0.01" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Preço máximo</mat-label>
+      <input matInput type="number" name="precoMaximo" [(ngModel)]="precoMaximo" min="0.01" step="0.01" />
     </mat-form-field>
     <label class="filtro-nota">
       <span>Média mínima</span>
@@ -99,6 +124,18 @@
                   </p>
                 } @else {
                   <p class="sem-avaliacoes">Ainda sem avaliações</p>
+                }
+                @if (profissional.resumoOfertas?.length) {
+                  <ul class="resumo-ofertas" aria-label="Ofertas públicas ativas">
+                    @for (oferta of profissional.resumoOfertas; track oferta.categoria + oferta.modalidade) {
+                      <li>
+                        <strong>{{ rotuloCategoria(oferta.categoria) }}</strong>
+                        · {{ oferta.modalidade === 'VENDA' ? 'Venda' : 'Troca' }}
+                        · {{ oferta.quantidade }} {{ oferta.quantidade === 1 ? 'oferta' : 'ofertas' }}
+                        · {{ resumoPreco(oferta) }}
+                      </li>
+                    }
+                  </ul>
                 }
               </div>
 

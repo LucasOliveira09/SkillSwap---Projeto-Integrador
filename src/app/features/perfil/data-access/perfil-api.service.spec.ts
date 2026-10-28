@@ -91,6 +91,18 @@ describe('PerfilApiService', () => {
     requisicao.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
   });
 
+  it('envia categoria, modalidade e faixa de preço da busca profissional', () => {
+    api.buscarProfissionais('', '', 0, undefined, {
+      categoria: 'MANUTENCAO', modalidade: 'VENDA', precoMinimo: 100, precoMaximo: 200,
+    }).subscribe();
+    const requisicao = http.expectOne((candidate) => candidate.url === '/api/profissionais');
+    expect(requisicao.request.params.get('categoria')).toBe('MANUTENCAO');
+    expect(requisicao.request.params.get('modalidade')).toBe('VENDA');
+    expect(requisicao.request.params.get('precoMinimo')).toBe('100');
+    expect(requisicao.request.params.get('precoMaximo')).toBe('200');
+    requisicao.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+  });
+
   it('atualiza o próprio perfil pelo recurso autenticado', () => {
     const dados = {
       nome: 'Ana Lima', tituloProfissional: 'Professora de violão', bio: 'Aulas com prática', cidade: 'São José',

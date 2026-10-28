@@ -56,6 +56,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Ligar anúncios ao perfil e associar ofertas às publicações.
 - [x] Editar, pausar e reativar anúncios próprios com leitura autenticada, validação do proprietário e persistência pela API.
 - [x] Buscar profissionais por nome/especialidade e cidade com paginação, perfil público e reputação apenas quando há avaliações reais.
+- [x] Complementar descoberta com categoria, modalidade e faixa de preço baseadas em ofertas públicas ativas não demonstrativas; comparar profissionais com quantidade e faixa de preços reais. Testes Java cobrem os filtros, anúncios inativos e critérios divergentes; Angular envia os filtros e apresenta os resumos retornados. `mvnw -q -Dtest=PerfilControllerTest test`, `npm run typecheck` e 105 testes Angular passaram em 28/10/2026.
+- [ ] Validar os filtros e resumos no MySQL da prévia Tailscale e no Chromium em 390/1440 px; preservar imagens/volumes e trocar somente containers necessários.
 - [x] Filtrar ofertas do catálogo por cidade, modalidade e faixa de preço combinadas, preservando trocas sem preço.
 - [x] Descobrir ofertas por disponibilidade declarada.
 - [x] Harmonizar detalhe do anúncio e perfil com a identidade do primeiro SkillSwap; validar estados vazios/erro e navegação de retorno.

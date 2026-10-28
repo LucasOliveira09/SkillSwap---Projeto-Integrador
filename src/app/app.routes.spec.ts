@@ -46,6 +46,7 @@ describe('Navegação do SkillSwap', () => {
     fixture.detectChanges();
     await TestBed.inject(Router).navigateByUrl('/profissionais');
     fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne('/api/categorias').flush([]);
     TestBed.inject(HttpTestingController)
       .expectOne((request) => request.url === '/api/profissionais')
       .flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });

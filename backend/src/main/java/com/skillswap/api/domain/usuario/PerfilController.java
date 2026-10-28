@@ -1,6 +1,7 @@
 package com.skillswap.api.domain.usuario;
 
 import com.skillswap.api.domain.usuario.dto.PerfilDTO;
+import com.skillswap.api.domain.usuario.dto.ProfissionalBuscaDTO;
 import com.skillswap.api.domain.usuario.dto.UpdatePerfilDTO;
 import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.anuncio.dto.AnuncioResponseDTO;
@@ -19,6 +20,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Validated
 public class PerfilController {
 
     private final UsuarioService usuarioService;
@@ -110,14 +115,19 @@ public class PerfilController {
     }
 
     @GetMapping("/profissionais")
-    public ResponseEntity<PaginaDTO<PerfilDTO>> buscarProfissionais(
+    public ResponseEntity<PaginaDTO<ProfissionalBuscaDTO>> buscarProfissionais(
             @RequestParam(defaultValue = "") @Size(max = 100) String busca,
             @RequestParam(defaultValue = "") @Size(max = 80) String cidade,
             @RequestParam(required = false) @DecimalMin("1.0") @DecimalMax("5.0") Double notaMinima,
+            @RequestParam(defaultValue = "") @Size(max = 40) String categoria,
+            @RequestParam(defaultValue = "") @Pattern(regexp = "(?i)|VENDA|TROCA") String modalidade,
+            @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) java.math.BigDecimal precoMinimo,
+            @RequestParam(required = false) @DecimalMin("0.01") @DecimalMax("99999999.99") @Digits(integer = 8, fraction = 2) java.math.BigDecimal precoMaximo,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
             @RequestParam(defaultValue = "12") @Min(1) @Max(20) int tamanho) {
         var pageable = PageRequest.of(pagina, tamanho);
-        return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(busca, cidade, notaMinima, pageable)));
+        return ResponseEntity.ok(PaginaDTO.de(usuarioService.buscarProfissionais(
+                busca, cidade, notaMinima, categoria, modalidade, precoMinimo, precoMaximo, pageable)));
     }
 
     @GetMapping("/perfil")

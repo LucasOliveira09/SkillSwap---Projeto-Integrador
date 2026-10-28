@@ -1,8 +1,14 @@
 package com.skillswap.api.domain.usuario;
 
+import com.skillswap.api.domain.anuncio.AnuncioRepository;
+import com.skillswap.api.domain.anuncio.CategoriaAnuncio;
+import com.skillswap.api.domain.anuncio.ModalidadeAnuncio;
+import com.skillswap.api.domain.anuncio.StatusAnuncio;
+import com.skillswap.api.domain.anuncio.dto.ResumoOfertaProfissionalDTO;
 import com.skillswap.api.domain.avaliacao.AvaliacaoRepository;
 import com.skillswap.api.domain.avaliacao.dto.ResumoAvaliacaoProfissionalDTO;
 import com.skillswap.api.domain.usuario.dto.PerfilDTO;
+import com.skillswap.api.domain.usuario.dto.ProfissionalBuscaDTO;
 import com.skillswap.api.domain.usuario.dto.RegisterDTO;
 import com.skillswap.api.domain.usuario.dto.UpdatePerfilDTO;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
@@ -16,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +31,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final AvaliacaoRepository avaliacaoRepository;
+    private final AnuncioRepository anuncioRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -63,16 +71,43 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PerfilDTO> buscarProfissionais(String busca, String cidade, Double notaMinima, Pageable pageable) {
+    public Page<ProfissionalBuscaDTO> buscarProfissionais(String busca, String cidade, Double notaMinima,
+            String categoria, String modalidade, BigDecimal precoMinimo, BigDecimal precoMaximo, Pageable pageable) {
         String termoSeguro = normalizarFiltro(busca, 100);
         String cidadeSegura = normalizarFiltro(cidade, 80);
+        CategoriaAnuncio categoriaFiltro = null;
+        if (categoria != null && !categoria.isBlank()) {
+            try {
+                categoriaFiltro = CategoriaAnuncio.valueOf(categoria.toUpperCase(java.util.Locale.ROOT));
+            } catch (IllegalArgumentException ex) {
+                return Page.empty(pageable);
+            }
+        }
+        ModalidadeAnuncio modalidadeFiltro = null;
+        if (modalidade != null && !modalidade.isBlank()) {
+            try {
+                modalidadeFiltro = ModalidadeAnuncio.valueOf(modalidade.toUpperCase(java.util.Locale.ROOT));
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Modalidade inválida.");
+            }
+        }
+        if (precoMinimo != null && precoMaximo != null && precoMinimo.compareTo(precoMaximo) > 0) {
+            throw new IllegalArgumentException("O preço mínimo não pode ser maior que o preço máximo.");
+        }
         Page<Usuario> profissionais = usuarioRepository.buscarProfissionais(
-                termoSeguro, cidadeSegura, notaMinima, AMOSTRA_MINIMA_PARA_FILTRO_NOTA, pageable);
+                termoSeguro, cidadeSegura, notaMinima, AMOSTRA_MINIMA_PARA_FILTRO_NOTA,
+                categoriaFiltro, modalidadeFiltro, precoMinimo, precoMaximo, pageable);
         List<Long> ids = profissionais.getContent().stream().map(Usuario::getId).toList();
         Map<Long, ResumoAvaliacaoProfissionalDTO> resumos = ids.isEmpty() ? Map.of()
                 : avaliacaoRepository.resumirProfissionais(ids).stream()
                         .collect(Collectors.toMap(ResumoAvaliacaoProfissionalDTO::profissionalId, Function.identity()));
-        return profissionais.map(profissional -> toPerfilDTO(profissional, resumos.get(profissional.getId())));
+        Map<Long, List<ResumoOfertaProfissionalDTO>> ofertas = ids.isEmpty() ? Map.of()
+                : anuncioRepository.resumirOfertasDeProfissionais(ids, StatusAnuncio.ATIVO, categoriaFiltro,
+                        modalidadeFiltro, precoMinimo, precoMaximo).stream()
+                        .collect(Collectors.groupingBy(ResumoOfertaProfissionalDTO::profissionalId));
+        return profissionais.map(profissional -> ProfissionalBuscaDTO.de(
+                toPerfilDTO(profissional, resumos.get(profissional.getId())),
+                ofertas.getOrDefault(profissional.getId(), List.of())));
     }
 
     @Transactional

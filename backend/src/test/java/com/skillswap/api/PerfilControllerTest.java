@@ -1,6 +1,12 @@
 package com.skillswap.api;
 
 import com.skillswap.api.domain.usuario.UsuarioService;
+import com.skillswap.api.domain.usuario.Usuario;
+import com.skillswap.api.domain.anuncio.Anuncio;
+import com.skillswap.api.domain.anuncio.AnuncioRepository;
+import com.skillswap.api.domain.anuncio.CategoriaAnuncio;
+import com.skillswap.api.domain.anuncio.ModalidadeAnuncio;
+import com.skillswap.api.domain.anuncio.StatusAnuncio;
 import com.skillswap.api.domain.usuario.dto.RegisterDTO;
 import com.skillswap.api.infra.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PerfilControllerTest {
     @Autowired MockMvc mvc;
     @Autowired UsuarioService usuarios;
+    @Autowired AnuncioRepository anuncios;
     @Autowired JwtService jwt;
     @Autowired EntityManagerFactory entityManagerFactory;
 
@@ -91,8 +98,8 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.itens[1].mediaNotas").value(org.hamcrest.Matchers.nullValue()))
                 .andExpect(jsonPath("$.itens[1].quantidadeAvaliacoes").value(0));
 
-        org.junit.jupiter.api.Assertions.assertEquals(4, estatisticas.getPrepareStatementCount(),
-                "a página de dois profissionais deve manter o número de consultas limitado");
+        org.junit.jupiter.api.Assertions.assertEquals(5, estatisticas.getPrepareStatementCount(),
+                "a página carrega profissionais, reputação e ofertas com consultas em lote");
     }
 
     @Test
@@ -347,6 +354,74 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.itens[0].id").value(especialista.getId()))
                 .andExpect(jsonPath("$.itens[1].id").value(usuarioId))
                 .andExpect(jsonPath("$.itens[2].id").value(nomeCorrespondente.getId()));
+    }
+
+    @Test
+    void buscaProfissionaisFiltraOfertasAtivasPorCategoriaModalidadeEPreco() throws Exception {
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"Manutenção residencial\"}"))
+                .andExpect(status().isOk());
+        Usuario ana = usuarios.findById(usuarioId);
+        salvarOferta(ana, CategoriaAnuncio.MANUTENCAO, ModalidadeAnuncio.VENDA, "150.00", StatusAnuncio.ATIVO);
+        salvarOferta(ana, CategoriaAnuncio.MANUTENCAO, ModalidadeAnuncio.VENDA, "190.00", StatusAnuncio.ATIVO);
+        salvarOferta(ana, CategoriaAnuncio.AULAS, ModalidadeAnuncio.VENDA, "160.00", StatusAnuncio.ATIVO);
+
+        Usuario bia = criarProfissional("Bia Profissional", "bia-filtro@skillswap.invalid", "Manutenção");
+        salvarOferta(bia, CategoriaAnuncio.MANUTENCAO, ModalidadeAnuncio.VENDA, "250.00", StatusAnuncio.ATIVO);
+        Usuario caio = criarProfissional("Caio Profissional", "caio-filtro@skillswap.invalid", "Manutenção");
+        salvarOferta(caio, CategoriaAnuncio.MANUTENCAO, ModalidadeAnuncio.TROCA, null, StatusAnuncio.ATIVO);
+        Usuario dora = criarProfissional("Dora Profissional", "dora-filtro@skillswap.invalid", "Aulas");
+        salvarOferta(dora, CategoriaAnuncio.AULAS, ModalidadeAnuncio.VENDA, "160.00", StatusAnuncio.ATIVO);
+        Usuario eva = criarProfissional("Eva Profissional", "eva-filtro@skillswap.invalid", "Manutenção");
+        salvarOferta(eva, CategoriaAnuncio.MANUTENCAO, ModalidadeAnuncio.VENDA, "170.00", StatusAnuncio.INATIVO);
+
+        mvc.perform(get("/api/profissionais")
+                        .param("categoria", "MANUTENCAO")
+                        .param("modalidade", "VENDA")
+                        .param("precoMinimo", "100")
+                        .param("precoMaximo", "200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].id").value(usuarioId))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas.length()").value(1))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas[0].categoria").value("MANUTENCAO"))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas[0].modalidade").value("VENDA"))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas[0].quantidade").value(2))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas[0].precoMinimo").value(150.0))
+                .andExpect(jsonPath("$.itens[0].resumoOfertas[0].precoMaximo").value(190.0));
+    }
+
+    @Test
+    void buscaProfissionaisRejeitaFaixaDePrecoInvalida() throws Exception {
+        mvc.perform(get("/api/profissionais").param("precoMinimo", "200").param("precoMaximo", "100"))
+                .andExpect(status().isBadRequest());
+    }
+
+    private Usuario criarProfissional(String nome, String email, String especialidades) throws Exception {
+        Usuario usuario = usuarios.register(new RegisterDTO(nome, email, "senha-teste-123"));
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + jwt.generateToken(usuario.getEmail()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"especialidades\":\"" + especialidades + "\"}"))
+                .andExpect(status().isOk());
+        return usuario;
+    }
+
+    private void salvarOferta(Usuario proprietario, CategoriaAnuncio categoria,
+                              ModalidadeAnuncio modalidade, String preco, StatusAnuncio status) {
+        anuncios.save(Anuncio.builder()
+                .titulo("Oferta " + categoria + " " + modalidade)
+                .descricao("Oferta de demonstração para teste de busca")
+                .categoria(categoria)
+                .cidade("Florianópolis")
+                .modalidade(modalidade)
+                .preco(preco == null ? null : new java.math.BigDecimal(preco))
+                .habilidadeDesejada(modalidade == ModalidadeAnuncio.TROCA ? "Aulas de inglês" : "")
+                .status(status)
+                .usuario(proprietario)
+                .build());
     }
 
     @Test

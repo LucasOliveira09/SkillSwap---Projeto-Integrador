@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.skillswap.api.domain.anuncio.dto.ResumoOfertaProfissionalDTO;
 import jakarta.persistence.LockModeType;
 import java.math.BigDecimal;
 import java.util.List;
@@ -73,4 +74,25 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
         @Param("precoMinimo") BigDecimal precoMinimo, @Param("precoMaximo") BigDecimal precoMaximo,
         @Param("diaSemana") DiaSemana diaSemana, @Param("periodo") PeriodoDia periodo,
         @Param("busca") String busca, Pageable pageable);
+
+    @Query("""
+            select new com.skillswap.api.domain.anuncio.dto.ResumoOfertaProfissionalDTO(
+                a.usuario.id, a.categoria, a.modalidade, count(a.id), min(a.preco), max(a.preco))
+            from Anuncio a
+            where a.status = :status and a.exemplo = false and a.usuario.perfilPublico = true
+              and a.usuario.id in :profissionalIds
+              and (:categoria is null or a.categoria = :categoria)
+              and (:modalidade is null or a.modalidade = :modalidade)
+              and (:precoMinimo is null or (a.preco is not null and a.preco >= :precoMinimo))
+              and (:precoMaximo is null or (a.preco is not null and a.preco <= :precoMaximo))
+            group by a.usuario.id, a.categoria, a.modalidade
+            order by a.usuario.id, a.categoria, a.modalidade
+            """)
+    List<ResumoOfertaProfissionalDTO> resumirOfertasDeProfissionais(
+            @Param("profissionalIds") List<Long> profissionalIds,
+            @Param("status") StatusAnuncio status,
+            @Param("categoria") CategoriaAnuncio categoria,
+            @Param("modalidade") ModalidadeAnuncio modalidade,
+            @Param("precoMinimo") BigDecimal precoMinimo,
+            @Param("precoMaximo") BigDecimal precoMaximo);
 }

@@ -18,6 +18,7 @@ describe('BuscaProfissionaisComponent', () => {
     const harness = await RouterTestingHarness.create(
       '/profissionais?busca=Eletricista&cidade=Florian%C3%B3polis',
     );
+    http.expectOne('/api/categorias').flush([{ valor: 'MANUTENCAO', rotulo: 'Manutenção e reparos' }]);
     const requisicao = http.expectOne((request) => request.url === '/api/profissionais');
     expect(requisicao.request.params.get('busca')).toBe('Eletricista');
     expect(requisicao.request.params.get('cidade')).toBe('Florianópolis');
@@ -62,6 +63,7 @@ describe('BuscaProfissionaisComponent', () => {
 
   it('mostra estado vazio quando a API não encontra perfis', async () => {
     const harness = await RouterTestingHarness.create('/profissionais');
+    http.expectOne('/api/categorias').flush([]);
     http.expectOne((request) => request.url === '/api/profissionais').flush({
       itens: [],
       pagina: 0,
@@ -75,6 +77,7 @@ describe('BuscaProfissionaisComponent', () => {
 
   it('mantém o host da página como bloco que pode encolher em telas estreitas', async () => {
     const harness = await RouterTestingHarness.create('/profissionais');
+    http.expectOne('/api/categorias').flush([]);
     http.expectOne((request) => request.url === '/api/profissionais').flush({
       itens: [],
       pagina: 0,
@@ -92,6 +95,7 @@ describe('BuscaProfissionaisComponent', () => {
 
   it('envia filtro de reputação pela URL e explica a amostra mínima', async () => {
     const harness = await RouterTestingHarness.create('/profissionais?notaMinima=4.5');
+    http.expectOne('/api/categorias').flush([{ valor: 'MANUTENCAO', rotulo: 'Manutenção e reparos' }]);
     const requisicao = http.expectOne((request) => request.url === '/api/profissionais');
     expect(requisicao.request.params.get('notaMinima')).toBe('4.5');
     requisicao.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
@@ -101,5 +105,32 @@ describe('BuscaProfissionaisComponent', () => {
     expect(harness.routeNativeElement?.textContent).toContain('correspondência com o serviço');
     expect(harness.routeNativeElement?.textContent).toContain('avaliações não definem a posição');
     expect(harness.routeNativeElement?.querySelector<HTMLSelectElement>('[name="notaMinima"]')?.value).toBe('4.5');
+  });
+
+  it('envia filtros da oferta e apresenta somente o resumo real retornado pela API', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/profissionais?categoria=MANUTENCAO&modalidade=VENDA&precoMinimo=100&precoMaximo=200',
+    );
+    http.expectOne('/api/categorias').flush([{ valor: 'MANUTENCAO', rotulo: 'Manutenção e reparos' }]);
+    const request = http.expectOne((candidate) => candidate.url === '/api/profissionais');
+    expect(request.request.params.get('categoria')).toBe('MANUTENCAO');
+    expect(request.request.params.get('modalidade')).toBe('VENDA');
+    expect(request.request.params.get('precoMinimo')).toBe('100');
+    expect(request.request.params.get('precoMaximo')).toBe('200');
+    request.flush({
+      itens: [{
+        id: 19, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: 'Campinas',
+        fotoUrl: null, capaUrl: null, especialidades: 'Manutenção', criadoEm: '2026-10-01T10:00:00',
+        mediaNotas: null, quantidadeAvaliacoes: 0,
+        resumoOfertas: [{ profissionalId: 19, categoria: 'MANUTENCAO', modalidade: 'VENDA', quantidade: 2,
+          precoMinimo: 150, precoMaximo: 190 }],
+      }],
+      pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
+    });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Manutenção e reparos');
+    expect(harness.routeNativeElement?.textContent).toContain('2 ofertas');
+    expect(harness.routeNativeElement?.textContent).toContain('R$ 150,00 a R$ 190,00');
   });
 });
