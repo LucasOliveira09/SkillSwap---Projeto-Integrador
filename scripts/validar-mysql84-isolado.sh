@@ -104,6 +104,7 @@ docker run -d \
   -e DB_USER=skillswap \
   -e DB_PASSWORD="$DB_PASSWORD" \
   -e JWT_SECRET="$JWT_SECRET" \
+  -e MODERATOR_EMAILS=moderador-mysql84@skillswap.invalid \
   -e SERVER_ADDRESS=0.0.0.0 \
   -e SEED_ENABLED=false \
   -e UPLOAD_DIR=/tmp/skillswap-mysql84-validation \
@@ -268,6 +269,126 @@ docker exec "$api" sh -ec '
   echo "Avaliação, médias públicas e busca persistiram após reinício da API."
 '
 
+# Exercita denúncia, acesso restrito, ocultação e reexibição de publicação no MySQL 8.4.
+docker exec "$api" sh -ec '
+  set -eu
+  base=http://127.0.0.1:8080
+  sufixo="$(date +%s)-$$"
+  senha=validacao-temporaria-123
+  moderador=moderador-mysql84@skillswap.invalid
+
+  registrar() {
+    nome=$1
+    email=$2
+    resposta=$(wget -qO- --header="Content-Type: application/json" \
+      --post-data="{\"nome\":\"$nome\",\"email\":\"$email\",\"senha\":\"$senha\"}" \
+      "$base/api/usuarios")
+    token=$(printf "%s" "$resposta" | sed -n "s/.*\"token\":\"\\([^\"]*\\)\".*/\\1/p")
+    if [ -z "$token" ]; then
+      echo "A API não devolveu o token da conta temporária." >&2
+      exit 1
+    fi
+    printf "%s" "$token"
+  }
+
+  request() {
+    metodo=$1
+    caminho=$2
+    bearer=$3
+    corpo=${4:-}
+    if [ -n "$corpo" ]; then
+      tamanho=$(printf "%s" "$corpo" | wc -c | tr -d "[:space:]")
+      printf "%s %s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s" \
+        "$metodo" "$caminho" "$bearer" "$tamanho" "$corpo" | busybox nc 127.0.0.1 8080
+    else
+      printf "%s %s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nConnection: close\r\n\r\n" \
+        "$metodo" "$caminho" "$bearer" | busybox nc 127.0.0.1 8080
+    fi
+  }
+
+  status_upload() {
+    bearer=$1
+    if [ -n "$bearer" ]; then
+      printf "GET /api/uploads/$arquivo HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nAuthorization: Bearer %s\r\nConnection: close\r\n\r\n" \
+        "$bearer" | busybox nc 127.0.0.1 8080 | sed -n "1s/.* \\([0-9][0-9][0-9]\\) .*/\\1/p"
+    else
+      printf "GET /api/uploads/$arquivo HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nConnection: close\r\n\r\n" \
+        | busybox nc 127.0.0.1 8080 | sed -n "1s/.* \\([0-9][0-9][0-9]\\) .*/\\1/p"
+    fi
+  }
+
+  token_autor=$(registrar "Autora de publicação" "autora-$sufixo@skillswap.invalid")
+  token_denunciante=$(registrar "Denunciante" "denunciante-$sufixo@skillswap.invalid")
+  token_externo=$(registrar "Conta externa" "externo-$sufixo@skillswap.invalid")
+  token_moderador=$(registrar "Moderador temporário" "$moderador")
+  perfil=$(wget -qO- --header="Authorization: Bearer $token_autor" "$base/api/perfil")
+  perfil_id=$(printf "%s" "$perfil" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"nome\".*/\\1/p")
+  if [ -z "$perfil_id" ]; then
+    echo "A API não devolveu o identificador do perfil temporário." >&2
+    exit 1
+  fi
+
+  arquivo=$(printf "%064d" 1).png
+  printf "%s" "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII=" | base64 -d > "/tmp/skillswap-mysql84-validation/$arquivo"
+  foto_url="/api/uploads/$arquivo"
+  publicacao=$(wget -qO- --header="Content-Type: application/json" \
+    --header="Authorization: Bearer $token_autor" \
+    --post-data="{\"legenda\":\"Trabalho de marcenaria para moderação\",\"fotos\":[\"$foto_url\"]}" \
+    "$base/api/publicacoes")
+  publicacao_id=$(printf "%s" "$publicacao" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"profissionalId\".*/\\1/p")
+  if [ -z "$publicacao_id" ]; then
+    echo "A API não devolveu a publicação temporária." >&2
+    exit 1
+  fi
+  teste_publico=$(request GET "/api/publicacoes/$publicacao_id" "$token_denunciante")
+  printf "%s" "$teste_publico" | grep -q "HTTP/1.1 200"
+  [ "$(status_upload "")" = 200 ]
+
+  denuncia=$(request POST /api/denuncias "$token_denunciante" \
+    "{\"tipoConteudo\":\"PUBLICACAO\",\"recursoId\":$publicacao_id,\"motivo\":\"SPAM\",\"descricao\":\"Conteúdo repetido para validação\"}")
+  printf "%s" "$denuncia" | grep -q "HTTP/1.1 201"
+  printf "%s" "$denuncia" | grep -q "\"status\":\"ABERTA\""
+  denuncia_id=$(printf "%s" "$denuncia" | sed -n "s/.*\"id\":\\([0-9][0-9]*\\),\"tipoConteudo\".*/\\1/p")
+  if [ -z "$denuncia_id" ]; then
+    echo "A API não devolveu a denúncia temporária." >&2
+    exit 1
+  fi
+
+  fila_externa=$(request GET /api/moderacao/denuncias "$token_externo")
+  printf "%s" "$fila_externa" | grep -q "HTTP/1.1 403"
+  detalhes_autor=$(request GET "/api/denuncias/$denuncia_id" "$token_autor")
+  printf "%s" "$detalhes_autor" | grep -q "HTTP/1.1 403"
+  duplicada=$(request POST /api/denuncias "$token_denunciante" \
+    "{\"tipoConteudo\":\"PUBLICACAO\",\"recursoId\":$publicacao_id,\"motivo\":\"SPAM\"}")
+  printf "%s" "$duplicada" | grep -q "HTTP/1.1 409"
+  acesso=$(request GET /api/moderacao/acesso "$token_moderador")
+  printf "%s" "$acesso" | grep -q "HTTP/1.1 200"
+  printf "%s" "$acesso" | grep -q "true"
+  fila=$(request GET /api/moderacao/denuncias "$token_moderador")
+  printf "%s" "$fila" | grep -q "HTTP/1.1 200"
+  printf "%s" "$fila" | grep -q "Trabalho de marcenaria para moderação"
+
+  ocultada=$(request PATCH "/api/moderacao/denuncias/$denuncia_id" "$token_moderador" "{\"acao\":\"OCULTAR\"}")
+  printf "%s" "$ocultada" | grep -q "HTTP/1.1 200"
+  printf "%s" "$ocultada" | grep -q "\"status\":\"OCULTADA\""
+  publicacao_oculta=$(request GET "/api/publicacoes/$publicacao_id" "$token_denunciante")
+  printf "%s" "$publicacao_oculta" | grep -q "HTTP/1.1 404"
+  perfil_oculto=$(request GET "/api/perfis/$perfil_id/publicacoes" "$token_denunciante")
+  printf "%s" "$perfil_oculto" | grep -q "\"totalItens\":0"
+  [ "$(status_upload "")" = 404 ]
+
+  reexibida=$(request PATCH "/api/moderacao/denuncias/$denuncia_id" "$token_moderador" "{\"acao\":\"REEXIBIR\"}")
+  printf "%s" "$reexibida" | grep -q "HTTP/1.1 200"
+  printf "%s" "$reexibida" | grep -q "\"status\":\"REEXIBIDA\""
+  printf "%s" "$reexibida" | grep -q "moderador-mysql84@skillswap.invalid"
+  publicacao_reexibida=$(request GET "/api/publicacoes/$publicacao_id" "$token_denunciante")
+  printf "%s" "$publicacao_reexibida" | grep -q "HTTP/1.1 200"
+  perfil_reexibido=$(request GET "/api/perfis/$perfil_id/publicacoes" "$token_denunciante")
+  printf "%s" "$perfil_reexibido" | grep -q "\"totalItens\":1"
+  [ "$(status_upload "")" = 200 ]
+  echo "Denúncia, restrição da fila, ocultação, privacidade da imagem e reexibição da publicação passaram em MySQL 8.4 descartável."
+'
+
 versao_mysql=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT VERSION()"')
 versao_flyway=$(docker exec "$banco" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -e "SELECT version FROM skillswap.flyway_schema_history WHERE success = 1 ORDER BY installed_rank DESC LIMIT 1"')
 if [ "$versao_flyway" != 14 ]; then
@@ -276,4 +397,4 @@ if [ "$versao_flyway" != 14 ]; then
   exit 1
 fi
 
-echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate, descoberta e fluxo REST de venda/reputação aprovados."
+echo "MySQL $versao_mysql; Flyway V$versao_flyway; Hibernate validate, venda/troca/reputação e moderação de publicação aprovados."
