@@ -137,7 +137,9 @@ Revise a simulação. Ela preserva o backup mais recente de cada dia UTC dos úl
 
 ## Backup dos uploads
 
-O script copia o volume Docker escolhido em modo somente leitura para um arquivo `tar.gz`, valida o arquivo, grava SHA-256 e restringe as permissões a quem executou o script. Ele não para nem altera o volume ativo. Para garantir uma cópia consistente com o banco, programe a execução em uma janela sem uploads e coordene-a com o backup do MySQL.
+O script copia o volume Docker escolhido em modo somente leitura para um arquivo `tar.gz`, valida o arquivo, grava SHA-256 e restringe o diretório a `700` e os arquivos ao proprietário (`600`), mesmo quando o diretório já existia. Se tar, checksum ou publicação falhar, remove somente os arquivos que a execução publicou; nomes repetidos no mesmo segundo não sobrescrevem o backup concorrente. Ele não para nem altera o volume ativo. Para garantir uma cópia consistente com o banco, programe a execução em uma janela sem uploads e coordene-a com o backup do MySQL.
+
+`bash scripts/test-backup-uploads.sh` usa um Docker simulado para validar permissões, checksum, limpeza após falha e colisão de execuções simultâneas sem iniciar containers nem montar volumes reais. Execute o teste em Linux, onde `chmod` e os bits POSIX podem ser conferidos; Git Bash no Windows não representa essas permissões de forma equivalente.
 
 Confira o destino de montagem e o nome real do volume no container da API. No site público, a montagem é `/app/uploads`; não presuma o prefixo do volume Compose:
 

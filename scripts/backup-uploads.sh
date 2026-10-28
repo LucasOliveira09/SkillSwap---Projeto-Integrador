@@ -31,10 +31,14 @@ fi
 
 mkdir -p -- "$diretorio"
 diretorio=$(cd -- "$diretorio" && pwd -P)
+chmod 700 "$diretorio"
 instante=$(date -u +%Y%m%dT%H%M%SZ)
 arquivo="skillswap-uploads-$instante.tar.gz"
 temporario="$arquivo.partial-$$"
 checksum_temporario="$arquivo.sha256.partial-$$"
+sucesso=0
+arquivo_publicado=0
+checksum_publicado=0
 
 if [ -e "$diretorio/$arquivo" ] || [ -e "$diretorio/$temporario" ] || [ -e "$diretorio/$checksum_temporario" ]; then
   echo "Já existe um backup com este nome. Tente novamente em alguns segundos." >&2
@@ -44,6 +48,14 @@ fi
 limpar() {
   rm -f -- "$diretorio/$temporario"
   rm -f -- "$diretorio/$checksum_temporario"
+  if [ "$sucesso" -ne 1 ]; then
+    if [ "$checksum_publicado" -eq 1 ]; then
+      rm -f -- "$diretorio/$arquivo.sha256"
+    fi
+    if [ "$arquivo_publicado" -eq 1 ]; then
+      rm -f -- "$diretorio/$arquivo"
+    fi
+  fi
 }
 trap limpar EXIT
 trap 'exit 1' HUP INT TERM
@@ -60,10 +72,21 @@ if [ ! -s "$diretorio/$temporario" ]; then
 fi
 
 tar -tzf "$diretorio/$temporario" >/dev/null
-mv -- "$diretorio/$temporario" "$diretorio/$arquivo"
+mv -n -- "$diretorio/$temporario" "$diretorio/$arquivo"
+if [ -e "$diretorio/$temporario" ]; then
+  echo "Já existe um backup com este nome. Tente novamente em alguns segundos." >&2
+  exit 1
+fi
+arquivo_publicado=1
 sha256sum "$diretorio/$arquivo" > "$diretorio/$checksum_temporario"
-mv -- "$diretorio/$checksum_temporario" "$diretorio/$arquivo.sha256"
+mv -n -- "$diretorio/$checksum_temporario" "$diretorio/$arquivo.sha256"
+if [ -e "$diretorio/$checksum_temporario" ]; then
+  echo "Já existe um checksum com este nome. Tente novamente em alguns segundos." >&2
+  exit 1
+fi
+checksum_publicado=1
 chmod 600 "$diretorio/$arquivo" "$diretorio/$arquivo.sha256"
+sucesso=1
 trap - EXIT HUP INT TERM
 
 echo "Backup validado: $diretorio/$arquivo"
