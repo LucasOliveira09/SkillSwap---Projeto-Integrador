@@ -250,7 +250,7 @@ mat-form-field {
   width: 100%;
   min-height: 44px;
   padding: 8px 10px;
-  border: 1px solid var(--ss-line);
+  border: 1px solid var(--ss-control-outline);
   border-radius: 8px;
   background: var(--ss-surface);
   color: var(--ss-text);
@@ -313,7 +313,7 @@ mat-form-field {
 }
 .edicao-legenda { display: grid; gap: 8px; }
 .edicao-legenda label { color: var(--ss-muted); font-size: 12px; font-weight: 600; }
-.edicao-legenda textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid var(--ss-line); border-radius: 8px; padding: 10px; color: var(--ss-text); font: inherit; }
+.edicao-legenda textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid var(--ss-control-outline); border-radius: 8px; padding: 10px; color: var(--ss-text); font: inherit; }
 .acoes-legenda, .acoes-publicacao { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
 .paginacao-portfolio { display: flex; grid-column: 1 / -1; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; padding-top: 12px; }
 .paginacao-portfolio span { color: var(--ss-muted); font-size: 12px; }

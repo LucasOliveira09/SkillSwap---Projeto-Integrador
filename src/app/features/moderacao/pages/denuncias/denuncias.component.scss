@@ -25,7 +25,7 @@ dd { margin: 3px 0 0; color: var(--ss-text); font-size: 13px; overflow-wrap: any
 .fila-contestacoes h2 { margin: 0; color: var(--ss-text); font-size: 24px; }
 .fila-contestacoes header > p:last-child { color: var(--ss-muted); }
 .campo-decisao { display: grid; gap: 6px; color: var(--ss-text); font-size: 13px; font-weight: 600; }
-.campo-decisao textarea { width: 100%; min-height: 84px; padding: 10px 12px; border: 1px solid var(--ss-line); border-radius: 8px; background: var(--ss-surface); color: var(--ss-text); font: inherit; resize: vertical; }
+.campo-decisao textarea { width: 100%; min-height: 84px; padding: 10px 12px; border: 1px solid var(--ss-control-outline); border-radius: 8px; background: var(--ss-surface); color: var(--ss-text); font: inherit; resize: vertical; }
 .decisao-anterior { grid-column: 1 / -1; }
 .estado, .erro { padding: 14px; border-radius: 8px; background: var(--ss-soft); color: var(--ss-muted); }
 .erro { color: #9f2525; background: #fff1f0; }

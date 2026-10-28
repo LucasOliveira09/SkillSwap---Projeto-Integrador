@@ -33,7 +33,7 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .avaliacao fieldset { padding: 0; border: 0; }
 .avaliacao legend { margin-bottom: 6px; font-size: 13px; }
 .estrelas { display: flex; gap: 4px; }
-.estrelas button { border: 0; background: none; color: #b9bec6; cursor: pointer; font-size: 32px; }
+.estrelas button { border: 0; background: none; color: #778394; cursor: pointer; font-size: 32px; }
 .estrelas button.selecionada { color: #8a5d00; }
 .avaliacao-publicada { display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ss-line); }
 .avaliacao-publicada span { color: #8a5d00; }
@@ -50,7 +50,7 @@ h2 { margin: 0 0 14px; color: var(--ss-text); font-size: 20px; }
 .resposta-profissional time { color: var(--ss-muted, #65737d); font-size: 12px; }
 .contestar-avaliacao { display: grid; gap: 8px; margin-top: 14px; }
 .contestar-avaliacao label { color: var(--ss-text); font-size: 13px; font-weight: 600; }
-.contestar-avaliacao textarea { width: 100%; min-height: 88px; padding: 10px 12px; border: 1px solid var(--ss-line); border-radius: 8px; background: var(--ss-surface); color: var(--ss-text); font: inherit; resize: vertical; }
+.contestar-avaliacao textarea { width: 100%; min-height: 88px; padding: 10px 12px; border: 1px solid var(--ss-control-outline); border-radius: 8px; background: var(--ss-surface); color: var(--ss-text); font: inherit; resize: vertical; }
 .contestar-avaliacao small, .estado-contestacao small { color: var(--ss-muted); font-size: 12px; }
 .estado-contestacao { display: grid; gap: 6px; margin-top: 14px; padding: 12px 14px; border-radius: 8px; background: var(--ss-soft); }
 .estado-contestacao p { margin: 0; white-space: pre-line; }

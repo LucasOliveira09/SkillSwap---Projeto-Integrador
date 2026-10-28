@@ -55,6 +55,7 @@ html {
   --ss-green-action: #79bb39;
   --ss-text: #1f2937;
   --ss-muted: #5b687d;
+  --ss-control-outline: #7f8b9b;
   --ss-line: #e6edf5;
   --ss-surface: #ffffff;
   --ss-soft: #f5f7fb;
@@ -230,7 +231,7 @@ button.botao-anunciar,
 .formulario-card {
   @include mat.form-field-overrides(
     (
-      outlined-outline-color: #dce6f2,
+      outlined-outline-color: var(--ss-control-outline),
       outlined-container-shape: 10px,
     )
   );
