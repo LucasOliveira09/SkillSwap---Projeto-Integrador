@@ -118,6 +118,17 @@ sudo ./scripts/backup-mysql.sh skillswap-mysql skillswap /home/ubuntu/backups/sk
 
 O diretório fica com permissão `700`; arquivos e checksum, `600`. O dump usa `--single-transaction`, adequado para tabelas InnoDB; não substitui um backup coordenado se houver tabelas não transacionais. Confira o checksum antes de copiar para armazenamento externo. Antes de qualquer restauração, use outro schema/volume e compare contagens, chaves e dados. Nunca restaure diretamente sobre o banco público.
 
+## Retenção dos backups
+
+`scripts/reter-backups.sh <diretorio>` valida os dumps/arquivos reconhecidos e mostra a lista que seria removida, sem apagar nada. Para habilitar a retenção, primeiro restaure o backup mais recente do banco em schema MySQL isolado e extraia o arquivo de uploads em diretório temporário; compare os dados e confirme a integridade. Só depois registre essa verificação para cada arquivo mais recente:
+
+```sh
+./scripts/reter-backups.sh /home/ubuntu/backups/skillswap-mysql --confirmar-restauracao <arquivo.sql.gz>
+./scripts/reter-backups.sh /home/ubuntu/backups/skillswap-uploads --confirmar-restauracao <arquivo.tar.gz>
+```
+
+Revise a simulação. Ela preserva o backup mais recente de cada dia UTC dos últimos 30 dias e o mais recente de cada mês anterior até completar 12 meses; cópias e checksums dos arquivos excedentes entram juntos na remoção. A execução real exige `--aplicar` e recusa excluir qualquer coisa se o checksum ou o formato de um arquivo falhar, ou se os marcadores não corresponderem aos backups mais recentes. Cada novo backup exige nova restauração e confirmação antes de uma poda posterior. O script não configura agendamento nem copia dados entre locais.
+
 ## Backup dos uploads
 
 O script copia o volume Docker escolhido em modo somente leitura para um arquivo `tar.gz`, valida o arquivo, grava SHA-256 e restringe as permissões a quem executou o script. Ele não para nem altera o volume ativo. Para garantir uma cópia consistente com o banco, programe a execução em uma janela sem uploads e coordene-a com o backup do MySQL.

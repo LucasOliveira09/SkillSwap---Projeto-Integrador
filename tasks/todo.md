@@ -144,3 +144,8 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Manter carga idempotente e preservar anúncios existentes.
 - [x] Validar 28 testes Angular, 14 testes Java, build, tipos e responsividade.
 - [x] Publicar no domínio indicado pelo usuário, preservando banco ativo, proxy e registros existentes, com backup e reversão.
+
+## Retenção automatizada de backups (28/10/2026)
+
+- [x] Criar simulação e poda com retenção móvel de 30 dias e até 12 cópias mensais; validar checksum e formato antes de qualquer remoção; exigir confirmação da restauração mais recente de MySQL e uploads.
+- [ ] Instalar agendamento somente depois de configurar cópia externa em outro local e ensaiar o processo no destino definitivo.

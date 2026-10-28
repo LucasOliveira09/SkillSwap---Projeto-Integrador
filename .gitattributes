@@ -2,3 +2,4 @@
 * text=auto
 backend/mvnw text eol=lf
 backend/mvnw.cmd text eol=crlf
+scripts/*.sh text eol=lf
