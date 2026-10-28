@@ -56,11 +56,18 @@
           <p class="desde">No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</p>
         </div>
 
-        <a mat-stroked-button color="primary" routerLink="/anuncios" [queryParams]="{ busca: p.especialidades || p.tituloProfissional || p.nome }">
-          Encontrar serviços
+        <a mat-flat-button color="primary" href="#titulo-ofertas">
+          Ver serviços e aulas
         </a>
       </div>
     </section>
+
+    <nav class="atalhos-perfil" aria-label="Seções do perfil">
+      <a href="#titulo-sobre">Sobre</a>
+      <a href="#titulo-portfolio">Portfólio <span>{{ estado().totalPublicacoes }}</span></a>
+      <a href="#titulo-ofertas">Serviços <span>{{ estado().totalOfertas }}</span></a>
+      <a href="#titulo-avaliacoes">Avaliações <span>{{ p.quantidadeAvaliacoes }}</span></a>
+    </nav>
 
     <section class="sobre secao" aria-labelledby="titulo-sobre">
       <h2 id="titulo-sobre">Sobre o profissional</h2>

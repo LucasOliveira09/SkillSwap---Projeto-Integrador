@@ -1,0 +1,113 @@
+<section class="caixa" aria-labelledby="titulo-mensagens">
+  <header class="topo-caixa">
+    <div>
+      <p class="sobretitulo">Área de conversas</p>
+      <h1 id="titulo-mensagens">Mensagens</h1>
+      <p>Combine os detalhes dos serviços diretamente com quem negocia com você.</p>
+    </div>
+    <a mat-stroked-button routerLink="/conta">Minha conta</a>
+  </header>
+
+  @if (erro()) { <p class="aviso erro" role="alert">{{ erro() }}</p> }
+  @if (sucesso()) { <p class="aviso sucesso" role="status">{{ sucesso() }}</p> }
+
+  @if (carregando()) {
+    <p class="estado" role="status">Carregando suas conversas...</p>
+  } @else {
+    <div class="mensageiro" [class.com-conversa]="acordoSelecionado()">
+      <aside class="lista-conversas" aria-label="Lista de conversas">
+        <div class="lista-topo">
+          <h2>Conversas</h2>
+          <span>{{ acordos().length }}</span>
+        </div>
+        @if (!acordos().length) {
+          <div class="lista-vazia">
+            <span class="icone-vazio" aria-hidden="true">✉</span>
+            <strong>Nenhuma conversa ainda</strong>
+            <p>Quando uma proposta for aceita, a conversa aparecerá aqui.</p>
+            <a mat-stroked-button routerLink="/anuncios">Explorar serviços</a>
+          </div>
+        } @else {
+          <nav class="itens-conversa" aria-label="Selecionar conversa">
+            @for (acordo of acordos(); track acordo.id) {
+              <button class="item-conversa" type="button" [class.selecionado]="acordoSelecionado()?.id === acordo.id"
+                (click)="selecionar(acordo)" [attr.aria-current]="acordoSelecionado()?.id === acordo.id ? 'true' : null">
+                <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
+                <span class="resumo-conversa">
+                  <span class="linha-resumo"><strong>{{ interlocutor(acordo) }}</strong><small>{{ acordo.criadoEm | date: 'dd/MM/yy' }}</small></span>
+                  <span class="titulo-anuncio">{{ acordo.anuncioTitulo }}</span>
+                  <span class="status-conversa" [class.encerrado]="acordo.status !== 'EM_ANDAMENTO'">
+                    {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+                  </span>
+                </span>
+              </button>
+            }
+          </nav>
+          @if (paginaAcordos() + 1 < totalPaginasAcordos()) {
+            <button mat-button class="mais-conversas" type="button" (click)="carregarMaisAcordos()" [disabled]="carregandoMais()">
+              {{ carregandoMais() ? 'Carregando...' : 'Carregar mais conversas' }}
+            </button>
+          }
+        }
+      </aside>
+
+      @if (acordoSelecionado(); as acordo) {
+        <section class="painel-chat" aria-label="Conversa selecionada">
+          <header class="cabecalho-chat">
+            <button class="voltar-lista" type="button" (click)="acordoSelecionado.set(null)">← Conversas</button>
+            <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
+            <div class="dados-chat">
+              <strong>{{ interlocutor(acordo) }}</strong>
+              <a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a>
+            </div>
+            <span class="badge-status" [class.encerrado]="acordo.status !== 'EM_ANDAMENTO'">
+              {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+            </span>
+            <a mat-button class="detalhes-acordo" [routerLink]="['/acordos', acordo.id]">Detalhes</a>
+          </header>
+
+          <div class="historico-chat" aria-label="Histórico de mensagens">
+            @if (carregarMensagemAnteriorDisponivel()) {
+              <button mat-button type="button" class="anteriores" (click)="carregarMensagensAnteriores()" [disabled]="carregandoMensagens()">
+                Carregar mensagens anteriores
+              </button>
+            }
+            @if (carregandoMensagens()) {
+              <p class="estado-chat" role="status">Atualizando conversa...</p>
+            } @else if (!mensagens().length) {
+              <div class="inicio-chat"><strong>Conversa iniciada</strong><p>As mensagens sobre <b>{{ acordo.anuncioTitulo }}</b> ficam registradas neste espaço privado.</p></div>
+            } @else {
+              <ol class="lista-mensagens">
+                @for (mensagem of mensagens(); track mensagem.id) {
+                  <li class="mensagem" [class.propria]="mensagem.remetenteId === perfil()?.id">
+                    @if (mensagem.remetenteId !== perfil()?.id) { <small>{{ mensagem.remetenteNome }}</small> }
+                    <p>{{ mensagem.conteudo }}</p>
+                    <time [attr.datetime]="mensagem.enviadoEm">{{ mensagem.enviadoEm | date: 'dd/MM/yy, HH:mm' }}</time>
+                  </li>
+                }
+              </ol>
+            }
+          </div>
+
+          @if (acordo.status === 'EM_ANDAMENTO') {
+            <form class="form-chat" (ngSubmit)="enviar()">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Escreva uma mensagem</mat-label>
+                <textarea matInput name="texto" [(ngModel)]="texto" maxlength="2000" rows="2" required
+                  aria-label="Escreva uma mensagem para a conversa"></textarea>
+              </mat-form-field>
+              <button mat-flat-button color="primary" type="submit" [disabled]="enviando() || !texto.trim() || texto.length > 2000">
+                {{ enviando() ? 'Enviando...' : 'Enviar' }}
+              </button>
+            </form>
+            <p class="nota-chat">A conversa é privada entre as pessoas deste acordo. Pagamentos ainda são combinados fora da plataforma.</p>
+          } @else {
+            <p class="conversa-encerrada">Este acordo foi encerrado. O histórico continua disponível para consulta.</p>
+          }
+        </section>
+      } @else if (acordos().length) {
+        <section class="chat-vazio"><span aria-hidden="true">✉</span><h2>Suas conversas, em um só lugar</h2><p>Selecione uma negociação para abrir o chat.</p></section>
+      }
+    </div>
+  }
+</section>

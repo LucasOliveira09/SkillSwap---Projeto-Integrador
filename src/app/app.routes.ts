@@ -24,6 +24,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'mensagens',
+    title: 'Mensagens | SkillSwap',
+    loadComponent: () =>
+      import('./features/negociacao/pages/caixa-mensagens/caixa-mensagens.component').then(
+        (m) => m.CaixaMensagensComponent,
+      ),
+  },
+  {
     path: 'acordos/:id',
     title: 'Conversa do acordo | SkillSwap',
     loadComponent: () =>

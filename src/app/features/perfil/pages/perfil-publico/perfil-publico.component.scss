@@ -4,7 +4,7 @@
 }
 
 .pagina-perfil {
-  max-width: 1080px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 28px 32px 64px;
 }
@@ -37,14 +37,16 @@
 
 .cabecalho-perfil {
   display: block;
-  padding: 16px;
+  padding: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 34px #20394c0b;
 }
 
 .capa-perfil {
-  height: 168px;
+  height: clamp(150px, 22vw, 230px);
   overflow: hidden;
   border-radius: 12px;
-  background: linear-gradient(110deg, #255188, #8bc63f);
+  background: linear-gradient(115deg, #173a68 0%, #287b88 58%, #b7dca0 100%);
 }
 
 .capa-perfil img {
@@ -56,16 +58,19 @@
 
 .identidade-perfil {
   display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 22px 12px 12px;
+  align-items: flex-end;
+  gap: 22px;
+  padding: 0 22px 18px;
 }
 
 .foto-perfil,
 .foto-vazia {
-  width: 112px;
-  height: 112px;
-  flex: 0 0 112px;
+  width: 132px;
+  height: 132px;
+  flex: 0 0 132px;
+  margin-top: -58px;
+  border: 5px solid var(--ss-surface);
+  box-shadow: 0 4px 16px #172b3a24;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -81,6 +86,41 @@
 .identidade {
   flex: 1;
   min-width: 0;
+}
+
+.identidade-perfil > a { flex: 0 0 auto; margin-bottom: 4px; }
+.atalhos-perfil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 22px;
+  padding: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--ss-line);
+  border-radius: 14px;
+  background: var(--ss-surface);
+}
+.atalhos-perfil a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  color: var(--ss-blue);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.atalhos-perfil a:hover { background: var(--ss-soft); }
+.atalhos-perfil span {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ss-soft);
+  font-size: 11px;
 }
 
 .sobretitulo {
@@ -136,8 +176,9 @@ h1 {
 }
 
 .secao {
-  margin-top: 20px;
+  margin-top: 16px;
   padding: 24px 28px;
+  box-shadow: 0 8px 24px #20394c08;
 }
 
 .secao h2 {
@@ -343,15 +384,16 @@ h1 {
   .identidade-perfil {
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 14px;
-    padding: 18px 4px 4px;
+    gap: 12px;
+    padding: 0 8px 8px;
   }
 
   .foto-perfil,
   .foto-vazia {
-    width: 80px;
-    height: 80px;
-    flex-basis: 80px;
+    width: 90px;
+    height: 90px;
+    flex-basis: 90px;
+    margin-top: -40px;
   }
 
   .identidade {
@@ -361,6 +403,8 @@ h1 {
   .identidade-perfil > a {
     width: 100%;
   }
+
+  .atalhos-perfil { margin-top: 10px; }
 
   .secao {
     padding: 20px;

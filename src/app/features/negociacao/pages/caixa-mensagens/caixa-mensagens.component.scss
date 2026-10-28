@@ -1,0 +1,78 @@
+:host { display: block; min-width: 0; }
+.caixa { width: min(1240px, 100%); margin: 0 auto; padding: 30px 28px 48px; }
+.topo-caixa { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+.topo-caixa h1, .topo-caixa p { margin: 0; }
+.topo-caixa h1 { color: var(--ss-text); font-size: clamp(28px, 4vw, 36px); }
+.topo-caixa > div > p:last-child { margin-top: 5px; color: var(--ss-muted); }
+.sobretitulo { color: var(--ss-blue); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.mensageiro { display: grid; grid-template-columns: 340px minmax(0, 1fr); min-height: min(690px, calc(100vh - 220px)); overflow: hidden; border: 1px solid var(--ss-line); border-radius: 18px; background: var(--ss-surface); box-shadow: 0 12px 36px #20394c0d; }
+.lista-conversas { display: flex; min-height: 0; flex-direction: column; border-right: 1px solid var(--ss-line); }
+.lista-topo { display: flex; align-items: center; justify-content: space-between; padding: 20px 18px; border-bottom: 1px solid var(--ss-line); }
+.lista-topo h2 { margin: 0; font-size: 18px; }
+.lista-topo span { display: grid; min-width: 26px; height: 26px; place-items: center; border-radius: 50%; background: var(--ss-soft); color: var(--ss-blue); font-size: 12px; font-weight: 700; }
+.itens-conversa { overflow: auto; }
+.item-conversa { display: flex; width: 100%; align-items: center; gap: 12px; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--ss-line); background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.item-conversa:hover, .item-conversa.selecionado { background: #eef5f7; }
+.item-conversa.selecionado { box-shadow: inset 3px 0 var(--ss-primary, #168b83); }
+.avatar { display: grid; width: 46px; height: 46px; flex: 0 0 46px; place-items: center; border-radius: 50%; background: #e5eff4; color: var(--ss-blue); font-size: 14px; font-weight: 700; }
+.resumo-conversa { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.linha-resumo { display: flex; justify-content: space-between; gap: 8px; }
+.linha-resumo strong, .titulo-anuncio { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linha-resumo small, .status-conversa { color: var(--ss-muted); font-size: 11px; }
+.titulo-anuncio { color: var(--ss-muted); font-size: 12px; }
+.status-conversa { color: #13736c; }
+.status-conversa.encerrado { color: var(--ss-muted); }
+.mais-conversas { min-height: 48px; }
+.painel-chat { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: #f7fafb; }
+.cabecalho-chat { display: flex; align-items: center; gap: 12px; min-height: 76px; padding: 12px 18px; border-bottom: 1px solid var(--ss-line); background: var(--ss-surface); }
+.dados-chat { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.dados-chat > strong, .dados-chat > a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dados-chat > a { color: var(--ss-muted); font-size: 12px; text-decoration: none; }
+.badge-status { padding: 6px 9px; border-radius: 999px; background: #e7f4ee; color: #176a4a; font-size: 11px; white-space: nowrap; }
+.badge-status.encerrado { background: #edf0f2; color: #59666d; }
+.voltar-lista { display: none; border: 0; background: none; color: var(--ss-blue); font: inherit; cursor: pointer; }
+.historico-chat { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 12px; overflow: auto; padding: 22px clamp(16px, 4vw, 54px); background-color: #f4f7f5; background-image: radial-gradient(#dce7e2 0.65px, transparent 0.65px); background-size: 18px 18px; }
+.anteriores { align-self: center; border-radius: 999px; background: var(--ss-surface); }
+.lista-mensagens { display: flex; flex-direction: column; gap: 10px; margin: auto 0 0; padding: 0; list-style: none; }
+.mensagem { display: grid; width: fit-content; max-width: min(78%, 560px); gap: 5px; padding: 10px 13px 7px; border: 1px solid #e4e9e7; border-radius: 14px 14px 14px 4px; background: #fff; box-shadow: 0 1px 2px #1e293b0a; }
+.mensagem.propria { align-self: flex-end; border-color: #cce9dc; border-radius: 14px 14px 4px 14px; background: #e1f4e9; }
+.mensagem p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; }
+.mensagem small { color: var(--ss-blue); font-size: 11px; font-weight: 700; }
+.mensagem time { justify-self: end; color: var(--ss-muted); font-size: 10px; }
+.inicio-chat, .chat-vazio { margin: auto; color: var(--ss-muted); text-align: center; }
+.inicio-chat { max-width: 360px; padding: 14px 18px; border-radius: 12px; background: #fff8dc; font-size: 13px; }
+.inicio-chat strong { color: var(--ss-text); }
+.inicio-chat p { margin: 5px 0 0; }
+.estado-chat { margin: auto; color: var(--ss-muted); }
+.form-chat { display: flex; align-items: end; gap: 12px; padding: 14px 18px 8px; background: var(--ss-surface); }
+.form-chat mat-form-field { flex: 1; }
+.form-chat textarea { resize: vertical; }
+.nota-chat, .conversa-encerrada { margin: 0; padding: 0 20px 12px; background: var(--ss-surface); color: var(--ss-muted); font-size: 11px; text-align: center; }
+.conversa-encerrada { padding-top: 16px; font-size: 13px; }
+.lista-vazia { display: grid; justify-items: center; gap: 10px; padding: 40px 24px; color: var(--ss-muted); text-align: center; }
+.lista-vazia p { margin: 0 0 8px; font-size: 13px; }
+.icone-vazio, .chat-vazio > span { color: var(--ss-primary, #168b83); font-size: 30px; }
+.chat-vazio { display: grid; align-content: center; justify-items: center; gap: 8px; padding: 24px; }
+.chat-vazio h2, .chat-vazio p { margin: 0; }
+.chat-vazio h2 { color: var(--ss-text); font-size: 20px; }
+.aviso { margin: 0 0 12px; padding: 12px 16px; border-radius: 10px; }
+.aviso.erro { background: #fff0ef; color: #9d302a; }
+.aviso.sucesso { background: #e9f6ef; color: #176a4a; }
+.estado { padding: 30px; color: var(--ss-muted); text-align: center; }
+@media (max-width: 760px) {
+  .caixa { padding: 18px 12px 32px; }
+  .topo-caixa { align-items: flex-start; }
+  .topo-caixa > a { display: none; }
+  .mensageiro { grid-template-columns: minmax(0, 1fr); min-height: min(720px, calc(100dvh - 150px)); border-radius: 12px; }
+  .mensageiro.com-conversa .lista-conversas { display: none; }
+  .mensageiro:not(.com-conversa) .painel-chat { display: none; }
+  .lista-conversas { border-right: 0; }
+  .voltar-lista { display: inline-flex; }
+  .cabecalho-chat { gap: 9px; padding: 10px; }
+  .cabecalho-chat .avatar { width: 40px; height: 40px; flex-basis: 40px; }
+  .badge-status, .detalhes-acordo { display: none; }
+  .historico-chat { padding: 16px 12px; }
+  .mensagem { max-width: 88%; }
+  .form-chat { gap: 6px; padding: 10px 8px 6px; }
+  .form-chat button { min-width: 66px; }
+}

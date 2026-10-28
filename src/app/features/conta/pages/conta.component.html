@@ -8,12 +8,13 @@
     <p>Sua sessão está ativa.</p>
     <div class="acoes-topo">
       <a mat-stroked-button routerLink="/meu-perfil">Editar perfil profissional</a>
+      <a mat-stroked-button routerLink="/mensagens">Abrir mensagens</a>
       <a mat-stroked-button routerLink="/anuncios/minhas">Gerenciar meus anúncios</a>
       <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar novo anúncio</a>
       <button mat-stroked-button (click)="sessao.sair()">Sair da conta</button>
     </div>
 
-    <!-- SEÇÃO DE MENSAGENS E PROPOSTAS -->
+    <!-- Propostas e notificações da conta; conversas completas ficam em /mensagens. -->
     <section class="propostas-secao">
       <section class="notificacoes-secao" aria-labelledby="titulo-notificacoes">
         <h2 id="titulo-notificacoes">Notificações @if (naoLidas()) { <span>({{ naoLidas() }} não {{ naoLidas() === 1 ? 'lida' : 'lidas' }})</span> }</h2>
