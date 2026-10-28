@@ -73,6 +73,23 @@ describe('BuscaProfissionaisComponent', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Nenhum perfil encontrado');
   });
 
+  it('mantém o host da página como bloco que pode encolher em telas estreitas', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais');
+    http.expectOne((request) => request.url === '/api/profissionais').flush({
+      itens: [],
+      pagina: 0,
+      tamanho: 12,
+      totalItens: 0,
+      totalPaginas: 0,
+    });
+    harness.detectChanges();
+
+    const host = harness.routeNativeElement;
+    expect(host).not.toBeNull();
+    expect(getComputedStyle(host!).display).toBe('block');
+    expect(getComputedStyle(host!).minWidth).toBe('0px');
+  });
+
   it('envia filtro de reputação pela URL e explica a amostra mínima', async () => {
     const harness = await RouterTestingHarness.create('/profissionais?notaMinima=4.5');
     const requisicao = http.expectOne((request) => request.url === '/api/profissionais');

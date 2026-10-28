@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
 .pagina-busca {
   width: calc(100% - 40px);
   max-width: 1080px;
