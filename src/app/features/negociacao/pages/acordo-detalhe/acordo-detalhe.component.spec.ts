@@ -81,12 +81,17 @@ describe('AcordoDetalheComponent', () => {
       id: 12, acordoId: 7, avaliadorId: 2, avaliadorNome: 'Bruno', avaliadoId: 1, avaliadoNome: 'Ana',
       nota: 5, notaAnuncio: 4, depoimento: 'Ótimo serviço', criadoEm: '2026-10-26T10:30:00',
       respostaProfissional: null, respondidaEm: null,
+    }, {
+      id: 13, acordoId: 8, avaliadorId: 3, avaliadorNome: 'Carla', avaliadoId: 1, avaliadoNome: 'Ana',
+      nota: 4, notaAnuncio: 5, depoimento: 'Outro trabalho', criadoEm: '2026-10-27T10:30:00',
+      respostaProfissional: null, respondidaEm: null,
     }]);
     http.expectOne('/api/perfil').flush({
       id: 1, nome: 'Ana', tituloProfissional: null, bio: null, cidade: null, fotoUrl: null, capaUrl: null, especialidades: null,
       criadoEm: '2026-10-01T10:00:00', mediaNotas: null, quantidadeAvaliacoes: 0,
     });
     http.expectOne('/api/avaliacoes/12/contestacoes').flush([]);
+    http.expectOne('/api/avaliacoes/13/contestacoes').flush([]);
     harness.detectChanges();
 
     const secao = harness.routeNativeElement!.querySelector('.avaliacao')!;
@@ -96,6 +101,10 @@ describe('AcordoDetalheComponent', () => {
       .not.toBeNull();
     expect(secao.querySelector('[role="img"][aria-label="Nota do anúncio: 4 de 5 estrelas"]'))
       .not.toBeNull();
+    const camposContestacao = Array.from(secao.querySelectorAll<HTMLTextAreaElement>('.contestar-avaliacao textarea'));
+    expect(camposContestacao.map((campo) => campo.getAttribute('aria-describedby')))
+      .toEqual(['prazo-contestacao-12', 'prazo-contestacao-13']);
+    expect(secao.querySelectorAll('#prazo-contestacao-12, #prazo-contestacao-13')).toHaveSize(2);
     const campoContestacao = secao.querySelector<HTMLTextAreaElement>('.contestar-avaliacao textarea')!;
     campoContestacao.value = 'O depoimento relata uma etapa que não fazia parte do combinado.';
     campoContestacao.dispatchEvent(new Event('input'));
@@ -112,7 +121,8 @@ describe('AcordoDetalheComponent', () => {
     });
     harness.detectChanges();
     expect(secao.textContent).toContain('Contestação em análise');
-    expect(secao.querySelector('.contestar-avaliacao')).toBeNull();
+    const primeiraAvaliacao = secao.querySelectorAll<HTMLElement>('.avaliacao-publicada')[0];
+    expect(primeiraAvaliacao.querySelector('.contestar-avaliacao')).toBeNull();
 
     const campoResposta = secao.querySelector<HTMLTextAreaElement>('.responder-avaliacao textarea')!;
     campoResposta.value = '  Obrigado pelo retorno.  ';
@@ -131,7 +141,7 @@ describe('AcordoDetalheComponent', () => {
     });
     harness.detectChanges();
     expect(secao.textContent).toContain('Obrigado pelo retorno.');
-    expect(secao.querySelector('.responder-avaliacao')).toBeNull();
+    expect(primeiraAvaliacao.querySelector('.responder-avaliacao')).toBeNull();
     expect(harness.routeNativeElement!.querySelector('.historico-acordo')?.textContent)
       .toContain('Confirmou que o trabalho foi concluído');
   });

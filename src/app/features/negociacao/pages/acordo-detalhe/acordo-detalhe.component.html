@@ -249,8 +249,8 @@
                     [value]="justificativas[avaliacao.id] || ''"
                     (input)="atualizarJustificativa(avaliacao.id, $any($event.target).value)"
                     minlength="20" maxlength="1000" rows="3"
-                    aria-describedby="prazo-contestacao"></textarea>
-                  <small id="prazo-contestacao">Disponível por sete dias após a publicação. A avaliação permanece visível durante a análise.</small>
+                    [attr.aria-describedby]="'prazo-contestacao-' + avaliacao.id"></textarea>
+                  <small [id]="'prazo-contestacao-' + avaliacao.id">Disponível por sete dias após a publicação. A avaliação permanece visível durante a análise.</small>
                   <button mat-stroked-button type="submit"
                     [disabled]="(justificativas[avaliacao.id] || '').trim().length < 20 || (justificativas[avaliacao.id] || '').length > 1000 || contestandoAvaliacao() !== null">
                     {{ contestandoAvaliacao() === avaliacao.id ? 'Enviando...' : 'Enviar contestação' }}
