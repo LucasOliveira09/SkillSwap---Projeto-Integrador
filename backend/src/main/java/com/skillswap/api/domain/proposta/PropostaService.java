@@ -1,6 +1,8 @@
 package com.skillswap.api.domain.proposta;
 
 import com.skillswap.api.domain.acordo.Acordo;
+import com.skillswap.api.domain.mensagem.Mensagem;
+import com.skillswap.api.domain.mensagem.MensagemRepository;
 import com.skillswap.api.domain.acordo.AcordoRepository;
 import com.skillswap.api.domain.anuncio.Anuncio;
 import com.skillswap.api.domain.anuncio.AnuncioRepository;
@@ -30,6 +32,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PropostaService {
 
+    private final MensagemRepository mensagens;
     private final PropostaRepository propostaRepository;
     private final AnuncioService anuncioService;
     private final AnuncioRepository anuncioRepository;
@@ -62,9 +65,11 @@ public class PropostaService {
                 .mensagemInicial(dto.mensagemInicial())
                 .build();
         proposta = propostaRepository.save(proposta);
+        mensagens.save(Mensagem.builder()
+                .proposta(proposta).remetente(proponente).conteudo(dto.mensagemInicial().strip()).build());
         notificacaoService.criar(anuncio.getUsuario(), TipoNotificacao.PROPOSTA_RECEBIDA,
                 "Nova proposta", proponente.getNome() + " demonstrou interesse em “" + anuncio.getTitulo() + "”.",
-                "/conta?aba=recebidas&propostaId=" + proposta.getId());
+                "/mensagens?conversa=" + proposta.getId());
         return proposta;
     }
 
@@ -136,6 +141,7 @@ public class PropostaService {
         // Avisa a pessoa que enviou a proposta e aponta para a nova conversa.
         var acordo = Acordo.builder().proposta(proposta).build();
         acordoRepository.save(acordo);
+        mensagens.associarAcordo(proposta.getId(), acordo);
         eventoAcordoService.registrar(acordo, proposta.getAnuncio().getUsuario(), TipoEventoAcordo.ACORDO_INICIADO);
         notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                 "Proposta aceita", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi aceita.",

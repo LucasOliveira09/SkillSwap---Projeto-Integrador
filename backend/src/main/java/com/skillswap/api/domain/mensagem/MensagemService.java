@@ -38,6 +38,7 @@ public class MensagemService {
 
         var mensagem = Mensagem.builder()
                 .acordo(acordo)
+                .proposta(acordo.getProposta())
                 .remetente(remetente)
                 .conteudo(dto.conteudo())
                 .build();
@@ -48,7 +49,7 @@ public class MensagemService {
                 : anunciante;
         notificacaoService.criar(destinatario, TipoNotificacao.NOVA_MENSAGEM,
                 "Nova mensagem", remetente.getNome() + " enviou uma mensagem sobre “" + acordo.getProposta().getAnuncio().getTitulo() + "”.",
-                "/acordos/" + acordo.getId());
+                "/mensagens?conversa=" + acordo.getProposta().getId());
         return mensagem;
     }
 
@@ -57,7 +58,7 @@ public class MensagemService {
         Acordo acordo = acordoService.findById(acordoId);
         checkParticipant(acordo, emailUsuario);
         return mensagemRepository.findByAcordoIdOrderByEnviadoEmAsc(acordoId).stream()
-                .map(this::toResponseDTO)
+                .map(m -> toResponseDTO(m, acordoId))
                 .toList();
     }
 
@@ -65,7 +66,7 @@ public class MensagemService {
     public Page<MensagemResponseDTO> listarPorAcordo(Long acordoId, String emailUsuario, Pageable pageable) {
         Acordo acordo = acordoService.findById(acordoId);
         checkParticipant(acordo, emailUsuario);
-        return mensagemRepository.findByAcordoId(acordoId, pageable).map(this::toResponseDTO);
+        return mensagemRepository.findByAcordoId(acordoId, pageable).map(m -> toResponseDTO(m, acordoId));
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +74,7 @@ public class MensagemService {
         Acordo acordo = acordoService.findById(acordoId);
         checkParticipant(acordo, emailUsuario);
         return mensagemRepository.findByIdAndAcordoId(mensagemId, acordoId)
-                .map(this::toResponseDTO)
+                .map(m -> toResponseDTO(m, acordoId))
                 .orElseThrow(() -> new com.skillswap.api.infra.exception.NaoEncontradoException("Mensagem não encontrada"));
     }
 
@@ -86,9 +87,13 @@ public class MensagemService {
     }
 
     public MensagemResponseDTO toResponseDTO(Mensagem m) {
+        return toResponseDTO(m, m.getAcordo().getId());
+    }
+
+    private MensagemResponseDTO toResponseDTO(Mensagem m, Long acordoId) {
         return new MensagemResponseDTO(
                 m.getId(),
-                m.getAcordo().getId(),
+                acordoId,
                 m.getRemetente().getId(),
                 m.getRemetente().getNome(),
                 m.getConteudo(),

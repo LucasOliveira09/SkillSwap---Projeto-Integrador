@@ -37,6 +37,18 @@ public class Proposta {
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "ultima_lida_anunciante", nullable = false)
+    @Builder.Default
+    private long ultimaLidaAnunciante = 0;
+    @Column(name = "ultima_lida_proponente", nullable = false)
+    @Builder.Default
+    private long ultimaLidaProponente = 0;
+
+    @Column(name = "ultima_leitura_anunciante_em")
+    private LocalDateTime ultimaLeituraAnuncianteEm;
+    @Column(name = "ultima_leitura_proponente_em")
+    private LocalDateTime ultimaLeituraProponenteEm;
+
     @PrePersist
     protected void onCreate() {
         this.criadoEm = LocalDateTime.now();

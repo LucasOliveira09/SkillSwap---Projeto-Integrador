@@ -41,4 +41,13 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     Optional<Long> findAnuncioIdById(@Param("id") Long id);
 
     boolean existsByAnuncioIdAndProponenteIdAndStatusIn(Long anuncioId, Long proponenteId, Collection<StatusProposta> statuses);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Proposta p where p.id=:id")
+    Optional<Proposta> findByIdForUpdate(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
+    @Query(value = "select p from Proposta p where p.anuncio.usuario.id=:usuario or p.proponente.id=:usuario order by (select max(m.enviadoEm) from Mensagem m where m.proposta=p) desc, p.id desc",
+           countQuery = "select count(p) from Proposta p where p.anuncio.usuario.id=:usuario or p.proponente.id=:usuario")
+    Page<Proposta> listarConversas(@Param("usuario") Long usuario, Pageable pageable);
+
 }

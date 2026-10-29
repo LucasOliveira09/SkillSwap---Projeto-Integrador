@@ -26,4 +26,7 @@ public interface AcordoRepository extends JpaRepository<Acordo, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Acordo a where a.id = :id")
     Optional<Acordo> findByIdForUpdate(@Param("id") Long id);
+    List<Acordo> findByPropostaIdIn(List<Long> ids);
+    Optional<Acordo> findByPropostaId(Long propostaId);
+
 }

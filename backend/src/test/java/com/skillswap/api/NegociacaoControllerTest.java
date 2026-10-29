@@ -250,8 +250,8 @@ class NegociacaoControllerTest {
         mvc.perform(get("/api/acordos/{id}/mensagens", acordoId)
                         .param("pagina", "0").param("tamanho", "10")
                         .header("Authorization", "Bearer " + anuncianteToken))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
-                .andExpect(jsonPath("$.itens[0].conteudo").value("Podemos agendar para sexta?"));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(2))
+                .andExpect(jsonPath("$.itens[1].conteudo").value("Podemos agendar para sexta?"));
 
         mvc.perform(patch("/api/acordos/{id}", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
