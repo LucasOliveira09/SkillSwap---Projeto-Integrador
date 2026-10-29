@@ -99,7 +99,9 @@ export class CaixaMensagensComponent {
       .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoMais.set(false)))
       .subscribe({
         next: (pagina) => {
-          this.acordos.update((atuais) => [...atuais, ...pagina.itens]);
+          this.acordos.update((atuais) => [...new Map(
+            [...atuais, ...pagina.itens].map(item => [item.id, item]),
+          ).values()]);
           this.paginaAcordos.set(pagina.pagina);
           this.totalPaginasAcordos.set(pagina.totalPaginas);
         },

@@ -81,4 +81,25 @@ describe('CaixaMensagensComponent', () => {
     expect(componente.texto).toBe('Meu rascunho');
   });
 
+  it('não duplica uma conversa aberta por link ao carregar sua página depois', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+    const harness = await RouterTestingHarness.create('/mensagens?acordo=7');
+    http.expectOne('/api/perfil').flush({ id: 2, nome: 'Bruno' });
+    const acordo = { id: 7, anuncianteId: 1, proponenteId: 2, anuncianteNome: 'Ana',
+      proponenteNome: 'Bruno', anuncioTitulo: 'Aula', status: 'EM_ANDAMENTO' };
+    http.expectOne('/api/acordos?pagina=0&tamanho=20').flush({
+      itens: [{ ...acordo, id: 8 }], pagina: 0, totalPaginas: 2,
+    });
+    http.expectOne('/api/acordos/7').flush(acordo);
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({ itens: [], pagina: 0, totalPaginas: 1 });
+    harness.detectChanges();
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.mais-conversas')!.click();
+    http.expectOne('/api/acordos?pagina=1&tamanho=20').flush({
+      itens: [acordo, { ...acordo, id: 9 }], pagina: 1, totalPaginas: 2,
+    });
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelectorAll('.item-conversa').length).toBe(3);
+  });
+
 });
