@@ -56,4 +56,29 @@ describe('CaixaMensagensComponent', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement!.textContent).toContain('Confirmo para amanhã');
   });
+  it('abre na lista, guarda o rascunho e respeita a navegação de volta', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'jwt-teste' });
+    const harness = await RouterTestingHarness.create('/mensagens');
+    http.expectOne('/api/perfil').flush({ id: 2, nome: 'Bruno' });
+    http.expectOne('/api/acordos?pagina=0&tamanho=20').flush({
+      itens: [{ id: 7, anuncianteId: 1, proponenteId: 2, anuncianteNome: 'Ana',
+        proponenteNome: 'Bruno', anuncioTitulo: 'Aula', status: 'EM_ANDAMENTO' }],
+      pagina: 0, totalPaginas: 1,
+    });
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.painel-chat')).toBeNull();
+    await harness.navigateByUrl('/mensagens?acordo=7');
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({ itens: [], pagina: 0, totalPaginas: 1 });
+    const componente = harness.routeDebugElement!.componentInstance as { texto: string };
+    componente.texto = 'Meu rascunho';
+    await harness.navigateByUrl('/mensagens');
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.painel-chat')).toBeNull();
+    expect(harness.routeNativeElement!.querySelector('.item-conversa a')).toBeNull();
+    await harness.navigateByUrl('/mensagens?acordo=7');
+    http.expectOne('/api/acordos/7/mensagens?pagina=0&tamanho=50').flush({ itens: [], pagina: 0, totalPaginas: 1 });
+    expect(componente.texto).toBe('Meu rascunho');
+  });
+
 });

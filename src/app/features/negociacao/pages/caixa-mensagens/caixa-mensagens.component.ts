@@ -1,15 +1,15 @@
-import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { DOCUMENT, DatePipe } from '@angular/common';
+import { Component, DestroyRef, ElementRef, Injector, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, interval } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
-import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { Acordo, Mensagem, Pagina } from '../../models/negociacao.model';
 import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
 
@@ -23,7 +23,6 @@ import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
 export class CaixaMensagensComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly sessao = inject(SessaoService);
   private readonly perfilApi = inject(PerfilApiService);
   private readonly api = inject(NegociacaoApiService);
   private readonly destroyRef = inject(DestroyRef);
@@ -43,13 +42,35 @@ export class CaixaMensagensComponent {
   protected readonly totalPaginasMensagens = signal(0);
   protected readonly carregandoMensagens = signal(false);
   protected texto = '';
+  protected readonly filtro = signal('');
+  protected readonly visiveis = computed(() => {
+    const busca = this.filtro().trim().toLocaleLowerCase('pt-BR');
+    return this.acordos().filter(acordo =>
+      `${this.interlocutor(acordo)} ${acordo.anuncioTitulo}`.toLocaleLowerCase('pt-BR').includes(busca));
+  });
+  protected readonly erroSincronizacao = signal('');
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
+  private readonly historico = viewChild<ElementRef<HTMLDivElement>>('historico');
+  private readonly rascunhos = new Map<number, string>();
+  private sincronizando = false;
+  private rolarAoAbrir = true;
+  private readonly sessao = inject(SessaoService);
+  private readonly acompanharSessao = effect(() => {
+    if (!this.sessao.autenticado()) {
+      const id = this.acordoSelecionado()?.id;
+      void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?acordo=${id}` : '/mensagens' } });
+    }
+  });
   private geracaoSelecao = 0;
 
   constructor() {
-    if (!this.sessao.autenticado()) {
-      void this.router.navigate(['/conta'], { queryParams: { retorno: '/mensagens' } });
-      return;
-    }
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (!this.carregando()) this.sincronizarRota();
+    });
+    interval(8000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.document.visibilityState === 'visible') this.atualizarConversa();
+    });
     this.carregar();
   }
 
@@ -64,11 +85,7 @@ export class CaixaMensagensComponent {
           this.acordos.set(acordos.itens);
           this.paginaAcordos.set(acordos.pagina);
           this.totalPaginasAcordos.set(acordos.totalPaginas);
-          const idSolicitado = Number(this.route.snapshot.queryParamMap.get('acordo'));
-          const selecionado = acordos.itens.find((item) => item.id === idSolicitado)
-            ?? acordos.itens[0]
-            ?? null;
-          if (selecionado) this.selecionar(selecionado, false);
+          this.sincronizarRota();
         },
         error: () => this.erro.set('Não foi possível carregar suas conversas. Tente novamente.'),
       });
@@ -91,18 +108,19 @@ export class CaixaMensagensComponent {
   }
 
   protected selecionar(acordo: Acordo, atualizarUrl = true): void {
+    if (atualizarUrl) {
+      void this.router.navigate([], { relativeTo: this.route, queryParams: { acordo: acordo.id }, queryParamsHandling: 'merge' });
+      return;
+    }
+    const anterior = this.acordoSelecionado();
+    if (anterior) this.rascunhos.set(anterior.id, this.texto);
+    this.texto = this.rascunhos.get(acordo.id) ?? '';
+    this.rolarAoAbrir = true;
     const geracao = ++this.geracaoSelecao;
     this.acordoSelecionado.set(acordo);
     this.mensagens.set([]);
     this.erro.set('');
     this.sucesso.set('');
-    if (atualizarUrl) {
-      void this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { acordo: acordo.id },
-        queryParamsHandling: 'merge',
-      });
-    }
     this.carregandoMensagens.set(true);
     this.api.mensagens(acordo.id, 0)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -138,15 +156,74 @@ export class CaixaMensagensComponent {
   }
 
   protected voltarLista(): void {
-    ++this.geracaoSelecao;
-    this.acordoSelecionado.set(null);
-    this.mensagens.set([]);
-    this.carregandoMensagens.set(false);
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { acordo: null },
-      queryParamsHandling: 'merge',
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { acordo: null }, queryParamsHandling: 'merge' });
+  }
+
+  private sincronizarRota(): void {
+    const id = Number(this.route.snapshot.queryParamMap.get('acordo'));
+    if (id === this.acordoSelecionado()?.id) return;
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      const anterior = this.acordoSelecionado();
+      if (anterior) this.rascunhos.set(anterior.id, this.texto);
+      ++this.geracaoSelecao;
+      this.acordoSelecionado.set(null);
+      this.mensagens.set([]);
+      this.carregandoMensagens.set(false);
+      return;
+    }
+    const acordo = this.acordos().find(item => item.id === id);
+    if (acordo) { this.selecionar(acordo, false); return; }
+    const geracao = ++this.geracaoSelecao;
+    this.api.acordo(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: item => {
+        if (geracao !== this.geracaoSelecao) return;
+        this.acordos.update(atuais => [item, ...atuais.filter(a => a.id !== item.id)]);
+        this.selecionar(item, false);
+      },
+      error: () => { if (geracao === this.geracaoSelecao) this.erro.set('Conversa indisponível ou sem permissão de acesso.'); },
     });
+  }
+
+  protected atualizarConversa(): void {
+    const acordo = this.acordoSelecionado();
+    if (!acordo || this.sincronizando || this.enviando() || this.carregandoMensagens() ||
+      this.paginaMensagens() < this.totalPaginasMensagens() - 1) return;
+    const geracao = this.geracaoSelecao;
+    this.sincronizando = true;
+    this.api.mensagens(acordo.id, this.paginaMensagens()).pipe(
+      takeUntilDestroyed(this.destroyRef), finalize(() => this.sincronizando = false),
+    ).subscribe({
+      next: pagina => {
+        if (geracao !== this.geracaoSelecao) return;
+        this.erroSincronizacao.set('');
+        if (pagina.totalPaginas > this.totalPaginasMensagens()) {
+          this.carregarPagina(acordo.id, pagina.totalPaginas - 1, geracao);
+        } else this.aplicarMensagens(pagina);
+      },
+      error: () => { if (geracao === this.geracaoSelecao) this.erroSincronizacao.set('A atualização automática falhou. Tentaremos novamente.'); },
+    });
+  }
+
+  private carregarPagina(id: number, pagina: number, geracao: number): void {
+    this.carregandoMensagens.set(true);
+    this.api.mensagens(id, pagina).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+      if (geracao === this.geracaoSelecao) this.carregandoMensagens.set(false);
+    })).subscribe({
+      next: resposta => { if (geracao === this.geracaoSelecao) this.aplicarMensagens(resposta); },
+      error: () => { if (geracao === this.geracaoSelecao) this.erroSincronizacao.set('Não foi possível atualizar as mensagens.'); },
+    });
+  }
+
+  protected carregarMensagensRecentes(): void {
+    const acordo = this.acordoSelecionado();
+    if (acordo && !this.carregandoMensagens()) this.selecionar(acordo, false);
+  }
+
+  protected aoEnter(evento: KeyboardEvent): void {
+    if (!evento.shiftKey && !evento.isComposing && window.matchMedia('(pointer: fine)').matches) {
+      evento.preventDefault();
+      this.enviar();
+    }
   }
 
   protected carregarMensagensAnteriores(): void {
@@ -173,6 +250,7 @@ export class CaixaMensagensComponent {
     const acordo = this.acordoSelecionado();
     const conteudo = this.texto.trim();
     if (!acordo || acordo.status !== 'EM_ANDAMENTO' || !conteudo || conteudo.length > 2000 || this.enviando()) return;
+    const geracao = this.geracaoSelecao;
     this.enviando.set(true);
     this.erro.set('');
     this.sucesso.set('');
@@ -180,11 +258,13 @@ export class CaixaMensagensComponent {
       .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => {
+          this.rascunhos.delete(acordo.id);
+          if (geracao !== this.geracaoSelecao) return;
           this.texto = '';
           this.selecionar(acordo, false);
           this.sucesso.set('Mensagem enviada.');
         },
-        error: () => this.erro.set('Não foi possível enviar a mensagem. Tente novamente.'),
+        error: () => { if (geracao === this.geracaoSelecao) this.erro.set('Não foi possível enviar a mensagem. Tente novamente.'); },
       });
   }
 
@@ -202,7 +282,14 @@ export class CaixaMensagensComponent {
   }
 
   private aplicarMensagens(pagina: Pagina<Mensagem>): void {
+    const elemento = this.historico()?.nativeElement;
+    const rolar = this.rolarAoAbrir || (elemento && elemento.scrollHeight - elemento.scrollTop - elemento.clientHeight < 100);
+    this.rolarAoAbrir = false;
     this.mensagens.set(pagina.itens);
+    if (rolar) afterNextRender(() => {
+      const historico = this.historico()?.nativeElement;
+      if (historico) historico.scrollTop = historico.scrollHeight;
+    }, { injector: this.injector });
     this.paginaMensagens.set(pagina.pagina);
     this.totalPaginasMensagens.set(pagina.totalPaginas);
   }

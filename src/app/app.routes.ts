@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { sessaoGuard } from './features/conta/data-access/sessao.guard';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'mensagens',
+    canActivate: [sessaoGuard],
     title: 'Mensagens | SkillSwap',
     loadComponent: () =>
       import('./features/negociacao/pages/caixa-mensagens/caixa-mensagens.component').then(

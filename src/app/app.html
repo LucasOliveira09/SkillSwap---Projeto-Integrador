@@ -55,7 +55,8 @@
     </nav>
     <small>Projeto Integrador · Grupo Saptura</small>
   </mat-sidenav>
-  <mat-sidenav-content>
+  <mat-sidenav-content [class.modo-chat]="modoChat()">
+    @if (!modoChat()) {
     <header class="cabecalho">
       <div class="barra">
         <div class="marca-area">
@@ -102,7 +103,9 @@
         </div>
       </div>
     </header>
+    }
     <main #conteudo id="conteudo" tabindex="-1"><router-outlet /></main>
+    @if (!modoChat()) {
     <footer class="rodape">
       <div class="rodape-interno">
         <div class="rodape-marca">
@@ -165,5 +168,6 @@
       </div>
       <span class="circulo-rodape" aria-hidden="true"></span>
     </footer>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

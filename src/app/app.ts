@@ -1,6 +1,7 @@
 import { Component, Injector, effect, inject, signal } from '@angular/core';
 import {
   ActivatedRoute,
+  NavigationEnd,
   Router,
   RouterLink,
   RouterLinkActive,
@@ -12,7 +13,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { IconeComponent } from './shared/ui/icone/icone.component';
 import { SessaoService } from './features/conta/data-access/sessao.service';
 import { ModeracaoApiService } from './features/moderacao/data-access/moderacao-api.service';
-import { catchError, of } from 'rxjs';
+import { catchError, filter, map, of } from 'rxjs';
 import { PerfilApiService } from './features/perfil/data-access/perfil-api.service';
 
 @Component({
@@ -48,6 +49,10 @@ export class App {
     onCleanup(() => subscription.unsubscribe());
   });
   private readonly router = inject(Router);
+  protected readonly modoChat = toSignal(this.router.events.pipe(
+    filter((evento): evento is NavigationEnd => evento instanceof NavigationEnd),
+    map(evento => evento.urlAfterRedirects.split('?')[0] === '/mensagens'),
+  ), { initialValue: this.router.url.split('?')[0] === '/mensagens' });
   private readonly injector = inject(Injector);
   private readonly route = inject(ActivatedRoute);
   protected readonly parametros = toSignal(this.route.queryParamMap, {
