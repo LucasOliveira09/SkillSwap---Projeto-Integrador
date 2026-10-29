@@ -10,6 +10,8 @@ Em 28/10/2026, a home foi reorganizada com atalhos, categorias e grades de contr
 
 Em 28/10/2026, `b426df9` acrescentou login persistente por cookie protegido e uma área própria de mensagens em tela inteira, inspirada no WhatsApp: painel duplo no computador e lista/conversa em telas separadas no celular. A sessão é restaurada antes de abrir as rotas, inclusive ao recarregar; o JWT é renovado automaticamente. Conversas têm busca nos acordos carregados, rascunhos durante a navegação e atualização a cada oito segundos enquanto a tela está visível. Os links de notificações e acordos levam à conversa correspondente. A [ADR-006](docs/decisions/006-sessao-persistente-cookie.md) documenta duração, proteção e limites. Passaram 74 testes Java e 115 Angular, tipos, build sem avisos de budget e auditoria npm de produção (zero vulnerabilidades). O fluxo autenticado foi conferido em Chromium e MySQL 8.4.11 local; no público, V15 e os healthchecks passaram, e o cookie usa Secure.
 
+A correção final `2baa562` evita duplicar conversas abertas por link ao carregar outras páginas da lista; a suíte Angular passou com 116 testes e a web pública já contém o ajuste.
+
 ## Executar localmente
 
 Pré-requisitos: PowerShell 7, Docker Desktop ativo, JDK 21 e Node.js 20.19+, 22.12+ ou 24.x (ambiente validado: 24.13.1); npm (validado: 11.8.0). Os testes precisam de Google Chrome instalado ou de `CHROME_BIN` apontando para Chromium compatível.
