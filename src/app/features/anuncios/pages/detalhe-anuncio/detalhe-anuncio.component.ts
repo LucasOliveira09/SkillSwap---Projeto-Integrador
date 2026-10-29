@@ -10,6 +10,7 @@ import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi } from '../../models/anuncio-api.model';
 import { DiaSemana, PeriodoDia } from '../../models/anuncio.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
+import { ConversasApiService } from '../../../negociacao/data-access/conversas-api.service';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 
 interface EstadoDetalhe {
@@ -44,6 +45,7 @@ export class DetalheAnuncioComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly api = inject(AnunciosApiService);
+  private readonly conversasApi = inject(ConversasApiService);
   protected readonly sessao = inject(SessaoService);
 
   protected readonly fotoSelecionada = signal<string | null>(null);
@@ -113,7 +115,8 @@ export class DetalheAnuncioComponent {
 
   protected enviarMensagem(): void {
     const anuncioAtual = this.anuncio();
-    if (!anuncioAtual) return;
+    if (!anuncioAtual || this.enviandoMensagem()) return;
+    if (anuncioAtual.exemplo) { this.feedbackErro.set('Este anúncio é ilustrativo e não recebe mensagens.'); return; }
 
     if (!this.sessao.autenticado()) {
       void this.router.navigate(['/conta'], {
@@ -123,8 +126,8 @@ export class DetalheAnuncioComponent {
     }
 
     const texto = this.mensagemTexto.trim();
-    if (!texto) {
-      this.feedbackErro.set('Por favor, digite sua mensagem antes de enviar.');
+    if (!texto || texto.length > 500) {
+      this.feedbackErro.set('Digite uma mensagem de até 500 caracteres.');
       return;
     }
 
@@ -132,19 +135,20 @@ export class DetalheAnuncioComponent {
     this.feedbackSucesso.set(null);
     this.feedbackErro.set(null);
 
-    this.api.enviarProposta(anuncioAtual.id, texto).subscribe({
-      next: () => {
+    this.conversasApi.abrir(anuncioAtual.id, texto).subscribe({
+      next: (conversa) => {
         this.enviandoMensagem.set(false);
         this.feedbackSucesso.set(
-          'Mensagem e proposta enviadas com sucesso! O anunciante recebeu seu contato.',
+          'Mensagem salva na conversa deste anúncio.',
         );
         this.mensagemTexto = '';
+        void this.router.navigate(['/mensagens'], { queryParams: { conversa: conversa.id } });
       },
       error: (err) => {
         this.enviandoMensagem.set(false);
         const msg =
           err?.error?.mensagem ||
-          'Não foi possível enviar a mensagem. Verifique se você já possui uma proposta ativa.';
+          'Não foi possível enviar sua mensagem. Tente novamente.';
         this.feedbackErro.set(msg);
       },
     });

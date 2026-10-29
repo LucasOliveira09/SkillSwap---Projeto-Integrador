@@ -23,7 +23,7 @@ export function destinoPosLogin(destino: string | null): string {
     destino === '/anuncios/novo' ||
     destino === '/anuncios/minhas' ||
     destino === '/meu-perfil' ||
-    (destino !== null && /^\/mensagens(?:\?acordo=[1-9]\d{0,14})?$/.test(destino)) ||
+    (destino !== null && /^\/mensagens(?:\?(?:acordo|conversa)=[1-9]\d{0,14})?$/.test(destino)) ||
     (destino && ROTA_EDICAO_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ACORDO.test(destino))
@@ -100,6 +100,8 @@ export class ContaComponent {
   }
 
   protected destinoNotificacao(notificacao: Notificacao): string {
+    const proposta = /^\/conta\?aba=recebidas&propostaId=([1-9]\d*)$/.exec(notificacao.recursoUrl);
+    if (notificacao.tipo === 'PROPOSTA_RECEBIDA' && proposta) return `/mensagens?conversa=${proposta[1]}`;
     const acordo = /^\/acordos\/([1-9]\d*)$/.exec(notificacao.recursoUrl);
     return notificacao.tipo === 'NOVA_MENSAGEM' && acordo
       ? `/mensagens?acordo=${acordo[1]}` : notificacao.recursoUrl;

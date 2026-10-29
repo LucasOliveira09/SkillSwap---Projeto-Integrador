@@ -14,6 +14,7 @@ import { IconeComponent } from './shared/ui/icone/icone.component';
 import { SessaoService } from './features/conta/data-access/sessao.service';
 import { ModeracaoApiService } from './features/moderacao/data-access/moderacao-api.service';
 import { catchError, filter, map, of } from 'rxjs';
+import { IndicadorMensagensService } from './features/negociacao/data-access/indicador-mensagens.service';
 import { PerfilApiService } from './features/perfil/data-access/perfil-api.service';
 
 @Component({
@@ -31,6 +32,7 @@ import { PerfilApiService } from './features/perfil/data-access/perfil-api.servi
   styleUrl: './app.scss',
 })
 export class App {
+  protected readonly mensagens = inject(IndicadorMensagensService);
   protected readonly sessao = inject(SessaoService);
   private readonly perfilApi = inject(PerfilApiService);
   protected readonly moderador = signal(false);

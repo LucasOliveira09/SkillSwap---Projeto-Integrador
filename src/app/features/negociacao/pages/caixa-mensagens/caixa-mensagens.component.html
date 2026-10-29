@@ -8,53 +8,56 @@
   </nav>
   <div class="area-mensagens">
 
-  @if (erro()) { <p class="aviso erro" role="alert">{{ erro() }}</p> }
+  @if (erro()) { <p class="aviso erro" role="alert">{{ erro() }} <button type="button" (click)="carregar()">Tentar novamente</button></p> }
+  @if (erroSincronizacao() && !conversaSelecionada()) { <p class="aviso erro" role="status">{{ erroSincronizacao() }}</p> }
   @if (sucesso()) { <p class="aviso sucesso" role="status">{{ sucesso() }}</p> }
 
   @if (carregando()) {
     <p class="estado" role="status">Carregando suas conversas...</p>
   } @else {
-    <div class="mensageiro" [class.com-conversa]="acordoSelecionado()" [class.sem-conversas]="!acordos().length">
+    <div class="mensageiro" [class.com-conversa]="conversaSelecionada()" [class.sem-conversas]="!conversas().length">
       <aside class="lista-conversas" aria-label="Lista de conversas">
         <div class="lista-topo">
           <div><span class="marca-chat">SKILLSWAP</span><h1 id="titulo-mensagens">Conversas</h1></div>
           <a class="sair-chat" routerLink="/anuncios">Explorar <span aria-hidden="true">↗</span></a>
         </div>
         <label class="busca-conversas"><span aria-hidden="true">⌕</span><input #busca type="search" placeholder="Buscar uma conversa" aria-label="Buscar por pessoa ou serviço nas conversas carregadas" (input)="filtro.set(busca.value)" maxlength="100" /></label>
-        <div class="lista-filtros"><span>Suas negociações</span><small>{{ acordos().length }} carregadas</small></div>
-        @if (!acordos().length) {
+        <div class="lista-filtros"><span>Contatos por anúncio</span><small>{{ conversas().length }} carregadas</small></div>
+        @if (!conversas().length) {
           <div class="lista-vazia">
             <span class="icone-vazio" aria-hidden="true">✉</span>
             <strong>Nenhuma conversa ainda</strong>
-            <p>Quando uma proposta for aceita, a conversa aparecerá aqui.</p>
+            <p>Envie uma mensagem em um anúncio ou receba um contato para iniciar uma conversa.</p>
             <a mat-stroked-button routerLink="/anuncios">Explorar serviços</a>
           </div>
         } @else {
           <nav class="itens-conversa" aria-label="Selecionar conversa">
             @for (acordo of visiveis(); track acordo.id) {
-              <button class="item-conversa" type="button" [class.selecionado]="acordoSelecionado()?.id === acordo.id"
-                (click)="selecionar(acordo)" [attr.aria-current]="acordoSelecionado()?.id === acordo.id ? 'true' : null">
+              <button class="item-conversa" type="button" [class.selecionado]="conversaSelecionada()?.id === acordo.id"
+                (click)="selecionar(acordo)" [attr.aria-current]="conversaSelecionada()?.id === acordo.id ? 'true' : null">
                 <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
                 <span class="resumo-conversa">
-                  <span class="linha-resumo"><strong>{{ interlocutor(acordo) }}</strong><small>{{ acordo.criadoEm | date: 'dd/MM/yy' }}</small></span>
-                  <span class="titulo-anuncio">{{ acordo.anuncioTitulo }}</span>
-                  <span class="status-conversa" [class.encerrado]="acordo.status !== 'EM_ANDAMENTO'">
-                    {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+                  <span class="linha-resumo"><strong>{{ interlocutor(acordo) }}</strong><small>{{ (acordo.ultimaMensagem?.enviadoEm || acordo.criadoEm) | date: 'dd/MM/yy' }}</small></span>
+                  <span class="titulo-anuncio">Sobre: {{ acordo.anuncioTitulo }}</span>
+                  @if (acordo.ultimaMensagem; as ultima) { <span class="previa-mensagem">{{ ultima.remetenteId === perfil()?.id ? 'Você: ' : '' }}{{ ultima.conteudo }}</span> }
+                  @if (acordo.naoLidas) { <span class="nao-lidas" [attr.aria-label]="acordo.naoLidas + ' mensagens não lidas'">{{ acordo.naoLidas }}</span> }
+                  <span class="status-conversa" [class.encerrado]="!acordo.podeEnviar">
+                    {{ rotuloConversa(acordo) }}
                   </span>
                 </span>
               </button>
             }
           </nav>
           @if (!visiveis().length) { <p class="sem-resultado" role="status">Nenhuma conversa carregada corresponde à busca.</p> }
-          @if (paginaAcordos() + 1 < totalPaginasAcordos()) {
-            <button mat-button class="mais-conversas" type="button" (click)="carregarMaisAcordos()" [disabled]="carregandoMais()">
+          @if (paginaConversas() + 1 < totalPaginasConversas()) {
+            <button mat-button class="mais-conversas" type="button" (click)="carregarMaisConversas()" [disabled]="carregandoMais()">
               {{ carregandoMais() ? 'Carregando...' : 'Carregar mais conversas' }}
             </button>
           }
         }
       </aside>
 
-      @if (acordoSelecionado(); as acordo) {
+      @if (conversaSelecionada(); as acordo) {
         <section class="painel-chat" aria-label="Conversa selecionada">
           <header class="cabecalho-chat">
             <button class="voltar-lista" type="button" (click)="voltarLista()">← Conversas</button>
@@ -63,12 +66,17 @@
               <a class="nome-interlocutor" [routerLink]="['/profissionais', acordo.anuncianteId === perfil()?.id ? acordo.proponenteId : acordo.anuncianteId]">{{ interlocutor(acordo) }}</a>
               <a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a>
             </div>
-            <span class="badge-status" [class.encerrado]="acordo.status !== 'EM_ANDAMENTO'">
-              {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+            <span class="badge-status" [class.encerrado]="!acordo.podeEnviar">
+              {{ rotuloConversa(acordo) }}
             </span>
-            <a mat-button class="detalhes-acordo" [routerLink]="['/acordos', acordo.id]">Acordo ↗</a>
+            @if (acordo.acordoId) { <a mat-button class="detalhes-acordo" [routerLink]="['/acordos', acordo.acordoId]">Acordo ↗</a> }
+            @else { <a mat-button class="detalhes-acordo" routerLink="/conta">Proposta ↗</a> }
           </header>
 
+          <aside class="contexto-anuncio" aria-label="Anúncio de origem da conversa">
+            @if (acordo.anuncioImagem) { <img [src]="acordo.anuncioImagem" alt="" width="48" height="48" /> }
+            <div><small>Contato iniciado pelo anúncio #{{ acordo.anuncioId }}</small><a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a><span>{{ acordo.cidade }} · {{ acordo.modalidade === 'TROCA' ? 'Troca de habilidades' : 'Serviço ou aula à venda' }}</span></div>
+          </aside>
           <div #historico class="historico-chat" aria-label="Histórico de mensagens">
             @if (carregarMensagemAnteriorDisponivel()) {
               <button mat-button type="button" class="anteriores" (click)="carregarMensagensAnteriores()" [disabled]="carregandoMensagens()">
@@ -81,7 +89,7 @@
             @if (carregandoMensagens()) {
               <p class="estado-chat" role="status">Atualizando conversa...</p>
             } @else if (!mensagens().length) {
-              <div class="inicio-chat"><strong>Conversa iniciada</strong><p>As mensagens sobre <b>{{ acordo.anuncioTitulo }}</b> ficam registradas neste espaço privado.</p></div>
+              <div class="inicio-chat"><strong>Conversa iniciada</strong><p>Este contato veio do anúncio <b>{{ acordo.anuncioTitulo }}</b>. As mensagens ficam disponíveis para os dois participantes, mesmo antes do aceite da proposta.</p></div>
             } @else {
               <ol class="lista-mensagens">
                 @for (mensagem of mensagens(); track mensagem.id) {
@@ -96,24 +104,24 @@
           </div>
 
           @if (erroSincronizacao()) { <p class="falha-sincronizacao" role="status">{{ erroSincronizacao() }} <button type="button" (click)="atualizarConversa()">Tentar agora</button></p> }
-          @if (acordo.status === 'EM_ANDAMENTO') {
+          @if (acordo.podeEnviar) {
             <form class="form-chat" (ngSubmit)="enviar()">
               <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>Escreva uma mensagem</mat-label>
-                <textarea matInput name="texto" [(ngModel)]="texto" maxlength="2000" rows="1" required [disabled]="enviando()" (keydown.enter)="aoEnter($any($event))"
+                <mat-label>Mensagem</mat-label>
+                <textarea matInput name="texto" [(ngModel)]="texto" maxlength="2000" rows="1" placeholder="Escreva sua mensagem..." [disabled]="enviando()" (keydown.enter)="aoEnter($any($event))"
                   aria-label="Escreva uma mensagem para a conversa"></textarea>
               </mat-form-field>
               <button mat-flat-button color="primary" type="submit" [disabled]="enviando() || !texto.trim() || texto.length > 2000">
                 {{ enviando() ? 'Enviando...' : 'Enviar ➤' }}
               </button>
             </form>
-            <p class="nota-chat">A conversa é privada entre as pessoas deste acordo. Pagamentos ainda são combinados fora da plataforma.</p>
+            <p class="nota-chat">Conversa privada vinculada a este anúncio. Pagamentos ainda são combinados fora da plataforma.</p>
           } @else {
-            <p class="conversa-encerrada">Este acordo foi encerrado. O histórico continua disponível para consulta.</p>
+            <p class="conversa-encerrada">Esta negociação foi encerrada. O histórico continua disponível para consulta.</p>
           }
         </section>
       } @else {
-        <section class="chat-vazio"><span class="ilustracao-chat" aria-hidden="true">↔</span><span class="marca-chat">SEU ESPAÇO PARA COMBINAR</span><h2>Boas conversas.<br />Novas possibilidades.</h2><p>Selecione uma negociação ao lado para conversar sobre o serviço, combinar detalhes e dar o próximo passo.</p><small>Mensagens privadas entre os participantes do acordo.</small><a mat-stroked-button routerLink="/anuncios">Encontrar um serviço</a></section>
+        <section class="chat-vazio"><span class="ilustracao-chat" aria-hidden="true">↔</span><span class="marca-chat">SEU ESPAÇO PARA COMBINAR</span><h2>Boas conversas.<br />Novas possibilidades.</h2><p>Selecione uma negociação ao lado para conversar sobre o serviço, combinar detalhes e dar o próximo passo.</p><small>Mensagens privadas entre quem anuncia e quem entra em contato.</small><a mat-stroked-button routerLink="/anuncios">Encontrar um serviço</a></section>
       }
     </div>
   }

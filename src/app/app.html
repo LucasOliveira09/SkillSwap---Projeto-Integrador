@@ -32,7 +32,7 @@
         >Explorar catálogo</a
       >
       <a mat-button routerLink="/profissionais" (click)="menu.close()">Encontrar profissionais</a>
-      <a mat-button routerLink="/mensagens" (click)="menu.close()">Mensagens</a>
+      <a mat-button routerLink="/mensagens" (click)="menu.close()">Mensagens @if (mensagens.total(); as total) { <span class="contador-mensagens">{{ total }}</span> }</a>
       <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo" (click)="menu.close()"
         >Criar anúncio</a
       >
@@ -89,7 +89,7 @@
           @if (moderador()) {
             <a mat-button routerLink="/moderacao/denuncias">Moderação</a>
           }
-          <a mat-button class="carrinho" routerLink="/mensagens">Mensagens</a>
+          <a mat-button class="atalho-mensagens" routerLink="/mensagens" [attr.aria-label]="'Mensagens' + (mensagens.total() ? ', ' + mensagens.total() + ' não lidas' : '')"><app-icone nome="email" /><span class="rotulo-mensagens">Mensagens</span>@if (mensagens.total(); as total) { <span class="contador-mensagens">{{ total }}</span> }</a>
           <button
             mat-stroked-button
             class="conta"

@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
@@ -115,19 +116,22 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     http.expectOne('/api/anuncios/1').flush(mockAnuncio);
     harness.detectChanges();
 
+    const navegar = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
     component.mensagemTexto = 'Olá, gostaria de saber se atende aos sábados!';
     harness.detectChanges();
 
     const botao = harness.routeNativeElement?.querySelector('button[type="submit"]') as HTMLButtonElement;
     expect(botao.disabled).toBeFalse();
     botao.click();
+    botao.click();
     harness.detectChanges();
 
-    const reqMsg = http.expectOne('/api/anuncios/1/propostas');
-    expect(reqMsg.request.body.mensagemInicial).toBe('Olá, gostaria de saber se atende aos sábados!');
+    const reqMsg = http.expectOne('/api/anuncios/1/conversas');
+    expect(reqMsg.request.body.conteudo).toBe('Olá, gostaria de saber se atende aos sábados!');
     reqMsg.flush({ id: 50, mensagemInicial: 'Olá, gostaria de saber se atende aos sábados!', status: 'PENDENTE' });
     harness.detectChanges();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Mensagem e proposta enviadas com sucesso');
+    expect(harness.routeNativeElement?.textContent).toContain('Mensagem salva na conversa deste anúncio');
+    expect(navegar).toHaveBeenCalledWith(['/mensagens'], { queryParams: { conversa: 50 } });
   });
 });

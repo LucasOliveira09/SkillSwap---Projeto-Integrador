@@ -10,7 +10,10 @@ import { MatInputModule } from '@angular/material/input';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
-import { Acordo, Mensagem, Pagina } from '../../models/negociacao.model';
+import { Pagina } from '../../models/negociacao.model';
+import { Conversa, MensagemConversa } from '../../models/conversa.model';
+import { ConversasApiService } from '../../data-access/conversas-api.service';
+import { IndicadorMensagensService } from '../../data-access/indicador-mensagens.service';
 import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
 
 @Component({
@@ -24,7 +27,11 @@ export class CaixaMensagensComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly perfilApi = inject(PerfilApiService);
-  private readonly api = inject(NegociacaoApiService);
+  private readonly api = inject(ConversasApiService);
+  private readonly negociacaoApi = inject(NegociacaoApiService);
+  private readonly indicador = inject(IndicadorMensagensService);
+  private readonly leituras = new Map<number, number>();
+  private atualizandoLista = false;
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly carregando = signal(true);
@@ -33,11 +40,11 @@ export class CaixaMensagensComponent {
   protected readonly erro = signal('');
   protected readonly sucesso = signal('');
   protected readonly perfil = signal<PerfilProfissional | null>(null);
-  protected readonly acordos = signal<readonly Acordo[]>([]);
-  protected readonly paginaAcordos = signal(0);
-  protected readonly totalPaginasAcordos = signal(0);
-  protected readonly acordoSelecionado = signal<Acordo | null>(null);
-  protected readonly mensagens = signal<readonly Mensagem[]>([]);
+  protected readonly conversas = signal<readonly Conversa[]>([]);
+  protected readonly paginaConversas = signal(0);
+  protected readonly totalPaginasConversas = signal(0);
+  protected readonly conversaSelecionada = signal<Conversa | null>(null);
+  protected readonly mensagens = signal<readonly MensagemConversa[]>([]);
   protected readonly paginaMensagens = signal(0);
   protected readonly totalPaginasMensagens = signal(0);
   protected readonly carregandoMensagens = signal(false);
@@ -45,7 +52,7 @@ export class CaixaMensagensComponent {
   protected readonly filtro = signal('');
   protected readonly visiveis = computed(() => {
     const busca = this.filtro().trim().toLocaleLowerCase('pt-BR');
-    return this.acordos().filter(acordo =>
+    return this.conversas().filter(acordo =>
       `${this.interlocutor(acordo)} ${acordo.anuncioTitulo}`.toLocaleLowerCase('pt-BR').includes(busca));
   });
   protected readonly erroSincronizacao = signal('');
@@ -58,8 +65,8 @@ export class CaixaMensagensComponent {
   private readonly sessao = inject(SessaoService);
   private readonly acompanharSessao = effect(() => {
     if (!this.sessao.autenticado()) {
-      const id = this.acordoSelecionado()?.id;
-      void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?acordo=${id}` : '/mensagens' } });
+      const id = this.conversaSelecionada()?.id;
+      void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?conversa=${id}` : '/mensagens' } });
     }
   });
   private geracaoSelecao = 0;
@@ -69,7 +76,7 @@ export class CaixaMensagensComponent {
       if (!this.carregando()) this.sincronizarRota();
     });
     interval(8000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      if (this.document.visibilityState === 'visible') this.atualizarConversa();
+      if (this.document.visibilityState === 'visible') { this.atualizarEntrada(); this.atualizarConversa(); }
     });
     this.carregar();
   }
@@ -77,49 +84,49 @@ export class CaixaMensagensComponent {
   protected carregar(): void {
     this.carregando.set(true);
     this.erro.set('');
-    forkJoin({ perfil: this.perfilApi.meuPerfil(), acordos: this.api.acordos(0) })
+    forkJoin({ perfil: this.perfilApi.meuPerfil(), conversas: this.api.listar(0) })
       .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.carregando.set(false)))
       .subscribe({
-        next: ({ perfil, acordos }) => {
+        next: ({ perfil, conversas }) => {
           this.perfil.set(perfil);
-          this.acordos.set(acordos.itens);
-          this.paginaAcordos.set(acordos.pagina);
-          this.totalPaginasAcordos.set(acordos.totalPaginas);
+          this.conversas.set(conversas.itens);
+          this.paginaConversas.set(conversas.pagina);
+          this.totalPaginasConversas.set(conversas.totalPaginas);
           this.sincronizarRota();
         },
         error: () => this.erro.set('Não foi possível carregar suas conversas. Tente novamente.'),
       });
   }
 
-  protected carregarMaisAcordos(): void {
-    if (this.carregandoMais() || this.paginaAcordos() + 1 >= this.totalPaginasAcordos()) return;
-    const proximaPagina = this.paginaAcordos() + 1;
+  protected carregarMaisConversas(): void {
+    if (this.carregandoMais() || this.paginaConversas() + 1 >= this.totalPaginasConversas()) return;
+    const proximaPagina = this.paginaConversas() + 1;
     this.carregandoMais.set(true);
-    this.api.acordos(proximaPagina)
+    this.api.listar(proximaPagina)
       .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoMais.set(false)))
       .subscribe({
         next: (pagina) => {
-          this.acordos.update((atuais) => [...new Map(
+          this.conversas.update((atuais) => [...new Map(
             [...atuais, ...pagina.itens].map(item => [item.id, item]),
           ).values()]);
-          this.paginaAcordos.set(pagina.pagina);
-          this.totalPaginasAcordos.set(pagina.totalPaginas);
+          this.paginaConversas.set(pagina.pagina);
+          this.totalPaginasConversas.set(pagina.totalPaginas);
         },
         error: () => this.erro.set('Não foi possível carregar mais conversas.'),
       });
   }
 
-  protected selecionar(acordo: Acordo, atualizarUrl = true): void {
+  protected selecionar(acordo: Conversa, atualizarUrl = true): void {
     if (atualizarUrl) {
-      void this.router.navigate([], { relativeTo: this.route, queryParams: { acordo: acordo.id }, queryParamsHandling: 'merge' });
+      void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: acordo.id, acordo: null }, queryParamsHandling: 'merge' });
       return;
     }
-    const anterior = this.acordoSelecionado();
+    const anterior = this.conversaSelecionada();
     if (anterior) this.rascunhos.set(anterior.id, this.texto);
     this.texto = this.rascunhos.get(acordo.id) ?? '';
     this.rolarAoAbrir = true;
     const geracao = ++this.geracaoSelecao;
-    this.acordoSelecionado.set(acordo);
+    this.conversaSelecionada.set(acordo);
     this.mensagens.set([]);
     this.erro.set('');
     this.sucesso.set('');
@@ -158,36 +165,89 @@ export class CaixaMensagensComponent {
   }
 
   protected voltarLista(): void {
-    void this.router.navigate([], { relativeTo: this.route, queryParams: { acordo: null }, queryParamsHandling: 'merge' });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: null, acordo: null }, queryParamsHandling: 'merge' });
   }
 
   private sincronizarRota(): void {
-    const id = Number(this.route.snapshot.queryParamMap.get('acordo'));
-    if (id === this.acordoSelecionado()?.id) return;
+    const legado = Number(this.route.snapshot.queryParamMap.get('acordo'));
+    if (Number.isSafeInteger(legado) && legado > 0) {
+      const geracao = ++this.geracaoSelecao;
+      this.negociacaoApi.acordo(legado).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: acordo => { if (geracao === this.geracaoSelecao) void this.router.navigate([], {
+          relativeTo: this.route, queryParams: { acordo: null, conversa: acordo.propostaId }, queryParamsHandling: 'merge', replaceUrl: true,
+        }); },
+        error: () => this.erro.set('Conversa indisponível ou sem permissão de acesso.'),
+      });
+      return;
+    }
+    const id = Number(this.route.snapshot.queryParamMap.get('conversa'));
+    if (id === this.conversaSelecionada()?.id) return;
     if (!Number.isSafeInteger(id) || id <= 0) {
-      const anterior = this.acordoSelecionado();
+      const anterior = this.conversaSelecionada();
       if (anterior) this.rascunhos.set(anterior.id, this.texto);
       ++this.geracaoSelecao;
-      this.acordoSelecionado.set(null);
+      this.conversaSelecionada.set(null);
       this.mensagens.set([]);
       this.carregandoMensagens.set(false);
       return;
     }
-    const acordo = this.acordos().find(item => item.id === id);
+    const acordo = this.conversas().find(item => item.id === id);
     if (acordo) { this.selecionar(acordo, false); return; }
+    const anterior = this.conversaSelecionada();
+    if (anterior) this.rascunhos.set(anterior.id, this.texto);
+    this.conversaSelecionada.set(null);
+    this.mensagens.set([]);
+    this.carregandoMensagens.set(true);
     const geracao = ++this.geracaoSelecao;
-    this.api.acordo(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.api.conversa(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: item => {
         if (geracao !== this.geracaoSelecao) return;
-        this.acordos.update(atuais => [item, ...atuais.filter(a => a.id !== item.id)]);
+        this.conversas.update(atuais => [item, ...atuais.filter(a => a.id !== item.id)]);
         this.selecionar(item, false);
       },
-      error: () => { if (geracao === this.geracaoSelecao) this.erro.set('Conversa indisponível ou sem permissão de acesso.'); },
+      error: () => { if (geracao === this.geracaoSelecao) { this.carregandoMensagens.set(false); this.erro.set('Conversa indisponível ou sem permissão de acesso.'); } },
+    });
+  }
+
+  protected atualizarEntrada(): void {
+    if (this.carregando() || this.atualizandoLista) return;
+    this.atualizandoLista = true;
+    this.api.listar(0).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.atualizandoLista = false)).subscribe({
+      next: pagina => {
+        this.conversas.update(atuais => [...new Map([...pagina.itens, ...atuais.filter(a => !pagina.itens.some(n => n.id === a.id))].map(a => [a.id, a])).values()]);
+        this.totalPaginasConversas.set(pagina.totalPaginas);
+        const selecionada = this.conversaSelecionada();
+        const atualizada = selecionada && pagina.itens.find(a => a.id === selecionada.id);
+        if (atualizada) this.conversaSelecionada.set(atualizada);
+      },
+      error: () => this.erroSincronizacao.set('Não foi possível atualizar a caixa de entrada. Tentaremos novamente.'),
+    });
+  }
+
+  protected rotuloConversa(conversa: Conversa): string {
+    if (conversa.acordoStatus === 'CONCLUIDO') return 'Concluído';
+    if (conversa.acordoStatus === 'CANCELADO' || conversa.status === 'CANCELADA') return 'Cancelado';
+    if (conversa.status === 'RECUSADA') return 'Proposta recusada';
+    return conversa.acordoId ? 'Em andamento' : 'Primeiro contato';
+  }
+
+  private marcarLeitura(pagina: Pagina<MensagemConversa>): void {
+    const conversa = this.conversaSelecionada();
+    const ultima = pagina.itens.at(-1);
+    if (!conversa || !ultima || pagina.pagina + 1 < pagina.totalPaginas ||
+        this.document.visibilityState !== 'visible' || this.leituras.get(conversa.id) === ultima.id) return;
+    this.api.ler(conversa.id, ultima.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.leituras.set(conversa.id, ultima.id);
+        this.conversas.update(itens => itens.map(a => a.id === conversa.id ? { ...a, naoLidas: 0 } : a));
+        this.indicador.atualizar();
+      },
+      error: () => this.erroSincronizacao.set('Não foi possível confirmar a leitura. Tentaremos novamente.'),
     });
   }
 
   protected atualizarConversa(): void {
-    const acordo = this.acordoSelecionado();
+    const acordo = this.conversaSelecionada();
     if (!acordo || this.sincronizando || this.enviando() || this.carregandoMensagens() ||
       this.paginaMensagens() < this.totalPaginasMensagens() - 1) return;
     const geracao = this.geracaoSelecao;
@@ -217,7 +277,7 @@ export class CaixaMensagensComponent {
   }
 
   protected carregarMensagensRecentes(): void {
-    const acordo = this.acordoSelecionado();
+    const acordo = this.conversaSelecionada();
     if (acordo && !this.carregandoMensagens()) this.selecionar(acordo, false);
   }
 
@@ -229,7 +289,7 @@ export class CaixaMensagensComponent {
   }
 
   protected carregarMensagensAnteriores(): void {
-    const acordo = this.acordoSelecionado();
+    const acordo = this.conversaSelecionada();
     const pagina = this.paginaMensagens() - 1;
     if (!acordo || pagina < 0 || this.carregandoMensagens()) return;
     const geracao = this.geracaoSelecao;
@@ -249,9 +309,9 @@ export class CaixaMensagensComponent {
   }
 
   protected enviar(): void {
-    const acordo = this.acordoSelecionado();
+    const acordo = this.conversaSelecionada();
     const conteudo = this.texto.trim();
-    if (!acordo || acordo.status !== 'EM_ANDAMENTO' || !conteudo || conteudo.length > 2000 || this.enviando()) return;
+    if (!acordo || !acordo.podeEnviar || !conteudo || conteudo.length > 2000 || this.enviando()) return;
     const geracao = this.geracaoSelecao;
     this.enviando.set(true);
     this.erro.set('');
@@ -270,7 +330,7 @@ export class CaixaMensagensComponent {
       });
   }
 
-  protected interlocutor(acordo: Acordo): string {
+  protected interlocutor(acordo: Conversa): string {
     const id = this.perfil()?.id;
     return acordo.anuncianteId === id ? acordo.proponenteNome : acordo.anuncianteNome;
   }
@@ -283,7 +343,7 @@ export class CaixaMensagensComponent {
     return this.paginaMensagens() > 0;
   }
 
-  private aplicarMensagens(pagina: Pagina<Mensagem>): void {
+  private aplicarMensagens(pagina: Pagina<MensagemConversa>): void {
     const elemento = this.historico()?.nativeElement;
     const rolar = this.rolarAoAbrir || (elemento && elemento.scrollHeight - elemento.scrollTop - elemento.clientHeight < 100);
     this.rolarAoAbrir = false;
@@ -294,5 +354,6 @@ export class CaixaMensagensComponent {
     }, { injector: this.injector });
     this.paginaMensagens.set(pagina.pagina);
     this.totalPaginasMensagens.set(pagina.totalPaginas);
+    this.marcarLeitura(pagina);
   }
 }

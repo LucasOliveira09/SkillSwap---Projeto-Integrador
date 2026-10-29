@@ -135,14 +135,17 @@
             </div>
           }
 
-          @if (sessao.autenticado()) {
+          @if (a.exemplo) {
+            <p class="aviso-login">Anúncio ilustrativo: o contato não está disponível. Escolha uma oferta cadastrada por um profissional.</p>
+          } @else if (sessao.autenticado()) {
             <form (ngSubmit)="enviarMensagem()" class="form-mensagem">
               <label for="campo-mensagem" class="sr-only">Sua mensagem para o anunciante</label>
+              <p id="origem-contato">Sua mensagem será vinculada ao anúncio <strong>{{ a.titulo }}</strong>.</p>
               <textarea
                 id="campo-mensagem"
                 name="mensagemTexto"
                 [(ngModel)]="mensagemTexto"
-                rows="4"
+                rows="4" maxlength="500" aria-describedby="origem-contato"
                 placeholder="Olá! Gostaria de saber mais informações sobre o seu serviço..."
                 [disabled]="enviandoMensagem()"
                 required
@@ -152,7 +155,7 @@
                   mat-flat-button
                   color="primary"
                   type="submit"
-                  [disabled]="enviandoMensagem() || !mensagemTexto.trim()"
+                  [disabled]="enviandoMensagem() || !mensagemTexto.trim() || mensagemTexto.length > 500"
                 >
                   <app-icone nome="email" />
                   {{ enviandoMensagem() ? 'Enviando...' : 'Enviar mensagem' }}
@@ -204,14 +207,14 @@
               <app-icone nome="correto" />
               <div>
                 <strong>Converse pelo SkillSwap</strong>
-                <small>Esclareça o escopo antes de enviar uma proposta</small>
+                <small>Sua conversa chega diretamente ao anunciante</small>
               </div>
             </li>
             <li>
               <app-icone nome="relogio" />
               <div>
                 <strong>Proposta registrada</strong>
-                <small>Acompanhe a resposta na sua conta</small>
+                <small>Acompanhe a resposta em Mensagens</small>
               </div>
             </li>
             <li>

@@ -19,7 +19,7 @@
         <span>Criado em {{ a.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</span>
       </div>
       <a mat-button [routerLink]="['/anuncios', a.anuncioId]">Ver oferta</a>
-      <a mat-flat-button routerLink="/mensagens" [queryParams]="{ acordo: a.id }">Abrir na área de mensagens</a>
+      <a mat-flat-button routerLink="/mensagens" [queryParams]="{ conversa: a.propostaId }">Abrir na área de mensagens</a>
     </header>
 
     <section class="conversa" aria-labelledby="titulo-conversa">
