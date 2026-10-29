@@ -39,9 +39,10 @@ management:
 app:
   jwt:
     secret: ${JWT_SECRET}
-    expiration: 3600000
+    expiration: 900000
 skillswap:
   security:
+    session-cookie-secure: ${SESSION_COOKIE_SECURE:true}
     rate-limit:
       login:
         max-attempts: ${AUTH_RATE_LIMIT_LOGIN_MAX_ATTEMPTS:10}

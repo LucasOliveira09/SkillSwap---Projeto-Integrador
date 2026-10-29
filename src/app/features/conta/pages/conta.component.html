@@ -11,8 +11,10 @@
       <a mat-stroked-button routerLink="/mensagens">Abrir mensagens</a>
       <a mat-stroked-button routerLink="/anuncios/minhas">Gerenciar meus anúncios</a>
       <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar novo anúncio</a>
-      <button mat-stroked-button (click)="sessao.sair()">Sair da conta</button>
+      <button mat-stroked-button (click)="sessao.sair()" [disabled]="sessao.saindo()">{{ sessao.saindo() ? 'Saindo...' : 'Sair da conta' }}</button>
     </div>
+
+    @if (sessao.erroSaida()) { <p role="alert">{{ sessao.erroSaida() }}</p> }
 
     <!-- Propostas e notificações da conta; conversas completas ficam em /mensagens. -->
     <section class="propostas-secao">
@@ -32,7 +34,7 @@
             <ol class="lista-notificacoes">
               @for (notificacao of notificacoes(); track notificacao.id) {
                 <li [class.nao-lida]="!notificacao.lida">
-                  <a [href]="notificacao.recursoUrl" (click)="abrirNotificacao($event, notificacao)">
+                  <a [href]="destinoNotificacao(notificacao)" (click)="abrirNotificacao($event, notificacao)">
                     <strong>{{ notificacao.titulo }}</strong>
                     <span>{{ notificacao.mensagem }}</span>
                     <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
@@ -51,14 +53,14 @@
           <button mat-button type="button" (click)="erroAcaoProposta.set(''); carregarPropostas()">Atualizar lista</button>
         </p>
       }
-      <h2>Mensagens recebidas em seus anúncios</h2>
+      <h2>Propostas recebidas em seus anúncios</h2>
       @if (carregandoPropostas()) {
-        <p class="status-msg" role="status">Carregando mensagens...</p>
+        <p class="status-msg" role="status">Carregando propostas...</p>
       } @else if (erroPropostas()) {
         <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
       } @else if (propostasRecebidas().length === 0) {
         <div class="vazio-card">
-          <p>Você ainda não recebeu mensagens de interessados em seus serviços.</p>
+          <p>Você ainda não recebeu propostas para seus serviços.</p>
         </div>
       } @else {
         <div class="lista-propostas">
@@ -96,12 +98,12 @@
         </div>
       }
 
-      <h2>Suas mensagens enviadas</h2>
+      <h2>Suas propostas enviadas</h2>
       @if (erroPropostas()) {
         <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
       } @else if (propostasEnviadas().length === 0) {
         <div class="vazio-card">
-          <p>Você ainda não enviou mensagens para outros anunciantes.</p>
+          <p>Você ainda não enviou propostas para outros anunciantes.</p>
         </div>
       } @else {
         <div class="lista-propostas">
@@ -152,9 +154,8 @@
               </div>
               <div class="proposta-meta">
                 <small>Criado em {{ acordo.criadoEm | date: 'dd/MM/yyyy' }}</small>
-                <a mat-flat-button color="primary" [routerLink]="['/acordos', acordo.id]">
-                  {{ acordo.status === 'EM_ANDAMENTO' ? 'Abrir conversa' : 'Ver conversa e avaliação' }}
-                </a>
+                <a mat-flat-button color="primary" routerLink="/mensagens" [queryParams]="{ acordo: acordo.id }">Abrir conversa</a>
+                <a mat-button [routerLink]="['/acordos', acordo.id]">Detalhes e avaliação</a>
               </div>
             </article>
           }
@@ -222,6 +223,6 @@
         {{ registrar() ? 'Já tenho uma conta' : 'Quero criar uma conta' }}
       </button>
     </form>
-    <p class="aviso">Sua sessão termina ao recarregar ou sair. Os anúncios permanecem salvos.</p>
+    <p class="aviso">Seu acesso fica conectado por até 30 dias neste navegador. Em um dispositivo compartilhado, saia da conta ao terminar.</p>
   }
 </section>

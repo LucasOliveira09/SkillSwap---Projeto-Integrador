@@ -64,7 +64,7 @@ describe('ações sobre propostas', () => {
     harness.detectChanges();
 
     expect(harness.routeNativeElement!.querySelector('.status-msg[role="status"]')?.textContent)
-      .toContain('Carregando mensagens...');
+      .toContain('Carregando propostas...');
 
     http.expectOne((request) =>
       request.url === '/api/propostas' && request.params.get('direcao') === 'RECEBIDAS',
@@ -155,7 +155,7 @@ describe('ações sobre propostas', () => {
     component.abrirNotificacao(new MouseEvent('click', { button: 0 }), notificacao);
     http.expectOne('/api/notificacoes/12').flush({ ...notificacao, lida: true });
     harness.detectChanges();
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/acordos/15');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/mensagens?acordo=15');
   });
 });
 
@@ -250,5 +250,14 @@ describe('destino após login', () => {
     for (const destino of [null, '', '//externo.example', '/conta', '/anuncios/42?x=1']) {
       expect(destinoPosLogin(destino)).toBe('/anuncios');
     }
+  });
+});
+
+
+describe('retorno seguro às conversas', () => {
+  it('preserva a conversa escolhida após autenticar', () => {
+    expect(destinoPosLogin('/mensagens')).toBe('/mensagens');
+    expect(destinoPosLogin('/mensagens?acordo=4')).toBe('/mensagens?acordo=4');
+    expect(destinoPosLogin('/mensagens?acordo=4&retorno=https://untrusted.invalid')).toBe('/anuncios');
   });
 });

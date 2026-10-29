@@ -23,6 +23,7 @@ export function destinoPosLogin(destino: string | null): string {
     destino === '/anuncios/novo' ||
     destino === '/anuncios/minhas' ||
     destino === '/meu-perfil' ||
+    (destino !== null && /^\/mensagens(?:\?acordo=[1-9]\d{0,14})?$/.test(destino)) ||
     (destino && ROTA_EDICAO_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ANUNCIO.test(destino)) ||
     (destino && ROTA_DETALHE_ACORDO.test(destino))
@@ -98,11 +99,17 @@ export class ContaComponent {
     });
   }
 
+  protected destinoNotificacao(notificacao: Notificacao): string {
+    const acordo = /^\/acordos\/([1-9]\d*)$/.exec(notificacao.recursoUrl);
+    return notificacao.tipo === 'NOVA_MENSAGEM' && acordo
+      ? `/mensagens?acordo=${acordo[1]}` : notificacao.recursoUrl;
+  }
+
   protected abrirNotificacao(event: MouseEvent, notificacao: Notificacao): void {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (notificacao.lida) {
-      void this.router.navigateByUrl(notificacao.recursoUrl);
+      void this.router.navigateByUrl(this.destinoNotificacao(notificacao));
       return;
     }
     this.erroLeituraNotificacao.set('');
@@ -114,7 +121,7 @@ export class ContaComponent {
       error: () => {
         this.erroLeituraNotificacao.set('Não foi possível atualizar esta notificação.');
       },
-      complete: () => void this.router.navigateByUrl(notificacao.recursoUrl),
+      complete: () => void this.router.navigateByUrl(this.destinoNotificacao(notificacao)),
     });
   }
 

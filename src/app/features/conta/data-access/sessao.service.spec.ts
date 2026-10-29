@@ -32,6 +32,7 @@ describe('Sessão JWT', () => {
     entrar();
     expect(sessao.autenticado()).toBeTrue();
     sessao.sair();
+    http.expectOne('/api/sessoes/atual').flush(null, { status: 204, statusText: 'No Content' });
     expect(sessao.credencial()).toBeNull();
   });
 
@@ -55,7 +56,40 @@ describe('Sessão JWT', () => {
       .get('/api/anuncios')
       .subscribe({ error: () => (falhou = true) });
     http.expectOne('/api/anuncios').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/api/sessoes/atual').flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(falhou).toBeTrue();
     expect(sessao.autenticado()).toBeFalse();
   });
+  it('restaura o JWT pelo cookie, sem expor a credencial persistente ao JavaScript', () => {
+    sessao.restaurar().subscribe();
+    const req = http.expectOne('/api/sessoes/atual');
+    expect(req.request.headers.get('X-SkillSwap-Session')).toBe('1');
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({ token: 'restaurado' });
+    expect(sessao.credencial()).toBe('restaurado');
+  });
+
+  it('compartilha a renovação entre falhas simultâneas e repete as chamadas uma vez', () => {
+    entrar();
+    const cliente = TestBed.inject(HttpClient);
+    cliente.get('/api/perfil').subscribe();
+    cliente.get('/api/acordos').subscribe();
+    http.expectOne('/api/perfil').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/api/acordos').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/api/sessoes/atual').flush({ token: 'renovado' });
+    for (const url of ['/api/perfil', '/api/acordos']) {
+      const req = http.expectOne(url);
+      expect(req.request.headers.get('Authorization')).toBe('Bearer renovado');
+      req.flush({});
+    }
+  });
+
+  it('não finge logout quando a revogação falha', () => {
+    entrar();
+    sessao.sair();
+    http.expectOne('/api/sessoes/atual').flush({}, { status: 503, statusText: 'Unavailable' });
+    expect(sessao.autenticado()).toBeTrue();
+    expect(sessao.erroSaida()).toContain('Não foi possível');
+  });
+
 });
