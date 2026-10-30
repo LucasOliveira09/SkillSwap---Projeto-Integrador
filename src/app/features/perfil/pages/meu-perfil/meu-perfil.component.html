@@ -1,0 +1,360 @@
+<section class="pagina-edicao" aria-labelledby="titulo-edicao">
+  <a class="voltar" routerLink="/conta">← Minha conta</a>
+  <header>
+    <p class="sobretitulo">Sua presença profissional</p>
+    <h1 id="titulo-edicao">Apresente seu trabalho</h1>
+    <p class="introducao">Estas informações ajudam clientes a conhecer sua experiência e região de atendimento.</p>
+  </header>
+
+  @if (carregando) {
+    <p class="estado" role="status">Carregando seus dados...</p>
+  } @else if (erro && !perfil()) {
+    <div class="estado erro" role="alert">
+      <p>{{ erro }}</p>
+      <button mat-stroked-button type="button" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else {
+    <form #form="ngForm" (ngSubmit)="salvar(form)" [attr.aria-busy]="salvando || enviandoFoto || enviandoCapa">
+      <section class="foto-editor" aria-labelledby="titulo-foto">
+        <div class="foto-preview">
+          @if (previaFoto() || perfil()?.fotoUrl) {
+            <img [src]="previaFoto() || perfil()?.fotoUrl" alt="Prévia da foto do perfil" />
+          } @else {
+            <span aria-hidden="true">+</span>
+          }
+        </div>
+        <div class="foto-conteudo">
+          <h2 id="titulo-foto">Foto profissional</h2>
+          <p>Use uma imagem sua ou do seu trabalho. JPG, PNG ou GIF, até 5 MB.</p>
+          <input
+            #campoFoto
+            class="arquivo-oculto"
+            type="file"
+            accept="image/jpeg,image/png,image/gif"
+            aria-label="Selecionar foto profissional"
+            (change)="selecionarFoto($event)"
+          />
+          <div class="foto-acoes">
+            <button mat-stroked-button type="button" (click)="campoFoto.click()"
+              [disabled]="enviandoFoto || enviandoCapa || salvando">
+              Escolher imagem
+            </button>
+            @if (arquivoFoto) {
+              <button mat-flat-button color="primary" type="button" (click)="enviarFoto()"
+                [disabled]="enviandoFoto || enviandoCapa || salvando">
+                {{ enviandoFoto ? 'Enviando...' : 'Enviar foto' }}
+              </button>
+            }
+            @if (perfil()?.fotoUrl) {
+              <button mat-button type="button" (click)="removerFoto()"
+                [disabled]="enviandoFoto || enviandoCapa || salvando">
+                Remover foto
+              </button>
+            }
+          </div>
+          @if (statusOperacaoFoto()) {
+            <p class="feedback" role="status">{{ statusOperacaoFoto() }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="capa-editor" aria-labelledby="titulo-capa">
+        <div class="capa-preview">
+          @if (previaCapa() || perfil()?.capaUrl) {
+            <img [src]="previaCapa() || perfil()?.capaUrl" alt="Prévia da capa profissional" />
+          } @else {
+            <span>Prévia da capa profissional</span>
+          }
+        </div>
+        <div class="capa-conteudo">
+          <h2 id="titulo-capa">Capa profissional <small>Opcional</small></h2>
+          <p>Escolha uma imagem que represente seu trabalho. JPG, PNG ou GIF, até 5 MB.</p>
+          <input #campoCapa class="arquivo-oculto" type="file" accept="image/jpeg,image/png,image/gif"
+            aria-label="Selecionar capa profissional" (change)="selecionarCapa($event)" />
+          <div class="foto-acoes">
+            <button mat-stroked-button type="button" (click)="campoCapa.click()"
+              [disabled]="enviandoCapa || enviandoFoto || salvando">Escolher capa</button>
+            @if (arquivoCapa) {
+              <button mat-flat-button color="primary" type="button" (click)="enviarCapa()"
+                [disabled]="enviandoCapa || enviandoFoto || salvando">
+                {{ enviandoCapa ? 'Enviando...' : 'Enviar capa' }}
+              </button>
+            }
+            @if (perfil()?.capaUrl) {
+              <button mat-button type="button" (click)="removerCapa()"
+                [disabled]="enviandoCapa || salvando">Remover capa</button>
+            }
+          </div>
+          @if (statusOperacaoCapa()) {
+            <p class="feedback" role="status">{{ statusOperacaoCapa() }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="armazenamento" aria-label="Uso do armazenamento de imagens">
+        @if (usoArmazenamento(); as uso) {
+          <div class="armazenamento-texto">
+            <strong>Imagens da sua conta</strong>
+            <span>{{ formatarTamanho(uso.usoBytes) }} de {{ formatarTamanho(uso.limiteBytes) }} usados</span>
+          </div>
+          <progress [value]="uso.usoBytes" [max]="uso.limiteBytes"
+            [attr.aria-label]="'Armazenamento de imagens: ' + formatarTamanho(uso.usoBytes) + ' de ' + formatarTamanho(uso.limiteBytes)"></progress>
+          <small>Até {{ formatarTamanho(uso.limitePorArquivoBytes) }} por imagem. Arquivos sem uso são removidos após 30 dias.</small>
+        } @else if (erroArmazenamento) {
+          <p role="status">{{ erroArmazenamento }} <button mat-button type="button" (click)="carregarUsoArmazenamento()">Tentar novamente</button></p>
+        } @else {
+          <p role="status">Consultando armazenamento...</p>
+        }
+      </section>
+
+      <section class="visibilidade-perfil" aria-labelledby="titulo-visibilidade">
+        <div>
+          <h2 id="titulo-visibilidade">Exibição pública</h2>
+          <p>Ao pausar, seu perfil, anúncios, portfólio e avaliações deixam de aparecer nas páginas públicas. Seus dados e negociações são preservados.</p>
+        </div>
+        <mat-checkbox name="perfilPublico" [(ngModel)]="dados.perfilPublico" [disabled]="salvando">
+          Manter meu perfil visível
+        </mat-checkbox>
+      </section>
+
+      <section class="visibilidade-perfil" aria-labelledby="titulo-disponibilidade">
+        <div>
+          <h2 id="titulo-disponibilidade">Disponibilidade para trabalhos</h2>
+          <p>Mostre no seu perfil público se você está aceitando novos serviços ou aulas.</p>
+        </div>
+        <mat-checkbox name="disponivelTrabalhos" [(ngModel)]="dados.disponivelTrabalhos" [disabled]="salvando">
+          Estou disponível para novos trabalhos
+        </mat-checkbox>
+      </section>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nome público</mat-label>
+        <input
+          matInput
+          name="nome"
+          [(ngModel)]="dados.nome"
+          required
+          maxlength="100"
+          pattern=".*\S.*"
+          autocomplete="name"
+          [disabled]="salvando"
+        />
+        <mat-hint>{{ dados.nome.length }}/100</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Título profissional</mat-label>
+        <input
+          matInput
+          name="tituloProfissional"
+          [(ngModel)]="dados.tituloProfissional"
+          maxlength="120"
+          placeholder="Ex.: Instrutora de violão"
+          [disabled]="salvando"
+        />
+        <mat-hint>{{ dados.tituloProfissional.length }}/120 · Opcional</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Especialidades</mat-label>
+        <input
+          matInput
+          name="especialidades"
+          [(ngModel)]="dados.especialidades"
+          maxlength="500"
+          placeholder="Ex.: elétrica residencial, manutenção de chuveiro"
+          [disabled]="salvando"
+        />
+        <mat-hint>Separe as áreas de atuação por vírgula.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cidade ou região atendida</mat-label>
+        <input
+          matInput
+          name="cidade"
+          [(ngModel)]="dados.cidade"
+          maxlength="80"
+          autocomplete="address-level2"
+          [disabled]="salvando"
+        />
+      </mat-form-field>
+
+      <fieldset class="links-perfil">
+        <legend>Links profissionais <span>· opcionais</span></legend>
+        <mat-form-field appearance="outline">
+          <mat-label>LinkedIn</mat-label>
+          <input matInput type="url" name="linkedinUrl" [(ngModel)]="dados.linkedinUrl"
+            maxlength="300" placeholder="https://www.linkedin.com/in/seu-perfil"
+            pattern="https://(www\.)?linkedin\.com/(in|company)/[A-Za-z0-9_.%-]+/?" [disabled]="salvando" />
+          <mat-hint>Endereço público do seu perfil ou página profissional.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Instagram</mat-label>
+          <input matInput type="url" name="instagramUrl" [(ngModel)]="dados.instagramUrl"
+            maxlength="300" placeholder="https://www.instagram.com/seu-perfil"
+            pattern="https://(www\.)?instagram\.com/[A-Za-z0-9_.]+/?" [disabled]="salvando" />
+          <mat-hint>Link para mostrar seus trabalhos.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Seu site</mat-label>
+          <input matInput type="url" name="siteUrl" [(ngModel)]="dados.siteUrl"
+            maxlength="300" placeholder="https://seusite.com.br"
+            pattern="https://([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}(:[0-9]{1,5})?(/[^\s]*)?" [disabled]="salvando" />
+          <mat-hint>Use um endereço HTTPS.</mat-hint>
+        </mat-form-field>
+      </fieldset>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Sobre você</mat-label>
+        <textarea
+          matInput
+          name="bio"
+          [(ngModel)]="dados.bio"
+          maxlength="500"
+          rows="5"
+          placeholder="Conte como trabalha, sua experiência e o que o cliente pode esperar."
+          [disabled]="salvando"
+        ></textarea>
+        <mat-hint>{{ dados.bio.length }}/500</mat-hint>
+      </mat-form-field>
+
+      @if (erro) {
+        <p class="feedback erro" role="alert">{{ erro }}</p>
+      }
+      @if (sucesso) {
+        <p class="feedback sucesso" role="status">{{ sucesso }}</p>
+      }
+
+      <div class="acoes">
+        <button mat-flat-button color="primary" type="submit"
+          [disabled]="form.invalid || salvando || enviandoFoto || enviandoCapa">
+          {{ salvando ? 'Salvando...' : 'Salvar perfil' }}
+        </button>
+        @if (perfil()) {
+          <a mat-button [routerLink]="['/profissionais', perfil()!.id]">Ver perfil público</a>
+        }
+      </div>
+    </form>
+
+    <app-historico-profissional-editor />
+
+    <section class="portfolio-editor" aria-labelledby="titulo-portfolio">
+      <header class="portfolio-titulo">
+        <div>
+          <p class="sobretitulo">Mostre como você trabalha</p>
+          <h2 id="titulo-portfolio">Portfólio de serviços</h2>
+          <p>Publique até 6 fotos por trabalho. As imagens ficam visíveis no seu perfil público.</p>
+        </div>
+      </header>
+
+      <div class="nova-publicacao">
+        <mat-form-field appearance="outline">
+          <mat-label>Legenda do trabalho</mat-label>
+          <textarea matInput name="legendaPortfolio" [(ngModel)]="legendaPortfolio" maxlength="500" rows="3"
+            placeholder="Conte o que foi feito, os materiais usados ou o resultado."></textarea>
+          <mat-hint>{{ legendaPortfolio.length }}/500</mat-hint>
+        </mat-form-field>
+        @if (ofertasPortfolio().length) {
+          <label class="vinculo-oferta" for="ofertaPortfolio">Vincular a uma oferta sua (opcional)
+            <select id="ofertaPortfolio" name="ofertaPortfolio" [(ngModel)]="anuncioPortfolioId">
+              <option value="">Sem oferta vinculada</option>
+              @for (oferta of ofertasPortfolio(); track oferta.id) {
+                <option [value]="oferta.id">{{ oferta.titulo }}</option>
+              }
+            </select>
+          </label>
+        }
+        <input #campoPortfolio class="arquivo-oculto" type="file" multiple
+          accept="image/jpeg,image/png,image/gif" aria-label="Selecionar fotos para o portfólio"
+          (change)="selecionarFotosPortfolio($event)" />
+        <div class="acoes-portfolio">
+          <button mat-stroked-button type="button" (click)="campoPortfolio.click()" [disabled]="enviandoPortfolio">
+            Escolher até 6 fotos
+          </button>
+          <button mat-flat-button color="primary" type="button" (click)="publicarPortfolio()"
+            [disabled]="!previaFotosPortfolio().length || enviandoPortfolio">
+            {{ enviandoPortfolio ? 'Enviando fotos...' : 'Publicar no portfólio' }}
+          </button>
+        </div>
+        @if (enviandoPortfolio) {
+          <p class="feedback" role="status">Enviando fotos para o portfólio...</p>
+        }
+        @if (previaFotosPortfolio().length) {
+          <div class="previas-portfolio" role="group" aria-label="Prévia das fotos selecionadas">
+            @for (item of previaFotosPortfolio(); track item.url) {
+              <img [src]="item.url" [alt]="'Prévia de ' + item.arquivo.name" />
+            }
+          </div>
+        }
+        @if (erroPortfolio) { <p class="feedback erro" role="alert">{{ erroPortfolio }}</p> }
+        @if (sucessoPortfolio) { <p class="feedback sucesso" role="status">{{ sucessoPortfolio }}</p> }
+      </div>
+
+      <div class="publicacoes-proprias">
+        <h3>Suas publicações</h3>
+        @if (carregandoPortfolio) {
+          <p class="estado" role="status">Carregando portfólio...</p>
+        } @else if (!publicacoes().length) {
+          <p class="introducao">Suas fotos publicadas aparecerão aqui.</p>
+        } @else {
+          @for (publicacao of publicacoes(); track publicacao.id) {
+            <article class="item-publicacao">
+              <div class="miniaturas">
+                @for (foto of publicacao.fotos; track foto; let indice = $index) {
+                  <img
+                    [src]="foto"
+                    [alt]="'Foto ' + (indice + 1) + ' do trabalho de ' + (perfil()?.nome || 'seu perfil')"
+                    loading="lazy"
+                  />
+                }
+              </div>
+              <div class="item-publicacao-texto">
+                @if (editandoPublicacaoId() === publicacao.id) {
+                  <form class="edicao-legenda" (ngSubmit)="salvarEdicaoPublicacao(publicacao)">
+                    <label [for]="'legenda-' + publicacao.id">Legenda</label>
+                    <textarea [id]="'legenda-' + publicacao.id" [name]="'legenda-' + publicacao.id"
+                      [(ngModel)]="legendaEmEdicao" maxlength="500" rows="3"></textarea>
+                    <div class="acoes-legenda">
+                      <button mat-flat-button color="primary" type="submit"
+                        [disabled]="salvandoPublicacaoId() !== null || legendaEmEdicao.length > 500">
+                        {{ salvandoPublicacaoId() === publicacao.id ? 'Salvando...' : 'Salvar legenda' }}
+                      </button>
+                      <button mat-button type="button" [disabled]="salvandoPublicacaoId() !== null"
+                        (click)="cancelarEdicaoPublicacao()">Cancelar</button>
+                    </div>
+                  </form>
+                } @else {
+                  <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
+                  <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                }
+              </div>
+              <div class="acoes-publicacao">
+                @if (editandoPublicacaoId() !== publicacao.id) {
+                  <button mat-button type="button" (click)="iniciarEdicaoPublicacao(publicacao)"
+                    [disabled]="salvandoPublicacaoId() !== null || removendoPublicacaoId !== null">
+                    Editar legenda
+                  </button>
+                }
+                <button mat-button type="button" (click)="removerPublicacao(publicacao)"
+                  [disabled]="removendoPublicacaoId !== null || salvandoPublicacaoId() !== null"
+                  [attr.aria-label]="'Remover publicação de ' + publicacao.criadoEm">
+                  {{ removendoPublicacaoId === publicacao.id ? 'Removendo...' : 'Remover' }}
+                </button>
+              </div>
+            </article>
+          }
+          @if (totalPaginasPortfolio() > 1) {
+            <nav class="paginacao-portfolio" aria-label="Páginas das suas publicações">
+              <button mat-stroked-button type="button" [disabled]="carregandoPortfolio || paginaPortfolio() === 0"
+                (click)="mudarPaginaPortfolio(paginaPortfolio() - 1)">Anteriores</button>
+              <span>Página {{ paginaPortfolio() + 1 }} de {{ totalPaginasPortfolio() }} · {{ totalPublicacoesPortfolio() }} publicações</span>
+              <button mat-stroked-button type="button" [disabled]="carregandoPortfolio || paginaPortfolio() >= totalPaginasPortfolio() - 1"
+                (click)="mudarPaginaPortfolio(paginaPortfolio() + 1)">Próximas</button>
+            </nav>
+          }
+        }
+      </div>
+    </section>
+  }
+</section>

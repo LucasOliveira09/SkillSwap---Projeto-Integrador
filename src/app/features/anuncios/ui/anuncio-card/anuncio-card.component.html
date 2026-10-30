@@ -1,0 +1,69 @@
+<mat-card class="anuncio-card" [attr.data-origem]="anuncio().exemplo ? 'exemplo' : 'sessao'">
+  <a
+    [routerLink]="['/anuncios', anuncio().id]"
+    class="foto-link"
+  >
+    @if (!imagemDisponivel()) {
+      <span class="sr-only">Ver detalhes de {{ anuncio().titulo }}</span>
+    }
+    <div class="foto">
+      @if (imagemDisponivel(); as imagem) {
+        <img [src]="imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" (error)="marcarImagemIndisponivel()" />
+      } @else {
+        <div class="sem-foto"><app-icone nome="troca" /><span>{{ anuncio().imagem ? 'Imagem indisponível' : 'Seu anúncio' }}</span></div>
+      }
+      <span class="categoria">{{ anuncio().categoria }}</span>
+      <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Cadastrado' }}</span>
+    </div>
+  </a>
+  <div class="corpo">
+    <div class="titulo-preco">
+      <h3>
+        <a [routerLink]="['/anuncios', anuncio().id]" class="titulo-link">{{ anuncio().titulo }}</a>
+      </h3>
+      @if (anuncio().preco !== null) {
+        <p class="preco">
+          {{ anuncio().preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'
+          }}<small>{{ anuncio().unidade }}</small>
+        </p>
+      } @else {
+        <p class="preco">Troca</p>
+      }
+    </div>
+    <p class="troca">
+      <app-icone nome="troca" />
+      <span>{{ anuncio().trocaPor ? 'Troco por: ' + anuncio().trocaPor : 'Venda de serviço ou aula' }}</span>
+    </p>
+    <ul class="detalhes">
+      @for (detalhe of anuncio().detalhes; track $index) {
+        <li>
+          <app-icone [nome]="$index === 0 ? 'relogio' : 'pessoas'" /><span>{{ detalhe }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+  <div class="perfil">
+    @if (!anuncio().exemplo && anuncio().autorId) {
+      <a class="avatar-link" [routerLink]="['/profissionais', anuncio().autorId]"
+        [attr.aria-label]="'Ver perfil de ' + anuncio().autor">
+        @if (anuncio().avatar) {
+          <img [src]="anuncio().avatar" alt="" width="36" height="36" loading="lazy" />
+        } @else { <span class="avatar"><app-icone nome="usuario" /></span> }
+      </a>
+    } @else {
+      <span class="avatar" aria-hidden="true"><app-icone nome="usuario" /></span>
+    }
+    <div class="autor">
+      @if (!anuncio().exemplo && anuncio().autorId) {
+        <a class="autor-link" [routerLink]="['/profissionais', anuncio().autorId]">{{ anuncio().autor }}</a>
+      } @else {
+        <strong>{{ anuncio().autor }}</strong>
+      }
+      <small>{{ anuncio().exemplo ? 'Perfil ilustrativo' : 'Ver perfil profissional' }}</small>
+    </div>
+    <div class="local">
+      <span><app-icone nome="relogio" /> {{ anuncio().quando }}</span
+      ><span><app-icone nome="local" /> {{ anuncio().cidade }}</span>
+    </div>
+  </div>
+</mat-card>

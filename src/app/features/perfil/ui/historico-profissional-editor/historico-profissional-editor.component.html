@@ -1,0 +1,98 @@
+<section class="editor-historico" aria-labelledby="titulo-historico-editor">
+  <header>
+    <p class="sobretitulo">Sua trajetória</p>
+    <h2 id="titulo-historico-editor">Experiência e certificações</h2>
+    <p>São informações declaradas por você e não verificadas pelo SkillSwap. Ficam visíveis enquanto seu perfil estiver público. Você pode cadastrar até 50 itens em cada seção.</p>
+  </header>
+
+  @if (erro) {
+    <div class="feedback erro" role="alert">
+      <p>{{ erro }}</p>
+      <button mat-stroked-button type="button" (click)="carregar()" [disabled]="carregando">Tentar novamente</button>
+    </div>
+  }
+  @if (mensagem) { <p class="feedback" role="status">{{ mensagem }}</p> }
+  @if (carregando) { <p role="status">Carregando sua trajetória...</p> }
+
+  <section class="bloco-editor" aria-labelledby="titulo-experiencias-editor">
+    <h3 id="titulo-experiencias-editor">Experiências</h3>
+    <form #formExperiencia="ngForm" (ngSubmit)="salvarExperiencia(formExperiencia)">
+      <label>Cargo<input name="cargo" [(ngModel)]="experiencia.cargo" maxlength="120" required /></label>
+      <label>Empresa ou organização<input name="organizacao" [(ngModel)]="experiencia.organizacao" maxlength="120" required /></label>
+      <label>Cidade (opcional)<input name="cidade" [(ngModel)]="experiencia.cidade" maxlength="80" /></label>
+      <label>Início<input name="dataInicio" type="date" [(ngModel)]="experiencia.dataInicio" required /></label>
+      <label>Fim (deixe vazio se ainda trabalha lá)<input name="dataFim" type="date" [(ngModel)]="experiencia.dataFim" /></label>
+      <label class="campo-largo">Descrição (opcional)<textarea name="descricao" [(ngModel)]="experiencia.descricao" maxlength="1500" rows="3"></textarea></label>
+      <div class="acoes-formulario">
+        <button mat-flat-button color="primary" type="submit"
+          [disabled]="salvandoExperiencia || (experiencias().length >= 50 && editandoExperienciaId() === null)">
+          {{ salvandoExperiencia ? 'Salvando...' : editandoExperienciaId() ? 'Salvar experiência' : 'Adicionar experiência' }}
+        </button>
+        @if (editandoExperienciaId() !== null) {
+          <button mat-button type="button" (click)="limparExperiencia()">Cancelar edição</button>
+        }
+      </div>
+    </form>
+    @if (experiencias().length === 0 && !carregando && !erro) {
+      <p class="vazio">Você ainda não adicionou experiências.</p>
+    } @else {
+      <ul class="lista-historico">
+        @for (item of experiencias(); track item.id) {
+          <li>
+            <div><h4>{{ item.cargo }}</h4><p>{{ item.organizacao }}@if (item.cidade) { · {{ item.cidade }} }</p>
+              <time [attr.datetime]="item.dataInicio">{{ item.dataInicio | date: 'MMM yyyy' : '+0000' : 'pt-BR' }}</time>
+              <span aria-hidden="true"> – </span>
+              @if (item.dataFim) { <time [attr.datetime]="item.dataFim">{{ item.dataFim | date: 'MMM yyyy' : '+0000' : 'pt-BR' }}</time> } @else { Atual }
+              @if (item.descricao) { <p>{{ item.descricao }}</p> }
+            </div>
+            <div class="acoes-item"><button mat-button type="button" (click)="editarExperiencia(item)" [attr.aria-label]="'Editar experiência: ' + item.cargo">Editar</button>
+              <button mat-button type="button" (click)="excluirExperiencia(item)" [disabled]="removendoExperienciaId !== null"
+                [attr.aria-label]="'Remover experiência: ' + item.cargo">
+                {{ removendoExperienciaId === item.id ? 'Removendo...' : 'Remover' }}
+              </button></div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="bloco-editor" aria-labelledby="titulo-certificacoes-editor">
+    <h3 id="titulo-certificacoes-editor">Certificações</h3>
+    <form #formCertificacao="ngForm" (ngSubmit)="salvarCertificacao(formCertificacao)">
+      <label>Nome da certificação<input name="nome" [(ngModel)]="certificacao.nome" maxlength="150" required /></label>
+      <label>Instituição emissora<input name="emissor" [(ngModel)]="certificacao.emissor" maxlength="120" required /></label>
+      <label>Data de emissão<input name="dataEmissao" type="date" [(ngModel)]="certificacao.dataEmissao" required /></label>
+      <label>Validade (opcional)<input name="dataValidade" type="date" [(ngModel)]="certificacao.dataValidade" /></label>
+      <label class="campo-largo">Link da credencial HTTPS (opcional)<input name="urlCredencial" type="url" [(ngModel)]="certificacao.urlCredencial" maxlength="500" pattern="https://.*" /></label>
+      <div class="acoes-formulario">
+        <button mat-flat-button color="primary" type="submit"
+          [disabled]="salvandoCertificacao || (certificacoes().length >= 50 && editandoCertificacaoId() === null)">
+          {{ salvandoCertificacao ? 'Salvando...' : editandoCertificacaoId() ? 'Salvar certificação' : 'Adicionar certificação' }}
+        </button>
+        @if (editandoCertificacaoId() !== null) {
+          <button mat-button type="button" (click)="limparCertificacao()">Cancelar edição</button>
+        }
+      </div>
+    </form>
+    @if (certificacoes().length === 0 && !carregando && !erro) {
+      <p class="vazio">Você ainda não adicionou certificações.</p>
+    } @else {
+      <ul class="lista-historico">
+        @for (item of certificacoes(); track item.id) {
+          <li>
+            <div><h4>{{ item.nome }}</h4><p>{{ item.emissor }}</p>
+              <time [attr.datetime]="item.dataEmissao">Emitida em {{ item.dataEmissao | date: 'MMM yyyy' : '+0000' : 'pt-BR' }}</time>
+              @if (item.dataValidade) { <p>Validade: <time [attr.datetime]="item.dataValidade">{{ item.dataValidade | date: 'MMM yyyy' : '+0000' : 'pt-BR' }}</time></p> }
+              @if (item.urlCredencial) { <a [href]="item.urlCredencial" target="_blank" rel="noopener noreferrer">Abrir credencial <span aria-hidden="true">↗</span></a> }
+            </div>
+            <div class="acoes-item"><button mat-button type="button" (click)="editarCertificacao(item)" [attr.aria-label]="'Editar certificação: ' + item.nome">Editar</button>
+              <button mat-button type="button" (click)="excluirCertificacao(item)" [disabled]="removendoCertificacaoId !== null"
+                [attr.aria-label]="'Remover certificação: ' + item.nome">
+                {{ removendoCertificacaoId === item.id ? 'Removendo...' : 'Remover' }}
+              </button></div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

@@ -31,6 +31,12 @@ public class Acordo {
 
     private LocalDateTime concluidoEm;
 
+    @Builder.Default
+    private Boolean conclusaoConfirmadaAnunciante = false;
+
+    @Builder.Default
+    private Boolean conclusaoConfirmadaProponente = false;
+
     @PrePersist
     protected void onCreate() {
         this.criadoEm = LocalDateTime.now();

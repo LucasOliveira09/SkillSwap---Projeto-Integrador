@@ -4,8 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.skillswap.api.domain.anuncio.dto.ResumoOfertaProfissionalDTO;
+import jakarta.persistence.LockModeType;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +22,21 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
     List<Anuncio> findByUsuarioId(Long usuarioId);
 
     @EntityGraph(attributePaths = {"usuario"})
-    Optional<Anuncio> findById(Long id);
+    Page<Anuncio> findByUsuarioIdAndStatusAndExemploFalseAndUsuarioPerfilPublicoTrue(
+            Long usuarioId, StatusAnuncio status, Pageable pageable);
 
     @EntityGraph(attributePaths = {"usuario"})
-    @Query("SELECT a FROM Anuncio a WHERE a.status = :status " +
+    Page<Anuncio> findByUsuarioIdAndExemploFalse(Long usuarioId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario"})
+    Optional<Anuncio> findById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from Anuncio a where a.id = :id")
+    Optional<Anuncio> findByIdForUpdate(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"usuario"})
+    @Query("SELECT a FROM Anuncio a WHERE a.status = :status AND a.usuario.perfilPublico = true " +
            "AND (:categoria IS NULL OR a.categoria = :categoria) " +
            "AND (:cidade IS NULL OR LOWER(a.cidade) LIKE LOWER(CONCAT('%', :cidade, '%')))")
     Page<Anuncio> findByStatusAndFilters(
@@ -29,4 +44,55 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
             @Param("categoria") CategoriaAnuncio categoria,
             @Param("cidade") String cidade,
             Pageable pageable);
+
+    boolean existsByCodigoLegado(String codigo);
+    boolean existsByImagemAndStatusAndExemploFalseAndUsuarioPerfilPublicoTrue(String imagem, StatusAnuncio status);
+
+    @Query("select a.imagem from Anuncio a where a.imagem is not null")
+    List<String> listarImagens();
+
+    @EntityGraph(attributePaths = {"usuario"})
+    Optional<Anuncio> findByCodigoLegado(String codigoLegado);
+
+    java.util.List<Anuncio> findTop100ByTextoBuscaIsNull();
+
+    @EntityGraph(attributePaths = {"usuario"})
+    @Query("SELECT a FROM Anuncio a WHERE a.status = :status AND a.usuario.perfilPublico = true " +
+           "AND (:categoria IS NULL OR a.categoria = :categoria) " +
+           "AND (:cidade IS NULL OR LOWER(a.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
+           "AND (:modalidade IS NULL OR a.modalidade = :modalidade) " +
+           "AND (:precoMinimo IS NULL OR (a.preco IS NOT NULL AND a.preco >= :precoMinimo)) " +
+           "AND (:precoMaximo IS NULL OR (a.preco IS NOT NULL AND a.preco <= :precoMaximo)) " +
+           "AND ((:diaSemana IS NULL AND :periodo IS NULL) OR EXISTS " +
+           "(select d.id from DisponibilidadeAnuncio d where d.anuncio = a " +
+           "and (:diaSemana IS NULL OR d.diaSemana = :diaSemana) " +
+           "and (:periodo IS NULL OR d.periodo = :periodo))) " +
+           "AND a.textoBusca LIKE :busca ESCAPE '!'")
+    Page<Anuncio> pesquisar(@Param("status") StatusAnuncio status,
+        @Param("categoria") CategoriaAnuncio categoria, @Param("cidade") String cidade,
+        @Param("modalidade") ModalidadeAnuncio modalidade,
+        @Param("precoMinimo") BigDecimal precoMinimo, @Param("precoMaximo") BigDecimal precoMaximo,
+        @Param("diaSemana") DiaSemana diaSemana, @Param("periodo") PeriodoDia periodo,
+        @Param("busca") String busca, Pageable pageable);
+
+    @Query("""
+            select new com.skillswap.api.domain.anuncio.dto.ResumoOfertaProfissionalDTO(
+                a.usuario.id, a.categoria, a.modalidade, count(a.id), min(a.preco), max(a.preco))
+            from Anuncio a
+            where a.status = :status and a.exemplo = false and a.usuario.perfilPublico = true
+              and a.usuario.id in :profissionalIds
+              and (:categoria is null or a.categoria = :categoria)
+              and (:modalidade is null or a.modalidade = :modalidade)
+              and (:precoMinimo is null or (a.preco is not null and a.preco >= :precoMinimo))
+              and (:precoMaximo is null or (a.preco is not null and a.preco <= :precoMaximo))
+            group by a.usuario.id, a.categoria, a.modalidade
+            order by a.usuario.id, a.categoria, a.modalidade
+            """)
+    List<ResumoOfertaProfissionalDTO> resumirOfertasDeProfissionais(
+            @Param("profissionalIds") List<Long> profissionalIds,
+            @Param("status") StatusAnuncio status,
+            @Param("categoria") CategoriaAnuncio categoria,
+            @Param("modalidade") ModalidadeAnuncio modalidade,
+            @Param("precoMinimo") BigDecimal precoMinimo,
+            @Param("precoMaximo") BigDecimal precoMaximo);
 }

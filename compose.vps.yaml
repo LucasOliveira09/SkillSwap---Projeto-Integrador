@@ -1,0 +1,16 @@
+# A VPS mantém MySQL 8.0 para abrir uma cópia do volume existente sem upgrade.
+services:
+  mysql:
+    image: mysql:8.0
+    ports: !reset []
+    volumes:
+      - mysql-vps:/var/lib/mysql
+    mem_limit: 768m
+  api:
+    mem_limit: 768m
+  web:
+    mem_limit: 128m
+volumes:
+  mysql-vps:
+    external: true
+    name: ${MYSQL_VPS_VOLUME:?Defina o volume preservado da VPS}

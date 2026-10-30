@@ -1,0 +1,73 @@
+<section class="minhas-anuncios" aria-labelledby="minhas-anuncios-titulo">
+  <a class="voltar" mat-button routerLink="/conta">← Minha conta</a>
+  <header class="cabecalho">
+    <div>
+      <p class="sobretitulo">Seu trabalho, do seu jeito</p>
+      <h1 id="minhas-anuncios-titulo">Meus anúncios</h1>
+      <p>Edite as informações e pause ou reative suas ofertas quando precisar.</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar anúncio</a>
+  </header>
+
+  @if (sucesso()) { <p class="feedback sucesso" role="status">{{ sucesso() }}</p> }
+  @if (erro()) {
+    <div class="feedback erro" role="alert">
+      <span>{{ erro() }}</span>
+      <button mat-button type="button" (click)="carregar(pagina()?.pagina || 0)">Tentar novamente</button>
+    </div>
+  }
+
+  @if (carregando()) {
+    <p class="estado" role="status">Carregando seus anúncios...</p>
+  } @else if (!erro() && pagina()?.itens?.length) {
+    <section class="lista" aria-label="Ofertas cadastradas por você">
+      @for (anuncio of pagina()!.itens; track anuncio.id) {
+        <article class="oferta">
+          @if (anuncio.imagem) {
+            <img class="foto" [src]="anuncio.imagem" [alt]="'Foto de ' + anuncio.titulo" />
+          } @else {
+            <div class="foto sem-foto" aria-hidden="true">SS</div>
+          }
+          <div class="conteudo">
+            <div class="titulo-linha">
+              <h2>{{ anuncio.titulo }}</h2>
+              <span class="status" [class.inativo]="anuncio.status === 'INATIVO'">
+                {{ anuncio.status === 'ATIVO' ? 'Publicado' : 'Pausado' }}
+              </span>
+            </div>
+            <p class="resumo">{{ anuncio.categoriaRotulo }} · {{ anuncio.cidade }} · {{ anuncio.modalidade === 'venda' ? 'Venda' : 'Troca' }}</p>
+            <p class="descricao">{{ anuncio.descricao }}</p>
+            <p class="preco">
+              @if (anuncio.modalidade === 'venda' && anuncio.preco !== null) {
+                {{ anuncio.preco | currency: 'BRL':'symbol':'1.2-2':'pt-BR' }} {{ anuncio.unidade }}
+              } @else {
+                Troca por: {{ anuncio.habilidadeDesejada }}
+              }
+            </p>
+            <small>Criado em {{ anuncio.criadoEm | date: 'dd/MM/yyyy' }}</small>
+            <div class="acoes">
+              <a mat-stroked-button [routerLink]="['/anuncios', anuncio.id, 'editar']">Editar anúncio</a>
+              <button mat-button type="button" [disabled]="alterandoId() !== null" (click)="alternarStatus(anuncio)">
+                @if (alterandoId() === anuncio.id) { Atualizando... }
+                @else { {{ anuncio.status === 'ATIVO' ? 'Pausar anúncio' : 'Reativar anúncio' }} }
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+    @if (pagina()!.totalPaginas > 1) {
+      <nav class="paginacao" aria-label="Páginas dos meus anúncios">
+        <button mat-stroked-button type="button" [disabled]="pagina()!.pagina === 0" (click)="mudarPagina(pagina()!.pagina - 1)">Anterior</button>
+        <span>Página {{ pagina()!.pagina + 1 }} de {{ pagina()!.totalPaginas }}</span>
+        <button mat-stroked-button type="button" [disabled]="pagina()!.pagina >= pagina()!.totalPaginas - 1" (click)="mudarPagina(pagina()!.pagina + 1)">Próxima</button>
+      </nav>
+    }
+  } @else if (!erro()) {
+    <section class="estado vazio" role="status">
+      <h2>Você ainda não publicou anúncios</h2>
+      <p>Crie sua primeira oferta para começar a apresentar seu trabalho.</p>
+      <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar anúncio</a>
+    </section>
+  }
+</section>

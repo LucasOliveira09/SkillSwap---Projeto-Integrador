@@ -1,0 +1,205 @@
+.conta {
+  max-width: 440px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+.conta.autenticada {
+  max-width: 880px;
+}
+.logo-acesso {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 32px auto 24px;
+}
+h1 {
+  color: var(--ss-blue);
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+}
+mat-form-field {
+  width: 100%;
+}
+form > button {
+  width: 100%;
+  min-height: 45px;
+  border-radius: 10px;
+}
+.aviso {
+  color: var(--ss-muted);
+  font-size: 14px;
+}
+
+.acoes-topo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0 28px;
+}
+
+.propostas-secao {
+  margin-top: 32px;
+  text-align: left;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 24px 0 12px;
+  }
+}
+
+.vazio-card {
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.lista-propostas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proposta-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  .proposta-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+
+    strong {
+      display: block;
+      color: #0f172a;
+      font-size: 15px;
+    }
+
+    .proposta-anuncio {
+      font-size: 12px;
+      color: #64748b;
+    }
+  }
+
+  .badge-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+
+    &.pendente {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    &.aceita {
+      background: #dcfce7;
+      color: #166534;
+    }
+    &.recusada {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    &.cancelada {
+      background: #e2e8f0;
+      color: #334155;
+    }
+  }
+
+  .proposta-msg {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #334155;
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-style: italic;
+  }
+
+  .proposta-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #64748b;
+
+    .proposta-acoes {
+      display: flex;
+      gap: 8px;
+    }
+  }
+}
+.notificacoes-secao {
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border: 1px solid #dbe5ef;
+  border-radius: 14px;
+  background: #f8fbff;
+}
+
+.notificacoes-secao h2 span {
+  color: #55708a;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.lista-notificacoes {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-notificacoes li {
+  position: relative;
+  border: 1px solid #dbe5ef;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.lista-notificacoes li.nao-lida {
+  border-color: #8db5df;
+  background: #f1f7ff;
+}
+
+.lista-notificacoes a {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.85rem 2rem 0.85rem 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.lista-notificacoes a:focus-visible {
+  outline: 3px solid #1672b8;
+  outline-offset: 2px;
+}
+
+.lista-notificacoes small {
+  color: #607286;
+}
+
+.indicador-nao-lida {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #1376b8;
+}

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "anuncios")
@@ -35,6 +37,7 @@ public class Anuncio {
     @Column(nullable = false)
     private ModalidadeAnuncio modalidade;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal preco;
 
     @Column(length = 120)
@@ -52,9 +55,49 @@ public class Anuncio {
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(unique = true, length = 50)
+    private String codigoLegado;
+    private String imagem;
+    private String categoriaExibicao;
+    private String unidade;
+    private String autorExibicao;
+    private String avatar;
+    private Integer estrelas;
+    @Builder.Default
+    private boolean exemplo = false;
+    @Column(length = 2200)
+    private String textoBusca;
+
+    @OneToMany(mappedBy = "anuncio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<DisponibilidadeAnuncio> disponibilidades = new HashSet<>();
+
+    public void substituirDisponibilidades(Set<DisponibilidadeAnuncio> novas) {
+        disponibilidades.clear();
+        novas.forEach(disponibilidade -> {
+            disponibilidade.setAnuncio(this);
+            disponibilidades.add(disponibilidade);
+        });
+    }
+
+    public static String normalizar(String texto) {
+        return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT).strip();
+    }
+
+    @PreUpdate
+    protected void indexar() {
+        textoBusca = normalizar(String.join(" ", titulo, descricao, cidade, categoria.name(),
+            habilidadeDesejada == null ? "" : habilidadeDesejada,
+            categoriaExibicao == null ? "" : categoriaExibicao));
+    }
+
     @PrePersist
     protected void onCreate() {
-        this.criadoEm = LocalDateTime.now();
+        if (this.criadoEm == null) this.criadoEm = LocalDateTime.now();
+        indexar();
         if (this.status == null) {
             this.status = StatusAnuncio.ATIVO;
         }

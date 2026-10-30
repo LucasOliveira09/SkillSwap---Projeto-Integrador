@@ -1,21 +1,24 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:skillswap;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    url: jdbc:h2:mem:skillswap;MODE=MySQL;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
-    password:
+    password: ""
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+      ddl-auto: validate
     open-in-view: false
-
-server:
-  port: 8080
-
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
 app:
   jwt:
-    secret: skillswap-jwt-secret-key-2026-projeto-integrador-saptura-min-256bit
-    expiration: 86400000
+    # Chave exclusiva dos testes isolados. Não serve à aplicação.
+    secret: TEST_ONLY_NOT_FOR_DEPLOYMENT_012345678901234567890123456789
+    expiration: 3600000
+skillswap:
+  seed:
+    enabled: false

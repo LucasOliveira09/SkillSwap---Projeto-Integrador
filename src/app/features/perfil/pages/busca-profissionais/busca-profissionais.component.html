@@ -1,0 +1,163 @@
+<section class="pagina-busca" aria-labelledby="titulo-busca">
+  <nav class="caminho" aria-label="Navegação estrutural">
+    <a routerLink="/anuncios">Início</a>
+    <span aria-hidden="true">›</span>
+    <span aria-current="page">Profissionais</span>
+  </nav>
+
+  <header class="cabecalho-busca">
+    <p class="sobretitulo">Talentos da sua região</p>
+    <h1 id="titulo-busca">Encontre o profissional certo</h1>
+    <p>Pesquise por especialidade e cidade e compare ofertas atuais. A ordem prioriza a correspondência com o serviço, depois a cidade exata e o cadastro mais recente; avaliações não definem a posição.</p>
+  </header>
+
+  <form class="filtros" role="search" (ngSubmit)="pesquisar()">
+    <mat-form-field appearance="outline">
+      <mat-label>Serviço ou especialidade</mat-label>
+      <input
+        matInput
+        name="busca"
+        [(ngModel)]="busca"
+        maxlength="100"
+        placeholder="Ex.: eletricista, aulas de inglês"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Cidade ou região</mat-label>
+      <input
+        matInput
+        name="cidade"
+        [(ngModel)]="cidade"
+        maxlength="80"
+        placeholder="Ex.: Florianópolis"
+      />
+    </mat-form-field>
+    <label class="filtro-nota">
+      <span>Categoria do serviço</span>
+      <select name="categoria" [(ngModel)]="categoria">
+        <option value="">Todas as categorias</option>
+        @for (opcao of categorias(); track opcao.valor) {
+          <option [value]="opcao.valor.toUpperCase()">{{ opcao.rotulo }}</option>
+        }
+      </select>
+    </label>
+    <label class="filtro-nota">
+      <span>Tipo de negociação</span>
+      <select name="modalidade" [(ngModel)]="modalidade">
+        <option value="">Venda ou troca</option>
+        <option value="VENDA">Venda</option>
+        <option value="TROCA">Troca</option>
+      </select>
+    </label>
+    <mat-form-field appearance="outline">
+      <mat-label>Preço mínimo</mat-label>
+      <input matInput type="number" name="precoMinimo" [(ngModel)]="precoMinimo" min="0.01" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Preço máximo</mat-label>
+      <input matInput type="number" name="precoMaximo" [(ngModel)]="precoMaximo" min="0.01" step="0.01" />
+    </mat-form-field>
+    <label class="filtro-nota">
+      <span>Média mínima</span>
+      <select name="notaMinima" [(ngModel)]="notaMinima">
+        <option value="">Qualquer média</option>
+        <option value="4">4 estrelas ou mais</option>
+        <option value="4.5">4,5 estrelas ou mais</option>
+        <option value="5">5 estrelas</option>
+      </select>
+      <small>Considera apenas profissionais com pelo menos 3 avaliações verificadas.</small>
+    </label>
+    <button mat-flat-button color="primary" type="submit">Buscar profissionais</button>
+  </form>
+
+  @if (estado().carregando) {
+    <p class="estado" role="status">Buscando profissionais...</p>
+  } @else if (estado().erro) {
+    <section class="estado erro" role="alert">
+      <h2>Não foi possível carregar os profissionais.</h2>
+      <p>Confira sua conexão e tente novamente.</p>
+      <button mat-stroked-button type="button" (click)="recarregar()">Tentar novamente</button>
+    </section>
+  } @else if (estado().pagina; as pagina) {
+    <section aria-labelledby="titulo-resultados">
+      <div class="linha-resultados">
+        <h2 id="titulo-resultados">{{ pagina.totalItens }} profissional(is) encontrado(s)</h2>
+        <a mat-button routerLink="/meu-perfil">Apresentar meu trabalho</a>
+      </div>
+
+      @if (pagina.itens.length === 0) {
+        <div class="estado vazio" role="status">
+          <h3>Nenhum perfil encontrado com esses filtros.</h3>
+          <p>Tente uma especialidade ou cidade diferente.</p>
+          <a mat-stroked-button routerLink="/profissionais">Ver todos os profissionais</a>
+        </div>
+      } @else {
+        <div class="lista-profissionais">
+          @for (profissional of pagina.itens; track profissional.id) {
+            <article class="cartao-profissional">
+              @if (profissional.fotoUrl) {
+                <img class="foto" [src]="profissional.fotoUrl" [alt]="'Foto de ' + profissional.nome" loading="lazy" />
+              } @else {
+                <div class="foto-placeholder" aria-hidden="true">{{ inicial(profissional.nome) }}</div>
+              }
+
+              <div class="dados-profissional">
+                <h3><a [routerLink]="['/profissionais', profissional.id]">{{ profissional.nome }}</a></h3>
+                @if (profissional.tituloProfissional) {
+                  <p class="titulo-profissional">{{ profissional.tituloProfissional }}</p>
+                }
+                @if (profissional.especialidades) {
+                  <p class="especialidades">{{ profissional.especialidades }}</p>
+                }
+                @if (profissional.cidade) {
+                  <p class="cidade">{{ profissional.cidade }}</p>
+                }
+                @if (profissional.bio) {
+                  <p class="bio">{{ profissional.bio }}</p>
+                }
+                @if (profissional.quantidadeAvaliacoes > 0 && profissional.mediaNotas !== null) {
+                  <p class="reputacao">
+                    <span aria-hidden="true">★</span>
+                    {{ profissional.mediaNotas | number: '1.1-1' }}
+                    · {{ profissional.quantidadeAvaliacoes }}
+                    {{ profissional.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }}
+                  </p>
+                } @else {
+                  <p class="sem-avaliacoes">Ainda sem avaliações</p>
+                }
+                @if (profissional.resumoOfertas?.length) {
+                  <ul class="resumo-ofertas" aria-label="Ofertas públicas ativas">
+                    @for (oferta of profissional.resumoOfertas; track oferta.categoria + oferta.modalidade) {
+                      <li>
+                        <strong>{{ rotuloCategoria(oferta.categoria) }}</strong>
+                        · {{ oferta.modalidade === 'VENDA' ? 'Venda' : 'Troca' }}
+                        · {{ oferta.quantidade }} {{ oferta.quantidade === 1 ? 'oferta' : 'ofertas' }}
+                        · {{ resumoPreco(oferta) }}
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <a mat-stroked-button color="primary" [routerLink]="['/profissionais', profissional.id]">
+                Ver perfil
+              </a>
+            </article>
+          }
+        </div>
+
+        @if (pagina.totalPaginas > 1) {
+          <nav class="paginacao" aria-label="Paginação de profissionais">
+            <button mat-stroked-button type="button" (click)="mudarPagina(paginaAtual() - 1)" [disabled]="paginaAtual() === 0">
+              Anteriores
+            </button>
+            <span>Página {{ paginaAtual() + 1 }} de {{ totalPaginas() }}</span>
+            <button mat-stroked-button type="button" (click)="mudarPagina(paginaAtual() + 1)" [disabled]="paginaAtual() + 1 >= totalPaginas()">
+              Próxima
+            </button>
+          </nav>
+        }
+      }
+    </section>
+  }
+</section>

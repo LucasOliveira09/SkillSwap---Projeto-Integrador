@@ -14,5 +14,7 @@ public record AcordoResponseDTO(
         String proponenteNome,
         StatusAcordo status,
         LocalDateTime criadoEm,
-        LocalDateTime concluidoEm
+        LocalDateTime concluidoEm,
+        Boolean conclusaoConfirmadaAnunciante,
+        Boolean conclusaoConfirmadaProponente
 ) {}

@@ -1,0 +1,229 @@
+<section class="pagina conta" [class.autenticada]="sessao.autenticado()" aria-labelledby="conta-titulo">
+  <a mat-button routerLink="/anuncios">Voltar ao catálogo</a>
+  <img class="logo-acesso" src="images/legado/logo-skill-swap.png" alt="Skill Swap" width="320" height="133" />
+  <h1 id="conta-titulo">
+    {{ sessao.autenticado() ? 'Minha conta' : registrar() ? 'Criar conta' : 'Entrar' }}
+  </h1>
+  @if (sessao.autenticado()) {
+    <p>Sua sessão está ativa.</p>
+    <div class="acoes-topo">
+      <a mat-stroked-button routerLink="/meu-perfil">Editar perfil profissional</a>
+      <a mat-stroked-button routerLink="/mensagens">Abrir mensagens</a>
+      <a mat-stroked-button routerLink="/anuncios/minhas">Gerenciar meus anúncios</a>
+      <a mat-flat-button color="primary" routerLink="/anuncios/novo">Criar novo anúncio</a>
+      <button mat-stroked-button (click)="sessao.sair()" [disabled]="sessao.saindo()">{{ sessao.saindo() ? 'Saindo...' : 'Sair da conta' }}</button>
+    </div>
+
+    @if (sessao.erroSaida()) { <p role="alert">{{ sessao.erroSaida() }}</p> }
+
+    <!-- Propostas e notificações da conta; conversas completas ficam em /mensagens. -->
+    <section class="propostas-secao">
+      <section class="notificacoes-secao" aria-labelledby="titulo-notificacoes">
+        <h2 id="titulo-notificacoes">Notificações @if (naoLidas()) { <span>({{ naoLidas() }} não {{ naoLidas() === 1 ? 'lida' : 'lidas' }})</span> }</h2>
+        @if (carregandoNotificacoes()) {
+          <p role="status">Carregando notificações...</p>
+        } @else if (erroNotificacoes()) {
+          <p role="alert">{{ erroNotificacoes() }} <button mat-button type="button" (click)="carregarNotificacoes()">Tentar novamente</button></p>
+        } @else {
+          @if (erroLeituraNotificacao()) {
+            <p role="alert">{{ erroLeituraNotificacao() }} Selecione a notificação novamente para tentar outra vez.</p>
+          }
+          @if (!notificacoes().length) {
+            <div class="vazio-card"><p>Suas propostas, mensagens e atualizações de acordos aparecerão aqui.</p></div>
+          } @else {
+            <ol class="lista-notificacoes">
+              @for (notificacao of notificacoes(); track notificacao.id) {
+                <li [class.nao-lida]="!notificacao.lida">
+                  <a [href]="destinoNotificacao(notificacao)" (click)="abrirNotificacao($event, notificacao)">
+                    <strong>{{ notificacao.titulo }}</strong>
+                    <span>{{ notificacao.mensagem }}</span>
+                    <small>{{ notificacao.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                  </a>
+                  @if (!notificacao.lida) { <span class="indicador-nao-lida" role="img" aria-label="Não lida"></span> }
+                </li>
+              }
+            </ol>
+          }
+        }
+      </section>
+
+      @if (erroAcaoProposta()) {
+        <p role="alert">
+          {{ erroAcaoProposta() }}
+          <button mat-button type="button" (click)="erroAcaoProposta.set(''); carregarPropostas()">Atualizar lista</button>
+        </p>
+      }
+      <h2>Propostas recebidas em seus anúncios</h2>
+      @if (carregandoPropostas()) {
+        <p class="status-msg" role="status">Carregando propostas...</p>
+      } @else if (erroPropostas()) {
+        <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
+      } @else if (propostasRecebidas().length === 0) {
+        <div class="vazio-card">
+          <p>Você ainda não recebeu propostas para seus serviços.</p>
+        </div>
+      } @else {
+        <div class="lista-propostas">
+          @for (p of propostasRecebidas(); track p.id) {
+            <div class="proposta-card">
+              <div class="proposta-topo">
+                <div>
+                  <strong>{{ p.proponenteNome }}</strong>
+                  <span class="proposta-anuncio">Anúncio: {{ p.anuncioTitulo }}</span>
+                </div>
+                <span class="badge-status" [class]="p.status.toLowerCase()">
+                  {{ p.status }}
+                </span>
+              </div>
+              <p class="proposta-msg">"{{ p.mensagemInicial }}"</p>
+              <div class="proposta-meta">
+                <small>{{ p.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                @if (p.status === 'PENDENTE') {
+                  <div class="proposta-acoes">
+                    <button mat-flat-button color="primary" type="button"
+                      [disabled]="acaoPropostaEmAndamento() !== null"
+                      (click)="aceitarProposta(p.id)">
+                      {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'ACEITA' ? 'Aceitando...' : 'Aceitar' }}
+                    </button>
+                    <button mat-button color="warn" type="button"
+                      [disabled]="acaoPropostaEmAndamento() !== null"
+                      (click)="recusarProposta(p.id)">
+                      {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'RECUSADA' ? 'Recusando...' : 'Recusar' }}
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <h2>Suas propostas enviadas</h2>
+      @if (erroPropostas()) {
+        <p role="alert">{{ erroPropostas() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
+      } @else if (propostasEnviadas().length === 0) {
+        <div class="vazio-card">
+          <p>Você ainda não enviou propostas para outros anunciantes.</p>
+        </div>
+      } @else {
+        <div class="lista-propostas">
+          @for (p of propostasEnviadas(); track p.id) {
+            <div class="proposta-card">
+              <div class="proposta-topo">
+                <div>
+                  <strong>{{ p.anuncioTitulo }}</strong>
+                </div>
+                <span class="badge-status" [class]="p.status.toLowerCase()">
+                  {{ p.status }}
+                </span>
+              </div>
+              <p class="proposta-msg">"{{ p.mensagemInicial }}"</p>
+              <div class="proposta-meta">
+                <small>Enviado em {{ p.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                <a mat-button [routerLink]="['/anuncios', p.anuncioId]">Ver anúncio</a>
+                <a mat-button routerLink="/mensagens" [queryParams]="{ conversa: p.id }">Abrir conversa</a>
+                @if (p.status === 'PENDENTE') {
+                  <button mat-button color="warn" type="button"
+                    [disabled]="acaoPropostaEmAndamento() !== null"
+                    (click)="cancelarProposta(p.id)">
+                    {{ acaoPropostaEmAndamento()?.id === p.id && acaoPropostaEmAndamento()?.status === 'CANCELADA' ? 'Cancelando...' : 'Cancelar proposta' }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <h2>Seus acordos</h2>
+      @if (erroAcordos()) {
+        <p role="alert">{{ erroAcordos() }} <button mat-button type="button" (click)="carregarPropostas()">Tentar novamente</button></p>
+      } @else if (acordos().length === 0) {
+        <div class="vazio-card"><p>Quando uma proposta for aceita, o acordo aparecerá aqui.</p></div>
+      } @else {
+        <div class="lista-propostas">
+          @for (acordo of acordos(); track acordo.id) {
+            <article class="proposta-card">
+              <div class="proposta-topo">
+                <div>
+                  <strong>{{ acordo.anuncioTitulo }}</strong>
+                  <span class="proposta-anuncio">{{ acordo.anuncianteNome }} e {{ acordo.proponenteNome }}</span>
+                </div>
+                <span class="badge-status" [class]="acordo.status.toLowerCase()">
+                  {{ acordo.status === 'EM_ANDAMENTO' ? 'Em andamento' : acordo.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}
+                </span>
+              </div>
+              <div class="proposta-meta">
+                <small>Criado em {{ acordo.criadoEm | date: 'dd/MM/yyyy' }}</small>
+                <a mat-flat-button color="primary" routerLink="/mensagens" [queryParams]="{ conversa: acordo.propostaId }">Abrir conversa</a>
+                <a mat-button [routerLink]="['/acordos', acordo.id]">Detalhes e avaliação</a>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  } @else {
+    <p>Entre para cadastrar anúncios com sua conta.</p>
+    <form #form="ngForm" (ngSubmit)="enviar(form)" [attr.aria-busy]="enviando">
+      @if (registrar()) {
+        <mat-form-field appearance="outline"
+          ><mat-label>Nome</mat-label>
+          <input
+            matInput
+            name="nome"
+            [(ngModel)]="nome"
+            required
+            maxlength="100"
+            pattern=".*\S.*"
+            autocomplete="name"
+            [disabled]="enviando"
+          />
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline"
+        ><mat-label>E-mail</mat-label>
+        <input
+          matInput
+          name="email"
+          [(ngModel)]="email"
+          type="email"
+          email
+          required
+          maxlength="254"
+          autocomplete="username"
+          [disabled]="enviando"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Senha</mat-label>
+        <input
+          matInput
+          name="senha"
+          [(ngModel)]="senha"
+          type="password"
+          required
+          [minlength]="registrar() ? 6 : 1"
+          maxlength="64"
+          [attr.autocomplete]="registrar() ? 'new-password' : 'current-password'"
+          [disabled]="enviando"
+        />
+      </mat-form-field>
+      @if (erro) {
+        <p role="alert">{{ erro }}</p>
+      }
+      <button mat-flat-button type="submit" [disabled]="form.invalid || enviando">
+        {{ enviando ? 'Aguarde...' : registrar() ? 'Criar conta' : 'Entrar' }}
+      </button>
+      <button
+        mat-button
+        type="button"
+        [disabled]="enviando"
+        (click)="registrar.set(!registrar()); erro = ''"
+      >
+        {{ registrar() ? 'Já tenho uma conta' : 'Quero criar uma conta' }}
+      </button>
+    </form>
+    <p class="aviso">Seu acesso fica conectado por até 30 dias neste navegador. Em um dispositivo compartilhado, saia da conta ao terminar.</p>
+  }
+</section>

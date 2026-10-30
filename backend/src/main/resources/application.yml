@@ -1,26 +1,61 @@
 spring:
+  application:
+    name: skillswap-api
   datasource:
-    url: jdbc:mysql://skillswap-mysql:3306/skillswap?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-    username: skillswap
-    password: skillswap123
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3307/skillswap?serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8}
+    username: ${DB_USER:skillswap}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: validate
     open-in-view: false
-
+  flyway:
+    enabled: true
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:false}
+    baseline-version: 1
+    clean-disabled: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
 server:
-  port: 8080
-
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
-
+        include: health
+  endpoint:
+    health:
+      show-details: never
 app:
   jwt:
-    secret: skillswap-jwt-secret-key-2026-projeto-integrador-saptura-min-256bit
-    expiration: 86400000
+    secret: ${JWT_SECRET}
+    expiration: 900000
+skillswap:
+  security:
+    session-cookie-secure: ${SESSION_COOKIE_SECURE:true}
+    rate-limit:
+      login:
+        max-attempts: ${AUTH_RATE_LIMIT_LOGIN_MAX_ATTEMPTS:10}
+        window: ${AUTH_RATE_LIMIT_LOGIN_WINDOW:15m}
+      registration:
+        max-attempts: ${AUTH_RATE_LIMIT_REGISTRATION_MAX_ATTEMPTS:5}
+        window: ${AUTH_RATE_LIMIT_REGISTRATION_WINDOW:1h}
+  upload:
+    directory: ${UPLOAD_DIR:uploads}
+    user-quota-bytes: ${UPLOAD_USER_QUOTA_BYTES:104857600}
+    orphan-retention-days: ${UPLOAD_ORPHAN_RETENTION_DAYS:30}
+    cleanup-cron: ${UPLOAD_CLEANUP_CRON:0 30 3 * * *}
+  moderacao:
+    emails: ${MODERATOR_EMAILS:}
+  seed:
+    enabled: ${SEED_ENABLED:false}

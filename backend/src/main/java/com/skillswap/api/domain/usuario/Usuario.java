@@ -28,10 +28,33 @@ public class Usuario {
     @Column(length = 500)
     private String bio;
 
+    @Column(name = "titulo_profissional", length = 120)
+    private String tituloProfissional;
+
     @Column(length = 80)
     private String cidade;
 
     private String fotoUrl;
+
+    @Column(name = "capa_url", length = 120)
+    private String capaUrl;
+
+    @Column(name = "linkedin_url", length = 300)
+    private String linkedinUrl;
+
+    @Column(name = "instagram_url", length = 300)
+    private String instagramUrl;
+
+    @Column(name = "site_url", length = 300)
+    private String siteUrl;
+
+    @Builder.Default
+    @Column(name = "perfil_publico", nullable = false)
+    private boolean perfilPublico = true;
+
+    @Builder.Default
+    @Column(name = "disponivel_trabalhos", nullable = false)
+    private boolean disponivelTrabalhos = false;
 
     @Column(length = 500)
     private String especialidades;

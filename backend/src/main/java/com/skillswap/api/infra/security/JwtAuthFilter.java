@@ -34,9 +34,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
+        if (!jwtService.validateToken(token)) {
+            response.setStatus(401);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"codigo\":\"NAO_AUTENTICADO\",\"mensagem\":\"Sessao invalida.\",\"campos\":{}}");
+            return;
+        }
+
         if (jwtService.validateToken(token)) {
             String email = jwtService.extractEmail(token);
-            var userDetails = userDetailsService.loadUserByUsername(email);
+            org.springframework.security.core.userdetails.UserDetails userDetails;
+            try { userDetails = userDetailsService.loadUserByUsername(email); }
+            catch (org.springframework.security.core.AuthenticationException ex) {
+                response.setStatus(401); return;
+            }
 
             var authentication = new UsernamePasswordAuthenticationToken(
                     email, null, userDetails.getAuthorities());

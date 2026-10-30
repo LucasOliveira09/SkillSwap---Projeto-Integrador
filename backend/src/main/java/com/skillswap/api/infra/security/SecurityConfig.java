@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final LimitadorTentativasAuth limitadorTentativasAuth;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,13 +36,35 @@ public class SecurityConfig {
             .csrf(c -> c.disable())
             .cors(Customizer.withDefaults())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(e -> e
+                .authenticationEntryPoint((req,res,ex) -> {
+                    res.setStatus(401); res.setContentType("application/json");
+                    res.getWriter().write("{\"codigo\":\"NAO_AUTENTICADO\",\"mensagem\":\"Autenticacao necessaria.\",\"campos\":{}}");
+                })
+                .accessDeniedHandler((req,res,ex) -> {
+                    res.setStatus(403); res.setContentType("application/json");
+                    res.getWriter().write("{\"codigo\":\"ACESSO_NEGADO\",\"mensagem\":\"Acesso negado.\",\"campos\":{}}");
+                }))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/sessoes/atual").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuarios", "/api/sessoes").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/vitrine").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/anuncios/meus", "/api/anuncios/meus/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/anuncios/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/perfis/*/seguidores/me").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/perfis/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/profissionais").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/publicacoes").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/publicacoes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/uploads/uso").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(new AuthRateLimitFilter(limitadorTentativasAuth, objectMapper),
+                    org.springframework.security.web.authentication.logout.LogoutFilter.class)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -49,6 +74,7 @@ public class SecurityConfig {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
+                "http://100.97.254.9:8089",
                 "https://skillswap.vizihub.com.br",
                 "http://skillswap.163-176-204-48.sslip.io",
                 "https://skillswap.163-176-204-48.sslip.io"

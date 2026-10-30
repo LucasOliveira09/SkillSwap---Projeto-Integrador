@@ -1,0 +1,290 @@
+<section class="pagina-acordo" aria-labelledby="titulo-acordo">
+  <a class="voltar" routerLink="/conta">← Minha conta e negociações</a>
+
+  @if (carregando()) {
+    <p class="estado" role="status">Carregando acordo e conversa...</p>
+  } @else if (erro() && !acordo()) {
+    <section class="estado erro" role="alert">
+      <h1 id="titulo-acordo">Acordo indisponível</h1>
+      <p>{{ erro() }}</p>
+      <button mat-stroked-button type="button" (click)="carregar()">Tentar novamente</button>
+    </section>
+  } @else if (acordo(); as a) {
+    <header class="cabecalho-acordo">
+      <p class="sobretitulo">Negociação SkillSwap</p>
+      <h1 id="titulo-acordo">{{ a.anuncioTitulo }}</h1>
+      <p>Conversa entre você e {{ interlocutor() }}.</p>
+      <div class="meta-acordo">
+        <span>{{ a.status === 'EM_ANDAMENTO' ? 'Em andamento' : a.status === 'CONCLUIDO' ? 'Concluído' : 'Cancelado' }}</span>
+        <span>Criado em {{ a.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</span>
+      </div>
+      <a mat-button [routerLink]="['/anuncios', a.anuncioId]">Ver oferta</a>
+      <a mat-flat-button routerLink="/mensagens" [queryParams]="{ conversa: a.propostaId }">Abrir na área de mensagens</a>
+    </header>
+
+    <section class="conversa" aria-labelledby="titulo-conversa">
+      <h2 id="titulo-conversa">Conversa</h2>
+      @if (!mensagens().length) {
+        <p class="vazio">Ainda não há mensagens. Combine os detalhes do serviço por aqui.</p>
+      } @else {
+        <ol class="lista-mensagens">
+          @for (item of mensagens(); track item.id) {
+            <li class="mensagem" [class.propria]="item.remetenteId === perfil()?.id">
+              <p>{{ item.conteudo }}</p>
+              <small>{{ item.remetenteNome }} · {{ item.enviadoEm | date: 'd MMM, HH:mm' : '' : 'pt-BR' }}</small>
+            </li>
+          }
+        </ol>
+      }
+      @if (carregandoMensagens()) { <p role="status">Carregando mensagens...</p> }
+      @if (totalPaginasMensagens() > 1) {
+        <nav class="paginacao-mensagens" aria-label="Páginas da conversa">
+          <button mat-stroked-button type="button" (click)="carregarMensagens(paginaMensagens() - 1)"
+            [disabled]="paginaMensagens() === 0 || carregandoMensagens()">Mensagens anteriores</button>
+          <span>Página {{ paginaMensagens() + 1 }} de {{ totalPaginasMensagens() }}</span>
+          <button mat-stroked-button type="button" (click)="carregarMensagens(paginaMensagens() + 1)"
+            [disabled]="paginaMensagens() + 1 >= totalPaginasMensagens() || carregandoMensagens()">Mensagens mais recentes</button>
+        </nav>
+      }
+
+      @if (a.status === 'EM_ANDAMENTO') {
+        @if (minhaConclusaoConfirmada()) {
+          <p class="confirmacao-pendente" role="status">
+            Sua confirmação foi registrada. O acordo será concluído quando {{ interlocutor() }} também confirmar.
+          </p>
+        } @else if (outraConclusaoConfirmada()) {
+          <p class="confirmacao-pendente" role="status">
+            {{ interlocutor() }} confirmou a conclusão. Confira o resultado e confirme também para liberar as avaliações.
+          </p>
+        }
+        <form class="form-mensagem" (ngSubmit)="enviarMensagem()">
+          <mat-form-field appearance="outline">
+            <mat-label>Escreva uma mensagem</mat-label>
+            <textarea matInput name="mensagem" [ngModel]="mensagem()" (ngModelChange)="mensagem.set($event)"
+              maxlength="2000" rows="3" required></textarea>
+            <mat-hint align="end">{{ mensagem().length }}/2000</mat-hint>
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit"
+            [disabled]="enviando() || !mensagem().trim() || mensagem().length > 2000">
+            {{ enviando() ? 'Enviando...' : 'Enviar mensagem' }}
+          </button>
+        </form>
+        @if (!minhaConclusaoConfirmada() && !confirmandoConclusao()) {
+          <button class="concluir" mat-stroked-button type="button" (click)="confirmandoConclusao.set(true)" [disabled]="enviando()">
+            Confirmar conclusão do trabalho
+          </button>
+        } @else if (confirmandoConclusao()) {
+          <div class="confirmacao-conclusao" role="group" aria-label="Confirmar conclusão do acordo">
+            <p>O acordo só será concluído e liberará avaliações depois que ambas as pessoas confirmarem.</p>
+            <button mat-flat-button color="primary" type="button" (click)="concluirAcordo()" [disabled]="enviando()">
+              Confirmar conclusão
+            </button>
+            <button mat-button type="button" (click)="confirmandoConclusao.set(false)" [disabled]="enviando()">Voltar</button>
+          </div>
+        }
+        @if (!confirmandoConclusao() && !confirmandoCancelamento()) {
+          <button class="cancelar-acordo" mat-stroked-button color="warn" type="button"
+            (click)="confirmandoCancelamento.set(true)" [disabled]="enviando()">
+            Cancelar acordo
+          </button>
+        } @else if (confirmandoCancelamento()) {
+          <div class="confirmacao-conclusao confirmacao-cancelamento" role="group" aria-label="Confirmar cancelamento do acordo">
+            <p>O cancelamento impede novas mensagens neste acordo e não pode ser desfeito.</p>
+            <button class="confirmar-cancelamento" mat-flat-button color="warn" type="button"
+              (click)="cancelarAcordo()" [disabled]="enviando()">
+              {{ enviando() ? 'Cancelando...' : 'Confirmar cancelamento' }}
+            </button>
+            <button mat-button type="button" (click)="confirmandoCancelamento.set(false)" [disabled]="enviando()">Voltar</button>
+          </div>
+        }
+        <p class="aviso">O SkillSwap organiza a conversa. Pagamentos ainda são combinados fora da plataforma.</p>
+      }
+    </section>
+
+    <section class="historico-acordo" aria-labelledby="titulo-historico">
+      <h2 id="titulo-historico">Histórico do acordo</h2>
+      @if (!eventos().length) {
+        <p>Não há eventos de histórico disponíveis para este acordo.</p>
+      } @else {
+        <ol>
+          @for (evento of eventos(); track evento.id) {
+            <li>
+              <span class="marcador-evento" aria-hidden="true"></span>
+              <div>
+                <strong>{{ descricaoEvento(evento.tipo) }}</strong>
+                <small>{{ evento.atorNome }} · {{ evento.criadoEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</small>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+
+    @if (erro()) { <p class="feedback erro" role="alert">{{ erro() }}</p> }
+    @if (sucesso()) { <p class="feedback sucesso" role="status">{{ sucesso() }}</p> }
+
+    @if (a.status === 'CONCLUIDO') {
+      <section class="avaliacao" aria-labelledby="titulo-avaliacao">
+        @if (podeAvaliar()) {
+          <h2 id="titulo-avaliacao">Avaliar {{ interlocutor() }}</h2>
+          @if (jaAvaliou()) {
+            <p class="sucesso" role="status">Você já enviou sua avaliação para este acordo.</p>
+          } @else {
+            <p>Esta avaliação fica vinculada a um acordo concluído e ajuda outras pessoas a comparar profissionais.</p>
+            <form (ngSubmit)="avaliar()">
+              <fieldset>
+                <legend>Nota do profissional</legend>
+                <div class="estrelas">
+                  @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                    <button type="button" [attr.aria-pressed]="nota === estrela"
+                      [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                      [class.selecionada]="nota >= estrela" (click)="nota = estrela">
+                      {{ nota >= estrela ? '★' : '☆' }}
+                    </button>
+                  }
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Nota do anúncio ou serviço</legend>
+                <div class="estrelas">
+                  @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                    <button type="button" [attr.aria-pressed]="notaAnuncio === estrela"
+                      [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                      [class.selecionada]="notaAnuncio >= estrela" (click)="notaAnuncio = estrela">
+                      {{ notaAnuncio >= estrela ? '★' : '☆' }}
+                    </button>
+                  }
+                </div>
+              </fieldset>
+              <mat-form-field appearance="outline">
+                <mat-label>Depoimento (opcional)</mat-label>
+                <textarea matInput name="depoimento" [(ngModel)]="depoimento" maxlength="1000" rows="3"></textarea>
+                <mat-hint>{{ depoimento.length }}/1000</mat-hint>
+              </mat-form-field>
+              <button mat-flat-button color="primary" type="submit" [disabled]="!nota || !notaAnuncio || enviando()">
+                {{ enviando() ? 'Enviando...' : 'Enviar avaliação' }}
+              </button>
+            </form>
+          }
+        } @else {
+          <h2 id="titulo-avaliacao">Avaliação da experiência</h2>
+          <p role="status">O cliente que enviou a proposta poderá avaliar o profissional e o serviço.</p>
+        }
+        @for (avaliacao of avaliacoes(); track avaliacao.id) {
+          <article class="avaliacao-publicada">
+            <strong>{{ avaliacao.avaliadorNome }}</strong>
+            <span
+              role="img"
+              [attr.aria-label]="'Nota do profissional: ' + avaliacao.nota + ' de 5 estrelas'"
+            >
+              Profissional: {{ '★'.repeat(avaliacao.nota) }}
+            </span>
+            @if (avaliacao.notaAnuncio) {
+              <span
+                role="img"
+                [attr.aria-label]="'Nota do anúncio: ' + avaliacao.notaAnuncio + ' de 5 estrelas'"
+              >
+                Oferta: {{ '★'.repeat(avaliacao.notaAnuncio) }}
+              </span>
+            }
+            @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
+            @if (avaliacao.editadaEm) {
+              <small>Esta avaliação foi editada em {{ avaliacao.editadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}.</small>
+            }
+            @if (perfil()?.id === avaliacao.avaliadorId && acordo()?.proponenteId === perfil()?.id) {
+              @if (editandoAvaliacao() === avaliacao.id) {
+                <form class="editar-avaliacao" (ngSubmit)="salvarEdicaoAvaliacao(avaliacao)">
+                  <fieldset>
+                    <legend>Nota atualizada do profissional</legend>
+                    <div class="estrelas">
+                      @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                        <button type="button" [attr.aria-pressed]="notaEdicao === estrela"
+                          [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                          [class.selecionada]="notaEdicao >= estrela" (click)="notaEdicao = estrela">
+                          {{ notaEdicao >= estrela ? '★' : '☆' }}
+                        </button>
+                      }
+                    </div>
+                  </fieldset>
+                  <fieldset>
+                    <legend>Nota atualizada da oferta ou serviço</legend>
+                    <div class="estrelas">
+                      @for (estrela of [1, 2, 3, 4, 5]; track estrela) {
+                        <button type="button" [attr.aria-pressed]="notaAnuncioEdicao === estrela"
+                          [attr.aria-label]="estrela + (estrela === 1 ? ' estrela' : ' estrelas')"
+                          [class.selecionada]="notaAnuncioEdicao >= estrela" (click)="notaAnuncioEdicao = estrela">
+                          {{ notaAnuncioEdicao >= estrela ? '★' : '☆' }}
+                        </button>
+                      }
+                    </div>
+                  </fieldset>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Depoimento atualizado (opcional)</mat-label>
+                    <textarea matInput name="depoimentoEdicao" [value]="depoimentoEdicao"
+                      (input)="depoimentoEdicao = $any($event.target).value" maxlength="1000" rows="3"></textarea>
+                    <mat-hint>{{ depoimentoEdicao.length }}/1000</mat-hint>
+                  </mat-form-field>
+                  <div class="acoes-edicao">
+                    <button mat-flat-button color="primary" type="submit"
+                      [disabled]="!notaEdicao || !notaAnuncioEdicao || salvandoEdicaoAvaliacao() !== null">
+                      {{ salvandoEdicaoAvaliacao() === avaliacao.id ? 'Salvando...' : 'Salvar edição' }}
+                    </button>
+                    <button mat-stroked-button type="button" [disabled]="salvandoEdicaoAvaliacao() !== null"
+                      (click)="editandoAvaliacao.set(null)">Cancelar</button>
+                  </div>
+                  <small>Apenas uma edição é permitida nas primeiras 24 horas. A versão anterior fica disponível à moderação.</small>
+                </form>
+              } @else if (podeEditarAvaliacao(avaliacao)) {
+                <button mat-stroked-button type="button" (click)="iniciarEdicaoAvaliacao(avaliacao)">Editar avaliação</button>
+              }
+            }
+            @if (avaliacao.respostaProfissional) {
+              <aside class="resposta-profissional">
+                <strong>Resposta de {{ avaliacao.avaliadoNome }}</strong>
+                <p>{{ avaliacao.respostaProfissional }}</p>
+                @if (avaliacao.respondidaEm) {
+                  <time [attr.datetime]="avaliacao.respondidaEm">{{ avaliacao.respondidaEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                }
+              </aside>
+            } @else if (perfil()?.id === avaliacao.avaliadoId && acordo()?.anuncianteId === perfil()?.id) {
+              <form class="responder-avaliacao" (ngSubmit)="responderAvaliacao(avaliacao)">
+                <mat-form-field appearance="outline">
+                  <mat-label>Responder publicamente</mat-label>
+                  <textarea matInput [name]="'resposta-' + avaliacao.id" [value]="respostas[avaliacao.id] || ''"
+                    (input)="atualizarResposta(avaliacao.id, $any($event.target).value)" maxlength="1000" rows="3" required></textarea>
+                  <mat-hint>{{ (respostas[avaliacao.id] || '').length }}/1000</mat-hint>
+                </mat-form-field>
+                <button mat-stroked-button type="submit" [disabled]="!respostas[avaliacao.id]?.trim() || respondendoAvaliacao() !== null">
+                  {{ respondendoAvaliacao() === avaliacao.id ? 'Publicando...' : 'Publicar resposta' }}
+                </button>
+              </form>
+            }
+            @if (perfil()?.id === avaliacao.avaliadoId && acordo()?.anuncianteId === perfil()?.id) {
+              @if (contestacoes()[avaliacao.id]; as contestacao) {
+                <aside class="estado-contestacao" aria-label="Contestação da avaliação">
+                  <strong>Contestação {{ contestacao.status === 'ABERTA' ? 'em análise' : contestacao.status === 'MANTIDA' ? 'encerrada: avaliação mantida' : 'encerrada: avaliação ocultada' }}</strong>
+                  @if (contestacao.decisao) { <p>{{ contestacao.decisao }}</p> }
+                  <small>A justificativa enviada fica privada para você e a equipe de moderação.</small>
+                </aside>
+              } @else {
+                <form class="contestar-avaliacao" (ngSubmit)="contestarAvaliacao(avaliacao)">
+                  <label [for]="'contestacao-' + avaliacao.id">Contestar avaliação (privado)</label>
+                  <textarea [id]="'contestacao-' + avaliacao.id" [name]="'contestacao-' + avaliacao.id"
+                    [value]="justificativas[avaliacao.id] || ''"
+                    (input)="atualizarJustificativa(avaliacao.id, $any($event.target).value)"
+                    minlength="20" maxlength="1000" rows="3"
+                    [attr.aria-describedby]="'prazo-contestacao-' + avaliacao.id"></textarea>
+                  <small [id]="'prazo-contestacao-' + avaliacao.id">Disponível por sete dias após a publicação. A avaliação permanece visível durante a análise.</small>
+                  <button mat-stroked-button type="submit"
+                    [disabled]="(justificativas[avaliacao.id] || '').trim().length < 20 || (justificativas[avaliacao.id] || '').length > 1000 || contestandoAvaliacao() !== null">
+                    {{ contestandoAvaliacao() === avaliacao.id ? 'Enviando...' : 'Enviar contestação' }}
+                  </button>
+                </form>
+              }
+            }
+          </article>
+        }
+      </section>
+    }
+  }
+</section>

@@ -1,7 +1,15 @@
 package com.skillswap.api.domain.acordo;
 
 import com.skillswap.api.domain.acordo.dto.AcordoResponseDTO;
+import com.skillswap.api.domain.acordo.dto.AtualizarStatusAcordoDTO;
+import com.skillswap.api.domain.acordo.dto.EventoAcordoDTO;
+import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +22,34 @@ import java.util.List;
 public class AcordoController {
 
     private final AcordoService acordoService;
+    private final EventoAcordoService eventoAcordoService;
+
+    @GetMapping
+    public ResponseEntity<PaginaDTO<AcordoResponseDTO>> listar(Authentication authentication,
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(50) int tamanho) {
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(acordoService.listarMeus(
+                (String) authentication.getPrincipal(), pageable)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AcordoResponseDTO> buscar(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(acordoService.buscar(id, (String) authentication.getPrincipal()));
+    }
+
+    @GetMapping("/{id}/eventos")
+    public ResponseEntity<List<EventoAcordoDTO>> listarEventos(
+            @PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(eventoAcordoService.listar(id, (String) authentication.getPrincipal()));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<AcordoResponseDTO> atualizarStatus(@PathVariable Long id,
+            @RequestBody @Valid AtualizarStatusAcordoDTO dto, Authentication authentication) {
+        var acordo = acordoService.atualizarStatus(id, dto, (String) authentication.getPrincipal());
+        return ResponseEntity.ok(acordoService.toResponseDTO(acordo));
+    }
 
     @GetMapping("/meus")
     public ResponseEntity<List<AcordoResponseDTO>> listarMeus(Authentication authentication) {

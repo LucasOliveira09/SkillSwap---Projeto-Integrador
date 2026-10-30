@@ -6,31 +6,59 @@ Fonte de domínio: [Documento de Visão e Escopo do grupo Saptura](referencias/s
 
 Conectar moradores a prestadores de manutenção e serviços manuais e a instrutores locais, com foco inicial em Florianópolis e região. A proposta combina descoberta de profissionais, portfólio e reputação com negociação por venda direta ou troca de habilidades entre duas pessoas.
 
+## Visão ampliada confirmada pelo usuário
+
+O SkillSwap deve combinar uma rede de apresentação profissional com um marketplace local: cada pessoa pode construir um perfil público e portfólio visual, divulgar ofertas e ser encontrada por clientes; clientes podem comparar profissionais, conversar, negociar e avaliar trabalhos concluídos. Publicações devem ajudar a mostrar a qualidade e o estilo do serviço, sem transformar o produto em uma rede social genérica.
+
+Uma conta pode atuar como profissional e cliente. A descoberta deve responder “quem atende ao que preciso e na minha região?” e sustentar a confiança com avaliações de operações reais, contexto e quantidade de avaliações. Não apresentar notas, selos, identidade verificada, popularidade ou pagamento protegido sem mecanismos implementados e evidências correspondentes.
+
+O usuário definiu que pagamentos dentro da plataforma ficam para uma fase posterior à validação de perfis, ofertas, descoberta, propostas, acordos, conversa e avaliações. Até lá, a plataforma organiza a negociação, mas não processa nem garante pagamento.
+
+O [plano de produto e implementação](../tasks/plan.md) detalha os fluxos, critérios de aceite, dependências e riscos. O usuário aprovou o plano em 26/10/2026 e definiu pagamentos para uma fase posterior. Perfis, portfólio, descoberta, anúncios, propostas, acordos, conversa e avaliações verificadas estão implementados; os fluxos passaram pela interface e pela API em bancos MySQL descartáveis 8.0.46 e 8.4.11. A integração local também passou em MySQL 8.4.11 num schema separado que preserva o banco legado. Permanecem pendentes a revisão manual com leitor de tela, a automação e cópia externa dos backups e eventual migração do schema público. O estado detalhado está no plano e em [politica-perfis.md](politica-perfis.md).
+
 O documento relata dificuldade de descoberta, desconfiança na contratação e falta de vitrine para autônomos. As conclusões de pesquisa são relatos do documento; faltam amostra, roteiro e registros para sustentar percentuais em uma apresentação. Evitar prometer segurança total, identidade verificada ou proteção financeira antes de implementar e validar esses mecanismos.
 
 ## Seis capacidades do MVP planejado
 
 | Capacidade | Entrega e regra de aceite futura |
 | --- | --- |
-| Contas e perfis profissionais | Acesso autenticado, perfil público com biografia, foto, especialidades e métricas derivadas de operações reais. Um usuário poderá buscar e oferecer serviços. |
+| Contas e perfis profissionais | Acesso autenticado, perfil público com título, biografia, foto, capa opcional, links HTTPS, especialidades e métricas derivadas de operações reais. O titular pode pausar a exibição pública sem apagar negociações ou histórico. |
 | Anúncios de serviços e aulas | Criar e editar anúncios próprios com título, descrição, categoria, localidade, modalidade e portfólio. Venda informa preço; troca informa a habilidade desejada. |
 | Catálogo e detalhe | Buscar e filtrar por categoria, localidade e modalidade; abrir anúncio e perfil correspondente; tratar carregamento, erro e ausência de resultados. |
 | Propostas e acordos | Registrar intenção de venda ou troca entre duas pessoas, acompanhar status e confirmar conclusão. Não processar dinheiro nesta fase. |
 | Comunicação | Conversa entre participantes de uma negociação, com controle de acesso e mensagens associadas ao acordo. |
 | Reputação e histórico | Avaliação de 1 a 5 e depoimento associados a serviço concluído; impedir avaliação de operação inexistente e autoavaliação. |
 
-Esta decomposição organiza o documento em seis capacidades para planejamento. Autenticação, estados de acordo e regras contra abuso são definições técnicas propostas para viabilizar o domínio, ainda dependentes do contrato do backend.
+Esta decomposição organiza o documento em seis capacidades. As regras de autenticação, estados de acordo e prevenção de abuso foram incorporadas ao contrato REST e à implementação. Os resultados e limitações da validação estão descritos em [tasks/plan.md](../tasks/plan.md) e [backend.md](backend.md).
 
-## Entrega desta inicialização
+O perfil do MVP inclui nome, título profissional, foto, capa opcional, biografia, cidade, especialidades e portfólio visual. A capa e a foto são enviadas pelo próprio usuário autenticado.
+
+## Entrega da inicialização (histórico)
 
 - Workspace Angular standalone, modo estrito, roteamento e arquivos HTML/SCSS/TypeScript separados.
 - Angular Material compatível, tema único e imports locais nos componentes.
-- Catálogo inicialmente vazio e cadastro de anúncio demonstrativo, sem upload, autenticação ou backend.
+- Cadastro de anúncio demonstrativo, sem upload, autenticação ou backend. A inicialização começou com catálogo vazio; na adaptação do layout antigo, foram acrescentados exemplos visuais identificados e filtros no catálogo, separados dos dados da sessão.
 - Anúncios de demonstração mantidos somente em memória durante a sessão da aplicação, perdidos ao recarregar. Nenhuma promessa de publicação real.
 - Validação de obrigatórios e espaços, venda com preço positivo e troca com habilidade desejada; limpar reinicia campos e feedback.
 - Testes de regras, cadastro e navegação; build e conferência em navegador.
 
 Parâmetros iniciais da demonstração: categorias “Manutenção e reparos” e “Aulas e instrução”; título de até 100 caracteres, descrição de até 1500, cidade de até 80 e habilidade desejada de até 120. São escolhas desta base, não limites prescritos pelo PDF; rever com a equipe antes da API definitiva.
+
+## Integração do backend em 20/10/2026
+
+Na primeira integração, anúncios, categorias e coleções visuais passaram a vir do backend Spring Boot; sessão em memória de tela e fixtures do Angular foram removidas. A adoção posterior do backend escolhido pelo usuário acrescentou autenticação, perfis, portfólio, negociação, conversa e reputação, descritos nas seções seguintes. Busca, paginação e gravação persistem pela API. Migrações e integração foram validadas em MySQL 8.0.46 e 8.4.11 descartáveis; em 28/10/2026 a integração local também passou em schema MySQL 8.4.11 separado, preservando o schema legado. Chromium local percorreu uma venda completa: cadastro, perfil, anúncio, proposta, aceite, conversa, conclusão mútua e avaliação verificada. A revisão de outras telas autenticadas e a acessibilidade manual continuam pendentes. Consulte o [contrato e a execução](backend.md).
+
+## Integração do GitHub em 21/10/2026
+
+Por escolha do usuário, o backend novo do GitHub passou a ser a base canônica: Java 21, Spring Boot 4.0.8 e Maven Wrapper 3.10.0, mantendo MySQL. O Angular preserva o layout antigo e tem conta, login JWT, cadastro autenticado, perfil, busca de profissionais, portfólio, propostas, acordos, conversa e avaliações. Naquele ponto, a validação integral com MySQL e as regras de moderação ainda estavam pendentes; o progresso posterior está registrado abaixo e em [backend.md](backend.md). A [ADR-004](decisions/004-integra-backend-github.md) substitui a organização inicial.
+
+## Implementação de perfis iniciada em 26/10/2026
+
+A API permite consultar campos públicos de um profissional, editar o perfil autenticado, listar ofertas ativas e criar, editar legenda ou remover publicações de portfólio com até seis fotos. O perfil público e o editor paginam publicações pela API. O DTO público não retorna e-mail; a média e a quantidade de avaliações vêm de registros do backend. O Angular oferece página pública responsiva, editor de perfil e portfólio, prévia e envio das imagens. O backend valida conteúdo real JPG/PNG/GIF, dimensões, tamanho e existência das fotos; cada conta tem quota de 100 MiB por padrão, exibida no editor, e a migração V6 registra imagens já referenciadas por perfis, anúncios e publicações. A rotina diária remove arquivos hash sem referências após 30 dias e os metadados de quota associados. Denúncias de portfólio e avaliações são analisadas por uma allowlist de moderadores, preservam evidência e permitem ocultar ou reexibir; métricas públicas ignoram avaliações ocultadas. O Compose local e de publicação declaram volume persistente. A API completa para perfil, upload/portfólio, descoberta, venda/troca, conversa, conclusão e avaliação passou em cópias isoladas MySQL 8.0.46 e 8.4.11; em 8.4, a foto permaneceu disponível após recriação da API com volume nomeado. Denúncia, contestação e moderação passaram em MySQL 8.0.46. Em 28/10, o dump atual do banco foi copiado cifrado para a estação Windows e restaurado em MySQL 8.0.46 isolado; o arquivo de uploads foi extraído em teste e permaneceu vazio, como a origem. A retenção está definida, mas é manual; a cópia ainda não está em outro local físico/provedor. Chromium também percorreu o fluxo de venda e negociação em MySQL 8.4.11. Permanecem a auditoria manual de acessibilidade, validação integrada local e decisão de promoção do schema.
+
+A primeira busca de profissionais também está disponível em `/profissionais`, por nome, título, especialidade, cidade e nota mínima opcional. O filtro de nota considera apenas profissionais com pelo menos três avaliações visíveis; a nota não define a posição. A ordenação prioriza correspondência exata e depois inicial/parcial do título ou especialidade, seguida de nome, cidade exata e data de cadastro, com ID como desempate estável. Ela lista perfis com título ou especialidades preenchidos, apresenta contagem e média só quando vierem de avaliações existentes e não usa perfis ou notas fictícias. O perfil oferece título profissional opcional junto de foto, cidade, especialidades e biografia. Após acordo concluído, o cliente que enviou a proposta avalia o profissional e a oferta/serviço em campos separados; o detalhe apresenta média e amostra reais, e o perfil lista os depoimentos. O profissional avaliado pode publicar uma resposta curta e única, exibida no perfil. Edição pelo autor e contestação pelo profissional seguem a [política de avaliações](politica-avaliacoes.md), com histórico preservado e moderação restrita à allowlist. Contas autenticadas denunciam portfólio e avaliações; avaliações ocultadas deixam de contar nas médias públicas. A visibilidade de dados e remoção das imagens seguem a [política de perfis](politica-perfis.md).
+
+Na validação de 27–28/10/2026, os fluxos de venda e troca pela interface, os principais domínios, contestação e denúncia/moderação passaram em MySQL 8.0.46 com dados persistidos após reinício da API. Em MySQL 8.4.11, Flyway V1–V14, Hibernate `validate` e os fluxos REST completos passaram numa instância descartável da VPS, com persistência após reinício e recriação da API com volume para uploads; Chromium também percorreu o fluxo de cadastro, perfil, anúncio, proposta, conversa, conclusão mútua e avaliação de venda nessa versão. O fluxo REST de troca completo passou em MySQL 8.4.11, com duas mensagens, conclusão mútua e avaliação persistida; Chromium exibiu busca, perfil, oferta de troca e avaliação desses registros em 390 px e, depois, percorreu pela interface a negociação de troca completa com cadastro do cliente, proposta, aceite, conversa, conclusão mútua e avaliação. A API confirmou o acordo concluído, a mensagem, a avaliação e a nota pública após novo login. Em 28/10, Chromium percorreu em MySQL 8.4.11 descartável a fila de contestações, as decisões de manter e ocultar e os filtros de status; após reiniciar a API, estados e evidências persistiram, uma avaliação ocultada deixou de compor a reputação pública e a média passou de 1,5 em duas avaliações para 2,0 em uma. O stack e os dados sintéticos foram removidos. A migração do schema legado foi ensaiada numa cópia integral sem divergências nas sete tabelas existentes. Em 28/10, o dump do banco público foi copiado cifrado para a estação Windows e restaurado em MySQL 8.0.46 isolado; o arquivo de uploads foi extraído em teste e permaneceu vazio, como a origem. Retenção definida em 30 cópias diárias e uma cópia de fim de mês por 12 meses, com coleta manual; cópia em outro local físico/provedor ainda pendente. Também permanecem acessibilidade manual, validação integrada local e decisão de promoção do schema; o site público não foi migrado.
 
 ## Funcionalidades futuras
 
@@ -38,13 +66,13 @@ O PDF propõe gateway PIX/cartão e retenção/liberação de valores, destaque 
 
 O trecho do PDF que chama o MVP de “disponível na aplicação” descreve o escopo de referência, não comprova implementação neste repositório.
 
-## O que definir antes das próximas entregas
+## Pendências e decisões para as próximas etapas
 
-1. Backend e banco: linguagem exigida na disciplina, ambiente de hospedagem e contrato da API.
-2. Contas: método de acesso, dados mínimos, recuperação de conta e autorização de edição.
-3. Anúncios: categorias definitivas, cidade/bairro, limites, regras de imagens e moderação.
-4. Acordos: proposta, aceite, cancelamento, conclusão e resolução de divergências em vendas e trocas.
-5. Chat e reputação: participantes, retenção de mensagens, denúncia e critérios de avaliação.
-6. Entrega acadêmica: cronograma, divisão de responsabilidades e evidências da pesquisa.
+- Concluir a auditoria de acessibilidade com tecnologia assistiva, incluindo o uso manual do leitor de tela; as árvores de acessibilidade do Chromium e os testes automatizados não substituem essa revisão.
+- Reativar o Docker Desktop e validar a integração Angular/API/MySQL localmente, preservando os volumes existentes.
+- Automatizar a retenção definida para os backups e replicar a cópia cifrada para outro local físico ou provedor; praticar a restauração operacional.
+- Antes de migrar o schema público, repetir a comparação e a restauração em cópia isolada, preparar rollback e obter solicitação explícita para a publicação.
+- Pilotar a busca com profissionais reais da região somente com consentimento, identificando conteúdo de demonstração e medindo uma linha de base antes de definir metas.
+- Planejar recuperação de conta e fechar as decisões acadêmicas de cronograma, responsabilidades e evidências da pesquisa.
 
-Modelo conceitual inicial: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. É um modelo de planejamento, sem schema de banco ou API já criados.
+Modelo conceitual implementado: usuário possui perfil e anúncios; anúncio recebe propostas; proposta aceita gera acordo entre participantes; acordo possui conversa e pode gerar avaliações após conclusão. Venda e troca foram percorridas em interface com MySQL 8.0.46 e 8.4.11 descartáveis, e os fluxos REST também passaram nessas versões. A plataforma não processa nem garante pagamento; integração de pagamentos permanece explicitamente fora desta entrega.

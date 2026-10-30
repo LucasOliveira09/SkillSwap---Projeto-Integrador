@@ -17,7 +17,7 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PerfilDTO> getPerfil(@PathVariable Long id) {
-        var usuario = usuarioService.findById(id);
+        var usuario = usuarioService.buscarPerfilPublico(id);
         return ResponseEntity.ok(usuarioService.toPerfilDTO(usuario));
     }
 

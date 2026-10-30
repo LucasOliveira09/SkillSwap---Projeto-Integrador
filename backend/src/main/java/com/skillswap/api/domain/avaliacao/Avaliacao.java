@@ -35,11 +35,30 @@ public class Avaliacao {
     @Column(nullable = false)
     private int nota;
 
+    private Integer notaAnuncio;
+
     @Column(length = 1000)
     private String depoimento;
 
+    @Column(name = "resposta_profissional", length = 1000)
+    private String respostaProfissional;
+
+    @Column(name = "respondida_em")
+    private LocalDateTime respondidaEm;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
+
+    @Column(name = "moderada_oculta", nullable = false)
+    @Builder.Default
+    private boolean moderadaOculta = false;
+
+    @Column(name = "edicao_realizada", nullable = false)
+    @Builder.Default
+    private boolean edicaoRealizada = false;
+
+    @Column(name = "editada_em")
+    private LocalDateTime editadaEm;
 
     @PrePersist
     protected void onCreate() {

@@ -1,0 +1,36 @@
+.minhas-anuncios { width: min(1080px, calc(100% - 32px)); margin: 32px auto 72px; color: var(--ss-text); }
+.voltar { padding-left: 0; }
+.cabecalho { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin: 20px 0 28px; }
+.cabecalho h1 { margin: 4px 0; font-size: clamp(28px, 4vw, 38px); }
+.cabecalho p:not(.sobretitulo) { margin: 8px 0 0; color: var(--ss-muted); }
+.sobretitulo { margin: 0; color: var(--ss-blue); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.lista { display: grid; gap: 16px; }
+.oferta { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; padding: 18px; border: 1px solid var(--ss-line); border-radius: 14px; background: var(--ss-surface); }
+.foto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 9px; }
+.sem-foto { display: grid; place-items: center; color: var(--ss-blue); background: #edf4fb; font-size: 28px; font-weight: 800; }
+.titulo-linha { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.titulo-linha h2 { margin: 0; font-size: 20px; }
+.status { flex: 0 0 auto; border-radius: 999px; padding: 5px 10px; color: #14603d; background: #e7f5ec; font-size: 12px; font-weight: 700; }
+.status.inativo { color: #5b6470; background: #edf0f2; }
+.resumo, .preco { margin: 8px 0; color: var(--ss-muted); font-size: 13px; }
+.descricao { margin: 10px 0; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.preco { color: var(--ss-text); font-weight: 700; }
+.conteudo small { color: var(--ss-muted); }
+.acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.feedback { display: flex; align-items: center; gap: 12px; border-radius: 8px; padding: 12px 16px; }
+.feedback.sucesso { color: #14603d; background: #e7f5ec; }
+.feedback.erro { justify-content: space-between; color: #982a2a; background: #fff0ef; }
+.estado { padding: 48px 20px; text-align: center; border: 1px dashed var(--ss-line); border-radius: 14px; }
+.estado p { color: var(--ss-muted); }
+.paginacao { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 22px; }
+.paginacao span { color: var(--ss-muted); font-size: 13px; }
+@media (max-width: 680px) {
+  .cabecalho { align-items: stretch; flex-direction: column; }
+  .cabecalho > a { align-self: flex-start; }
+  .oferta { grid-template-columns: 1fr; }
+  .foto { max-height: 240px; }
+  .titulo-linha { flex-direction: column-reverse; gap: 8px; }
+  .acoes { align-items: stretch; flex-direction: column; }
+  .acoes > * { width: 100%; }
+  .paginacao { flex-wrap: wrap; gap: 8px; }
+}

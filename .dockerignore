@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+.angular
+dist
+frontend-dist
+backend
+docs
+tasks

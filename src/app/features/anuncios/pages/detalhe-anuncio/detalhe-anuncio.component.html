@@ -1,0 +1,323 @@
+<div class="detalhe-pagina">
+  @if (estado().carregando) {
+    <div class="estado-carregando" role="status">
+      <div class="spinner"></div>
+      <p>Carregando informações do anúncio...</p>
+    </div>
+  } @else if (estado().erro || !anuncio()) {
+    <div class="estado-erro" role="alert">
+      <h1>Anúncio não encontrado</h1>
+      <p>O anúncio que você procura pode ter sido finalizado ou não existe.</p>
+      <a mat-flat-button color="primary" routerLink="/anuncios">
+        <app-icone nome="esquerda" /> Voltar ao catálogo
+      </a>
+    </div>
+  } @else {
+    @let a = anuncio()!;
+
+    <h1 class="sr-only">{{ a.titulo }}</h1>
+
+    <!-- BREADCRUMB ESTILO MERCADO LIVRE -->
+    <nav class="breadcrumb" aria-label="Navegação estrutural">
+      <a routerLink="/anuncios">Início</a>
+      <span class="sep">&gt;</span>
+      <a routerLink="/anuncios" [queryParams]="{ categoria: a.categoria }">{{ a.categoriaRotulo }}</a>
+      <span class="sep">&gt;</span>
+      <span class="atual" aria-current="page">{{ a.titulo }}</span>
+    </nav>
+    @if ((a.quantidadeAvaliacoesAnuncio ?? 0) > 0 && a.mediaAvaliacoesAnuncio != null) {
+      <p class="reputacao-anuncio">
+        <span class="sr-only">Média de avaliações de trabalhos concluídos: </span>
+        <span aria-hidden="true">★</span> {{ a.mediaAvaliacoesAnuncio | number: '1.1-1' }}
+        · {{ a.quantidadeAvaliacoesAnuncio }} {{ a.quantidadeAvaliacoesAnuncio === 1 ? 'avaliação do serviço' : 'avaliações do serviço' }}
+      </p>
+    } @else {
+      <p class="reputacao-anuncio sem-notas">Este serviço ainda não tem avaliações.</p>
+    }
+    <nav class="abas-anuncio" aria-label="Detalhes do anúncio">
+      <a [routerLink]="[]" fragment="secao-comentarios" queryParamsHandling="preserve">Comentários</a>
+      <a [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Avaliações verificadas</a>
+    </nav>
+
+    <!-- GRID PRINCIPAL DE DETALHES -->
+    <div class="detalhe-layout">
+      <!-- COLUNA ESQUERDA: GALERIA E CONTEÚDO PRINCIPAL -->
+      <section class="coluna-esquerda">
+        <!-- ÁREA DA GALERIA -->
+        <div class="galeria-card">
+          <div class="galeria-destaque">
+            @if (fotoPrincipal()) {
+              <img
+                [src]="fotoPrincipal()"
+                [alt]="a.titulo"
+                class="imagem-destaque"
+                loading="eager"
+                (error)="marcarFotoIndisponivel(fotoPrincipal())"
+              />
+            } @else {
+              <div class="sem-imagem">
+                <app-icone nome="troca" />
+                <span>{{ fotoIndisponivel() ? 'Imagem indisponível' : 'Foto ilustrativa não fornecida' }}</span>
+              </div>
+            }
+
+            <span class="badge-categoria">{{ a.categoriaRotulo }}</span>
+            <span class="badge-modalidade" [class.troca]="a.modalidade === 'troca'">
+              {{ a.modalidade === 'troca' ? 'Troca de Talentos' : 'Serviço / Aula' }}
+            </span>
+          </div>
+
+          <!-- MINIATURAS SE HOUVER IMAGEM -->
+          @if (a.imagem && fotoPrincipal()) {
+            <div class="miniaturas-barra">
+              <button
+                type="button"
+                class="miniatura-btn ativo"
+                [attr.aria-label]="'Foto principal de ' + a.titulo"
+                (click)="selecionarFoto(a.imagem)"
+              >
+                <img [src]="a.imagem" [alt]="a.titulo" (error)="marcarFotoIndisponivel(a.imagem)" />
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- SEÇÃO: DESCRIÇÃO DO SERVIÇO / AULA -->
+        <div class="descricao-card">
+          <h2>Descrição do que é oferecido</h2>
+          <div class="descricao-texto">
+            @for (linha of linhasDescricao(); track $index) {
+              <p>{{ linha }}</p>
+            }
+          </div>
+
+          @if (a.disponibilidades?.length) {
+            <section class="disponibilidade-anuncio" aria-labelledby="disponibilidade-titulo">
+              <h3 id="disponibilidade-titulo">Disponibilidade semanal informada</h3>
+              <ul>
+                @for (item of a.disponibilidades; track item.diaSemana + item.periodo) {
+                  <li>{{ rotuloDia(item.diaSemana) }} · {{ rotuloPeriodo(item.periodo) }}</li>
+                }
+              </ul>
+              <small>Informação declarada pelo anunciante; confirme os horários na conversa.</small>
+            </section>
+          }
+
+          <!-- SE FOR TROCA: DESTAQUE PARA HABILIDADE DESEJADA -->
+          @if (a.modalidade === 'troca' && a.habilidadeDesejada) {
+            <div class="box-troca">
+              <div class="icone-troca">
+                <app-icone nome="troca" />
+              </div>
+              <div class="info-troca">
+                <strong>O anunciante aceita em troca:</strong>
+                <p>{{ a.habilidadeDesejada }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- CONTATO SEM MENSAGEM AVULSA FORA DA CONVERSA -->
+        <div class="mensagens-card" id="secao-contato">
+          <div class="mensagens-header">
+            <app-icone nome="email" />
+            <div>
+              <h2>Converse com o anunciante</h2>
+              <p>Abra sua conversa privada para tirar dúvidas e enviar uma proposta.</p>
+            </div>
+          </div>
+
+          @if (feedbackSucesso()) {
+            <div class="alerta sucesso" role="status">
+              <app-icone nome="correto" />
+              <span>{{ feedbackSucesso() }}</span>
+            </div>
+          }
+
+          @if (feedbackErro()) {
+            <div class="alerta erro" role="alert">
+              <span>{{ feedbackErro() }}</span>
+            </div>
+          }
+
+          @if (a.exemplo) {
+            <p class="aviso-login">Anúncio ilustrativo: o contato não está disponível. Escolha uma oferta cadastrada por um profissional.</p>
+          } @else if (sessao.autenticado()) {
+            <p>Uma conversa por profissional. A mensagem e o contexto do anúncio ficam juntos no chat.</p>
+            <button mat-flat-button color="primary" type="button" (click)="entrarEmContato()" [disabled]="enviandoMensagem()">
+              <app-icone nome="email" />
+              {{ enviandoMensagem() ? 'Abrindo conversa...' : 'Abrir conversa e enviar mensagem' }}
+            </button>
+          } @else {
+            <div class="aviso-login">
+              <p>Você precisa estar conectado à sua conta para enviar uma mensagem ao anunciante.</p>
+              <a
+                mat-flat-button
+                color="primary"
+                routerLink="/conta"
+                [queryParams]="{ retorno: '/anuncios/' + a.id }"
+              >
+                Entrar ou criar conta
+              </a>
+            </div>
+          }
+        </div>
+
+        <section class="interacoes-anuncio" id="secao-comentarios" aria-labelledby="titulo-comentarios">
+          <header><div><span class="rotulo-secao">PERGUNTAS PÚBLICAS</span><h2 id="titulo-comentarios">Comentários e dúvidas</h2></div>
+            <span>{{ totalComentarios() }} comentários</span></header>
+          <p class="nota-comentarios">Comentários são públicos. Para conversar em privado com o profissional, use “Entrar em contato”.</p>
+          @if (erroInteracoes()) { <p class="erro-interacoes" role="alert">{{ erroInteracoes() }} <button type="button" (click)="recarregarInteracoes()">Tentar novamente</button></p> }
+          @if (carregandoInteracoes() && !comentarios().length) { <p role="status">Carregando comentários...</p> }
+          @else if (!comentarios().length && !a.exemplo) { <p class="vazio-interacoes">Ainda não há comentários. Faça a primeira pergunta.</p> }
+          @for (comentario of comentarios(); track comentario.id) {
+            <article class="comentario-anuncio" [class.resposta-comentario]="comentario.respostaAId">
+              <header><strong>{{ comentario.autorNome }}</strong><time [attr.datetime]="comentario.criadoEm">{{ comentario.criadoEm | date: 'dd/MM/yyyy, HH:mm' }}</time></header>
+              <p>{{ comentario.conteudo }}</p>
+              @if (comentario.podeResponder && sessao.autenticado() && !comentario.respostaAId) {
+                <button mat-button type="button" (click)="responderComentario(comentario)">Responder</button>
+              }
+              @if (comentario.podeDenunciar) {
+                <app-denunciar [tipoConteudo]="'COMENTARIO_ANUNCIO'" [recursoId]="comentario.id" />
+              }
+            </article>
+          }
+          @if (paginaComentarios() + 1 < totalPaginasComentarios()) {
+            <button mat-stroked-button type="button" (click)="carregarMaisComentarios()" [disabled]="carregandoMaisComentarios()">
+              {{ carregandoMaisComentarios() ? 'Carregando...' : 'Carregar mais comentários' }}
+            </button>
+          }
+          @if (a.exemplo) {
+            <p class="vazio-interacoes">Este anúncio ilustrativo não recebe comentários.</p>
+          } @else {
+            <form class="form-comentario" (ngSubmit)="enviarComentario()">
+              @if (respostaAId()) { <p>Respondendo ao comentário #{{ respostaAId() }} <button type="button" (click)="cancelarResposta()">Cancelar resposta</button></p> }
+              <label for="texto-comentario">{{ respostaAId() ? 'Sua resposta' : 'Escreva um comentário ou dúvida' }}</label>
+              <textarea id="texto-comentario" name="comentarioTexto" [(ngModel)]="comentarioTexto" maxlength="1000" rows="3" required></textarea>
+              <button mat-flat-button color="primary" type="submit" [disabled]="!comentarioTexto.trim() || comentarioTexto.length > 1000">{{ sessao.autenticado() ? 'Publicar comentário' : 'Entrar para comentar' }}</button>
+            </form>
+          }
+        </section>
+
+        <section class="interacoes-anuncio" id="secao-avaliacoes" aria-labelledby="titulo-avaliacoes-anuncio">
+          <header><div><span class="rotulo-secao">NEGOCIAÇÕES CONCLUÍDAS</span><h2 id="titulo-avaliacoes-anuncio">Avaliações do serviço</h2></div>
+            <span>{{ avaliacoesAnuncio().length }} avaliações</span></header>
+          @if (!avaliacoesAnuncio().length && !carregandoInteracoes() && !a.exemplo) {
+            <p class="vazio-interacoes">Este serviço ainda não recebeu avaliações verificadas.</p>
+          }
+          @for (avaliacao of avaliacoesAnuncio(); track avaliacao.id) {
+            <article class="avaliacao-anuncio">
+              <header><strong>{{ avaliacao.avaliadorNome }}</strong><time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'dd/MM/yyyy' }}</time></header>
+              <p class="nota-estrelas" [attr.aria-label]="avaliacao.notaAnuncio + ' de 5 estrelas'">{{ estrelas(avaliacao.notaAnuncio) }}</p>
+              @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
+              @if (avaliacao.respostaProfissional) { <blockquote><strong>Resposta do profissional</strong><p>{{ avaliacao.respostaProfissional }}</p></blockquote> }
+            </article>
+          }
+          @if (a.exemplo) { <p class="vazio-interacoes">Este anúncio não possui avaliações reais.</p> }
+        </section>
+      </section>
+
+      <!-- COLUNA DIREITA: PREÇO, COMPRA E DADOS DO VENDEDOR -->
+      <aside class="coluna-direita">
+        <!-- CARD DE COMPRA / PREÇO (MERCADO LIVRE STYLE) -->
+        <div class="card-compra">
+          <span class="tag-status">{{ a.exemplo ? 'Exemplo ilustrativo' : 'Anúncio ativo' }}</span>
+          <p class="titulo-anuncio">{{ a.titulo }}</p>
+
+          <div class="preco-container">
+            @if (a.modalidade === 'venda' && a.preco !== null) {
+              <div class="preco-valor">
+                <span class="moeda">R$</span>
+                <span class="valor">{{ a.preco | currency: 'BRL' : '' : '1.2-2' : 'pt-BR' }}</span>
+                @if (a.unidade) {
+                  <span class="unidade">{{ a.unidade }}</span>
+                }
+              </div>
+            } @else {
+              <div class="preco-troca-badge">
+                <app-icone nome="troca" />
+                <span>Disponível para troca</span>
+              </div>
+            }
+          </div>
+
+          <ul class="lista-garantias">
+            <li>
+              <app-icone nome="correto" />
+              <div>
+                <strong>Converse pelo SkillSwap</strong>
+                <small>Sua conversa chega diretamente ao anunciante</small>
+              </div>
+            </li>
+            <li>
+              <app-icone nome="relogio" />
+              <div>
+                <strong>Proposta registrada</strong>
+                <small>Acompanhe a resposta em Mensagens</small>
+              </div>
+            </li>
+            <li>
+              <app-icone nome="local" />
+              <div>
+                <strong>{{ a.cidade }}</strong>
+                <small>Região de atendimento</small>
+              </div>
+            </li>
+          </ul>
+
+          <div class="acoes-card">
+            <button
+              mat-flat-button
+              class="btn-cta-mensagem"
+              type="button"
+              (click)="entrarEmContato()"
+            >
+              <app-icone nome="email" /> Entrar em contato
+            </button>
+            <a mat-stroked-button class="btn-cta-catalogo" routerLink="/anuncios">
+              <app-icone nome="esquerda" /> Ver mais anúncios
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD DO PERFIL DO ANUNCIANTE -->
+        <div class="card-vendedor">
+          <h2>Informações do anunciante</h2>
+          <div class="perfil-linha">
+            @if (a.avatar) {
+              <img [src]="a.avatar" [alt]="a.autor || 'Anunciante'" class="avatar-img" />
+            } @else {
+              <div class="avatar-placeholder">
+                <app-icone nome="usuario" />
+              </div>
+            }
+            <div class="perfil-info">
+              <strong>{{ a.autor || 'Anunciante da comunidade' }}</strong>
+              <small>{{ a.cidade }}</small>
+            </div>
+          </div>
+          @if (!a.exemplo) {
+            <a mat-button color="primary" [routerLink]="['/profissionais', a.usuarioId]">
+              Ver perfil e avaliações
+            </a>
+          }
+
+          <div class="meta-vendedor">
+            <div class="meta-item">
+              <span class="meta-rotulo">Cadastrado</span>
+              <span class="meta-dado">
+                {{ a.exemplo ? 'Na vitrine' : (a.criadoEm | date: 'dd/MM/yyyy' : '' : 'pt-BR') }}
+              </span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">Modalidade</span>
+              <span class="meta-dado">
+                {{ a.modalidade === 'troca' ? 'Troca de serviços' : 'Venda' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

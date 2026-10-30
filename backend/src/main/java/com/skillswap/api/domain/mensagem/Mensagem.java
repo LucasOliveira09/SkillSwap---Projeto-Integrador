@@ -1,6 +1,9 @@
 package com.skillswap.api.domain.mensagem;
 
 import com.skillswap.api.domain.acordo.Acordo;
+import com.skillswap.api.domain.anuncio.Anuncio;
+import com.skillswap.api.domain.conversa.Conversa;
+import com.skillswap.api.domain.proposta.Proposta;
 import com.skillswap.api.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +22,20 @@ public class Mensagem {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "acordo_id", nullable = false)
+    @JoinColumn(name = "conversa_id")
+    private Conversa conversa;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "anuncio_contexto_id")
+    private Anuncio anuncioContexto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "acordo_id")
     private Acordo acordo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proposta_id")
+    private Proposta proposta;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "remetente_id", nullable = false)
