@@ -109,9 +109,15 @@ export class PublicacaoInteracoesComponent {
             const itens = atual.itens.map((item) => item.id === raiz.id
               ? { ...item, respostas: [...item.respostas, criado] }
               : item);
-            this.pagina.set({ ...atual, itens, totalItens: atual.totalItens + 1 });
+            this.pagina.set({ ...atual, itens });
           } else if (atual.pagina === 0) {
-            this.pagina.set({ ...atual, itens: [criado, ...atual.itens], totalItens: atual.totalItens + 1 });
+            const totalItens = atual.totalItens + 1;
+            this.pagina.set({
+              ...atual,
+              itens: [criado, ...atual.itens].slice(0, atual.tamanho),
+              totalItens,
+              totalPaginas: Math.ceil(totalItens / atual.tamanho),
+            });
           } else {
             this.carregar(0);
           }

@@ -10,6 +10,7 @@ O perfil começa visível publicamente por compatibilidade com contas existentes
 - Título profissional, data de criação da conta, biografia, cidade, foto, capa, especialidades e links externos opcionais quando preenchidos, somente enquanto o perfil estiver visível.
 - Resumo das avaliações recebidas e avaliações não ocultadas, incluindo resposta pública do profissional, somente enquanto o perfil estiver visível.
 - Disponibilidade para novos trabalhos, contagem agregada de seguidores e acordos concluídos, derivados dos registros no banco; a lista de seguidores não é pública.
+- Experiências e certificações declaradas pelo titular, incluindo instituição e datas informadas, somente enquanto o perfil estiver visível. Uma URL HTTPS opcional pode apontar para uma credencial externa; o SkillSwap não confere o destino nem a autenticidade do conteúdo.
 - Anúncios ativos e não demonstrativos, publicações de portfólio publicadas e imagens ligadas a esses conteúdos, enquanto o perfil estiver visível.
 
 O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, acordos, notificações nem histórico de moderação. Não há campo de telefone ou endereço preciso no perfil público.
@@ -26,4 +27,4 @@ O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, ac
 
 URLs em `/api/uploads/{hash}.{extensão}` são acessíveis sem login enquanto a imagem estiver ligada a uma foto ou capa de perfil visível, a um anúncio ativo não demonstrativo de perfil visível ou a uma publicação de portfólio visível de perfil visível. Quando o perfil é pausado ou a última referência pública é removida, a URL passa a retornar não encontrado para visitantes. Até a limpeza dos arquivos sem referência (30 dias por padrão), a conta que enviou a imagem ainda pode acessá-la autenticada para prévia ou reutilização. As respostas usam `Cache-Control: no-store` para evitar cache HTTP controlado pelo navegador/proxy. Isso não apaga cópias que visitantes já baixaram ou capturaram.
 
-O SkillSwap não verifica documentos nem garante que uma pessoa, especialidade ou avaliação represente uma qualificação profissional. As notas descritas na [política de avaliações](politica-avaliacoes.md) vêm de acordos concluídos e seguem as regras de moderação.
+O SkillSwap não verifica documentos nem garante que uma pessoa, especialidade, experiência, certificação ou avaliação represente uma qualificação profissional. Experiências e certificações são autodeclaradas, sem selo de verificação, e podem ser removidas pelo titular. As notas descritas na [política de avaliações](politica-avaliacoes.md) vêm de acordos concluídos e seguem as regras de moderação.

@@ -8,7 +8,7 @@ import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.s
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
-import { EstadoSeguindo, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
+import { CertificacaoProfissional, EstadoSeguindo, ExperienciaProfissional, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 import { Avaliacao } from '../../../negociacao/models/negociacao.model';
 import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
@@ -30,6 +30,9 @@ interface EstadoPerfil {
   paginaPublicacoes: number;
   totalPaginasPublicacoes: number;
   totalPublicacoes: number;
+  experiencias: readonly ExperienciaProfissional[];
+  certificacoes: readonly CertificacaoProfissional[];
+  erroHistorico: boolean;
   avaliacoes: readonly Avaliacao[];
   seguidores: EstadoSeguindo | null;
 }
@@ -49,6 +52,9 @@ const estadoInicial: EstadoPerfil = {
   paginaPublicacoes: 0,
   totalPaginasPublicacoes: 0,
   totalPublicacoes: 0,
+  experiencias: [],
+  certificacoes: [],
+  erroHistorico: false,
   avaliacoes: [],
   seguidores: null,
 };
@@ -105,11 +111,13 @@ export class PerfilPublicoComponent {
               ofertas: this.anunciosApi.listarDoUsuario(perfil.id, paginaOfertas).pipe(catchError(() => of(null))),
               publicacoes: this.perfilApi.publicacoes(perfil.id, pagina).pipe(catchError(() => of(null))),
               avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of(null))),
+              experiencias: this.perfilApi.experiencias(perfil.id).pipe(catchError(() => of(null))),
+              certificacoes: this.perfilApi.certificacoes(perfil.id).pipe(catchError(() => of(null))),
               seguidores: this.sessao.autenticado()
                 ? this.perfilApi.estadoSeguindo(perfil.id).pipe(catchError(() => of(null)))
                 : of(null),
             }).pipe(
-              map(({ ofertas, publicacoes, avaliacoes, seguidores }) => ({
+              map(({ ofertas, publicacoes, avaliacoes, experiencias, certificacoes, seguidores }) => ({
                 carregando: false,
                 erro: false,
                 erroOfertas: ofertas === null,
@@ -124,6 +132,9 @@ export class PerfilPublicoComponent {
                 paginaPublicacoes: publicacoes?.pagina ?? 0,
                 totalPaginasPublicacoes: publicacoes?.totalPaginas ?? 0,
                 totalPublicacoes: publicacoes?.totalItens ?? 0,
+                experiencias: experiencias ?? [],
+                certificacoes: certificacoes ?? [],
+                erroHistorico: experiencias === null || certificacoes === null,
                 avaliacoes: avaliacoes ?? [],
                 seguidores,
               })),
@@ -140,6 +151,8 @@ export class PerfilPublicoComponent {
   protected readonly perfil = computed(() => this.estado().perfil);
   protected readonly ofertas = computed(() => this.estado().ofertas);
   protected readonly publicacoes = computed(() => this.estado().publicacoes);
+  protected readonly experiencias = computed(() => this.estado().experiencias);
+  protected readonly certificacoes = computed(() => this.estado().certificacoes);
   protected readonly avaliacoes = computed(() => this.estado().avaliacoes);
   protected readonly seguidores = computed(() => this.estadoSeguindoAtual() ?? this.estado().seguidores);
   protected readonly totalSeguidores = computed(() =>

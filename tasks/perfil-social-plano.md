@@ -1,7 +1,7 @@
 # Auditoria e plano: perfis profissionais e marketplace social
 
 Data da auditoria: 30/10/2026
-Escopo inicial: auditoria do repositório e planejamento. A Etapa 1 precedeu esta implementação. A atualização de 30/10 acrescenta disponibilidade, métricas derivadas e seguir/deixar de seguir com migração aditiva V18; experiências/certificações e interações nas publicações ainda estão pendentes.
+Escopo inicial: auditoria do repositório e planejamento. A Etapa 1 precedeu esta implementação. A atualização de 30/10 acrescenta disponibilidade, métricas derivadas, seguir/deixar de seguir (V18), curtidas/comentários no portfólio (V22/V23) e experiências/certificações autodeclaradas (V24). As duas últimas fatias estão no código e aguardam validação/publicação.
 
 ## Diagnóstico atual
 
@@ -83,9 +83,9 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 ### Etapa 2 — Atributos profissionais e métricas reais
 
-**Parcialmente implementada em 30/10/2026:** disponibilidade fica em `usuarios.disponivel_trabalhos`; seguidores e trabalhos concluídos são contagens consultadas no banco, e a conclusão usa somente acordos com status `CONCLUIDO`. A edição da disponibilidade exige sessão e o perfil público apresenta os valores retornados pelo servidor. Experiências/certificações ainda precisam de CRUD próprio.
+**Implementada no código em 30/10/2026 (V24; ainda sem publicação):** disponibilidade fica em `usuarios.disponivel_trabalhos`; seguidores e trabalhos concluídos são contagens consultadas no banco, e a conclusão usa somente acordos com status `CONCLUIDO`. Experiências e certificações têm leitura pública controlada pela visibilidade do perfil e CRUD autenticado do titular, limite de 50 itens por seção e validação de datas e links HTTPS sem credenciais embutidas. O editor oferece estados de carregamento, erro e vazio, além de edição e remoção; o perfil público avisa que os dados são autodeclarados.
 
-**Decisões:** o profissional controla se aceita novos trabalhos; trabalhos contam após acordo concluído pelos dois participantes; experiências e certificados serão autodeclarados e públicos enquanto o perfil estiver visível, sem selo de verificação. Não publicar arquivos/documentos de identidade.
+**Decisões:** o profissional controla se aceita novos trabalhos; trabalhos contam após acordo concluído pelos dois participantes; experiências e certificados são autodeclarados e públicos enquanto o perfil estiver visível, sem selo de verificação. Não publicar arquivos/documentos de identidade.
 
 ### Etapa 3 — Seguir e deixar de seguir
 
@@ -97,21 +97,21 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 **Limites mantidos:** vídeos continuam fora, pois o armazenamento aceita apenas imagens e não há política de mídia/moderação para vídeo. Não há ranking, lista pública de curtidores, notificações de interação nem edição/remoção individual de comentários nesta fatia.
 
-**Verificação local:** suíte Java (95 testes), suíte Angular (128), typecheck e build passaram. As migrações V22/V23 passaram em H2; o Docker Desktop local está indisponível, então não foi feita a validação MySQL local. A publicação/VPS e o ensaio de migração isolada ainda são pendentes.
+**Verificação local em 30/10/2026:** suíte Java (97 testes), suíte Angular (131), typecheck e build passaram sem avisos de budget. H2 aplicou V22–V24; o Docker Desktop local está indisponível, então não foi feita a validação MySQL local. A publicação/VPS e o ensaio de migração isolada ainda são pendentes.
 
 ### Etapa 5 — Integração comercial e reputação
 
 Manter ofertas e conversas por anúncio existentes. Exibir avaliações somente quando válidas segundo regras do acordo concluído, considerando ocultação/moderação. Testar a relação visual anúncio → perfil → conversa e preservar o fluxo de venda/troca. Pagamentos permanecem fora do escopo e dependem de tarefa/decisão própria.
 
-## Decisões de produto ainda necessárias
+## Decisões de produto
 
-1. “Disponível para trabalhos” será uma configuração explícita do profissional ou derivada de anúncios ativos? Recomendação: configuração explícita, independente do calendário de uma oferta.
-2. O que conta como trabalho concluído: acordo com confirmação dos dois participantes (regra atual) ou outro critério?
-3. Quais dados de experiência/certificação serão públicos, e devem ser declarados pelo profissional ou verificados por evidência?
-4. **Decidido:** contagem agregada de seguidores é pública; a lista individual não é publicada.
-5. Curtidas/comentários pertencem às publicações de portfólio existentes ou a um novo feed? Recomendação: reutilizar a publicação atual e estender em etapas, preservando vínculo opcional à oferta.
-6. Vídeos são necessários já no MVP social? A stack atual só aceita imagens; especificar orçamento de armazenamento e moderação antes de incluir vídeo.
+- Disponibilidade é uma configuração explícita do titular, independente dos anúncios ativos.
+- Trabalho concluído exige confirmação dos dois participantes.
+- Experiências/certificações são autodeclaradas, sem selo de verificação; não são aceitos documentos de identidade.
+- A contagem agregada de seguidores é pública; a lista individual não é publicada.
+- Curtidas e comentários estendem as publicações de portfólio existentes.
+- Vídeo permanece fora do escopo até decisão sobre armazenamento e moderação.
 
 ## Estado
 
-Etapas 1, 3 e 4 estão implementadas no código; disponibilidade e métricas reais da Etapa 2 também estão prontas. Experiências/certificações da Etapa 2 seguem pendentes. Etapa 4 ainda precisa de validação em MySQL real e Chromium com a nova API antes de publicação. Acessibilidade manual permanece pendente. Consulte [interacoes-publicacoes-plano.md](interacoes-publicacoes-plano.md) para contrato e aceite da entrega, e [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md) para a mudança publicada de conversas/propostas.
+Etapas 1–4 estão implementadas no código, incluindo experiências/certificações e interações sociais. Validação final local concluída; falta o ensaio de V22–V24 em MySQL isolado, a inspeção visual em Chromium desta UI e a publicação. Acessibilidade manual permanece pendente. Consulte [interacoes-publicacoes-plano.md](interacoes-publicacoes-plano.md) para o contrato das interações e [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md) para a mudança publicada de conversas/propostas.

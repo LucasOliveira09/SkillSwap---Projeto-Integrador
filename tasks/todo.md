@@ -175,4 +175,9 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Reorganizar a página pública com os dados atuais, mantendo rotas e contratos existentes; cobrir navegação por seções.
 - [x] Concluir suíte completa, build/typecheck e conferência Chromium responsiva da Etapa 1: 117 testes; Chromium em 320, 390, 768 e 1440 px sem erros de página, console ou respostas HTTP com erro.
 - [x] Planejar em documento separado conversa única por par, propostas dentro do chat e seção de comentários/avaliações do anúncio sem iniciar essa migração.
-- [ ] Fechar as decisões abertas no plano de comunicação antes de implementar APIs, schema ou nova navegação do chat.
+- [x] Fechar as decisões abertas sobre comentários e propostas; a conversa canônica mantém propostas dentro do chat e os anúncios usam comentários públicos com respostas do autor/anunciante. Limite de 12 parcelas para venda e trocas sem complemento financeiro.
+- [x] Implementar V22/V23: curtidas persistidas, comentários paginados no portfólio, respostas de uma camada, autenticação de escrita e integração à denúncia/moderação.
+- [x] Implementar V24: CRUD de experiências e certificações autodeclaradas; leitura pública respeita perfil pausado, edição é exclusiva do titular, 50 registros por seção e validação de datas/URLs.
+- [x] Integrar editor responsivo de trajetória ao perfil próprio e experiência/certificações ao perfil público, sem selo de verificação; acertar contagem e paginação de comentários.
+- [x] Rodada final de build sem avisos de budget, typecheck, 131 testes Angular e 97 Java; revisão do diff concluída. Chromium desktop/mobile ainda pendente.
+- [ ] Ensaiar migrações V22–V24 em MySQL descartável, salvar commits, enviar a branch ao GitHub e promover web/API à VPS com backup, preservando banco, uploads, redes e imagens anteriores.

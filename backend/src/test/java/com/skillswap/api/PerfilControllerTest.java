@@ -64,6 +64,72 @@ class PerfilControllerTest {
     }
 
     @Test
+    void experienciaProfissionalTemCrudDoProprietarioELeituraPublica() throws Exception {
+        var corpo = """
+                {"cargo":"Designer","organizacao":"Estúdio Azul","cidade":"Florianópolis",
+                 "dataInicio":"2022-03-01","dataFim":"2024-01-31","descricao":"Projetos digitais"}
+                """;
+        var criado = mvc.perform(post("/api/experiencias").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.cargo").value("Designer"))
+                .andExpect(jsonPath("$.organizacao").value("Estúdio Azul"))
+                .andReturn();
+        long id = tools.jackson.databind.json.JsonMapper.builder().build().readTree(criado.getResponse().getContentAsString())
+                .get("id").asLong();
+
+        mvc.perform(get("/api/perfis/{id}/experiencias", usuarioId))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].descricao").value("Projetos digitais"));
+        mvc.perform(get("/api/experiencias").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(id));
+        mvc.perform(get("/api/experiencias")).andExpect(status().isUnauthorized());
+
+        var outro = usuarios.register(new RegisterDTO("Outro", "outro-experiencia@skillswap.invalid", "senha-teste-123"));
+        var tokenOutro = jwt.generateToken(outro.getEmail());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/experiencias/{id}", id)
+                        .header("Authorization", "Bearer " + tokenOutro).contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isNotFound());
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/perfis/{id}/experiencias", usuarioId)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/experiencias").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(id));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/experiencias/{id}", id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void certificacaoProfissionalValidaPeriodoUrlEAutorizacao() throws Exception {
+        var corpo = """
+                {"nome":"Angular avançado","emissor":"Escola Skill","dataEmissao":"2023-04-12",
+                 "dataValidade":"2025-04-12","urlCredencial":"https://certificados.example/abc"}
+                """;
+        var criado = mvc.perform(post("/api/certificacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.urlCredencial").value("https://certificados.example/abc"))
+                .andReturn();
+        long id = tools.jackson.databind.json.JsonMapper.builder().build().readTree(criado.getResponse().getContentAsString())
+                .get("id").asLong();
+        mvc.perform(get("/api/perfis/{id}/certificacoes", usuarioId))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].nome").value("Angular avançado"))
+                .andExpect(jsonPath("$[0].email").doesNotExist()).andExpect(jsonPath("$[0].verificada").doesNotExist());
+        mvc.perform(post("/api/certificacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Inválida\",\"emissor\":\"Instituição\",\"dataEmissao\":\"2023-04-12\",\"urlCredencial\":\"http://example.com\"}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/certificacoes/{id}", id)
+                        .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Inválida\",\"emissor\":\"Instituição\",\"dataEmissao\":\"2023-04-12\",\"dataValidade\":\"2022-01-01\"}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/certificacoes/{id}", id)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     void perfilPublicoExpoeDisponibilidadeEMetricasReais() throws Exception {
         mvc.perform(get("/api/perfis/{id}", usuarioId))
                 .andExpect(status().isOk())

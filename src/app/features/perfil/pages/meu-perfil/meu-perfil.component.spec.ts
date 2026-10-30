@@ -16,6 +16,11 @@ describe('MeuPerfilComponent', () => {
 
   afterEach(() => http.verify());
 
+  function flushHistorico(): void {
+    http.expectOne('/api/experiencias').flush([]);
+    http.expectOne('/api/certificacoes').flush([]);
+  }
+
   it('carrega e salva os dados do próprio perfil', async () => {
     TestBed.inject(SessaoService).entrar('ana@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
@@ -43,6 +48,7 @@ describe('MeuPerfilComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();
+    flushHistorico();
 
     const raiz = harness.routeNativeElement!;
     const componente = harness.routeDebugElement!.componentInstance as unknown as {
@@ -108,6 +114,7 @@ describe('MeuPerfilComponent', () => {
       pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
     });
     harness.detectChanges();
+    flushHistorico();
 
     const fotoPortfolio = harness.routeNativeElement!.querySelector('.publicacoes-proprias .miniaturas img');
     expect(fotoPortfolio?.getAttribute('alt')).toBe('Foto 1 do trabalho de Ana Profissional');
@@ -172,6 +179,7 @@ describe('MeuPerfilComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();
+    flushHistorico();
 
     const componente = harness.routeDebugElement!.componentInstance as unknown as {
       arquivoFoto: File | null;
@@ -268,6 +276,7 @@ describe('MeuPerfilComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     harness.detectChanges();
+    flushHistorico();
 
     const raiz = harness.routeNativeElement!;
     const entrada = raiz.querySelector<HTMLInputElement>('input[type="file"][multiple]')!;

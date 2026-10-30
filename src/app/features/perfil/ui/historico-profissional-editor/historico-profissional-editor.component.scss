@@ -1,0 +1,38 @@
+:host { display: block; }
+
+.editor-historico {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #e6edf5;
+  border-radius: 1rem;
+  background: #fff;
+  color: #25364a;
+}
+
+header h2, .bloco-editor h3 { margin: .15rem 0 .6rem; color: #183b63; }
+header p:last-child { margin: 0; color: #617186; line-height: 1.55; }
+.sobretitulo { margin: 0; color: #4b7d25; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.bloco-editor { display: grid; gap: 1rem; padding-top: 1.25rem; border-top: 1px solid #e6edf5; }
+.bloco-editor form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+label { display: grid; gap: .35rem; color: #41546b; font-size: .9rem; font-weight: 600; }
+input, textarea { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid #cbd6e3; border-radius: .5rem; padding: .7rem .75rem; color: #25364a; font: inherit; background: #fff; }
+input:focus, textarea:focus { outline: 2px solid #255188; outline-offset: 1px; }
+.campo-largo, .acoes-formulario { grid-column: 1 / -1; }
+.acoes-formulario, .acoes-item { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.lista-historico { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
+.lista-historico li { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem; border: 1px solid #e6edf5; border-radius: .75rem; }
+.lista-historico h4 { margin: 0 0 .3rem; color: #183b63; }
+.lista-historico p { margin: .25rem 0; line-height: 1.5; white-space: pre-wrap; }
+.lista-historico time { color: #617186; font-size: .9rem; }
+.lista-historico a { display: inline-block; margin-top: .5rem; color: #255188; }
+.vazio, .feedback { margin: 0; color: #617186; }
+.erro { color: #a32332; }
+
+@media (max-width: 600px) {
+  .editor-historico { padding: 1rem; }
+  .bloco-editor form { grid-template-columns: 1fr; }
+  .campo-largo, .acoes-formulario { grid-column: auto; }
+  .lista-historico li { flex-direction: column; }
+  .acoes-item { justify-content: flex-start; }
+}

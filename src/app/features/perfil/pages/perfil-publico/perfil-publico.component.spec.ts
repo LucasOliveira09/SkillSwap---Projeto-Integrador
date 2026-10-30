@@ -16,6 +16,11 @@ describe('PerfilPublicoComponent', () => {
 
   afterEach(() => http.verify());
 
+  function flushHistorico(experiencias: readonly unknown[] = [], certificacoes: readonly unknown[] = []): void {
+    http.expectOne('/api/perfis/12/experiencias').flush(experiencias);
+    http.expectOne('/api/perfis/12/certificacoes').flush(certificacoes);
+  }
+
   it('persiste seguir e deixar de seguir com a contagem devolvida pela API', async () => {
     TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
@@ -31,6 +36,7 @@ describe('PerfilPublicoComponent', () => {
     http.expectOne((request) => request.url === '/api/perfis/12/publicacoes')
       .flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.textContent).toContain('Disponível para trabalhos');
@@ -71,6 +77,7 @@ describe('PerfilPublicoComponent', () => {
       pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     harness.detectChanges();
 
     const botao = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.botao-curtida')!;
@@ -177,6 +184,11 @@ describe('PerfilPublicoComponent', () => {
       respostaProfissional: 'Agradeço a confiança.',
       respondidaEm: '2026-10-04T10:00:00',
     }]);
+    flushHistorico([
+      { id: 31, cargo: 'Designer', organizacao: 'Estúdio', cidade: null, dataInicio: '2022-01-01', dataFim: null, descricao: null },
+    ], [
+      { id: 42, nome: 'UX', emissor: 'Escola', dataEmissao: '2024-05-01', dataValidade: null, urlCredencial: null },
+    ]);
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.querySelector('.capa-perfil img')?.getAttribute('src'))
@@ -211,6 +223,9 @@ describe('PerfilPublicoComponent', () => {
     expect(texto).toContain('Serviço pontual e bem executado.');
     expect(texto).toContain('Agradeço a confiança.');
     expect(texto).toContain('Links profissionais');
+    expect(texto).toContain('Designer');
+    expect(texto).toContain('UX');
+    expect(texto).toContain('não verificadas pelo SkillSwap');
     expect(texto).toContain('Serviço:');
     expect(texto).not.toContain('ana@');
 
@@ -248,6 +263,8 @@ describe('PerfilPublicoComponent', () => {
       .flush({}, { status: 503, statusText: 'Service Unavailable' });
     http.expectOne('/api/usuarios/12/avaliacoes')
       .flush({}, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/perfis/12/experiencias').flush([], { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/perfis/12/certificacoes').flush([], { status: 503, statusText: 'Service Unavailable' });
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Ana Profissional');
@@ -272,6 +289,7 @@ describe('PerfilPublicoComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     await harness.fixture.whenStable();
     harness.detectChanges();
 
@@ -303,6 +321,7 @@ describe('PerfilPublicoComponent', () => {
       pagina: 0, tamanho: 12, totalItens: 13, totalPaginas: 2,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     harness.detectChanges();
 
     Array.from(harness.routeNativeElement!.querySelectorAll('button'))
@@ -322,6 +341,7 @@ describe('PerfilPublicoComponent', () => {
       pagina: 1, tamanho: 12, totalItens: 13, totalPaginas: 2,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     await harness.fixture.whenStable();
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Décima terceira publicação');
@@ -350,6 +370,7 @@ describe('PerfilPublicoComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('7 serviços ativos');
 
@@ -365,6 +386,7 @@ describe('PerfilPublicoComponent', () => {
       itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
     await harness.fixture.whenStable();
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Página 2 de 2');

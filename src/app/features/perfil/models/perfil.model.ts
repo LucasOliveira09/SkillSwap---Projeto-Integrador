@@ -25,6 +25,25 @@ export interface EstadoSeguindo {
   totalSeguidores: number;
 }
 
+export interface ExperienciaProfissional {
+  id: number;
+  cargo: string;
+  organizacao: string;
+  cidade: string | null;
+  dataInicio: string;
+  dataFim: string | null;
+  descricao: string | null;
+}
+
+export interface CertificacaoProfissional {
+  id: number;
+  nome: string;
+  emissor: string;
+  dataEmissao: string;
+  dataValidade: string | null;
+  urlCredencial: string | null;
+}
+
 export interface ResumoOfertaProfissional {
   profissionalId: number;
   categoria: string;

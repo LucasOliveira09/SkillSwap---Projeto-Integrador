@@ -13,7 +13,6 @@
   <button mat-button type="button" class="alternar-comentarios" [attr.aria-expanded]="aberta()"
     [attr.aria-controls]="'comentarios-publicacao-' + publicacao().id" (click)="alternar()">
     {{ aberta() ? 'Ocultar comentários' : 'Ver comentários' }}
-    @if (pagina(); as dados) { <span>({{ dados.totalItens }})</span> }
   </button>
 
   @if (aberta()) {

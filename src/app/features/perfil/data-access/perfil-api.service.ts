@@ -2,8 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AtualizacaoPerfil,
+  CertificacaoProfissional,
   CurtidaPublicacao,
   ComentarioPublicacao,
+  ExperienciaProfissional,
   PaginaComentariosPublicacao,
   EstadoSeguindo,
   FiltrosBuscaProfissionais,
@@ -94,6 +96,46 @@ export class PerfilApiService {
       `/api/perfis/${encodeURIComponent(id)}/publicacoes`,
       { params: { pagina, tamanho: 12 } },
     );
+  }
+
+  experiencias(id: number | string) {
+    return this.http.get<readonly ExperienciaProfissional[]>(`/api/perfis/${encodeURIComponent(id)}/experiencias`);
+  }
+
+  minhasExperiencias() {
+    return this.http.get<readonly ExperienciaProfissional[]>('/api/experiencias');
+  }
+
+  criarExperiencia(dados: Omit<ExperienciaProfissional, 'id'>) {
+    return this.http.post<ExperienciaProfissional>('/api/experiencias', dados);
+  }
+
+  atualizarExperiencia(id: number, dados: Omit<ExperienciaProfissional, 'id'>) {
+    return this.http.put<ExperienciaProfissional>(`/api/experiencias/${id}`, dados);
+  }
+
+  excluirExperiencia(id: number) {
+    return this.http.delete<void>(`/api/experiencias/${id}`);
+  }
+
+  certificacoes(id: number | string) {
+    return this.http.get<readonly CertificacaoProfissional[]>(`/api/perfis/${encodeURIComponent(id)}/certificacoes`);
+  }
+
+  minhasCertificacoes() {
+    return this.http.get<readonly CertificacaoProfissional[]>('/api/certificacoes');
+  }
+
+  criarCertificacao(dados: Omit<CertificacaoProfissional, 'id'>) {
+    return this.http.post<CertificacaoProfissional>('/api/certificacoes', dados);
+  }
+
+  atualizarCertificacao(id: number, dados: Omit<CertificacaoProfissional, 'id'>) {
+    return this.http.put<CertificacaoProfissional>(`/api/certificacoes/${id}`, dados);
+  }
+
+  excluirCertificacao(id: number) {
+    return this.http.delete<void>(`/api/certificacoes/${id}`);
   }
 
   minhasPublicacoes(pagina = 0) {

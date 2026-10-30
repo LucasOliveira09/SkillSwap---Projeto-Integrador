@@ -38,6 +38,46 @@ describe('PerfilApiService', () => {
     });
   });
 
+  it('mantém a trajetória profissional em recursos próprios e públicos separados', () => {
+    const experiencia = { cargo: 'Designer', organizacao: 'Estúdio', cidade: null,
+      dataInicio: '2022-01-01', dataFim: null, descricao: null };
+    api.experiencias(12).subscribe(itens => expect(itens[0].cargo).toBe('Designer'));
+    http.expectOne('/api/perfis/12/experiencias').flush([{ id: 5, ...experiencia }]);
+    api.minhasExperiencias().subscribe();
+    http.expectOne('/api/experiencias').flush([]);
+    api.criarExperiencia(experiencia).subscribe();
+    const criarExperiencia = http.expectOne('/api/experiencias');
+    expect(criarExperiencia.request.method).toBe('POST');
+    criarExperiencia.flush({ id: 5, ...experiencia });
+    api.atualizarExperiencia(5, experiencia).subscribe();
+    const atualizarExperiencia = http.expectOne('/api/experiencias/5');
+    expect(atualizarExperiencia.request.method).toBe('PUT');
+    atualizarExperiencia.flush({ id: 5, ...experiencia });
+
+    const certificacao = { nome: 'UX', emissor: 'Escola', dataEmissao: '2023-01-01',
+      dataValidade: null, urlCredencial: null };
+    api.certificacoes(12).subscribe();
+    http.expectOne('/api/perfis/12/certificacoes').flush([{ id: 8, ...certificacao }]);
+    api.minhasCertificacoes().subscribe();
+    http.expectOne('/api/certificacoes').flush([]);
+    api.criarCertificacao(certificacao).subscribe();
+    const criarCertificacao = http.expectOne('/api/certificacoes');
+    expect(criarCertificacao.request.method).toBe('POST');
+    criarCertificacao.flush({ id: 8, ...certificacao });
+    api.atualizarCertificacao(8, certificacao).subscribe();
+    const atualizarCertificacao = http.expectOne('/api/certificacoes/8');
+    expect(atualizarCertificacao.request.method).toBe('PUT');
+    atualizarCertificacao.flush({ id: 8, ...certificacao });
+    api.excluirExperiencia(5).subscribe();
+    const excluirExperiencia = http.expectOne('/api/experiencias/5');
+    expect(excluirExperiencia.request.method).toBe('DELETE');
+    excluirExperiencia.flush(null);
+    api.excluirCertificacao(8).subscribe();
+    const excluirCertificacao = http.expectOne('/api/certificacoes/8');
+    expect(excluirCertificacao.request.method).toBe('DELETE');
+    excluirCertificacao.flush(null);
+  });
+
   it('consulta o uso de armazenamento da conta autenticada', () => {
     api.usoArmazenamento().subscribe((uso) => {
       expect(uso.usoBytes).toBe(4096);

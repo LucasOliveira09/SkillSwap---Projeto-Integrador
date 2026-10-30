@@ -9,6 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
+import { HistoricoProfissionalEditorComponent } from '../../ui/historico-profissional-editor/historico-profissional-editor.component';
 import { AtualizacaoPerfil, PerfilProfissional, PublicacaoPortfolio, UsoArmazenamento } from '../../models/perfil.model';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
@@ -30,7 +31,8 @@ const formularioVazio: AtualizacaoPerfil = {
 @Component({
   selector: 'app-meu-perfil',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, RouterLink, DatePipe, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
+    HistoricoProfissionalEditorComponent],
   templateUrl: './meu-perfil.component.html',
   styleUrl: './meu-perfil.component.scss',
 })

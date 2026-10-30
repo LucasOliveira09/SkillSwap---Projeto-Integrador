@@ -35,6 +35,8 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
 | GET | `/perfis/{id}/publicacoes?pagina=0&tamanho=12` | Publicações públicas de portfólio, com até 20 itens por página e fotos em ordem. |
+| GET | `/perfis/{id}/experiencias` | Histórico profissional público do perfil visível, ordenado pela data de início; perfil pausado responde 404. Informações são autodeclaradas. |
+| GET | `/perfis/{id}/certificacoes` | Certificações públicas do perfil visível, ordenadas pela data de emissão; sem selo de verificação. |
 | GET | `/profissionais?busca=&cidade=&notaMinima=&categoria=&modalidade=&precoMinimo=&precoMaximo=&pagina=0&tamanho=12` | Perfis visíveis com título ou especialidades preenchidos; filtra nome/título/especialidades, cidade, média mínima e ofertas correspondentes. Quando categoria, modalidade ou preço são informados, exige anúncio público ativo e não demonstrativo compatível. O filtro de nota só considera perfis com pelo menos três avaliações visíveis; faixa inválida ou modalidade desconhecida responde 400. A resposta inclui `resumoOfertas` por categoria/modalidade com quantidade e menor/maior preço reais, sem alterar a ordenação por correspondência do perfil. |
 | GET | `/perfil` | Exige JWT e devolve o perfil da conta autenticada. |
 | PATCH | `/perfil` | Exige JWT; altera nome público, título profissional, biografia, cidade, especialidades, links HTTPS e `perfilPublico` após validar o DTO. Perfil pausado retorna 404 nas rotas públicas e sai da busca; anúncios, portfólio, avaliações e imagens ligadas também deixam de ser públicos. |
@@ -50,6 +52,18 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | PATCH | `/publicacoes/{id}` | Exige o autor; altera a legenda (até 500 caracteres) e devolve a publicação atualizada, preservando suas fotos e vínculo. |
 | GET | `/publicacoes/{id}` | Consulta uma publicação pública de portfólio pelo identificador. |
 | DELETE | `/publicacoes/{id}` | Exige JWT e autoria; remove a publicação e suas referências de foto, responde 204. Arquivos não são apagados. |
+| PUT | `/publicacoes/{id}/curtida` | Exige JWT; registra uma curtida idempotente e retorna contagem real e estado do titular. |
+| DELETE | `/publicacoes/{id}/curtida` | Exige JWT; remove a curtida idempotentemente. |
+| GET | `/publicacoes/{id}/comentarios?pagina=0&tamanho=10` | Comentários públicos paginados por tópicos raiz; respostas de uma camada vêm no tópico. Perfil/publicação ocultos respondem 404. |
+| POST | `/publicacoes/{id}/comentarios` | Exige JWT; texto de até 1.000 caracteres. O autor do tópico ou dono da publicação pode responder uma vez. Denúncia/moderação usa os recursos de denúncias existentes. |
+| GET | `/experiencias` | Exige JWT; lista as experiências da conta, inclusive se o perfil estiver pausado. |
+| POST | `/experiencias` | Exige JWT; cria experiência e retorna 201 + Location. Máximo 50 por conta; data final opcional e não anterior à inicial. |
+| PUT | `/experiencias/{id}` | Exige JWT e autoria; substitui os campos da experiência. |
+| DELETE | `/experiencias/{id}` | Exige JWT e autoria; remove a experiência, 204. |
+| GET | `/certificacoes` | Exige JWT; lista as certificações da conta, inclusive se o perfil estiver pausado. |
+| POST | `/certificacoes` | Exige JWT; cria certificação autodeclarada e retorna 201 + Location. Máximo 50 por conta; datas validadas e link opcional exige HTTPS sem usuário/senha embutidos. |
+| PUT | `/certificacoes/{id}` | Exige JWT e autoria; substitui os campos da certificação. |
+| DELETE | `/certificacoes/{id}` | Exige JWT e autoria; remove a certificação, 204. |
 
 ### Negociação, conversa e reputação
 
