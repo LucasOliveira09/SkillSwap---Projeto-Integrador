@@ -59,4 +59,22 @@ describe('AnuncioCardComponent', () => {
     expect(link.textContent).toContain('Esportes');
     expect(link.textContent).toContain('Exemplo');
   });
+
+  it('mostra um estado sem foto quando a imagem do anúncio não carrega', () => {
+    const fixture = TestBed.createComponent(AnuncioCardComponent);
+    fixture.componentRef.setInput('anuncio', {
+      id: '1', titulo: 'Aula de violão', categoria: 'Aulas e instrução', filtros: [],
+      preco: 80, unidade: 'hora', trocaPor: '', detalhes: [], autor: 'Ana', autorId: 7,
+      estrelas: null, quando: 'Hoje', cidade: 'Florianópolis / SC', exemplo: false,
+      imagem: '/api/uploads/foto-ausente.png',
+    });
+    fixture.detectChanges();
+
+    const imagem = fixture.nativeElement.querySelector('.foto img') as HTMLImageElement;
+    imagem.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.foto img')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.sem-foto')?.textContent).toContain('Imagem indisponível');
+  });
 });

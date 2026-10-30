@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -14,6 +14,16 @@ import { CartaoAnuncio } from '../vitrine.model';
 })
 export class AnuncioCardComponent {
   readonly anuncio = input.required<CartaoAnuncio>();
+  private readonly imagemQueFalhou = signal<string | null>(null);
+  protected readonly imagemDisponivel = computed(() => {
+    const imagem = this.anuncio().imagem;
+    return imagem && imagem !== this.imagemQueFalhou() ? imagem : null;
+  });
+
+  protected marcarImagemIndisponivel(): void {
+    this.imagemQueFalhou.set(this.imagemDisponivel());
+  }
+
   protected estrelas(quantidade: number): string {
     return '★'.repeat(quantidade) + '☆'.repeat(5 - quantidade);
   }

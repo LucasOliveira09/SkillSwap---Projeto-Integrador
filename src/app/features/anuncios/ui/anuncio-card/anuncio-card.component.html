@@ -3,14 +3,14 @@
     [routerLink]="['/anuncios', anuncio().id]"
     class="foto-link"
   >
-    @if (!anuncio().imagem) {
+    @if (!imagemDisponivel()) {
       <span class="sr-only">Ver detalhes de {{ anuncio().titulo }}</span>
     }
     <div class="foto">
-      @if (anuncio().imagem) {
-        <img [src]="anuncio().imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" />
+      @if (imagemDisponivel(); as imagem) {
+        <img [src]="imagem" [alt]="anuncio().titulo" loading="eager" decoding="async" (error)="marcarImagemIndisponivel()" />
       } @else {
-        <div class="sem-foto"><app-icone nome="troca" /><span>Seu anúncio</span></div>
+        <div class="sem-foto"><app-icone nome="troca" /><span>{{ anuncio().imagem ? 'Imagem indisponível' : 'Seu anúncio' }}</span></div>
       }
       <span class="categoria">{{ anuncio().categoria }}</span>
       <span class="origem">{{ anuncio().exemplo ? 'Exemplo' : 'Cadastrado' }}</span>

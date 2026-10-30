@@ -52,6 +52,7 @@ export class DetalheAnuncioComponent {
   protected readonly sessao = inject(SessaoService);
 
   protected readonly fotoSelecionada = signal<string | null>(null);
+  private readonly fotoQueFalhou = signal<string | null>(null);
   protected readonly enviandoMensagem = signal(false);
   protected readonly feedbackSucesso = signal<string | null>(null);
   protected readonly feedbackErro = signal<string | null>(null);
@@ -89,7 +90,12 @@ export class DetalheAnuncioComponent {
 
   protected readonly anuncio = computed(() => this.estado().anuncio);
   protected readonly fotoPrincipal = computed(() => {
-    return this.fotoSelecionada() || this.anuncio()?.imagem || null;
+    const foto = this.fotoSelecionada() || this.anuncio()?.imagem || null;
+    return foto && foto !== this.fotoQueFalhou() ? foto : null;
+  });
+  protected readonly fotoIndisponivel = computed(() => {
+    const foto = this.fotoSelecionada() || this.anuncio()?.imagem || null;
+    return Boolean(foto && foto === this.fotoQueFalhou());
   });
   private readonly carregarInteracoesPorAnuncio = effect(() => {
     const anuncio = this.anuncio();
@@ -105,6 +111,10 @@ export class DetalheAnuncioComponent {
 
   protected selecionarFoto(url: string | null): void {
     this.fotoSelecionada.set(url);
+  }
+
+  protected marcarFotoIndisponivel(url: string | null): void {
+    if (url) this.fotoQueFalhou.set(url);
   }
 
   protected estrelas(quantidade: number | null): string {

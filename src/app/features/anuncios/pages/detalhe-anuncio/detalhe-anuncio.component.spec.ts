@@ -87,6 +87,21 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     expect(img.src).toContain('aula-futebol.jpg');
   });
 
+  it('substitui por estado sem foto quando a imagem da galeria falha', async () => {
+    const harness = await RouterTestingHarness.create('/anuncios/1');
+    http.expectOne('/api/anuncios/1').flush(mockAnuncio);
+    harness.detectChanges();
+    responderInteracoes(1);
+
+    const imagem = harness.routeNativeElement?.querySelector('.imagem-destaque') as HTMLImageElement;
+    imagem.dispatchEvent(new Event('error'));
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelector('.imagem-destaque')).toBeNull();
+    expect(harness.routeNativeElement?.querySelector('.sem-imagem')?.textContent).toContain('indisponível');
+    expect(harness.routeNativeElement?.querySelector('.miniaturas-barra')).toBeNull();
+  });
+
   it('exibe modalidade de troca e habilidade desejada quando for troca', async () => {
     const harness = await RouterTestingHarness.create('/anuncios/2');
     http.expectOne('/api/anuncios/2').flush({

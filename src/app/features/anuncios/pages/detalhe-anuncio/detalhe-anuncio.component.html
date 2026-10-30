@@ -52,11 +52,12 @@
                 [alt]="a.titulo"
                 class="imagem-destaque"
                 loading="eager"
+                (error)="marcarFotoIndisponivel(fotoPrincipal())"
               />
             } @else {
               <div class="sem-imagem">
                 <app-icone nome="troca" />
-                <span>Foto ilustrativa não fornecida</span>
+                <span>{{ fotoIndisponivel() ? 'Imagem indisponível' : 'Foto ilustrativa não fornecida' }}</span>
               </div>
             }
 
@@ -67,7 +68,7 @@
           </div>
 
           <!-- MINIATURAS SE HOUVER IMAGEM -->
-          @if (a.imagem) {
+          @if (a.imagem && fotoPrincipal()) {
             <div class="miniaturas-barra">
               <button
                 type="button"
@@ -75,7 +76,7 @@
                 [attr.aria-label]="'Foto principal de ' + a.titulo"
                 (click)="selecionarFoto(a.imagem)"
               >
-                <img [src]="a.imagem" [alt]="a.titulo" />
+                <img [src]="a.imagem" [alt]="a.titulo" (error)="marcarFotoIndisponivel(a.imagem)" />
               </button>
             </div>
           }
