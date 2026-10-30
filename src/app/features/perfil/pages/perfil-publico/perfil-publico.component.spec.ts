@@ -76,8 +76,27 @@ describe('PerfilPublicoComponent', () => {
     flushHistorico();
     harness.detectChanges();
 
-    expect(harness.routeNativeElement?.querySelector('.acoes-perfil button')).toBeNull();
+    expect(harness.routeNativeElement?.textContent).not.toContain('Conversar');
+    expect(harness.routeNativeElement?.textContent).toContain('Compartilhar perfil');
     expect(harness.routeNativeElement?.textContent).toContain('Ver serviços disponíveis');
+
+    const copiar = jasmine.createSpy('writeText').and.rejectWith(new Error('indisponível'));
+    spyOnProperty(navigator, 'clipboard', 'get').and.returnValue({ writeText: copiar } as unknown as Clipboard);
+    const compartilhar = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((botao) => botao.textContent?.includes('Compartilhar perfil')) as HTMLButtonElement;
+    compartilhar.click();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(copiar).toHaveBeenCalledWith(`${window.location.origin}/profissionais/12`);
+    expect(harness.routeNativeElement?.querySelector<HTMLInputElement>('#link-perfil')?.value)
+      .toBe(`${window.location.origin}/profissionais/12`);
+
+    copiar.and.resolveTo();
+    compartilhar.click();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Link do perfil copiado.');
+    expect(harness.routeNativeElement?.querySelector('#link-perfil')).toBeNull();
   });
 
   it('atualiza a curtida do portfólio somente após a confirmação da API', async () => {

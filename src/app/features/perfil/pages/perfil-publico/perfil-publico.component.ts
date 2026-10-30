@@ -79,6 +79,8 @@ export class PerfilPublicoComponent {
   protected readonly alterandoSeguimento = signal(false);
   protected readonly abrindoConversa = signal(false);
   protected readonly erroSeguimento = signal('');
+  protected readonly mensagemCompartilhamento = signal('');
+  protected readonly linkCompartilhamento = signal('');
 
   protected readonly estado = toSignal(
     combineLatest([
@@ -179,6 +181,21 @@ export class PerfilPublicoComponent {
         this.alterandoSeguimento.set(false);
       },
     });
+  }
+
+  protected async compartilharPerfil(): Promise<void> {
+    const perfil = this.perfil();
+    if (!perfil) return;
+    const link = new URL(this.router.serializeUrl(this.router.createUrlTree(['/profissionais', perfil.id])), window.location.origin).href;
+    this.linkCompartilhamento.set('');
+    try {
+      if (!navigator.clipboard) throw new Error('Área de transferência indisponível');
+      await navigator.clipboard.writeText(link);
+      this.mensagemCompartilhamento.set('Link do perfil copiado.');
+    } catch {
+      this.linkCompartilhamento.set(link);
+      this.mensagemCompartilhamento.set('Copie o link do perfil abaixo.');
+    }
   }
 
   protected iniciarConversa(): void {

@@ -91,6 +91,14 @@
             Ver serviços disponíveis
           </a>
           <a mat-button [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Ler avaliações</a>
+          <button mat-button type="button" (click)="compartilharPerfil()">Compartilhar perfil</button>
+          @if (mensagemCompartilhamento()) {
+            <p role="status">{{ mensagemCompartilhamento() }}</p>
+          }
+          @if (linkCompartilhamento()) {
+            <label for="link-perfil">Link do perfil</label>
+            <input id="link-perfil" type="text" size="12" readonly [value]="linkCompartilhamento()" (focus)="$any($event.target).select()" />
+          }
           @if (!seguidores()?.proprioPerfil) {
             <p>Você terá uma conversa privada única com este profissional. O anúncio de origem fica registrado em cada mensagem.</p>
           }
