@@ -314,7 +314,7 @@ A revisão final `2baa562` remove duplicações entre conversa carregada por lin
 
 ## Evolução social dos perfis — auditoria e planejamento (30/10/2026)
 
-A auditoria da página pública, editor, contratos REST, permissões, entidades e migrações está registrada em [perfil-social-plano.md](perfil-social-plano.md). A página atual já integra identidade, capa/foto, especialidades, reputação, portfólio fotográfico, ofertas e estados de erro/vazio com dados persistidos. Seguidores, disponibilidade global, experiências/certificações, vídeo, curtidas/comentários e contagem de trabalhos no perfil ainda não possuem contrato implementado. A proposta divide o trabalho em fatias e começa somente pela evolução visual/arquitetural da página com os dados atuais. Nenhuma implementação ou deploy foi iniciado; revisar o plano e decidir as questões de produto antes da Etapa 1.
+A Etapa 1 da auditoria em [perfil-social-plano.md](perfil-social-plano.md) foi implementada: perfil público reorganizado com identidade, reputação e contagens reais, navegação para Sobre/Portfólio/Serviços/Avaliações e acesso às ofertas, sem campos fictícios ou endpoints. Typecheck, build e 117 testes passaram; Chromium foi conferido em 320, 390, 768 e 1440 px sem erros de página, console ou respostas HTTP com erro. Seguidores, disponibilidade global, experiências/certificações, vídeo, curtidas/comentários e contagem de trabalhos no perfil continuam sem contrato. O plano solicitado para conversa única por pessoa, propostas no chat, contato a partir do anúncio e comentários está em [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md); ainda não implementado. Não houve deploy.
 
 ## Entrega de mensagens e contexto do anúncio (28/10/2026)
 

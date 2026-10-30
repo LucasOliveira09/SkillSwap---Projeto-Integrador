@@ -172,5 +172,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Auditar a página pública e editor de perfil, contratos REST, autorização, entidades e migrações existentes sem alterar aplicação ou banco.
 - [x] Registrar proposta incremental, arquivos prováveis, riscos, critérios de aceite e decisões de produto em [perfil-social-plano.md](perfil-social-plano.md).
-- [ ] Revisar as decisões de produto e aprovar a Etapa 1 antes de iniciar alterações na página pública.
-- [ ] Executar Etapa 1 com dados atuais, testes, build, navegador e responsividade; não antecipar etapas sociais ou migrações.
+- [x] Reorganizar a página pública com os dados atuais, mantendo rotas e contratos existentes; cobrir navegação por seções.
+- [x] Concluir suíte completa, build/typecheck e conferência Chromium responsiva da Etapa 1: 117 testes; Chromium em 320, 390, 768 e 1440 px sem erros de página, console ou respostas HTTP com erro.
+- [x] Planejar em documento separado conversa única por par, propostas dentro do chat e seção de comentários/avaliações do anúncio sem iniciar essa migração.
+- [ ] Fechar as decisões abertas no plano de comunicação antes de implementar APIs, schema ou nova navegação do chat.
