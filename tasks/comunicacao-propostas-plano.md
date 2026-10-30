@@ -1,7 +1,7 @@
 # Plano: conversas por pessoa, propostas no chat e comentários do anúncio
 
 Data: 30/10/2026
-Estado: regras de produto aprovadas pelo usuário; implementação ainda não iniciada. Comentários têm leitura pública e escrita autenticada; autor e anunciante podem responder. Propostas permitem até 12 parcelas e trocas sem complemento em dinheiro. O restante do contrato continua conforme as etapas abaixo.
+Estado: implementação concluída e suítes locais aprovadas. Os backups do banco e dos uploads foram validados; uma cópia isolada da base pública (MySQL 8.0.46, V17) foi restaurada para ensaio. Falta iniciar nela a API candidata, verificar preservação e publicar a versão autorizada.
 
 ## Objetivo confirmado
 
@@ -66,7 +66,7 @@ Revisar os nomes do contrato com as convenções REST do projeto antes de fixá-
 
 - A área “Comentários e avaliações” separa perguntas/comentários públicos de avaliações verificadas. Comentários não recebem estrelas nem selo de contratação; avaliações seguem o fluxo atual e continuam disponíveis só após acordo concluído.
 - A média de avaliação do anúncio continua baseada em `notaAnuncio` visível de trabalhos concluídos e não inclui comentários.
-- Comentários têm leitura pública, autoria autenticada, até 2.000 caracteres, paginação e moderação. Autor e dono do anúncio podem responder. Aplicar denúncia e controles antiabuso existentes.
+- Comentários têm leitura pública, autoria autenticada, até 1.000 caracteres, paginação e moderação. Autor e dono do anúncio podem responder. Aplicar denúncia e controles antiabuso existentes.
 - A transição deve preservar o resumo atual de avaliação no anúncio e não criar comentários/avaliações sintéticos.
 
 ## Migração e compatibilidade histórica
@@ -128,3 +128,16 @@ Definir regra de publicação/moderação e contrato; criar migração/API/teste
 6. **Decidido:** comentários públicos, escrita autenticada e respostas do autor ou anunciante, com denúncia/moderação.
 7. **Decidido:** visitantes podem ler comentários; somente pessoas autenticadas podem publicar.
 8. Rollout do banco público dependerá de solicitação e ensaio com cópia/rollback; esta tarefa não concede autorização para deploy.
+
+## Estado de implementação (30/10/2026)
+
+- **V19 — conversas canônicas:** migration aditiva cria uma conversa por par, associa o histórico de propostas/mensagens e mantém rotas legadas resolvíveis. Serviços/lista e DTOs usam o ID canônico.
+- **Contato:** o anúncio abre/reutiliza o chat sem enviar texto fora dele; o chat começa com o anúncio de origem e cada mensagem enviada recebe contexto. O perfil público abre o mesmo chat sem anúncio inicial.
+- **V20 — termos de proposta:** campos persistidos para serviço, escopo, forma de pagamento, valor, parcelas, duração e validade. `POST /api/conversas/{id}/propostas` cria a proposta, grava uma mensagem com referência e exige que o anúncio ativo pertença ao outro participante. Parcelas aceitas de 2 a 12; venda à vista/parcelada exige valor positivo; anúncio de troca rejeita qualquer valor ou parcela.
+- **Cartão no chat:** proposta mostra termos e estado, e permite ao destinatário aceitar/recusar ou ao autor cancelar. A aceitação passa pelo fluxo existente que cria acordo; pagamento não é processado.
+- **V21 — comentários:** leitura pública paginada e escrita autenticada; respostas de uma camada são autorizadas para o autor do comentário raiz ou dono do anúncio. O texto é persistido como texto plano e renderizado por interpolação. A listagem respeita visibilidade pública do anúncio e usa nome genérico para autor com perfil privado.
+- **Avaliações do anúncio:** endpoint público lista somente notas associadas a acordos e não ocultadas por moderação; comentários aparecem separados e não alteram a média.
+- **Moderação e experiência:** comentários podem ser denunciados e ocultados/reexibidos pela fila de moderação existente; a listagem não mostra comentários ocultos nem respostas sem raiz visível. O cliente carrega páginas seguintes de comentários. No chat iniciado pelo perfil, a pessoa pode escolher um anúncio ativo do interlocutor antes de enviar proposta; validade vencida desativa aceite/recusa e o servidor rejeita o aceite.
+- **Validação local:** `npm run typecheck`, `npm run build`, `npm run test:ci` (121 testes) e `./mvnw.cmd test` (92 testes) passaram; `git diff --check` está limpo. Migrações e fluxo já passaram em MySQL 8.4.11 descartável com dados sintéticos.
+- **Backup pré-publicação:** dump MySQL 8.0 público com checksum e arquivo de uploads conferidos em `/home/ubuntu/backups/skillswap-comunicacao-pre-20261030`; o upload público é uma montagem bind e foi arquivado sem parar ou alterar a API.
+- **Ensaio pendente:** cópia do dump V17 restaurada em MySQL 8.0.46 num container e rede internos separados. Ainda falta iniciar a API candidata nessa cópia, comparar preservação de mensagens/propostas/acordos/avaliações/cursos e validar o frontend em navegador responsivo antes de promover as imagens.

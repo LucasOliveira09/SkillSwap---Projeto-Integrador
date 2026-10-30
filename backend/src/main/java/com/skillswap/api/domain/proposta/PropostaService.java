@@ -12,9 +12,11 @@ import com.skillswap.api.domain.notificacao.NotificacaoService;
 import com.skillswap.api.domain.notificacao.TipoNotificacao;
 import com.skillswap.api.domain.acordo.EventoAcordoService;
 import com.skillswap.api.domain.acordo.TipoEventoAcordo;
+import com.skillswap.api.domain.conversa.ConversaService;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
 import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
+import com.skillswap.api.domain.proposta.dto.PropostaConversaRequestDTO;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
@@ -27,10 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
 public class PropostaService {
+    private static final ZoneId ZONA_PRODUTO = ZoneId.of("America/Sao_Paulo");
 
     private final MensagemRepository mensagens;
     private final PropostaRepository propostaRepository;
@@ -40,6 +45,62 @@ public class PropostaService {
     private final AcordoRepository acordoRepository;
     private final NotificacaoService notificacaoService;
     private final EventoAcordoService eventoAcordoService;
+    private final ConversaService conversaService;
+
+    @Transactional
+    public Proposta criarNaConversa(Long conversaId, PropostaConversaRequestDTO dto, String emailUsuario) {
+        var conversa = conversaService.exigirParticipante(conversaId, emailUsuario);
+        var proponente = usuarioService.findByEmail(emailUsuario);
+        var destinatario = conversaService.outroParticipante(conversa, emailUsuario);
+        var anuncio = anuncioRepository.findByIdForUpdate(dto.anuncioId())
+                .filter(a -> a.getStatus() == StatusAnuncio.ATIVO && a.getUsuario().getId().equals(destinatario.getId())
+                        && a.getUsuario().isPerfilPublico() && !a.isExemplo())
+                .orElseThrow(() -> new NaoEncontradoException("Anúncio do destinatário indisponível"));
+
+        validarTermos(dto, anuncio.getModalidade());
+        boolean jaProposto = propostaRepository.existsByAnuncioIdAndProponenteIdAndStatusIn(
+                anuncio.getId(), proponente.getId(), Set.of(StatusProposta.PENDENTE, StatusProposta.ACEITA));
+        if (jaProposto) throw new IllegalArgumentException("Você já possui uma proposta ativa para este anúncio");
+
+        var proposta = propostaRepository.save(Proposta.builder()
+                .conversa(conversa).anuncio(anuncio).proponente(proponente)
+                .mensagemInicial(dto.servico().strip()).servico(dto.servico().strip())
+                .escopo(dto.escopo().strip()).formaPagamento(dto.formaPagamento())
+                .valor(dto.valor()).parcelas(dto.parcelas()).duracao(normalizar(dto.duracao()))
+                .validadeEm(dto.validadeEm()).build());
+        String resumo = "Proposta enviada: " + proposta.getServico() + " — " +
+                (proposta.getFormaPagamento() == FormaPagamentoProposta.TROCA ? "troca sem complemento em dinheiro"
+                        : "R$ " + proposta.getValor().toPlainString() +
+                        (proposta.getFormaPagamento() == FormaPagamentoProposta.PARCELADO ? " em " + proposta.getParcelas() + " parcelas" : " à vista"));
+        mensagens.save(Mensagem.builder().conversa(conversa).anuncioContexto(anuncio)
+                .proposta(proposta).remetente(proponente).conteudo(resumo).build());
+        notificacaoService.criar(destinatario, TipoNotificacao.PROPOSTA_RECEBIDA, "Nova proposta",
+                proponente.getNome() + " enviou uma proposta para “" + anuncio.getTitulo() + "”.",
+                "/mensagens?conversa=chat-" + conversa.getId());
+        return proposta;
+    }
+
+    private void validarTermos(PropostaConversaRequestDTO dto, com.skillswap.api.domain.anuncio.ModalidadeAnuncio modalidade) {
+        if (dto.validadeEm() != null && dto.validadeEm().isBefore(LocalDate.now(ZONA_PRODUTO)))
+            throw new IllegalArgumentException("A validade da proposta não pode estar no passado");
+        if (modalidade == com.skillswap.api.domain.anuncio.ModalidadeAnuncio.TROCA) {
+            if (dto.formaPagamento() != FormaPagamentoProposta.TROCA || dto.valor() != null || dto.parcelas() != null)
+                throw new IllegalArgumentException("Anúncios de troca não aceitam complemento em dinheiro");
+        } else if (dto.formaPagamento() == FormaPagamentoProposta.TROCA) {
+            throw new IllegalArgumentException("A forma de pagamento por troca só vale para anúncios de troca");
+        } else if (dto.valor() == null || dto.valor().signum() <= 0) {
+            throw new IllegalArgumentException("Informe um valor maior que zero");
+        } else if (dto.formaPagamento() == FormaPagamentoProposta.A_VISTA && dto.parcelas() != null) {
+            throw new IllegalArgumentException("Pagamento à vista não deve informar parcelas");
+        } else if (dto.formaPagamento() == FormaPagamentoProposta.PARCELADO &&
+                (dto.parcelas() == null || dto.parcelas() < 2 || dto.parcelas() > 12)) {
+            throw new IllegalArgumentException("O parcelamento deve ter entre 2 e 12 parcelas");
+        }
+    }
+
+    private String normalizar(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.strip();
+    }
 
     @Transactional
     public Proposta criar(Long anuncioId, PropostaRequestDTO dto, String emailUsuario) {
@@ -59,17 +120,19 @@ public class PropostaService {
             throw new IllegalArgumentException("Você já possui uma proposta ativa para este anúncio");
         }
 
+        var conversa = conversaService.obterOuCriar(anuncio.getUsuario(), proponente).conversa();
         var proposta = Proposta.builder()
+                .conversa(conversa)
                 .anuncio(anuncio)
                 .proponente(proponente)
                 .mensagemInicial(dto.mensagemInicial())
                 .build();
         proposta = propostaRepository.save(proposta);
-        mensagens.save(Mensagem.builder()
+        mensagens.save(Mensagem.builder().conversa(conversa).anuncioContexto(anuncio)
                 .proposta(proposta).remetente(proponente).conteudo(dto.mensagemInicial().strip()).build());
         notificacaoService.criar(anuncio.getUsuario(), TipoNotificacao.PROPOSTA_RECEBIDA,
                 "Nova proposta", proponente.getNome() + " demonstrou interesse em “" + anuncio.getTitulo() + "”.",
-                "/mensagens?conversa=" + proposta.getId());
+                "/mensagens?conversa=chat-" + conversa.getId());
         return proposta;
     }
 
@@ -127,6 +190,8 @@ public class PropostaService {
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
             throw new IllegalArgumentException("Proposta não está pendente");
         }
+        if (proposta.getValidadeEm() != null && proposta.getValidadeEm().isBefore(LocalDate.now(ZONA_PRODUTO)))
+            throw new IllegalArgumentException("A validade da proposta expirou; solicite uma nova versão");
 
         List<Proposta> propostasDoAnuncio = propostaRepository.findByAnuncioIdForUpdate(proposta.getAnuncio().getId());
         boolean outraJaAceita = propostasDoAnuncio.stream()
@@ -145,7 +210,7 @@ public class PropostaService {
         eventoAcordoService.registrar(acordo, proposta.getAnuncio().getUsuario(), TipoEventoAcordo.ACORDO_INICIADO);
         notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                 "Proposta aceita", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi aceita.",
-                "/acordos/" + acordo.getId());
+                linkConversa(proposta));
 
         // Recusar outras propostas pendentes do mesmo anúncio
         propostasDoAnuncio.stream()
@@ -155,7 +220,7 @@ public class PropostaService {
                     propostaRepository.save(p);
                     notificacaoService.criar(p.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                             "Proposta encerrada", "Outra proposta foi aceita para “" + p.getAnuncio().getTitulo() + "”.",
-                            "/conta?aba=enviadas&propostaId=" + p.getId());
+                            linkConversa(p));
                 });
 
         return proposta;
@@ -173,7 +238,7 @@ public class PropostaService {
         proposta.setStatus(StatusProposta.RECUSADA);
         notificacaoService.criar(proposta.getProponente(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                 "Proposta recusada", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi recusada.",
-                "/conta?aba=enviadas&propostaId=" + proposta.getId());
+                linkConversa(proposta));
         return propostaRepository.save(proposta);
     }
 
@@ -189,7 +254,7 @@ public class PropostaService {
         proposta.setStatus(StatusProposta.CANCELADA);
         notificacaoService.criar(proposta.getAnuncio().getUsuario(), TipoNotificacao.PROPOSTA_RESPONDIDA,
                 "Proposta cancelada", proposta.getProponente().getNome() + " cancelou a proposta para “" + proposta.getAnuncio().getTitulo() + "”.",
-                "/conta?aba=recebidas&propostaId=" + proposta.getId());
+                linkConversa(proposta));
         return propostaRepository.save(proposta);
     }
 
@@ -209,6 +274,12 @@ public class PropostaService {
                 .orElseThrow(() -> new NaoEncontradoException("Proposta não encontrada"));
     }
 
+    private String linkConversa(Proposta proposta) {
+        return proposta.getConversa() == null
+                ? "/conta?aba=enviadas&propostaId=" + proposta.getId()
+                : "/mensagens?conversa=chat-" + proposta.getConversa().getId();
+    }
+
     private void checkAnuncioOwner(Proposta proposta, String emailUsuario) {
         if (!proposta.getAnuncio().getUsuario().getEmail().equals(emailUsuario)) {
             throw new NaoAutorizadoException("Você não é o dono deste anúncio");
@@ -224,7 +295,14 @@ public class PropostaService {
                 p.getProponente().getNome(),
                 p.getMensagemInicial(),
                 p.getStatus(),
-                p.getCriadoEm()
+                p.getCriadoEm(),
+                p.getServico(),
+                p.getEscopo(),
+                p.getFormaPagamento(),
+                p.getValor(),
+                p.getParcelas(),
+                p.getDuracao(),
+                p.getValidadeEm()
         );
     }
 }

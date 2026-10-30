@@ -17,25 +17,38 @@ import java.net.URI;
 @RequestMapping("/api")
 public class ConversaController {
     private final ConversaService service;
-    public record PrimeiroContato(@NotBlank @Size(max=500) String conteudo) {}
+    public record PrimeiroContato(@Size(max=500) String conteudo) {}
+    public record CriarConversa(@NotNull @Positive Long destinatarioId, @Positive Long anuncioId) {}
     public record Leitura(@NotNull @Min(1) Long ultimaMensagemId) {}
     public record Resumo(long naoLidas) {}
 
+    @PostMapping("/conversas")
+    public ResponseEntity<ConversaDTO> criar(@RequestBody @Valid CriarConversa dto, Authentication auth) {
+        var abertura = service.abrirPerfil(dto.destinatarioId(), dto.anuncioId(), (String) auth.getPrincipal());
+        var uri = URI.create("/api/conversas/" + abertura.conversa().id());
+        return abertura.criada() ? ResponseEntity.created(uri).body(abertura.conversa()) : ResponseEntity.ok(abertura.conversa());
+    }
+
     @PostMapping("/anuncios/{id}/conversas")
     public ResponseEntity<ConversaDTO> abrir(@PathVariable Long id, @RequestBody @Valid PrimeiroContato dto, Authentication auth) {
-        var abertura = service.abrir(id, dto.conteudo(), (String) auth.getPrincipal());
+        var abertura = service.abrirPorAnuncio(id, dto.conteudo(), (String) auth.getPrincipal());
         var uri = URI.create("/api/conversas/" + abertura.conversa().id());
         return abertura.criada() ? ResponseEntity.created(uri).body(abertura.conversa()) : ResponseEntity.ok(abertura.conversa());
     }
     @GetMapping("/conversas")
     public ResponseEntity<PaginaDTO<ConversaDTO>> listar(@RequestParam(defaultValue="0") @Min(0) @Max(1000000) int pagina,
             @RequestParam(defaultValue="20") @Min(1) @Max(50) int tamanho, Authentication auth) {
-        return ResponseEntity.ok(PaginaDTO.de(service.listar((String) auth.getPrincipal(), PageRequest.of(pagina, tamanho))));
+        var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "ultimaAtividadeEm", "id"));
+        return ResponseEntity.ok(PaginaDTO.de(service.listar((String) auth.getPrincipal(), pageable)));
     }
     @GetMapping("/conversas/resumo")
     public Resumo resumo(Authentication auth) { return new Resumo(service.naoLidas((String) auth.getPrincipal())); }
     @GetMapping("/conversas/{id}")
     public ConversaDTO buscar(@PathVariable Long id, Authentication auth) { return service.buscar(id, (String) auth.getPrincipal()); }
+    @GetMapping("/propostas/{id}/conversa")
+    public ConversaDTO buscarConversaDaProposta(@PathVariable Long id, Authentication auth) {
+        return service.buscarPorProposta(id, (String) auth.getPrincipal());
+    }
     @GetMapping("/conversas/{id}/mensagens")
     public PaginaDTO<MensagemConversaDTO> mensagens(@PathVariable Long id,
             @RequestParam(defaultValue="0") @Min(0) @Max(1000000) int pagina,
@@ -45,7 +58,7 @@ public class ConversaController {
     }
     @PostMapping("/conversas/{id}/mensagens")
     public ResponseEntity<MensagemConversaDTO> enviar(@PathVariable Long id, @RequestBody @Valid MensagemRequestDTO dto, Authentication auth) {
-        var mensagem = service.enviar(id, dto.conteudo(), (String) auth.getPrincipal());
+        var mensagem = service.enviar(id, dto.conteudo(), dto.anuncioId(), (String) auth.getPrincipal());
         return ResponseEntity.created(URI.create("/api/conversas/"+id+"/mensagens/"+mensagem.id())).body(mensagem);
     }
     @GetMapping("/conversas/{id}/mensagens/{mensagemId}")

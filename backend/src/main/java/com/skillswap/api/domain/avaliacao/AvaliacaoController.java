@@ -4,6 +4,7 @@ import com.skillswap.api.domain.avaliacao.dto.AvaliacaoRequestDTO;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoResponseDTO;
 import com.skillswap.api.domain.avaliacao.dto.RespostaAvaliacaoDTO;
 import com.skillswap.api.domain.avaliacao.dto.EditarAvaliacaoDTO;
+import com.skillswap.api.domain.avaliacao.dto.AvaliacaoAnuncioDTO;
 import com.skillswap.api.domain.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +66,10 @@ public class AvaliacaoController {
     public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
         usuarioService.buscarPerfilPublico(usuarioId);
         return ResponseEntity.ok(avaliacaoService.listarPorUsuario(usuarioId));
+    }
+
+    @GetMapping("/api/anuncios/{anuncioId}/avaliacoes")
+    public ResponseEntity<List<AvaliacaoAnuncioDTO>> listarPorAnuncio(@PathVariable Long anuncioId) {
+        return ResponseEntity.ok(avaliacaoService.listarPorAnuncio(anuncioId));
     }
 }

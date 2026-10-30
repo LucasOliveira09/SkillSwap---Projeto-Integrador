@@ -2,6 +2,7 @@ package com.skillswap.api.domain.moderacao;
 
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import com.skillswap.api.domain.avaliacao.AvaliacaoRepository;
+import com.skillswap.api.domain.comentario.ComentarioAnuncioRepository;
 import com.skillswap.api.domain.moderacao.dto.CriarDenunciaDTO;
 import com.skillswap.api.domain.moderacao.dto.DecisaoModeracaoDTO;
 import com.skillswap.api.domain.moderacao.dto.DenunciaDTO;
@@ -27,6 +28,7 @@ public class ModeracaoService {
     private final DenunciaRepository denunciaRepository;
     private final PublicacaoPortfolioRepository publicacaoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
+    private final ComentarioAnuncioRepository comentarioRepository;
     private final UsuarioService usuarioService;
 
     @Value("${skillswap.moderacao.emails:}")
@@ -128,6 +130,15 @@ public class ModeracaoService {
                         }
                         return avaliacao.getDepoimento();
                     }).orElseThrow(() -> new NaoEncontradoException("Avaliação não encontrada"));
+            case COMENTARIO_ANUNCIO -> comentarioRepository.findByIdAndModeradaOcultaFalse(recursoId)
+                    .filter(comentario -> comentario.getAnuncio().getStatus() == com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO)
+                    .filter(comentario -> comentario.getAnuncio().getUsuario().isPerfilPublico())
+                    .map(comentario -> {
+                        if (comentario.getAutor().getId().equals(autorId)) {
+                            throw new IllegalArgumentException("Não é possível denunciar seu próprio comentário.");
+                        }
+                        return comentario.getConteudo();
+                    }).orElseThrow(() -> new NaoEncontradoException("Comentário não encontrado"));
         };
     }
 
@@ -137,6 +148,8 @@ public class ModeracaoService {
                     .ifPresent(publicacao -> publicacao.setModeradaOculta(true));
             case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(denuncia.getRecursoId())
                     .ifPresent(avaliacao -> avaliacao.setModeradaOculta(true));
+            case COMENTARIO_ANUNCIO -> comentarioRepository.findById(denuncia.getRecursoId())
+                    .ifPresent(comentario -> comentario.setModeradaOculta(true));
         }
     }
 
@@ -146,6 +159,8 @@ public class ModeracaoService {
                     .ifPresent(publicacao -> publicacao.setModeradaOculta(false));
             case AVALIACAO -> avaliacaoRepository.findByIdForUpdate(denuncia.getRecursoId())
                     .ifPresent(avaliacao -> avaliacao.setModeradaOculta(false));
+            case COMENTARIO_ANUNCIO -> comentarioRepository.findById(denuncia.getRecursoId())
+                    .ifPresent(comentario -> comentario.setModeradaOculta(false));
         }
     }
 

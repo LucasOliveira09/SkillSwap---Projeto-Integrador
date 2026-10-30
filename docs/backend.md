@@ -55,20 +55,25 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 
 | Método | Rota | Comportamento |
 | --- | --- | --- |
-| POST | `/anuncios/{id}/conversas` | JWT; primeiro contato de até 500 caracteres, deriva remetente/destinatário/anúncio no servidor; 201 e Location ao criar, 200 ao reutilizar conversa ativa. |
-| GET | `/conversas?pagina=0&tamanho=20` | JWT; contatos recebidos/enviados, incluindo pendentes, contexto da oferta, última mensagem e não lidas. |
+| POST | `/conversas` | JWT; `{destinatarioId, anuncioId?}` abre/reusa uma conversa global por par; anúncio, se informado, deve estar ativo e pertencer ao destinatário. Retorna 201 + Location ao criar ou 200 ao reutilizar. Não envia mensagem. |
+| POST | `/anuncios/{id}/conversas` | Compatibilidade legada; primeiro contato autenticado, deriva remetente/destinatário/anúncio no servidor e resolve a conversa canônica. A interface atual usa `POST /conversas` e envia texto pelo chat. |
+| GET | `/conversas?pagina=0&tamanho=20` | JWT; uma linha por outro participante, contexto da mensagem mais recente, última mensagem e não lidas. |
 | GET | `/conversas/resumo` | JWT; total real de mensagens não lidas para a conta. |
-| GET | `/conversas/{id}` | JWT e participação; o ID corresponde à proposta. Inclui vínculo opcional ao acordo. |
+| GET | `/conversas/{id}` | JWT e participação; o ID é o da conversa canônica. Inclui o participante e contexto recente do anúncio. URLs antigas numéricas continuam resolvíveis como IDs de proposta por `/propostas/{id}/conversa`. |
 | GET | `/conversas/{id}/mensagens?pagina=0&tamanho=50` | JWT e participação; histórico cronológico, incluindo primeira mensagem e mensagens anteriores ao aceite. |
 | GET | `/conversas/{id}/mensagens/{mensagemId}` | JWT e participação; recurso da mensagem dentro da conversa correta. |
-| POST | `/conversas/{id}/mensagens` | JWT e participação; texto de até 2000 caracteres; 201 e Location. Negociação encerrada não aceita envio. |
+| POST | `/conversas/{id}/mensagens` | JWT e participação; texto de até 2000 caracteres e contexto opcional `{anuncioId}` pertencente a um participante; 201 e Location. |
 | PATCH | `/conversas/{id}/leitura` | JWT e participação; `{ultimaMensagemId}` pertencente à conversa; cursor monotônico por data/ID, 204. |
-| POST | `/anuncios/{anuncioId}/propostas` | Exige JWT de outra pessoa; cria proposta pendente e responde 201 com Location. |
+| POST | `/conversas/{id}/propostas` | JWT e participação; cria proposta no chat, vinculada a anúncio ativo do outro participante. Termos: serviço, escopo, à vista ou parcelado (2–12), duração e validade; troca não aceita dinheiro complementar. 201 + Location. |
+| POST | `/anuncios/{anuncioId}/propostas` | Entrada legada para proposta simples; a interface de negociação atual cria propostas por `/conversas/{id}/propostas`. |
 | GET | `/propostas?direcao=ENVIADAS&pagina=0&tamanho=20` | Exige JWT; lista propostas enviadas ou recebidas em página de até 50 itens. |
 | GET | `/notificacoes?pagina=0&tamanho=20` | Exige JWT; lista somente notificações da conta autenticada, da mais recente à mais antiga. |
 | PATCH | `/notificacoes/{id}` | Exige proprietário da notificação; recebe `{ "lida": true }` ou `{ "lida": false }` e marca ou reabre a notificação. |
 | GET | `/propostas/{id}` | Exige JWT de uma das partes da proposta. |
 | PATCH | `/propostas/{id}` | Aceita `{ "status": "ACEITA" }` ou `{ "status": "RECUSADA" }` do anunciante, e `{ "status": "CANCELADA" }` do proponente; somente enquanto pendente. Aceite, recusa, cancelamento e criação usam bloqueio transacional por anúncio. Aceitar cria um acordo e recusa propostas pendentes concorrentes. |
+| GET | `/anuncios/{id}/comentarios?pagina=0&tamanho=30` | Público; comentários paginados em ordem cronológica, exclui conteúdo moderado e exige anúncio/perfil públicos. O DTO não contém e-mail. |
+| POST | `/anuncios/{id}/comentarios` | JWT; texto de até 1.000 caracteres. Respostas só podem apontar para comentário raiz e são permitidas ao autor raiz ou anunciante. Responde 201 + Location. |
+| GET | `/anuncios/{id}/avaliacoes` | Público; avaliações vinculadas a acordos concluídos, com nota do anúncio e conteúdo não ocultado pela moderação. A autoria é genérica quando o perfil avaliador é privado. |
 | GET | `/acordos?pagina=0&tamanho=20` | Exige JWT; lista acordos dos quais a pessoa participa, até 50 por página. |
 | GET | `/acordos/{id}` | Exige JWT de um participante. |
 | GET | `/acordos/{id}/eventos` | Exige participante; lista em ordem cronológica o início do acordo, confirmações, conclusão e cancelamento, com ator e data. |

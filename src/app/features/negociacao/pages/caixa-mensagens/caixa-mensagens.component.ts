@@ -11,10 +11,12 @@ import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
 import { Pagina } from '../../models/negociacao.model';
-import { Conversa, MensagemConversa } from '../../models/conversa.model';
+import { Conversa, MensagemConversa, NovaPropostaConversa, PropostaMensagem } from '../../models/conversa.model';
 import { ConversasApiService } from '../../data-access/conversas-api.service';
 import { IndicadorMensagensService } from '../../data-access/indicador-mensagens.service';
 import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
+import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
+import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 
 @Component({
   selector: 'app-caixa-mensagens',
@@ -29,6 +31,7 @@ export class CaixaMensagensComponent {
   private readonly perfilApi = inject(PerfilApiService);
   private readonly api = inject(ConversasApiService);
   private readonly negociacaoApi = inject(NegociacaoApiService);
+  private readonly anunciosApi = inject(AnunciosApiService);
   private readonly indicador = inject(IndicadorMensagensService);
   private readonly leituras = new Map<number, number>();
   private atualizandoLista = false;
@@ -53,9 +56,19 @@ export class CaixaMensagensComponent {
   protected readonly visiveis = computed(() => {
     const busca = this.filtro().trim().toLocaleLowerCase('pt-BR');
     return this.conversas().filter(acordo =>
-      `${this.interlocutor(acordo)} ${acordo.anuncioTitulo}`.toLocaleLowerCase('pt-BR').includes(busca));
+      `${this.interlocutor(acordo)} ${acordo.anuncioTitulo ?? ''}`.toLocaleLowerCase('pt-BR').includes(busca));
   });
   protected readonly erroSincronizacao = signal('');
+  protected readonly anuncioContextoInicial = signal<number | null>(null);
+  protected readonly mostrandoProposta = signal(false);
+  protected readonly anunciosDoInterlocutor = signal<readonly AnuncioApi[]>([]);
+  protected readonly carregandoAnunciosProposta = signal(false);
+  protected readonly enviandoProposta = signal(false);
+  protected readonly respondendoProposta = signal<number | null>(null);
+  protected proposta: NovaPropostaConversa = {
+    anuncioId: 0, servico: '', escopo: '', formaPagamento: 'A_VISTA', valor: null,
+    parcelas: null, duracao: '', validadeEm: '',
+  };
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
   private readonly historico = viewChild<ElementRef<HTMLDivElement>>('historico');
@@ -66,7 +79,7 @@ export class CaixaMensagensComponent {
   private readonly acompanharSessao = effect(() => {
     if (!this.sessao.autenticado()) {
       const id = this.conversaSelecionada()?.id;
-      void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?conversa=${id}` : '/mensagens' } });
+      void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?conversa=chat-${id}` : '/mensagens' } });
     }
   });
   private geracaoSelecao = 0;
@@ -118,7 +131,7 @@ export class CaixaMensagensComponent {
 
   protected selecionar(acordo: Conversa, atualizarUrl = true): void {
     if (atualizarUrl) {
-      void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: acordo.id, acordo: null }, queryParamsHandling: 'merge' });
+      void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: `chat-${acordo.id}`, acordo: null, proposta: null, anuncioId: null }, queryParamsHandling: 'merge' });
       return;
     }
     const anterior = this.conversaSelecionada();
@@ -165,7 +178,7 @@ export class CaixaMensagensComponent {
   }
 
   protected voltarLista(): void {
-    void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: null, acordo: null }, queryParamsHandling: 'merge' });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: null, acordo: null, proposta: null, anuncioId: null }, queryParamsHandling: 'merge' });
   }
 
   private sincronizarRota(): void {
@@ -173,14 +186,22 @@ export class CaixaMensagensComponent {
     if (Number.isSafeInteger(legado) && legado > 0) {
       const geracao = ++this.geracaoSelecao;
       this.negociacaoApi.acordo(legado).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: acordo => { if (geracao === this.geracaoSelecao) void this.router.navigate([], {
-          relativeTo: this.route, queryParams: { acordo: null, conversa: acordo.propostaId }, queryParamsHandling: 'merge', replaceUrl: true,
-        }); },
+        next: acordo => this.resolverPropostaLegada(acordo.propostaId, geracao),
         error: () => this.erro.set('Conversa indisponível ou sem permissão de acesso.'),
       });
       return;
     }
-    const id = Number(this.route.snapshot.queryParamMap.get('conversa'));
+    const valorConversa = this.route.snapshot.queryParamMap.get('conversa');
+    const propostaLegada = Number(this.route.snapshot.queryParamMap.get('proposta') ??
+      (valorConversa && /^\d+$/.test(valorConversa) ? valorConversa : NaN));
+    if (Number.isSafeInteger(propostaLegada) && propostaLegada > 0 && (!valorConversa || !valorConversa.startsWith('chat-'))) {
+      this.resolverPropostaLegada(propostaLegada, ++this.geracaoSelecao);
+      return;
+    }
+    const textoId = valorConversa?.replace(/^chat-/, '') ?? '';
+    const id = Number(textoId);
+    const anuncioId = Number(this.route.snapshot.queryParamMap.get('anuncioId'));
+    this.anuncioContextoInicial.set(Number.isSafeInteger(anuncioId) && anuncioId > 0 ? anuncioId : null);
     if (id === this.conversaSelecionada()?.id) return;
     if (!Number.isSafeInteger(id) || id <= 0) {
       const anterior = this.conversaSelecionada();
@@ -206,6 +227,17 @@ export class CaixaMensagensComponent {
         this.selecionar(item, false);
       },
       error: () => { if (geracao === this.geracaoSelecao) { this.carregandoMensagens.set(false); this.erro.set('Conversa indisponível ou sem permissão de acesso.'); } },
+    });
+  }
+
+  private resolverPropostaLegada(id: number, geracao: number): void {
+    this.api.conversaDaProposta(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: conversa => { if (geracao === this.geracaoSelecao) void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { proposta: null, acordo: null, conversa: `chat-${conversa.id}` },
+        queryParamsHandling: 'merge', replaceUrl: true,
+      }); },
+      error: () => { if (geracao === this.geracaoSelecao) this.erro.set('Conversa indisponível ou sem permissão de acesso.'); },
     });
   }
 
@@ -316,13 +348,15 @@ export class CaixaMensagensComponent {
     this.enviando.set(true);
     this.erro.set('');
     this.sucesso.set('');
-    this.api.enviarMensagem(acordo.id, conteudo)
+    this.api.enviarMensagem(acordo.id, conteudo, this.anuncioContextoInicial() ?? acordo.anuncioId ?? undefined)
       .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => {
           this.rascunhos.delete(acordo.id);
           if (geracao !== this.geracaoSelecao) return;
           this.texto = '';
+          this.anuncioContextoInicial.set(null);
+          void this.router.navigate([], { relativeTo: this.route, queryParams: { anuncioId: null }, queryParamsHandling: 'merge', replaceUrl: true });
           this.selecionar(acordo, false);
           this.sucesso.set('Mensagem enviada.');
         },
@@ -330,9 +364,107 @@ export class CaixaMensagensComponent {
       });
   }
 
+  protected abrirFormularioProposta(conversa: Conversa): void {
+    this.proposta = {
+      anuncioId: this.anuncioContextoInicial() ?? conversa.anuncioId ?? 0, servico: '', escopo: '',
+      formaPagamento: 'A_VISTA',
+      valor: null, parcelas: null, duracao: '', validadeEm: '',
+    };
+    this.anunciosDoInterlocutor.set([]);
+    this.carregandoAnunciosProposta.set(true);
+    this.mostrandoProposta.set(true);
+    this.anunciosApi.listarDoUsuario(conversa.outroParticipanteId, 0, 50).pipe(
+      takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoAnunciosProposta.set(false)),
+    ).subscribe({
+      next: pagina => {
+        this.anunciosDoInterlocutor.set(pagina.itens);
+        if (!pagina.itens.some(anuncio => anuncio.id === this.proposta.anuncioId)) {
+          this.proposta.anuncioId = pagina.itens[0]?.id ?? 0;
+        }
+        this.ajustarFormaPagamentoDaOferta();
+      },
+      error: () => this.erro.set('Não foi possível carregar os anúncios disponíveis para a proposta.'),
+    });
+  }
+
+  protected ajustarFormaPagamentoDaOferta(): void {
+    const anuncio = this.anunciosDoInterlocutor().find(item => item.id === Number(this.proposta.anuncioId));
+    this.proposta.formaPagamento = anuncio?.modalidade === 'troca' ? 'TROCA' : 'A_VISTA';
+    this.proposta.valor = null;
+    this.proposta.parcelas = null;
+  }
+
+  protected ofertaDaProposta(): AnuncioApi | null {
+    return this.anunciosDoInterlocutor().find(item => item.id === Number(this.proposta.anuncioId)) ?? null;
+  }
+
+  protected enviarProposta(): void {
+    const conversa = this.conversaSelecionada();
+    if (!conversa || !this.proposta.anuncioId || this.enviandoProposta()) return;
+    const troca = this.ofertaDaProposta()?.modalidade === 'troca';
+    const proposta: NovaPropostaConversa = {
+      anuncioId: Number(this.proposta.anuncioId),
+      servico: this.proposta.servico.trim(),
+      escopo: this.proposta.escopo.trim(),
+      formaPagamento: troca ? 'TROCA' : this.proposta.formaPagamento,
+      valor: troca ? null : this.proposta.valor,
+      parcelas: troca || this.proposta.formaPagamento !== 'PARCELADO' ? null : this.proposta.parcelas,
+      duracao: this.proposta.duracao?.trim() || null,
+      validadeEm: this.proposta.validadeEm || null,
+    };
+    if (!proposta.servico || !proposta.escopo || (!troca && (!proposta.valor || proposta.valor <= 0)) ||
+      (!troca && proposta.formaPagamento === 'PARCELADO' && (!proposta.parcelas || proposta.parcelas < 2 || proposta.parcelas > 12))) {
+      this.erro.set('Preencha o serviço, o escopo e os termos de pagamento válidos.');
+      return;
+    }
+    this.enviandoProposta.set(true);
+    this.erro.set('');
+    this.api.criarProposta(conversa.id, proposta).pipe(
+      takeUntilDestroyed(this.destroyRef), finalize(() => this.enviandoProposta.set(false)),
+    ).subscribe({
+      next: () => {
+        this.mostrandoProposta.set(false);
+        this.selecionar(conversa, false);
+        this.sucesso.set('Proposta enviada no chat.');
+        this.atualizarEntrada();
+      },
+      error: () => this.erro.set('Não foi possível enviar a proposta. Confira os termos e tente novamente.'),
+    });
+  }
+
+  protected propostaExpirada(proposta: PropostaMensagem): boolean {
+    if (!proposta.validadeEm) return false;
+    const hoje = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+    return proposta.validadeEm < hoje;
+  }
+
+  protected responderProposta(proposta: PropostaMensagem, status: 'ACEITA' | 'RECUSADA' | 'CANCELADA'): void {
+    const conversa = this.conversaSelecionada();
+    if (!conversa || this.respondendoProposta() !== null) return;
+    this.respondendoProposta.set(proposta.id);
+    this.negociacaoApi.atualizarProposta(proposta.id, status).pipe(
+      takeUntilDestroyed(this.destroyRef), finalize(() => this.respondendoProposta.set(null)),
+    ).subscribe({
+      next: () => {
+        this.selecionar(conversa, false);
+        this.atualizarEntrada();
+        this.sucesso.set(status === 'ACEITA' ? 'Proposta aceita. O acordo está disponível nesta conversa.' :
+          status === 'RECUSADA' ? 'Proposta recusada.' : 'Proposta cancelada.');
+      },
+      error: () => this.erro.set('Não foi possível atualizar a proposta. Ela pode já ter sido respondida.'),
+    });
+  }
+
+  protected termosPagamento(proposta: PropostaMensagem): string {
+    if (proposta.formaPagamento === 'TROCA') return 'Troca sem complemento em dinheiro';
+    const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(proposta.valor ?? 0);
+    return proposta.formaPagamento === 'PARCELADO'
+      ? `${valor} em ${proposta.parcelas} parcelas`
+      : `${valor} à vista`;
+  }
+
   protected interlocutor(acordo: Conversa): string {
-    const id = this.perfil()?.id;
-    return acordo.anuncianteId === id ? acordo.proponenteNome : acordo.anuncianteNome;
+    return acordo.outroParticipanteNome;
   }
 
   protected iniciais(nome: string): string {

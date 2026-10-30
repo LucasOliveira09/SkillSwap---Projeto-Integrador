@@ -2,12 +2,14 @@ package com.skillswap.api.domain.avaliacao;
 
 import com.skillswap.api.domain.acordo.Acordo;
 import com.skillswap.api.domain.acordo.AcordoService;
+import com.skillswap.api.domain.anuncio.AnuncioService;
 import com.skillswap.api.domain.acordo.StatusAcordo;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoRequestDTO;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoResponseDTO;
 import com.skillswap.api.domain.avaliacao.dto.RespostaAvaliacaoDTO;
 import com.skillswap.api.domain.avaliacao.dto.AvaliacaoHistoricoDTO;
 import com.skillswap.api.domain.avaliacao.dto.EditarAvaliacaoDTO;
+import com.skillswap.api.domain.avaliacao.dto.AvaliacaoAnuncioDTO;
 import com.skillswap.api.domain.moderacao.DenunciaRepository;
 import com.skillswap.api.domain.moderacao.TipoConteudoDenunciado;
 import com.skillswap.api.domain.avaliacao.ContestacaoAvaliacaoRepository;
@@ -30,6 +32,7 @@ public class AvaliacaoService {
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final AcordoService acordoService;
+    private final AnuncioService anuncioService;
     private final UsuarioService usuarioService;
     private final AvaliacaoHistoricoRepository historicoRepository;
     private final DenunciaRepository denunciaRepository;
@@ -85,6 +88,19 @@ public class AvaliacaoService {
     public List<AvaliacaoResponseDTO> listarPorUsuario(Long usuarioId) {
         return avaliacaoRepository.findByAvaliadoIdAndModeradaOcultaFalse(usuarioId).stream()
                 .map(this::toResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvaliacaoAnuncioDTO> listarPorAnuncio(Long anuncioId) {
+        if (anuncioService.buscarPorId(anuncioId).isExemplo())
+            throw new NaoEncontradoException("Anúncio não encontrado");
+        return avaliacaoRepository.findByAcordoPropostaAnuncioIdAndNotaAnuncioIsNotNullAndModeradaOcultaFalseOrderByCriadoEmDescIdDesc(anuncioId)
+                .stream().map(avaliacao -> new AvaliacaoAnuncioDTO(
+                        avaliacao.getId(),
+                        avaliacao.getAvaliador().isPerfilPublico() ? avaliacao.getAvaliador().getNome() : "Usuário SkillSwap",
+                        avaliacao.getNota(), avaliacao.getNotaAnuncio(), avaliacao.getDepoimento(),
+                        avaliacao.getCriadoEm(), avaliacao.getRespostaProfissional()))
                 .toList();
     }
 

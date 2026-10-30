@@ -38,6 +38,8 @@ public class MensagemService {
 
         var mensagem = Mensagem.builder()
                 .acordo(acordo)
+                .conversa(acordo.getProposta().getConversa())
+                .anuncioContexto(acordo.getProposta().getAnuncio())
                 .proposta(acordo.getProposta())
                 .remetente(remetente)
                 .conteudo(dto.conteudo())
@@ -49,7 +51,7 @@ public class MensagemService {
                 : anunciante;
         notificacaoService.criar(destinatario, TipoNotificacao.NOVA_MENSAGEM,
                 "Nova mensagem", remetente.getNome() + " enviou uma mensagem sobre “" + acordo.getProposta().getAnuncio().getTitulo() + "”.",
-                "/mensagens?conversa=" + acordo.getProposta().getId());
+                "/mensagens?conversa=chat-" + acordo.getProposta().getConversa().getId());
         return mensagem;
     }
 

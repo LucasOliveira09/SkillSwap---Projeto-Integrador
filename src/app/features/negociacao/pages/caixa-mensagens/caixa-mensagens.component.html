@@ -22,12 +22,12 @@
           <a class="sair-chat" routerLink="/anuncios">Explorar <span aria-hidden="true">↗</span></a>
         </div>
         <label class="busca-conversas"><span aria-hidden="true">⌕</span><input #busca type="search" placeholder="Buscar uma conversa" aria-label="Buscar por pessoa ou serviço nas conversas carregadas" (input)="filtro.set(busca.value)" maxlength="100" /></label>
-        <div class="lista-filtros"><span>Contatos por anúncio</span><small>{{ conversas().length }} carregadas</small></div>
+        <div class="lista-filtros"><span>Conversas privadas</span><small>{{ conversas().length }} carregadas</small></div>
         @if (!conversas().length) {
           <div class="lista-vazia">
             <span class="icone-vazio" aria-hidden="true">✉</span>
             <strong>Nenhuma conversa ainda</strong>
-            <p>Envie uma mensagem em um anúncio ou receba um contato para iniciar uma conversa.</p>
+            <p>Inicie uma conversa pelo perfil de um profissional ou entre em contato por um anúncio.</p>
             <a mat-stroked-button routerLink="/anuncios">Explorar serviços</a>
           </div>
         } @else {
@@ -38,7 +38,7 @@
                 <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
                 <span class="resumo-conversa">
                   <span class="linha-resumo"><strong>{{ interlocutor(acordo) }}</strong><small>{{ (acordo.ultimaMensagem?.enviadoEm || acordo.criadoEm) | date: 'dd/MM/yy' }}</small></span>
-                  <span class="titulo-anuncio">Sobre: {{ acordo.anuncioTitulo }}</span>
+                  <span class="titulo-anuncio">{{ acordo.anuncioTitulo ? 'Anúncio: ' + acordo.anuncioTitulo : 'Conversa pelo perfil' }}</span>
                   @if (acordo.ultimaMensagem; as ultima) { <span class="previa-mensagem">{{ ultima.remetenteId === perfil()?.id ? 'Você: ' : '' }}{{ ultima.conteudo }}</span> }
                   @if (acordo.naoLidas) { <span class="nao-lidas" [attr.aria-label]="acordo.naoLidas + ' mensagens não lidas'">{{ acordo.naoLidas }}</span> }
                   <span class="status-conversa" [class.encerrado]="!acordo.podeEnviar">
@@ -63,20 +63,25 @@
             <button class="voltar-lista" type="button" (click)="voltarLista()">← Conversas</button>
             <span class="avatar" aria-hidden="true">{{ iniciais(interlocutor(acordo)) }}</span>
             <div class="dados-chat">
-              <a class="nome-interlocutor" [routerLink]="['/profissionais', acordo.anuncianteId === perfil()?.id ? acordo.proponenteId : acordo.anuncianteId]">{{ interlocutor(acordo) }}</a>
-              <a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a>
+              <a class="nome-interlocutor" [routerLink]="['/profissionais', acordo.outroParticipanteId]">{{ interlocutor(acordo) }}</a>
+              @if (acordo.anuncioId && acordo.anuncioTitulo) { <a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a> }
+              @else { <span>Conversa privada</span> }
             </div>
             <span class="badge-status" [class.encerrado]="!acordo.podeEnviar">
               {{ rotuloConversa(acordo) }}
             </span>
             @if (acordo.acordoId) { <a mat-button class="detalhes-acordo" [routerLink]="['/acordos', acordo.acordoId]">Acordo ↗</a> }
-            @else { <a mat-button class="detalhes-acordo" routerLink="/conta">Proposta ↗</a> }
+            @else { <span class="detalhes-acordo">Propostas da conversa</span> }
           </header>
 
-          <aside class="contexto-anuncio" aria-label="Anúncio de origem da conversa">
-            @if (acordo.anuncioImagem) { <img [src]="acordo.anuncioImagem" alt="" width="48" height="48" /> }
-            <div><small>Contato iniciado pelo anúncio #{{ acordo.anuncioId }}</small><a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a><span>{{ acordo.cidade }} · {{ acordo.modalidade === 'TROCA' ? 'Troca de habilidades' : 'Serviço ou aula à venda' }}</span></div>
-          </aside>
+          @if (anuncioContextoInicial()) {
+            <aside class="contexto-anuncio" aria-label="Anúncio desta conversa"><div><small>Você abriu esta conversa por um anúncio</small><a [routerLink]="['/anuncios', anuncioContextoInicial()]">Ver anúncio #{{ anuncioContextoInicial() }}</a></div></aside>
+          } @else if (acordo.anuncioId && acordo.anuncioTitulo) {
+            <aside class="contexto-anuncio" aria-label="Anúncio de origem da conversa">
+              @if (acordo.anuncioImagem) { <img [src]="acordo.anuncioImagem" alt="" width="48" height="48" /> }
+              <div><small>Contato iniciado pelo anúncio #{{ acordo.anuncioId }}</small><a [routerLink]="['/anuncios', acordo.anuncioId]">{{ acordo.anuncioTitulo }}</a><span>{{ acordo.cidade }} · {{ acordo.modalidade === 'TROCA' ? 'Troca de habilidades' : 'Serviço ou aula à venda' }}</span></div>
+            </aside>
+          }
           <div #historico class="historico-chat" aria-label="Histórico de mensagens">
             @if (carregarMensagemAnteriorDisponivel()) {
               <button mat-button type="button" class="anteriores" (click)="carregarMensagensAnteriores()" [disabled]="carregandoMensagens()">
@@ -89,13 +94,38 @@
             @if (carregandoMensagens()) {
               <p class="estado-chat" role="status">Atualizando conversa...</p>
             } @else if (!mensagens().length) {
-              <div class="inicio-chat"><strong>Conversa iniciada</strong><p>Este contato veio do anúncio <b>{{ acordo.anuncioTitulo }}</b>. As mensagens ficam disponíveis para os dois participantes, mesmo antes do aceite da proposta.</p></div>
+              <div class="inicio-chat"><strong>Conversa iniciada</strong><p>@if (acordo.anuncioTitulo) { Este contato veio do anúncio <b>{{ acordo.anuncioTitulo }}</b>. } As mensagens ficam disponíveis para os dois participantes. Você pode enviar uma mensagem ou iniciar uma proposta por aqui.</p></div>
             } @else {
               <ol class="lista-mensagens">
                 @for (mensagem of mensagens(); track mensagem.id) {
                   <li class="mensagem" [class.propria]="mensagem.remetenteId === perfil()?.id">
                     @if (mensagem.remetenteId !== perfil()?.id) { <small>{{ mensagem.remetenteNome }}</small> }
+                    @if (mensagem.anuncioTitulo) { <a class="contexto-mensagem" [routerLink]="['/anuncios', mensagem.anuncioId]">Sobre: {{ mensagem.anuncioTitulo }}</a> }
                     <p>{{ mensagem.conteudo }}</p>
+                    @if (mensagem.proposta; as proposta) {
+                    @if (proposta.formaPagamento) {
+                      <section class="cartao-proposta" aria-label="Termos da proposta">
+                        <div class="topo-proposta"><strong>{{ proposta.servico || 'Proposta' }}</strong><span>{{ propostaExpirada(proposta) && proposta.status === 'PENDENTE' ? 'Vencida' : proposta.status }}</span></div>
+                        @if (proposta.escopo) { <p>{{ proposta.escopo }}</p> }
+                        <strong>{{ termosPagamento(proposta) }}</strong>
+                        @if (proposta.duracao) { <small>Duração: {{ proposta.duracao }}</small> }
+                        @if (proposta.validadeEm) { <small>Válida até {{ proposta.validadeEm | date: 'dd/MM/yyyy' }}</small> }
+                        @if (propostaExpirada(proposta) && proposta.status === 'PENDENTE') {
+                          <p class="conversa-encerrada">O prazo desta proposta terminou. Envie uma nova proposta para continuar.</p>
+                          @if (perfil()?.id === proposta.proponenteId) {
+                            <button mat-button type="button" (click)="responderProposta(proposta, 'CANCELADA')" [disabled]="respondendoProposta() !== null">Encerrar proposta vencida</button>
+                          }
+                        } @else if (proposta.status === 'PENDENTE' && perfil()?.id === proposta.proponenteId) {
+                          <button mat-button type="button" (click)="responderProposta(proposta, 'CANCELADA')" [disabled]="respondendoProposta() !== null">Cancelar proposta</button>
+                        } @else if (proposta.status === 'PENDENTE' && perfil()?.id !== proposta.proponenteId) {
+                          <div class="acoes-proposta-mensagem">
+                            <button mat-button type="button" (click)="responderProposta(proposta, 'RECUSADA')" [disabled]="respondendoProposta() !== null">Recusar</button>
+                            <button mat-flat-button color="primary" type="button" (click)="responderProposta(proposta, 'ACEITA')" [disabled]="respondendoProposta() !== null">Aceitar proposta</button>
+                          </div>
+                        }
+                      </section>
+                    }
+                    }
                     <time [attr.datetime]="mensagem.enviadoEm">{{ mensagem.enviadoEm | date: 'dd/MM/yy, HH:mm' }}</time>
                   </li>
                 }
@@ -115,13 +145,60 @@
                 {{ enviando() ? 'Enviando...' : 'Enviar ➤' }}
               </button>
             </form>
-            <p class="nota-chat">Conversa privada vinculada a este anúncio. Pagamentos ainda são combinados fora da plataforma.</p>
+            <p class="nota-chat">Conversa privada entre os participantes. Pagamentos ainda são combinados fora da plataforma.</p>
+            @if (!mostrandoProposta()) {
+              <button mat-stroked-button type="button" class="abrir-proposta" (click)="abrirFormularioProposta(acordo)">
+                Enviar proposta no chat
+              </button>
+            } @else {
+                <form class="form-proposta-chat" (ngSubmit)="enviarProposta()" aria-label="Enviar proposta">
+                  <h3>Proposta comercial</h3>
+                  @if (carregandoAnunciosProposta()) {
+                    <p role="status">Carregando anúncios ativos...</p>
+                  } @else if (!anunciosDoInterlocutor().length) {
+                    <p>Esta pessoa ainda não tem anúncios ativos para receber uma proposta.</p>
+                  } @else {
+                    <label>Anúncio relacionado
+                      <select name="anuncioProposta" [(ngModel)]="proposta.anuncioId" (ngModelChange)="ajustarFormaPagamentoDaOferta()" required>
+                        @for (anuncio of anunciosDoInterlocutor(); track anuncio.id) {
+                          <option [ngValue]="anuncio.id">{{ anuncio.titulo }} · {{ anuncio.modalidade === 'troca' ? 'Troca' : 'Serviço' }}</option>
+                        }
+                      </select>
+                    </label>
+                  }
+                  <label>Serviço<input name="servicoProposta" [(ngModel)]="proposta.servico" maxlength="120" required /></label>
+                  <label>Escopo e entregas<textarea name="escopoProposta" [(ngModel)]="proposta.escopo" maxlength="4000" rows="3" required></textarea></label>
+                  @if (ofertaDaProposta()?.modalidade === 'troca') {
+                    <p class="aviso-troca">Troca combinada sem complemento em dinheiro.</p>
+                  } @else {
+                    <label>Forma de pagamento
+                      <select name="formaPagamento" [(ngModel)]="proposta.formaPagamento">
+                        <option value="A_VISTA">À vista</option>
+                        <option value="PARCELADO">Parcelado</option>
+                      </select>
+                    </label>
+                    <label>Valor (R$)<input name="valorProposta" type="number" min="0.01" step="0.01" [(ngModel)]="proposta.valor" required /></label>
+                    @if (proposta.formaPagamento === 'PARCELADO') {
+                      <label>Parcelas (2 a 12)<input name="parcelasProposta" type="number" min="2" max="12" step="1" [(ngModel)]="proposta.parcelas" required /></label>
+                    }
+                  }
+                  <label>Duração prevista<input name="duracaoProposta" [(ngModel)]="proposta.duracao" maxlength="120" placeholder="Ex.: 4 semanas" /></label>
+                  <label>Válida até<input name="validadeProposta" type="date" [(ngModel)]="proposta.validadeEm" /></label>
+                  <div class="acoes-proposta-chat">
+                    <button mat-button type="button" (click)="mostrandoProposta.set(false)">Cancelar</button>
+                    <button mat-flat-button color="primary" type="submit" [disabled]="enviandoProposta() || carregandoAnunciosProposta() || !ofertaDaProposta()">
+                      {{ enviandoProposta() ? 'Enviando...' : 'Enviar proposta' }}
+                    </button>
+                  </div>
+                  <small>O SkillSwap registra os termos; pagamentos continuam combinados fora da plataforma.</small>
+                </form>
+            }
           } @else {
             <p class="conversa-encerrada">Esta negociação foi encerrada. O histórico continua disponível para consulta.</p>
           }
         </section>
       } @else {
-        <section class="chat-vazio"><span class="ilustracao-chat" aria-hidden="true">↔</span><span class="marca-chat">SEU ESPAÇO PARA COMBINAR</span><h2>Boas conversas.<br />Novas possibilidades.</h2><p>Selecione uma negociação ao lado para conversar sobre o serviço, combinar detalhes e dar o próximo passo.</p><small>Mensagens privadas entre quem anuncia e quem entra em contato.</small><a mat-stroked-button routerLink="/anuncios">Encontrar um serviço</a></section>
+        <section class="chat-vazio"><span class="ilustracao-chat" aria-hidden="true">↔</span><span class="marca-chat">SEU ESPAÇO PARA COMBINAR</span><h2>Boas conversas.<br />Novas possibilidades.</h2><p>Selecione uma conversa ao lado para falar com a outra pessoa, combinar detalhes e enviar propostas.</p><small>Uma conversa privada por pessoa, com o contexto dos anúncios em cada mensagem.</small><a mat-stroked-button routerLink="/anuncios">Encontrar um serviço</a></section>
       }
     </div>
   }

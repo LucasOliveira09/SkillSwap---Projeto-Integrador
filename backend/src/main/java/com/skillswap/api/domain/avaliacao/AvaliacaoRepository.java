@@ -27,6 +27,9 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     @EntityGraph(attributePaths = {"avaliador", "avaliado", "acordo"})
     List<Avaliacao> findByAcordoId(Long acordoId);
 
+    @EntityGraph(attributePaths = {"avaliador", "acordo", "acordo.proposta", "acordo.proposta.anuncio"})
+    List<Avaliacao> findByAcordoPropostaAnuncioIdAndNotaAnuncioIsNotNullAndModeradaOcultaFalseOrderByCriadoEmDescIdDesc(Long anuncioId);
+
     @EntityGraph(attributePaths = {"avaliador", "avaliado", "acordo"})
     Optional<Avaliacao> findByIdAndAcordoId(Long id, Long acordoId);
 

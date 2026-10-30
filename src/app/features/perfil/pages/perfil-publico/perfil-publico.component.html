@@ -54,6 +54,13 @@
 
         <div class="acoes-perfil">
           @if (sessao.autenticado()) {
+            <button mat-flat-button type="button" (click)="iniciarConversa()" [disabled]="abrindoConversa()">
+              {{ abrindoConversa() ? 'Abrindo conversa...' : 'Conversar' }}
+            </button>
+          } @else {
+            <button mat-flat-button type="button" (click)="iniciarConversa()">Entrar para conversar</button>
+          }
+          @if (sessao.autenticado()) {
             @if (seguidores(); as estadoSeguidores) {
               @if (!estadoSeguidores.proprioPerfil) {
                 <button
@@ -82,7 +89,7 @@
             Ver serviços disponíveis
           </a>
           <a mat-button href="#secao-avaliacoes">Ler avaliações</a>
-          <p>Abra uma oferta para conferir detalhes e iniciar uma conversa.</p>
+          <p>Você terá uma conversa privada única com este profissional. O anúncio de origem fica registrado em cada mensagem.</p>
           @if (erroSeguimento()) {
             <p class="erro-seguimento" role="alert">{{ erroSeguimento() }}</p>
           }

@@ -12,6 +12,7 @@ import { EstadoSeguindo, PerfilProfissional, PublicacaoPortfolio } from '../../m
 import { Avaliacao } from '../../../negociacao/models/negociacao.model';
 import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
+import { ConversasApiService } from '../../../negociacao/data-access/conversas-api.service';
 
 interface EstadoPerfil {
   carregando: boolean;
@@ -63,10 +64,12 @@ export class PerfilPublicoComponent {
   private readonly router = inject(Router);
   private readonly perfilApi = inject(PerfilApiService);
   private readonly anunciosApi = inject(AnunciosApiService);
+  private readonly conversasApi = inject(ConversasApiService);
   protected readonly sessao = inject(SessaoService);
   private readonly atualizacao = new Subject<void>();
   private readonly estadoSeguindoAtual = signal<EstadoSeguindo | null>(null);
   protected readonly alterandoSeguimento = signal(false);
+  protected readonly abrindoConversa = signal(false);
   protected readonly erroSeguimento = signal('');
 
   protected readonly estado = toSignal(
@@ -159,6 +162,26 @@ export class PerfilPublicoComponent {
       error: () => {
         this.erroSeguimento.set('Não foi possível atualizar o seguimento. Tente novamente.');
         this.alterandoSeguimento.set(false);
+      },
+    });
+  }
+
+  protected iniciarConversa(): void {
+    const perfil = this.perfil();
+    if (!perfil || this.abrindoConversa()) return;
+    if (!this.sessao.autenticado()) {
+      void this.router.navigate(['/conta'], { queryParams: { retorno: `/profissionais/${perfil.id}` } });
+      return;
+    }
+    this.abrindoConversa.set(true);
+    this.conversasApi.abrirConversa(perfil.id).subscribe({
+      next: conversa => {
+        void this.router.navigate(['/mensagens'], { queryParams: { conversa: `chat-${conversa.id}` } });
+        this.abrindoConversa.set(false);
+      },
+      error: () => {
+        this.erroSeguimento.set('Não foi possível abrir a conversa. Tente novamente.');
+        this.abrindoConversa.set(false);
       },
     });
   }

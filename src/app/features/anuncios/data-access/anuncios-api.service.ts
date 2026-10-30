@@ -10,6 +10,8 @@ import {
   PaginaAnuncios,
   StatusAnuncioApi,
   VitrineApi,
+  ComentarioAnuncioApi,
+  AvaliacaoAnuncioApi,
 } from '../models/anuncio-api.model';
 
 @Injectable({ providedIn: 'root' })
@@ -34,10 +36,10 @@ export class AnunciosApiService {
       );
   }
 
-  listarDoUsuario(usuarioId: number, pagina = 0) {
+  listarDoUsuario(usuarioId: number, pagina = 0, tamanho = 6) {
     return this.http
       .get<PaginaAnuncios>(`/api/perfis/${usuarioId}/anuncios`, {
-        params: { pagina, tamanho: 6 },
+        params: { pagina, tamanho },
       })
       .pipe(
         map((resultado) => ({
@@ -68,6 +70,23 @@ export class AnunciosApiService {
     return this.http
       .get<AnuncioApi>(`${environment.apiUrl}/anuncios/${id}`)
       .pipe(map((anuncio) => this.converter(anuncio)));
+  }
+
+  comentarios(anuncioId: number, pagina = 0) {
+    return this.http.get<{ itens: readonly ComentarioAnuncioApi[]; pagina: number; totalPaginas: number; totalItens: number }>(
+      `/api/anuncios/${anuncioId}/comentarios`, { params: { pagina, tamanho: 30 } },
+    );
+  }
+
+  comentar(anuncioId: number, conteudo: string, respostaAId?: number) {
+    return this.http.post<ComentarioAnuncioApi>(`/api/anuncios/${anuncioId}/comentarios`, {
+      conteudo,
+      ...(respostaAId ? { respostaAId } : {}),
+    });
+  }
+
+  avaliacoesAnuncio(anuncioId: number) {
+    return this.http.get<readonly AvaliacaoAnuncioApi[]>(`/api/anuncios/${anuncioId}/avaliacoes`);
   }
 
   categorias() {

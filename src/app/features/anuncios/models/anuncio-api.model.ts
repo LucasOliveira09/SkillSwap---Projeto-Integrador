@@ -23,6 +23,27 @@ export interface AnuncioApi extends Omit<DadosAnuncio, 'categoria'> {
   quantidadeAvaliacoesAnuncio?: number;
 }
 
+export interface ComentarioAnuncioApi {
+  id: number;
+  anuncioId: number;
+  respostaAId: number | null;
+  autorNome: string;
+  conteudo: string;
+  criadoEm: string;
+  podeResponder: boolean;
+  podeDenunciar: boolean;
+}
+
+export interface AvaliacaoAnuncioApi {
+  id: number;
+  avaliadorNome: string;
+  nota: number;
+  notaAnuncio: number;
+  depoimento: string | null;
+  criadoEm: string;
+  respostaProfissional: string | null;
+}
+
 export type StatusAnuncioApi = AnuncioApi['status'];
 
 export interface PaginaAnuncios {

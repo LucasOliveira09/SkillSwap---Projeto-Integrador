@@ -2,5 +2,6 @@ package com.skillswap.api.domain.moderacao;
 
 public enum TipoConteudoDenunciado {
     PUBLICACAO,
-    AVALIACAO
+    AVALIACAO,
+    COMENTARIO_ANUNCIO
 }

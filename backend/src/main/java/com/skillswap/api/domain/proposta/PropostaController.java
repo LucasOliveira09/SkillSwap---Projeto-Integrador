@@ -3,6 +3,7 @@ package com.skillswap.api.domain.proposta;
 import com.skillswap.api.domain.proposta.dto.PropostaRequestDTO;
 import com.skillswap.api.domain.proposta.dto.PropostaResponseDTO;
 import com.skillswap.api.domain.proposta.dto.AtualizarStatusPropostaDTO;
+import com.skillswap.api.domain.proposta.dto.PropostaConversaRequestDTO;
 import com.skillswap.api.domain.anuncio.dto.PaginaDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,16 @@ import java.util.List;
 public class PropostaController {
 
     private final PropostaService propostaService;
+
+    @PostMapping("/conversas/{conversaId}/propostas")
+    public ResponseEntity<PropostaResponseDTO> criarNaConversa(
+            @PathVariable Long conversaId,
+            @RequestBody @Valid PropostaConversaRequestDTO dto,
+            Authentication authentication) {
+        var proposta = propostaService.criarNaConversa(conversaId, dto, (String) authentication.getPrincipal());
+        return ResponseEntity.created(java.net.URI.create("/api/propostas/" + proposta.getId()))
+                .body(propostaService.toResponseDTO(proposta));
+    }
 
     @PostMapping("/anuncios/{anuncioId}/propostas")
     public ResponseEntity<PropostaResponseDTO> criar(

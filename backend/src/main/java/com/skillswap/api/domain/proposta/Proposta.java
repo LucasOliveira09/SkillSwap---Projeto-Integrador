@@ -1,10 +1,13 @@
 package com.skillswap.api.domain.proposta;
 
 import com.skillswap.api.domain.anuncio.Anuncio;
+import com.skillswap.api.domain.conversa.Conversa;
 import com.skillswap.api.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "propostas")
@@ -19,6 +22,10 @@ public class Proposta {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversa_id")
+    private Conversa conversa;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "anuncio_id", nullable = false)
     private Anuncio anuncio;
 
@@ -28,6 +35,27 @@ public class Proposta {
 
     @Column(nullable = false, length = 500)
     private String mensagemInicial;
+
+    @Column(length = 120)
+    private String servico;
+
+    @Column(columnDefinition = "TEXT")
+    private String escopo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma_pagamento", length = 20)
+    private FormaPagamentoProposta formaPagamento;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal valor;
+
+    private Integer parcelas;
+
+    @Column(length = 120)
+    private String duracao;
+
+    @Column(name = "validade_em")
+    private LocalDate validadeEm;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

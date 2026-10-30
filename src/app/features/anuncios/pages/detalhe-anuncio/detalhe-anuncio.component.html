@@ -34,6 +34,10 @@
     } @else {
       <p class="reputacao-anuncio sem-notas">Este serviço ainda não tem avaliações.</p>
     }
+    <nav class="abas-anuncio" aria-label="Detalhes do anúncio">
+      <a href="#secao-comentarios">Comentários</a>
+      <a href="#secao-avaliacoes">Avaliações verificadas</a>
+    </nav>
 
     <!-- GRID PRINCIPAL DE DETALHES -->
     <div class="detalhe-layout">
@@ -112,13 +116,13 @@
           }
         </div>
 
-        <!-- SEÇÃO: PERGUNTAS E MENSAGENS AO ANUNCIANTE -->
+        <!-- CONTATO SEM MENSAGEM AVULSA FORA DA CONVERSA -->
         <div class="mensagens-card" id="secao-contato">
           <div class="mensagens-header">
             <app-icone nome="email" />
             <div>
               <h2>Converse com o anunciante</h2>
-              <p>Envie sua dúvida sobre horários, disponibilidade ou faça uma proposta.</p>
+              <p>Abra sua conversa privada para tirar dúvidas e enviar uma proposta.</p>
             </div>
           </div>
 
@@ -138,30 +142,11 @@
           @if (a.exemplo) {
             <p class="aviso-login">Anúncio ilustrativo: o contato não está disponível. Escolha uma oferta cadastrada por um profissional.</p>
           } @else if (sessao.autenticado()) {
-            <form (ngSubmit)="enviarMensagem()" class="form-mensagem">
-              <label for="campo-mensagem" class="sr-only">Sua mensagem para o anunciante</label>
-              <p id="origem-contato">Sua mensagem será vinculada ao anúncio <strong>{{ a.titulo }}</strong>.</p>
-              <textarea
-                id="campo-mensagem"
-                name="mensagemTexto"
-                [(ngModel)]="mensagemTexto"
-                rows="4" maxlength="500" aria-describedby="origem-contato"
-                placeholder="Olá! Gostaria de saber mais informações sobre o seu serviço..."
-                [disabled]="enviandoMensagem()"
-                required
-              ></textarea>
-              <div class="form-acoes">
-                <button
-                  mat-flat-button
-                  color="primary"
-                  type="submit"
-                  [disabled]="enviandoMensagem() || !mensagemTexto.trim() || mensagemTexto.length > 500"
-                >
-                  <app-icone nome="email" />
-                  {{ enviandoMensagem() ? 'Enviando...' : 'Enviar mensagem' }}
-                </button>
-              </div>
-            </form>
+            <p>Uma conversa por profissional. A mensagem e o contexto do anúncio ficam juntos no chat.</p>
+            <button mat-flat-button color="primary" type="button" (click)="entrarEmContato()" [disabled]="enviandoMensagem()">
+              <app-icone nome="email" />
+              {{ enviandoMensagem() ? 'Abrindo conversa...' : 'Abrir conversa e enviar mensagem' }}
+            </button>
           } @else {
             <div class="aviso-login">
               <p>Você precisa estar conectado à sua conta para enviar uma mensagem ao anunciante.</p>
@@ -176,6 +161,59 @@
             </div>
           }
         </div>
+
+        <section class="interacoes-anuncio" id="secao-comentarios" aria-labelledby="titulo-comentarios">
+          <header><div><span class="rotulo-secao">PERGUNTAS PÚBLICAS</span><h2 id="titulo-comentarios">Comentários e dúvidas</h2></div>
+            <span>{{ totalComentarios() }} comentários</span></header>
+          <p class="nota-comentarios">Comentários são públicos. Para conversar em privado com o profissional, use “Entrar em contato”.</p>
+          @if (erroInteracoes()) { <p class="erro-interacoes" role="alert">{{ erroInteracoes() }} <button type="button" (click)="recarregarInteracoes()">Tentar novamente</button></p> }
+          @if (carregandoInteracoes() && !comentarios().length) { <p role="status">Carregando comentários...</p> }
+          @else if (!comentarios().length && !a.exemplo) { <p class="vazio-interacoes">Ainda não há comentários. Faça a primeira pergunta.</p> }
+          @for (comentario of comentarios(); track comentario.id) {
+            <article class="comentario-anuncio" [class.resposta-comentario]="comentario.respostaAId">
+              <header><strong>{{ comentario.autorNome }}</strong><time [attr.datetime]="comentario.criadoEm">{{ comentario.criadoEm | date: 'dd/MM/yyyy, HH:mm' }}</time></header>
+              <p>{{ comentario.conteudo }}</p>
+              @if (comentario.podeResponder && sessao.autenticado() && !comentario.respostaAId) {
+                <button mat-button type="button" (click)="responderComentario(comentario)">Responder</button>
+              }
+              @if (comentario.podeDenunciar) {
+                <app-denunciar [tipoConteudo]="'COMENTARIO_ANUNCIO'" [recursoId]="comentario.id" />
+              }
+            </article>
+          }
+          @if (paginaComentarios() + 1 < totalPaginasComentarios()) {
+            <button mat-stroked-button type="button" (click)="carregarMaisComentarios()" [disabled]="carregandoMaisComentarios()">
+              {{ carregandoMaisComentarios() ? 'Carregando...' : 'Carregar mais comentários' }}
+            </button>
+          }
+          @if (a.exemplo) {
+            <p class="vazio-interacoes">Este anúncio ilustrativo não recebe comentários.</p>
+          } @else {
+            <form class="form-comentario" (ngSubmit)="enviarComentario()">
+              @if (respostaAId()) { <p>Respondendo ao comentário #{{ respostaAId() }} <button type="button" (click)="cancelarResposta()">Cancelar resposta</button></p> }
+              <label for="texto-comentario">{{ respostaAId() ? 'Sua resposta' : 'Escreva um comentário ou dúvida' }}</label>
+              <textarea id="texto-comentario" name="comentarioTexto" [(ngModel)]="comentarioTexto" maxlength="1000" rows="3" required></textarea>
+              <button mat-flat-button color="primary" type="submit" [disabled]="!comentarioTexto.trim() || comentarioTexto.length > 1000">{{ sessao.autenticado() ? 'Publicar comentário' : 'Entrar para comentar' }}</button>
+            </form>
+          }
+        </section>
+
+        <section class="interacoes-anuncio" id="secao-avaliacoes" aria-labelledby="titulo-avaliacoes-anuncio">
+          <header><div><span class="rotulo-secao">NEGOCIAÇÕES CONCLUÍDAS</span><h2 id="titulo-avaliacoes-anuncio">Avaliações do serviço</h2></div>
+            <span>{{ avaliacoesAnuncio().length }} avaliações</span></header>
+          @if (!avaliacoesAnuncio().length && !carregandoInteracoes() && !a.exemplo) {
+            <p class="vazio-interacoes">Este serviço ainda não recebeu avaliações verificadas.</p>
+          }
+          @for (avaliacao of avaliacoesAnuncio(); track avaliacao.id) {
+            <article class="avaliacao-anuncio">
+              <header><strong>{{ avaliacao.avaliadorNome }}</strong><time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'dd/MM/yyyy' }}</time></header>
+              <p class="nota-estrelas" [attr.aria-label]="avaliacao.notaAnuncio + ' de 5 estrelas'">{{ estrelas(avaliacao.notaAnuncio) }}</p>
+              @if (avaliacao.depoimento) { <p>{{ avaliacao.depoimento }}</p> }
+              @if (avaliacao.respostaProfissional) { <blockquote><strong>Resposta do profissional</strong><p>{{ avaliacao.respostaProfissional }}</p></blockquote> }
+            </article>
+          }
+          @if (a.exemplo) { <p class="vazio-interacoes">Este anúncio não possui avaliações reais.</p> }
+        </section>
       </section>
 
       <!-- COLUNA DIREITA: PREÇO, COMPRA E DADOS DO VENDEDOR -->
@@ -231,7 +269,7 @@
               mat-flat-button
               class="btn-cta-mensagem"
               type="button"
-              (click)="rolarParaMensagens()"
+              (click)="entrarEmContato()"
             >
               <app-icone nome="email" /> Entrar em contato
             </button>

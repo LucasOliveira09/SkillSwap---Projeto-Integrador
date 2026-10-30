@@ -44,12 +44,20 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
 
   afterEach(() => http.verify());
 
+  function responderInteracoes(anuncioId: number): void {
+    http.expectOne(`/api/anuncios/${anuncioId}/comentarios?pagina=0&tamanho=30`).flush({
+      itens: [], pagina: 0, tamanho: 30, totalItens: 0, totalPaginas: 0,
+    });
+    http.expectOne(`/api/anuncios/${anuncioId}/avaliacoes`).flush([]);
+  }
+
   it('carrega anúncio e exibe galeria, preço e informações do anunciante', async () => {
     const harness = await RouterTestingHarness.create('/anuncios/1');
     expect(harness.routeNativeElement?.textContent).toContain('Carregando informações');
 
     http.expectOne('/api/anuncios/1').flush(mockAnuncio);
     harness.detectChanges();
+    responderInteracoes(1);
 
     const texto = harness.routeNativeElement?.textContent || '';
     expect(texto).toContain('Aula de Violão Avançada');
@@ -65,7 +73,7 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     );
     expect(titulos[0]?.tagName).toBe('H1');
     expect(titulos[0]?.textContent?.trim()).toBe('Aula de Violão Avançada');
-    expect(titulos.map((titulo) => titulo.tagName)).toEqual(['H1', 'H2', 'H3', 'H2', 'H2']);
+    expect(titulos.map((titulo) => titulo.tagName)).toEqual(['H1', 'H2', 'H3', 'H2', 'H2', 'H2', 'H2']);
     expect(harness.routeNativeElement?.querySelectorAll('h1').length).toBe(1);
 
     const reputacao = harness.routeNativeElement?.querySelector('.reputacao-anuncio');
@@ -89,6 +97,7 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
       habilidadeDesejada: 'Aulas de Francês',
     });
     harness.detectChanges();
+    responderInteracoes(2);
 
     const texto = harness.routeNativeElement?.textContent || '';
     expect(texto).toContain('Disponível para troca');
@@ -105,33 +114,82 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     );
   });
 
-  it('permite enviar mensagem quando usuário estiver autenticado', async () => {
+  it('publica comentário autenticado e o acrescenta à lista persistida', async () => {
+    sessao.entrar('usuario@teste.invalid', '123456').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'mock-jwt-token' });
+    const harness = await RouterTestingHarness.create('/anuncios/1');
+    http.expectOne('/api/anuncios/1').flush(mockAnuncio);
+    harness.detectChanges();
+    responderInteracoes(1);
+
+    const componente = harness.routeDebugElement!.componentInstance as {
+      comentarioTexto: string;
+      enviarComentario(): void;
+    };
+    componente.comentarioTexto = 'Atende durante a semana?';
+    componente.enviarComentario();
+    harness.detectChanges();
+
+    const request = http.expectOne('/api/anuncios/1/comentarios');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ conteudo: 'Atende durante a semana?' });
+    request.flush({ id: 7, anuncioId: 1, respostaAId: null, autorNome: 'Visitante',
+      conteudo: 'Atende durante a semana?', criadoEm: '2026-10-30T13:00:00', podeResponder: false, podeDenunciar: true });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Atende durante a semana?');
+    expect(componente.comentarioTexto).toBe('');
+  });
+
+  it('carrega a próxima página pública de comentários sem substituir a primeira', async () => {
+    const harness = await RouterTestingHarness.create('/anuncios/1');
+    http.expectOne('/api/anuncios/1').flush(mockAnuncio);
+    harness.detectChanges();
+    http.expectOne('/api/anuncios/1/comentarios?pagina=0&tamanho=30').flush({
+      itens: [{ id: 1, anuncioId: 1, respostaAId: null, autorNome: 'Ana', conteudo: 'Primeira pergunta',
+        criadoEm: '2026-10-29T10:00:00', podeResponder: false, podeDenunciar: false }],
+      pagina: 0, tamanho: 30, totalItens: 31, totalPaginas: 2,
+    });
+    http.expectOne('/api/anuncios/1/avaliacoes').flush([]);
+    harness.detectChanges();
+
+    (harness.routeNativeElement?.querySelector('.interacoes-anuncio button') as HTMLButtonElement).click();
+    harness.detectChanges();
+    http.expectOne('/api/anuncios/1/comentarios?pagina=1&tamanho=30').flush({
+      itens: [{ id: 31, anuncioId: 1, respostaAId: null, autorNome: 'Bruno', conteudo: 'Última pergunta',
+        criadoEm: '2026-10-30T10:00:00', podeResponder: false, podeDenunciar: false }],
+      pagina: 1, tamanho: 30, totalItens: 31, totalPaginas: 2,
+    });
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Primeira pergunta');
+    expect(harness.routeNativeElement?.textContent).toContain('Última pergunta');
+  });
+
+  it('abre uma conversa contextualizada quando o usuário autenticado entra em contato', async () => {
     // Autentica via login mockado
     sessao.entrar('usuario@teste.invalid', '123456').subscribe();
     const reqLogin = http.expectOne('/api/sessoes');
     reqLogin.flush({ token: 'mock-jwt-token' });
 
     const harness = await RouterTestingHarness.create();
-    const component = await harness.navigateByUrl('/anuncios/1', DetalheAnuncioComponent);
+    await harness.navigateByUrl('/anuncios/1', DetalheAnuncioComponent);
     http.expectOne('/api/anuncios/1').flush(mockAnuncio);
     harness.detectChanges();
+    responderInteracoes(1);
 
     const navegar = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
-    component.mensagemTexto = 'Olá, gostaria de saber se atende aos sábados!';
-    harness.detectChanges();
-
-    const botao = harness.routeNativeElement?.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const botao = harness.routeNativeElement?.querySelector('.mensagens-card button') as HTMLButtonElement;
     expect(botao.disabled).toBeFalse();
     botao.click();
     botao.click();
     harness.detectChanges();
 
-    const reqMsg = http.expectOne('/api/anuncios/1/conversas');
-    expect(reqMsg.request.body.conteudo).toBe('Olá, gostaria de saber se atende aos sábados!');
-    reqMsg.flush({ id: 50, mensagemInicial: 'Olá, gostaria de saber se atende aos sábados!', status: 'PENDENTE' });
+    const reqMsg = http.expectOne('/api/conversas');
+    expect(reqMsg.request.body).toEqual({ destinatarioId: 10, anuncioId: 1 });
+    reqMsg.flush({ id: 50 });
     harness.detectChanges();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Mensagem salva na conversa deste anúncio');
-    expect(navegar).toHaveBeenCalledWith(['/mensagens'], { queryParams: { conversa: 50 } });
+    expect(navegar).toHaveBeenCalledWith(['/mensagens'], { queryParams: { conversa: 'chat-50', anuncioId: 1 } });
   });
 });
