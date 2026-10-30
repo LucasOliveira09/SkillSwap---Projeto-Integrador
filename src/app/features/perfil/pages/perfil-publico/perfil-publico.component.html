@@ -12,14 +12,17 @@
     <nav class="caminho" aria-label="Navegação estrutural">
       <a routerLink="/anuncios">Início</a>
       <span aria-hidden="true">›</span>
-      <span aria-current="page">Perfil profissional</span>
+      <a routerLink="/profissionais">Profissionais</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">{{ p.nome }}</span>
     </nav>
 
-    <section class="cabecalho-perfil" aria-labelledby="titulo-perfil">
+    <header class="cabecalho-perfil" aria-labelledby="titulo-perfil">
       <div class="capa-perfil">
         @if (p.capaUrl) {
           <img [src]="p.capaUrl" alt="" />
         }
+        <span>SkillSwap <span aria-hidden="true">·</span> perfil profissional</span>
       </div>
 
       <div class="identidade-perfil">
@@ -42,214 +45,257 @@
             @if (p.cidade) {
               <span><app-icone nome="local" /> {{ p.cidade }}</span>
             }
-            @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
-              <span class="reputacao">
-                <span aria-hidden="true">★</span>
-                {{ p.mediaNotas | number: '1.1-1' }}
-                ({{ p.quantidadeAvaliacoes }}
-                {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
-              </span>
-            } @else {
-              <span class="sem-avaliacoes">Ainda sem avaliações</span>
-            }
+            <span>No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</span>
           </div>
-          <p class="desde">No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</p>
         </div>
 
-        <a mat-flat-button color="primary" href="#titulo-ofertas">
-          Ver serviços e aulas
-        </a>
+        <div class="acoes-perfil">
+          <a mat-flat-button color="primary" href="#secao-servicos">
+            Ver serviços disponíveis
+          </a>
+          <a mat-button href="#secao-avaliacoes">Ler avaliações</a>
+          <p>Abra uma oferta para conferir detalhes e iniciar uma conversa.</p>
+        </div>
       </div>
-    </section>
 
-    <nav class="atalhos-perfil" aria-label="Seções do perfil">
-      <a href="#titulo-sobre">Sobre</a>
-      <a href="#titulo-portfolio">Portfólio <span>{{ estado().totalPublicacoes }}</span></a>
-      <a href="#titulo-ofertas">Serviços <span>{{ estado().totalOfertas }}</span></a>
-      <a href="#titulo-avaliacoes">Avaliações <span>{{ p.quantidadeAvaliacoes }}</span></a>
+      <div class="resumo-perfil" aria-label="Resumo profissional">
+        <div class="resumo-item reputacao">
+          <span class="resumo-valor">
+            @if (p.quantidadeAvaliacoes > 0 && p.mediaNotas !== null) {
+              <span aria-hidden="true">★</span> {{ p.mediaNotas | number: '1.1-1' }}
+            } @else {
+              —
+            }
+          </span>
+          <span class="resumo-rotulo">
+            @if (p.quantidadeAvaliacoes > 0) {
+              {{ p.quantidadeAvaliacoes }} {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }}
+            } @else {
+              Ainda sem avaliações
+            }
+          </span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-valor">
+            @if (!estado().erroOfertas) { {{ estado().totalOfertas }} } @else { — }
+          </span>
+          <span class="resumo-rotulo">serviços ativos</span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-valor">
+            @if (!estado().erroPublicacoes) { {{ estado().totalPublicacoes }} } @else { — }
+          </span>
+          <span class="resumo-rotulo">publicações no portfólio</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="atalhos-perfil" aria-label="Navegação do perfil profissional">
+      <a href="#secao-sobre">Sobre</a>
+      <a href="#secao-portfolio">
+        Portfólio
+        @if (!estado().erroPublicacoes) { <span>{{ estado().totalPublicacoes }}</span> }
+      </a>
+      <a href="#secao-servicos">
+        Serviços
+        @if (!estado().erroOfertas) { <span>{{ estado().totalOfertas }}</span> }
+      </a>
+      <a href="#secao-avaliacoes">
+        Avaliações
+        <span>{{ p.quantidadeAvaliacoes }}</span>
+      </a>
     </nav>
 
-    <section class="sobre secao" aria-labelledby="titulo-sobre">
-      <h2 id="titulo-sobre">Sobre o profissional</h2>
-      @if (p.bio) {
-        <p>{{ p.bio }}</p>
-      } @else {
-        <p class="vazio">Este profissional ainda não adicionou uma apresentação.</p>
-      }
-    </section>
+    <div class="conteudo-perfil">
+      <main class="coluna-conteudo">
+        <section id="secao-sobre" class="secao sobre" aria-labelledby="titulo-sobre">
+          <div class="titulo-secao">
+            <div>
+              <p class="sobretitulo">Conheça o profissional</p>
+              <h2 id="titulo-sobre">Sobre</h2>
+            </div>
+          </div>
+          @if (p.bio) {
+            <p class="texto-sobre">{{ p.bio }}</p>
+          } @else {
+            <p class="vazio">Este profissional ainda não adicionou uma apresentação.</p>
+          }
+        </section>
 
-    @if (p.linkedinUrl || p.instagramUrl || p.siteUrl) {
-      <section class="links-publicos secao" aria-labelledby="titulo-links">
-        <h2 id="titulo-links">Links profissionais</h2>
-        <div class="lista-links">
-          @if (p.linkedinUrl) { <a [href]="p.linkedinUrl" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a> }
-          @if (p.instagramUrl) { <a [href]="p.instagramUrl" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a> }
-          @if (p.siteUrl) { <a [href]="p.siteUrl" target="_blank" rel="noopener noreferrer">Site profissional <span aria-hidden="true">↗</span></a> }
-        </div>
-      </section>
-    }
+        <section id="secao-portfolio" class="secao portfolio" aria-labelledby="titulo-portfolio">
+          <div class="titulo-secao titulo-com-contagem">
+            <div>
+              <p class="sobretitulo">Trabalhos apresentados</p>
+              <h2 id="titulo-portfolio">Portfólio</h2>
+            </div>
+            @if (!estado().erroPublicacoes) {
+              <span>{{ estado().totalPublicacoes }} {{ estado().totalPublicacoes === 1 ? 'publicação' : 'publicações' }}</span>
+            }
+          </div>
+          <p class="descricao-secao">Fotos de serviços e projetos apresentados por {{ p.nome }}.</p>
 
-    <section class="avaliacoes secao" aria-labelledby="titulo-avaliacoes">
-      <h2 id="titulo-avaliacoes">Avaliações após trabalhos concluídos</h2>
-      @if (estado().erroAvaliacoes) {
-        <p class="vazio erro" role="alert">
-          Não foi possível carregar as avaliações agora.
-          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
-        </p>
-      } @else if (!avaliacoes().length) {
-        <p class="vazio">Ainda não há avaliações de trabalhos concluídos.</p>
-      } @else {
-        <div class="lista-avaliacoes">
-          @for (avaliacao of avaliacoes(); track avaliacao.id) {
-            <article class="avaliacao-publica">
-              <div class="avaliacao-cabecalho">
-                <strong>{{ avaliacao.avaliadorNome }}</strong>
-                <time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
-              </div>
-              <p class="notas-avaliacao">
-                <span>
-                  Profissional:
-                  <b
-                    role="img"
-                    [attr.aria-label]="'Nota do profissional: ' + avaliacao.nota + ' de 5 estrelas'"
-                    >{{ estrelas(avaliacao.nota) }}</b
-                  >
-                </span>
-                @if (avaliacao.notaAnuncio) {
-                  <span>
-                    Serviço:
-                    <b
-                      role="img"
-                      [attr.aria-label]="'Nota do serviço: ' + avaliacao.notaAnuncio + ' de 5 estrelas'"
-                      >{{ estrelas(avaliacao.notaAnuncio) }}</b
-                    >
-                  </span>
-                }
-              </p>
-              @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }
-              @if (avaliacao.respostaProfissional) {
-                <aside class="resposta-profissional">
-                  <strong>Resposta de {{ avaliacao.avaliadoNome }}</strong>
-                  <p>{{ avaliacao.respostaProfissional }}</p>
-                  @if (avaliacao.respondidaEm) {
-                    <time [attr.datetime]="avaliacao.respondidaEm">{{ avaliacao.respondidaEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
-                  }
-                </aside>
+          @if (estado().erroPublicacoes) {
+            <p class="vazio erro" role="alert">
+              Não foi possível carregar o portfólio agora.
+              <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+            </p>
+          } @else if (publicacoes().length === 0) {
+            <p class="vazio">Este profissional ainda não publicou fotos de trabalhos.</p>
+          } @else {
+            <div class="lista-publicacoes">
+              @for (publicacao of publicacoes(); track publicacao.id) {
+                <article class="publicacao">
+                  <div class="fotos-publicacao">
+                    @for (foto of publicacao.fotos; track foto; let indice = $index) {
+                      <img [src]="foto" [alt]="'Foto ' + (indice + 1) + ' do trabalho de ' + p.nome" loading="lazy" />
+                    }
+                  </div>
+                  <div class="texto-publicacao">
+                    <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
+                    @if (publicacao.anuncioId && publicacao.anuncioTitulo) {
+                      <a [routerLink]="['/anuncios', publicacao.anuncioId]">{{ publicacao.anuncioTitulo }}</a>
+                    }
+                    <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                    <app-denunciar [tipoConteudo]="'PUBLICACAO'" [recursoId]="publicacao.id" />
+                  </div>
+                </article>
               }
-              <app-denunciar [tipoConteudo]="'AVALIACAO'" [recursoId]="avaliacao.id" />
-            </article>
+            </div>
+            @if (estado().totalPaginasPublicacoes > 1) {
+              <nav class="paginacao paginacao-publicacoes" aria-label="Páginas do portfólio">
+                <button mat-stroked-button type="button" [disabled]="estado().paginaPublicacoes === 0"
+                  (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes - 1)">Anteriores</button>
+                <span>Página {{ estado().paginaPublicacoes + 1 }} de {{ estado().totalPaginasPublicacoes }}</span>
+                <button mat-stroked-button type="button"
+                  [disabled]="estado().paginaPublicacoes >= estado().totalPaginasPublicacoes - 1"
+                  (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes + 1)">Próximas</button>
+              </nav>
+            }
           }
-        </div>
-      }
-    </section>
+        </section>
 
-    <section class="portfolio secao" aria-labelledby="titulo-portfolio">
-      <div class="titulo-ofertas">
-        <div>
-          <h2 id="titulo-portfolio">Trabalhos e portfólio</h2>
-          <p>Fotos de serviços e projetos apresentados por {{ p.nome }}.</p>
-        </div>
-        @if (!estado().erroPublicacoes) {
-          <span>{{ estado().totalPublicacoes }} {{ estado().totalPublicacoes === 1 ? 'publicação' : 'publicações' }}</span>
-        }
-      </div>
+        <section id="secao-avaliacoes" class="secao avaliacoes" aria-labelledby="titulo-avaliacoes">
+          <div class="titulo-secao titulo-com-contagem">
+            <div>
+              <p class="sobretitulo">Experiências de clientes</p>
+              <h2 id="titulo-avaliacoes">Avaliações</h2>
+            </div>
+            <span>{{ p.quantidadeAvaliacoes }} {{ p.quantidadeAvaliacoes === 1 ? 'avaliação' : 'avaliações' }}</span>
+          </div>
+          <p class="descricao-secao">Avaliações publicadas após trabalhos concluídos.</p>
 
-      @if (estado().erroPublicacoes) {
-        <p class="vazio erro" role="alert">
-          Não foi possível carregar o portfólio agora.
-          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
-        </p>
-      } @else if (publicacoes().length === 0) {
-        <p class="vazio">Este profissional ainda não publicou fotos de trabalhos.</p>
-      } @else {
-        <div class="lista-publicacoes">
-          @for (publicacao of publicacoes(); track publicacao.id) {
-            <article class="publicacao">
-              <div class="fotos-publicacao">
-                @for (foto of publicacao.fotos; track foto; let indice = $index) {
-                  <img [src]="foto" [alt]="'Foto ' + (indice + 1) + ' do trabalho de ' + p.nome" loading="lazy" />
-                }
-              </div>
-              <div class="texto-publicacao">
-                <p>{{ publicacao.legenda || 'Trabalho realizado' }}</p>
-                @if (publicacao.anuncioId && publicacao.anuncioTitulo) {
-                  <a [routerLink]="['/anuncios', publicacao.anuncioId]">{{ publicacao.anuncioTitulo }}</a>
-                }
-                <time [attr.datetime]="publicacao.criadoEm">{{ publicacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
-                <app-denunciar [tipoConteudo]="'PUBLICACAO'" [recursoId]="publicacao.id" />
-              </div>
-            </article>
+          @if (estado().erroAvaliacoes) {
+            <p class="vazio erro" role="alert">
+              Não foi possível carregar as avaliações agora.
+              <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+            </p>
+          } @else if (!avaliacoes().length) {
+            <p class="vazio">Ainda não há avaliações de trabalhos concluídos.</p>
+          } @else {
+            <div class="lista-avaliacoes">
+              @for (avaliacao of avaliacoes(); track avaliacao.id) {
+                <article class="avaliacao-publica">
+                  <div class="avaliacao-cabecalho">
+                    <strong>{{ avaliacao.avaliadorNome }}</strong>
+                    <time [attr.datetime]="avaliacao.criadoEm">{{ avaliacao.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                  </div>
+                  <p class="notas-avaliacao">
+                    <span>Profissional: <b role="img" [attr.aria-label]="'Nota do profissional: ' + avaliacao.nota + ' de 5 estrelas'">{{ estrelas(avaliacao.nota) }}</b></span>
+                    @if (avaliacao.notaAnuncio) {
+                      <span>Serviço: <b role="img" [attr.aria-label]="'Nota do serviço: ' + avaliacao.notaAnuncio + ' de 5 estrelas'">{{ estrelas(avaliacao.notaAnuncio) }}</b></span>
+                    }
+                  </p>
+                  @if (avaliacao.depoimento) { <p class="depoimento">{{ avaliacao.depoimento }}</p> }
+                  @if (avaliacao.respostaProfissional) {
+                    <aside class="resposta-profissional">
+                      <strong>Resposta de {{ avaliacao.avaliadoNome }}</strong>
+                      <p>{{ avaliacao.respostaProfissional }}</p>
+                      @if (avaliacao.respondidaEm) {
+                        <time [attr.datetime]="avaliacao.respondidaEm">{{ avaliacao.respondidaEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                      }
+                    </aside>
+                  }
+                  <app-denunciar [tipoConteudo]="'AVALIACAO'" [recursoId]="avaliacao.id" />
+                </article>
+              }
+            </div>
           }
-        </div>
-        @if (estado().totalPaginasPublicacoes > 1) {
-          <nav class="paginacao-publicacoes" aria-label="Páginas do portfólio">
-            <button mat-stroked-button type="button" [disabled]="estado().paginaPublicacoes === 0"
-              (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes - 1)">Anteriores</button>
-            <span>Página {{ estado().paginaPublicacoes + 1 }} de {{ estado().totalPaginasPublicacoes }}</span>
-            <button mat-stroked-button type="button"
-              [disabled]="estado().paginaPublicacoes >= estado().totalPaginasPublicacoes - 1"
-              (click)="mudarPaginaPublicacoes(estado().paginaPublicacoes + 1)">Próximas</button>
-          </nav>
-        }
-      }
-    </section>
+        </section>
+      </main>
 
-    <section class="ofertas secao" aria-labelledby="titulo-ofertas">
-      <div class="titulo-ofertas">
-        <div>
-          <h2 id="titulo-ofertas">Serviços e aulas</h2>
-          <p>Ofertas publicadas por {{ p.nome }}.</p>
-        </div>
-        @if (!estado().erroOfertas) {
-          <span>{{ estado().totalOfertas }} {{ estado().totalOfertas === 1 ? 'oferta' : 'ofertas' }}</span>
-        }
-      </div>
+      <aside class="coluna-lateral">
+        <section id="secao-servicos" class="secao ofertas" aria-labelledby="titulo-ofertas">
+          <div class="titulo-secao titulo-com-contagem">
+            <div>
+              <p class="sobretitulo">Contrate ou troque</p>
+              <h2 id="titulo-ofertas">Serviços e aulas</h2>
+            </div>
+            @if (!estado().erroOfertas) {
+              <span>{{ estado().totalOfertas }}</span>
+            }
+          </div>
+          <p class="descricao-secao">Ofertas publicadas por {{ p.nome }}.</p>
 
-      @if (estado().erroOfertas) {
-        <p class="vazio erro erro-ofertas" role="alert">
-          Não foi possível carregar as ofertas agora.
-          <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
-        </p>
-      } @else if (ofertas().length === 0) {
-        <p class="vazio">Este profissional ainda não tem ofertas ativas.</p>
-      } @else {
-        <div class="lista-ofertas">
-          @for (oferta of ofertas(); track oferta.id) {
-            <article class="oferta">
-              <div class="imagem-oferta">
-                @if (oferta.imagem) {
-                  <img [src]="oferta.imagem" [alt]="oferta.titulo" loading="lazy" />
-                } @else {
-                  <app-icone nome="troca" />
-                }
-              </div>
-              <div class="dados-oferta">
-                <p>{{ oferta.categoriaRotulo }}</p>
-                <h3><a [routerLink]="['/anuncios', oferta.id]">{{ oferta.titulo }}</a></h3>
-                <span>{{ oferta.cidade }}</span>
-              </div>
-              <strong class="preco-oferta">
-                @if (oferta.modalidade === 'troca') {
-                  Troca
-                } @else if (oferta.preco !== null) {
-                  {{ oferta.preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
-                  <small>{{ oferta.unidade }}</small>
-                }
-              </strong>
-            </article>
+          @if (estado().erroOfertas) {
+            <p class="vazio erro erro-ofertas" role="alert">
+              Não foi possível carregar as ofertas agora.
+              <button mat-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+            </p>
+          } @else if (ofertas().length === 0) {
+            <p class="vazio">Este profissional ainda não tem ofertas ativas.</p>
+          } @else {
+            <div class="lista-ofertas">
+              @for (oferta of ofertas(); track oferta.id) {
+                <article class="oferta">
+                  <a class="imagem-oferta" [routerLink]="['/anuncios', oferta.id]" [attr.aria-label]="'Ver oferta: ' + oferta.titulo">
+                    @if (oferta.imagem) {
+                      <img [src]="oferta.imagem" [alt]="oferta.titulo" loading="lazy" />
+                    } @else {
+                      <app-icone nome="troca" />
+                    }
+                  </a>
+                  <div class="dados-oferta">
+                    <p>{{ oferta.categoriaRotulo }}</p>
+                    <h3><a [routerLink]="['/anuncios', oferta.id]">{{ oferta.titulo }}</a></h3>
+                    <span>{{ oferta.cidade }}</span>
+                    <strong class="preco-oferta">
+                      @if (oferta.modalidade === 'troca') {
+                        Troca
+                      } @else if (oferta.preco !== null) {
+                        {{ oferta.preco | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+                        <small>{{ oferta.unidade }}</small>
+                      }
+                    </strong>
+                    <a class="link-contato-oferta" [routerLink]="['/anuncios', oferta.id]">Ver detalhes e entrar em contato <span aria-hidden="true">→</span></a>
+                  </div>
+                </article>
+              }
+            </div>
+            @if (estado().totalPaginasOfertas > 1) {
+              <nav class="paginacao paginacao-ofertas" aria-label="Páginas de ofertas">
+                <button mat-stroked-button type="button" [disabled]="estado().paginaOfertas === 0"
+                  (click)="mudarPaginaOfertas(estado().paginaOfertas - 1)">Anteriores</button>
+                <span>Página {{ estado().paginaOfertas + 1 }} de {{ estado().totalPaginasOfertas }}</span>
+                <button mat-stroked-button type="button"
+                  [disabled]="estado().paginaOfertas >= estado().totalPaginasOfertas - 1"
+                  (click)="mudarPaginaOfertas(estado().paginaOfertas + 1)">Próximas</button>
+              </nav>
+            }
           }
-        </div>
-        @if (estado().totalPaginasOfertas > 1) {
-          <nav class="paginacao-ofertas" aria-label="Páginas de ofertas">
-            <button mat-stroked-button type="button" [disabled]="estado().paginaOfertas === 0"
-              (click)="mudarPaginaOfertas(estado().paginaOfertas - 1)">Anteriores</button>
-            <span>Página {{ estado().paginaOfertas + 1 }} de {{ estado().totalPaginasOfertas }}</span>
-            <button mat-stroked-button type="button"
-              [disabled]="estado().paginaOfertas >= estado().totalPaginasOfertas - 1"
-              (click)="mudarPaginaOfertas(estado().paginaOfertas + 1)">Próximas</button>
-          </nav>
+        </section>
+
+        @if (p.linkedinUrl || p.instagramUrl || p.siteUrl) {
+          <section class="secao links-lateral" aria-labelledby="titulo-links">
+            <p class="sobretitulo">Mais informações</p>
+            <h2 id="titulo-links">Links profissionais</h2>
+            <div class="links-publicos">
+              @if (p.linkedinUrl) { <a [href]="p.linkedinUrl" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a> }
+              @if (p.instagramUrl) { <a [href]="p.instagramUrl" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a> }
+              @if (p.siteUrl) { <a [href]="p.siteUrl" target="_blank" rel="noopener noreferrer">Site profissional <span aria-hidden="true">↗</span></a> }
+            </div>
+          </section>
         }
-      }
-    </section>
+      </aside>
+    </div>
   }
 </section>

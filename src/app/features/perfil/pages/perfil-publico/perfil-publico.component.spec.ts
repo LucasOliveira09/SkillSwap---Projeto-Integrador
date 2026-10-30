@@ -103,7 +103,7 @@ describe('PerfilPublicoComponent', () => {
 
     expect(harness.routeNativeElement?.querySelector('.capa-perfil img')?.getAttribute('src'))
       .toBe('/api/uploads/capa-profissional.png');
-    const linkedin = harness.routeNativeElement?.querySelector<HTMLAnchorElement>('.lista-links a');
+    const linkedin = harness.routeNativeElement?.querySelector<HTMLAnchorElement>('.links-publicos a');
     expect(linkedin?.href).toBe('https://www.linkedin.com/in/ana-lima');
     expect(linkedin?.rel).toContain('noopener');
 
@@ -126,15 +126,28 @@ describe('PerfilPublicoComponent', () => {
       ),
     ).not.toBeNull();
     expect(texto).toContain('Instalação de luminária');
-    expect(texto).toContain('Trabalhos e portfólio');
+    expect(texto).toContain('Portfólio');
     expect(texto).toContain('Instalação concluída');
-    expect(texto).toContain('Avaliações após trabalhos concluídos');
+    expect(texto).toContain('Avaliações publicadas após trabalhos concluídos.');
     expect(texto).toContain('Bruno Cliente');
     expect(texto).toContain('Serviço pontual e bem executado.');
     expect(texto).toContain('Agradeço a confiança.');
     expect(texto).toContain('Links profissionais');
     expect(texto).toContain('Serviço:');
     expect(texto).not.toContain('ana@');
+
+    const navegacao = harness.routeNativeElement?.querySelector(
+      '[aria-label="Navegação do perfil profissional"]',
+    );
+    expect(navegacao).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="#secao-sobre"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="#secao-portfolio"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="#secao-servicos"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="#secao-avaliacoes"]')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('#secao-sobre')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('#secao-portfolio')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('#secao-servicos')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('#secao-avaliacoes')).not.toBeNull();
   });
 
   it('trata perfil ausente sem inventar dados', async () => {
@@ -258,7 +271,7 @@ describe('PerfilPublicoComponent', () => {
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
     harness.detectChanges();
-    expect(harness.routeNativeElement?.textContent).toContain('7 ofertas');
+    expect(harness.routeNativeElement?.textContent).toContain('7 serviços ativos');
 
     const proxima = Array.from(harness.routeNativeElement!.querySelectorAll('.paginacao-ofertas button'))
       .find((button) => button.textContent?.includes('Próximas')) as HTMLButtonElement;

@@ -1,7 +1,7 @@
 # Auditoria e plano: perfis profissionais e marketplace social
 
 Data da auditoria: 30/10/2026
-Escopo desta entrega: leitura do repositório e planejamento. Nenhum código, banco, migração ou publicação foi alterado.
+Escopo inicial: auditoria do repositório e planejamento. Em 30/10/2026, a Etapa 1 foi implementada somente no frontend, usando contratos e dados existentes; nenhuma tabela, API, migração ou publicação foi alterada.
 
 ## Diagnóstico atual
 
@@ -61,9 +61,11 @@ O calendário declarado em ofertas não equivale a um indicador global de “ace
 - Upload de vídeo não é compatível com o armazenamento atual, que aceita apenas JPG/PNG/GIF. Vídeo exigirá decisão separada de formato, limites, conversão/serviço de mídia, retenção, moderação e impacto na quota/disco.
 - Regressões principais: divergência do layout legado; perda de estados de seção; cartão de oferta duplicado; CTA que abre conversa sem contexto de anúncio; exposição de dados privados; métricas sem fonte; acessibilidade/overflow em telas estreitas.
 
-## Plano incremental — não autorizado para execução automática
+## Plano incremental
 
 ### Etapa 1 — Página pública com dados existentes
+
+**Estado: implementada em 30/10/2026.** Reorganiza a página pública e preserva os dados, estados e rotas existentes. Testes completos, build, typecheck e conferência visual em 320, 768 e 1440 px passaram; a captura de 390 px também foi conferida após o ajuste mobile. Não houve deploy.
 
 Redesenhar a hierarquia da página profissional usando somente dados e recursos já persistidos: identidade e reputação na abertura, chamadas para ofertas e contato contextual, navegação clara por seções, portfólio visual, ofertas e avaliações. Manter a identidade original do SkillSwap e os estados de carregamento, erro, repetição e vazio existentes. Não apresentar botões de seguir, disponibilidade ou contagens ainda inexistentes como funcionais.
 
@@ -108,4 +110,4 @@ Manter ofertas e conversas por anúncio existentes. Exibir avaliações somente 
 
 ## Estado
 
-Auditoria e proposta incremental registradas; implementação não iniciada. Próximo checkpoint: revisar a proposta da Etapa 1 e responder decisões de produto necessárias antes de apresentar a implementação da primeira fatia.
+Auditoria e proposta incremental registradas. A Etapa 1 foi implementada com os endpoints e dados existentes. `npm run typecheck`, `npm run build` e `npm run test:ci` (117 testes) passaram. Chromium não mostrou erros de página, console ou respostas HTTP com erro nas capturas concluídas; responsividade foi conferida em 320, 390, 768 e 1440 px. As demais etapas continuam pendentes. Para a mudança independente de conversas/propostas solicitada depois, consulte [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md).
