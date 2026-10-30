@@ -189,4 +189,5 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Registrar o diagnóstico, contrato REST candidato, modelo de preço parametrizado, incrementos, riscos e critérios em [servicos-configuraveis-e-propostas-plano.md](servicos-configuraveis-e-propostas-plano.md).
 - [x] Reproduzir a navegação de seção do perfil: `href="#secao-servicos"` resolve para a raiz por causa de `<base href="/">` e abre o catálogo.
 - [x] Confirmar que as duas revisões (anúncio e proposta) entram no escopo e que ambos os participantes podem propor na conversa existente.
-- [ ] Definir se a contraproposta substitui a pendente do mesmo anúncio ou se propostas pendentes podem coexistir; depois implementar as fatias aprovadas, sem pagamento integrado.
+- [x] Refinar o plano: anúncio define operação do serviço, cobrança, tarifas, parâmetros e condições de pagamento; a proposta só preenche os valores permitidos. Ambos podem iniciar proposta; contraproposta substitui a anterior preservando histórico.
+- [ ] Implementar por incrementos após o plano detalhado; pagamentos continuam fora da plataforma nesta fase.

@@ -1,6 +1,6 @@
 # Plano: serviços parametrizados e propostas no chat
 
-**Estado:** diagnóstico atualizado com as respostas do usuário; implementação ainda não iniciada. Nenhum código, dado público ou container foi alterado nesta etapa.
+**Estado:** planejamento refinado; as funcionalidades de anúncio parametrizado e negociação descritas aqui ainda não foram implementadas. A limpeza de anúncios demonstrativos já feita na VPS está registrada em `docs/backend.md`.
 
 ## O que encontrei
 
@@ -15,68 +15,100 @@
 
 Arquivos que representam os fluxos atuais: `src/app/features/perfil/pages/meu-perfil/`, `src/app/features/anuncios/pages/cadastro-anuncio/`, `src/app/features/anuncios/anuncios.routes.ts`, `src/app/features/negociacao/pages/caixa-mensagens/`, `backend/src/main/java/com/skillswap/api/domain/anuncio/`, `backend/src/main/java/com/skillswap/api/domain/proposta/` e `docs/backend.md`.
 
-## Direção recomendada
+## Regra central do produto
 
-1. **Separar categoria de tipo de serviço.** A categoria organiza a busca; o tipo descreve o serviço. Exemplos iniciais podem incluir Transporte → corrida/táxi e mudança, mas a lista precisa ser validada com o grupo. A API passa a servir um catálogo persistido e extensível, sem adicionar um enum Java a cada nova opção. Para evitar categorias duplicadas e abusivas, começar com catálogo administrado; oferecer “Outro serviço” com título livre e categoria existente. Decidir depois se haverá gestão administrativa de categorias.
-2. **Configurar o anúncio como uma oferta, não como um formulário universal.** O anunciante escolhe um ou mais modelos de cobrança suportados e define valores, limites e campos que o cliente deve preencher. Tipos de campo seguros: texto curto, número/unidade, data, escolha e sim/não. O catálogo pode sugerir campos, mas o anunciante ativa e configura somente os necessários.
-3. **Permitir composição de preço.** Modelos iniciais: valor fixo, por hora, por km, por unidade e orçamento após avaliação. Uma oferta pode combinar itens: mudança por km + horas de equipe; corrida por km + tarifa inicial. Cada item guarda unidade, preço unitário, mínimo/quantidade opcional e regra de arredondamento. Fórmulas ficam limitadas a multiplicação e soma de itens definidos pelo servidor; não aceitar expressões de código do usuário.
-4. **Calcular no backend.** A proposta informa opção de cobrança e quantidades/campos. O servidor valida a configuração vigente do anúncio, calcula subtotais e total com `BigDecimal`, aplica limites e devolve a memória do cálculo. O navegador nunca é a autoridade do preço.
-5. **Congelar os termos da proposta.** Ao enviar, salvar uma cópia dos rótulos, unidades, taxas, quantidades e subtotais. Alterar o anúncio depois não muda uma proposta já enviada. Propostas antigas, sem parâmetros, continuam sendo exibidas no formato atual.
-6. **Abrir um modal de proposta no chat.** No desktop, diálogo central; no celular, tela/modal de largura total. O fluxo mostra o participante e o contexto, deixa escolher um anúncio ativo, carrega os parâmetros configurados nele, calcula uma prévia e apresenta a revisão final antes de enviar. Erros e cancelamento não apagam o rascunho nem a conversa.
-7. **Revisar o destino após edição.** O sucesso de editar anúncio deve dar uma confirmação explícita em “Meus anúncios” e não parecer que descartou a alteração. Para edição de perfil, manter o usuário na própria edição e oferecer link claro para ver o perfil público. Corrigir o redirecionamento relatado depois de confirmar o fluxo exato.
+**O anúncio é a ficha completa de como o serviço funciona e como é cobrado. A proposta não cria nem redefine o serviço: ela preenche a ficha para um atendimento específico.** O anunciante configura uma vez as regras e os limites da oferta. No chat, qualquer participante da conversa pode iniciar uma proposta escolhendo uma oferta dos participantes e preenchendo apenas os campos que essa oferta permite. A outra pessoa aceita, recusa ou envia uma contraproposta baseada na mesma configuração.
 
-### Exemplos de comportamento
+### O que o anunciante configura antes de publicar
 
-| Anúncio | Configurado pelo profissional | Informado pelo cliente na proposta | Revisão calculada |
-| --- | --- | --- | --- |
-| Corrida/táxi | R$/km, tarifa inicial, mínimo | origem/destino ou km estimados, data/horário | tarifa inicial + km × preço/km |
-| Mudança | R$/km e R$/hora; mínimo de horas; avaliação presencial opcional | distância estimada, horas/equipe ou pedido de vistoria | soma dos itens configurados, com aviso de estimativa quando aplicável |
-| Aula | R$/hora, sessão fixa ou pacote | duração, quantidade de sessões e objetivo | preço por unidade × quantidade, com duração total |
+1. **Identidade do serviço:** categoria para busca, tipo de serviço, título, descrição, local/região atendida, o que está incluído, o que não está incluído e condições de agendamento. O catálogo sugere categorias e campos; o anunciante completa os detalhes da própria oferta.
+2. **Como o preço é formado (modelo de cobrança):** preço único por serviço/pacote, por hora, por quilômetro, por unidade/sessão/diária, composição de itens ou “orçamento após avaliação”. Não confundir essa regra de cálculo com a forma e o momento do pagamento.
+3. **Tarifas e limites:** valor por unidade, tarifa inicial, mínimo cobrado, quantidade mínima/máxima, duração incluída, adicionais e arredondamento. O anunciante define somente itens compatíveis com o modelo escolhido. A fórmula permitida é soma de componentes e tarifa × quantidade; nunca uma expressão ou código livre.
+4. **Dados necessários para cada pedido:** parâmetros tipados e configurados pelo anunciante, como distância, horas, número de pessoas, quantidade de aulas, data, endereço aproximado ou opções de serviço. Para cada campo, define rótulo, tipo, unidade, obrigatoriedade, limites e opções permitidas. O cliente não pode acrescentar campos nem editar tarifas na proposta.
+5. **Como o pagamento pode ser combinado:** opções aceitas (à vista ou parcelado em até 12 vezes, quando permitido), métodos aceitos pelo profissional e momento previsto (antecipado, por etapa ou após a entrega). Estes são termos declarados no anúncio; a plataforma não coleta, processa, retém nem confirma pagamentos nesta fase. Em troca, a oferta informa a habilidade desejada e não permite complemento em dinheiro.
+6. **Margem de negociação, se houver:** o anunciante pode declarar se aceita contraproposta e que partes podem variar. A tarifa-base não muda em silêncio. Para cobrança calculável, uma contraproposta recalcula quantidades ou escolhe outra condição já permitida; um preço manual só existe se a oferta configurar explicitamente “orçamento após avaliação” ou uma margem/valor negociável.
 
-Se a distância ou o volume depender de vistoria, o profissional configura “orçamento após avaliação”; a proposta não inventa um total nem confirma contratação antes de os dois lados aceitarem os termos.
+O catálogo começa administrado e extensível, sem enum Java para cada novo tipo. “Outro serviço” pode usar título livre dentro de uma categoria existente. Os templates sugerem campos, mas os campos/tarifas efetivamente aceitos são persistidos na versão do anúncio e revisados pelo anunciante antes da publicação.
+
+### O que a pessoa preenche na proposta
+
+- Seleciona uma oferta participante da conversa e vê, em contexto, o profissional, o serviço e as condições que já foram publicados.
+- Informa apenas os dados daquele atendimento: por exemplo, km estimados, horas, quantidade, data e opções definidas no anúncio.
+- Escolhe somente condições de pagamento que o anúncio permite. A interface separa claramente **modelo de cobrança** (por km/hora/fixo) de **condição de pagamento** (à vista/parcelado e quando pagar).
+- Confere a memória de cálculo e o total estimado antes de enviar. Se o modelo depender de vistoria, envia um pedido de orçamento sem exibir um total fictício.
+
+O backend valida todos os campos contra a versão do anúncio e calcula com precisão decimal. A tela pode pré-visualizar o cálculo, mas o valor devolvido pelo servidor é a referência. O anúncio continua sendo a fonte das regras; proposta e acordo guardam snapshots para que futuras edições não mudem o que foi negociado.
+
+### Aceite e contraproposta no chat
+
+- O anúncio abre ou reutiliza a conversa canônica do par. Não se cria outra conversa para negociar outro serviço com a mesma pessoa.
+- Ambos os participantes podem iniciar uma proposta na conversa. Cada proposta identifica autor, destinatário e oferta; o serviço selecionado pode pertencer a qualquer um dos participantes, nunca a uma terceira pessoa.
+- Quem recebe pode aceitar, recusar ou responder com contraproposta. A contraproposta referencia a anterior e usa a mesma definição de campos, tarifas, opções de pagamento e limites do anúncio; o autor vê lado a lado o que mudou.
+- Recomendação para evitar duas condições concorrentes: uma proposta pendente por oferta/negociação. Ao enviar uma contraproposta, a anterior passa a “substituída”, continua no histórico e deixa de poder ser aceita; a nova fica pendente. Um aceite gera o acordo a partir do snapshot aceito.
+- Para um anúncio “orçamento após avaliação”, o primeiro envio solicita o orçamento; o profissional informa a cotação e os termos permitidos no fluxo da conversa. Só depois do aceite há acordo. Nenhum status de proposta significa que houve pagamento.
+
+### Exemplos de ponta a ponta
+
+| Serviço e configuração do anúncio | Campos da proposta | Cálculo/resultado |
+| --- | --- | --- |
+| Corrida/táxi: tarifa inicial + R$/km, mínimo de cobrança, região e horários; métodos e condições de pagamento aceitos | Origem/destino ou distância estimada, data e horário | Tarifa inicial + km × tarifa/km, respeitando o mínimo; estimativa identificada como tal |
+| Mudança: R$/km + R$/hora de equipe, mínimo de horas, quantidade de ajudantes e taxa de deslocamento | Distância, horas previstas, tamanho da equipe, andar/elevador, data; ou pedido de vistoria | Soma dos componentes configurados; se volume/distância só puder ser medido no local, retorna “aguardando orçamento” sem inventar valor |
+| Aulas: preço por hora/sessão ou pacote, duração e limite de alunos | Número de sessões, duração, quantidade de alunos e datas desejadas | Tarifa × unidades configuradas, com total e duração apresentados antes do envio |
+
+**Exemplo numérico ilustrativo — corrida:** no anúncio, o profissional define R$ 5 de tarifa inicial, R$ 3/km, mínimo de R$ 15 e Pix após a corrida. O cliente informa rota estimada de 10 km e horário; a API calcula R$ 5 + (10 × R$ 3) = R$ 35. O profissional aceita ou contrapropõe, por exemplo ajustando a distância para 12 km quando a rota justifica e a regra do anúncio permite; a API recalcula para R$ 41. O cliente aceita ou envia outra contraproposta. O aceite registra os termos e o cálculo; o SkillSwap não recebe nem confirma o Pix.
+
+### Revisão antes de cada ação
+
+- **Revisão do anúncio:** antes de publicar, mostra serviço, escopo, unidades, cálculo com exemplo, tarifas, limites, condições de pagamento e campos que o cliente terá de preencher.
+- **Revisão da proposta:** antes de enviar, mostra as respostas, itens calculados, total/estimativa, condição de pagamento escolhida, contraparte e anúncio de origem. A pessoa confirma explicitamente o envio.
+- Os rótulos devem explicar consequências concretas (“R$ 80 por hora”, “mínimo de 2 horas”, “estimativa baseada em 12 km”), sem slogans ou texto promocional genérico.
 
 ## Contrato e dados candidatos
 
 O contrato deve ser fechado antes da implementação, após revisar todas as consultas/DTOs atuais. Proposta REST compatível:
 
 - `GET /api/categorias` e novo recurso paginado `GET /api/tipos-servico?categoria=...` retornam catálogo persistido. Manter os códigos atuais de categorias durante a transição.
-- `POST /api/anuncios` e `PUT /api/anuncios/{id}` recebem tipo e configuração de preço/campos; o servidor valida tamanho, valores, unidades e tipo ativo. Leitura do anúncio retorna essa configuração para criar o modal.
-- `POST /api/conversas/{id}/propostas` continua sendo a criação canônica. Qualquer participante pode criar uma proposta na conversa escolhendo um anúncio ativo de um dos dois participantes; anúncio de terceiros é recusado. O servidor valida o dono do serviço, configuração, unidades e valores, e calcula o total a partir das tarifas configuradas pelo dono do anúncio. Responde `201 Created` com proposta e itens calculados.
-- `GET /api/propostas/{id}` e as mensagens da conversa devolvem snapshot tipado dos parâmetros e itens. Status continuam por `PATCH /api/propostas/{id}`. Nenhum novo chat é criado para o mesmo par.
-- Os modelos podem usar catálogo relacional para categoria/tipo, definições tipadas de campo e preço por anúncio, e snapshot imutável por proposta. O schema final e a estratégia de armazenamento (tabelas/JSON validado) dependem da auditoria de consultas e do suporte MySQL/H2; o Angular nunca envia nem executa uma definição de fórmula.
+- `POST /api/anuncios` e `PUT /api/anuncios/{id}` recebem a definição do serviço completa: tipo, escopo, regras de cobrança, tarifas, limites, parâmetros que serão preenchidos na proposta e opções de pagamento. O backend valida e versiona a definição. A leitura do anúncio fornece a mesma configuração ao cliente para exibição e preenchimento.
+- `POST /api/conversas/{id}/propostas` continua sendo a criação canônica. O corpo recebe somente `anuncioId`, versão da configuração, respostas aos campos publicados, condição de pagamento permitida e, em uma contraproposta, a referência à proposta anterior. Não recebe fórmula nem tarifa arbitrária. Qualquer participante pode criar a proposta com um anúncio ativo de um dos dois participantes; anúncio de terceiros é recusado. O servidor valida configuração, unidades, limites, opções de pagamento e autorização, calcula o valor e responde `201 Created` com itens, memória do cálculo e snapshot.
+- `GET /api/propostas/{id}` e as mensagens da conversa devolvem autor/destinatário, anúncio de origem, respostas, pagamento, snapshot do cálculo e vínculo de contraproposta. Os status indicam pendente, aceita, recusada, cancelada ou substituída; não indicam pagamento realizado. O acordo deriva do snapshot aceito.
+- O modelo precisa persistir uma versão da definição do anúncio e um snapshot imutável por proposta. Catálogo relacional, definições tipadas de campos/tarifas e snapshots em tabelas ou JSON validado são opções a comparar na auditoria de consultas MySQL/H2; o Angular nunca envia nem executa definição de fórmula.
 
-Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos campos opcionais para anúncios existentes. Não renomear nem remover colunas usadas por propostas, acordos e mensagens. Mapear as três categorias antigas para o novo catálogo sem reclassificar silenciosamente os anúncios. Se uma oferta antiga ainda não tiver configuração, permitir que ela continue no fluxo de proposta simples até ser editada pelo dono.
+Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com configuração opcional/versionada para anúncios existentes. Não renomear nem remover colunas usadas por propostas, acordos e mensagens. Mapear as três categorias antigas para o novo catálogo sem reclassificar silenciosamente os anúncios. Uma oferta antiga sem regras configuradas permanece no fluxo simples atual até que o proprietário a edite; o backend nunca inventa tarifas ou condições retroativamente.
 
 ## Entrega por incrementos
 
-### 0. Corrigir navegação e fechar as regras restantes
+### 0. Corrigir navegação e fechar decisões
 
 - Substituir links de fragmento relativos à raiz por navegação Angular vinculada à rota atual do perfil; habilitar/validar rolagem até o destino e manter `/profissionais/{id}` no endereço.
 - Cobrir todos os atalhos do perfil próprio/público (Sobre, Experiência, Portfólio, Serviços e Avaliações); a lista de busca mantém filtros por query params na rota `/profissionais`.
 - A revisão solicitada inclui tanto o anúncio antes de publicar quanto a proposta antes de enviar.
-- Aprovar catálogo administrado ou permitir tipos personalizados por qualquer anunciante; recomendação atual: categoria/tipo do catálogo e título livre em “Outro serviço”.
-- Ambos os participantes podem criar propostas na mesma conversa. O dono do anúncio define taxas e campos; o cálculo é feito no servidor e aparece como estimativa quando depende de medidas informadas pelo outro participante.
-- Definir se uma contraproposta substitui a proposta pendente do mesmo anúncio ou pode ficar pendente ao mesmo tempo. Recomendação: manter um fluxo pendente por anúncio na conversa; a nova proposta marca a anterior como substituída, preservando o histórico.
+- Ambos podem iniciar propostas na mesma conversa. A configuração pertence ao anúncio; toda proposta apenas preenche os campos aceitos por essa configuração.
+- Contraproposta responde à última proposta pendente daquele anúncio e a substitui, mantendo a anterior no histórico. Essa regra evita dois totais incompatíveis aguardando aceite ao mesmo tempo.
+- O catálogo inicial é administrado, com título livre para “Outro serviço” dentro de categoria válida. O anunciante personaliza o funcionamento e os campos da própria oferta, não cria novas categorias globais.
 
 ### 1. Catálogo e configuração de oferta
 
 - Criar catálogo de categorias/tipos e sugestões de parâmetros por tipo.
-- Permitir ao anunciante habilitar unidades/modelos de preço e configurar tarifas/campos no formulário de anúncio.
-- Apresentar uma revisão clara antes de publicar: tipo, condições, campos pedidos e exemplo de cálculo.
+- No formulário de anúncio, configurar o serviço completo: escopo/inclusões, região/agendamento, modelo de cobrança, tarifas, mínimos/máximos, adicionais, parâmetros a preencher, condição/método/momento de pagamento e regras de negociação.
+- Separar campos de preço calculável (fixo, hora, km, unidade, combinação) de “orçamento após avaliação”; cada modelo exige só seus próprios dados.
+- Apresentar uma revisão clara antes de publicar: tipo, como o serviço funciona, o que será cobrado, como o cálculo é feito, opções de pagamento, campos que aparecerão na proposta e exemplo numérico.
 - Preservar os anúncios existentes e o fluxo de edição.
 
 ### 2. Cálculo e snapshot REST
 
-- Validar autorização, tipo, valores e todos os campos no backend; calcular total em centavos com precisão decimal.
-- Persistir versão da configuração e snapshot imutável de cada proposta; deixar propostas antigas inalteradas.
-- Manter estados, regras atuais de parcelas (até 12), troca sem complemento em dinheiro e ausência de pagamentos integrados.
+- Validar autorização, versão do anúncio, respostas, limites, tarifas e condição de pagamento no backend; calcular totais em `BigDecimal` e arredondar para centavos somente segundo regra explícita.
+- Na proposta, receber respostas aos campos do anúncio e uma das condições publicadas. Rejeitar campo extra, opção não permitida, tarifa enviada pelo navegador ou quantidade fora dos limites.
+- Persistir versão da configuração e snapshot imutável de cada proposta; alterações do anúncio só afetam novas propostas. Propostas antigas continuam legíveis.
+- Manter até 12 parcelas quando habilitadas no anúncio, trocas sem complemento em dinheiro e ausência de pagamentos integrados. Não exibir “pago” nem sugerir custódia/garantia pela plataforma.
 - Cobrir combinações de unidade, limites, arredondamento, anúncio editado/inativado, oferta de troca, concorrência e submissão inválida.
 
 ### 3. Modal no chat e revisão legível
 
-- Trocar o formulário embutido por diálogo responsivo com seleção entre os anúncios ativos dos dois participantes, parâmetros dinâmicos, estimativa e resumo itemizado.
-- Permitir que o cliente preencha os dados de serviço e que o profissional responda ou apresente contraproposta, sem sair da conversa existente.
-- Exibir no histórico o mesmo resumo persistido, com aceite/recusa/cancelamento conforme participação e status.
+- Trocar o formulário embutido por diálogo responsivo. A pessoa seleciona uma oferta ativa de um dos participantes e o modal monta os campos exclusivamente a partir da configuração/versionamento do anúncio.
+- Na primeira proposta, qualquer participante preenche os dados do atendimento e escolhe uma condição permitida. O modal calcula a prévia pela API e exibe a revisão antes do envio.
+- Na conversa, o destinatário aceita, recusa ou abre contraproposta. A contraproposta reaproveita a definição do anúncio, mostra os valores anteriores e só permite alterar parâmetros/condições negociáveis; enviar substitui a pendente sem apagar o histórico.
+- Para “orçamento após avaliação”, o cliente solicita vistoria/orçamento e o profissional apresenta o valor no mesmo fio. O acordo só é formado depois do aceite explícito.
+- Exibir no histórico o snapshot de serviço, parâmetros, cálculo e condição de pagamento aceita. Deixar claro que isso registra os termos combinados, sem transação financeira no SkillSwap.
 - Usar mensagens curtas e concretas; retirar slogans genéricos e repetição de avisos sem função.
 - Confirmar acessibilidade do modal: foco inicial, contenção/restauração de foco, Escape, nomes dos campos e leitura dos erros.
 
@@ -90,9 +122,11 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos 
 ## Critérios de aceite
 
 - Uma pessoa consegue anunciar qualquer serviço dentro de uma categoria/tipo válido, configurar os modelos e parâmetros que aceita e editar a oferta sem perder dados.
-- O chat continua único por pessoa; o modal só oferece anúncios ativos do participante correto e campos definidos na oferta selecionada.
+- Antes de publicar, o anunciante consegue definir integralmente como o serviço funciona, como o preço é calculado e quais condições/métodos/momentos de pagamento aceita.
+- A proposta não cadastra serviço, campo, tarifa nem pagamento novo: exibe e preenche somente os parâmetros e opções previamente publicados no anúncio.
+- O chat continua único por par; ambos podem propor, e cada proposta aponta para um anúncio de um participante. O backend rejeita anúncios de terceiros e dados fora da configuração.
 - Valores e parcelas são validados pelo servidor; a soma exibida é reproduzível pelos itens persistidos e não muda quando o anúncio é alterado depois.
-- Trocas permanecem sem dinheiro; serviço sob avaliação não apresenta valor calculado como preço final; não há cobrança dentro da plataforma.
+- Aceite, recusa e contraproposta ficam no mesmo histórico; contraproposta substitui a pendente preservando-a como “substituída”. Trocas permanecem sem dinheiro; serviço sob avaliação não apresenta valor final antes da cotação; não há cobrança dentro da plataforma.
 - Erros de API mantêm o modal e dados preenchidos; cada envio persistido aparece no histórico e só é confirmado após sucesso REST.
 - Categorias antigas, anúncios e propostas existentes permanecem consultáveis; nenhuma métrica, tipo ou parâmetro fictício aparece como dado real.
 - A rota de editar anúncio/perfil não leva o usuário a uma página inicial sem explicar o que ocorreu.
@@ -114,5 +148,7 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos 
 - A navegação com falha é a troca entre seções do perfil, tanto no perfil consultado quanto no próprio perfil aberto publicamente; o desvio foi reproduzido.
 - A “tela de análise” inclui a revisão do anúncio e a revisão da proposta.
 - Ambos podem enviar propostas dentro da conversa única.
-- Falta definir como contrapropostas tratam a anterior pendente: substituição sequencial (recomendado) ou várias propostas pendentes em paralelo.
-- A recomendação do catálogo continua sendo categorias/tipos controlados e extensíveis, com “Outro serviço” e título livre. Os parâmetros e modelos de cobrança são configurados pelo anunciante.
+- Configuração completa do serviço, cobrança e condições de pagamento acontece no anúncio; proposta só preenche os campos e opções que essa oferta publicou.
+- Ambos podem iniciar proposta na conversa. Quem recebe aceita, recusa ou envia contraproposta baseada na mesma oferta; a contraproposta substitui a pendente e preserva o histórico.
+- A plataforma registra os termos, mas não processa nem confirma pagamentos nesta fase.
+- O catálogo continua controlado/extensível, com “Outro serviço” e título livre; cada anunciante configura os parâmetros operacionais da sua oferta.
