@@ -1,6 +1,6 @@
 # ADR-008: Conversa única por pessoa, propostas no chat e comentários do anúncio
 
-Status: aprovada pelo usuário em 30/10/2026; implementação concluída e suítes completas locais aprovadas. Migration e API já passaram em MySQL 8.4.11 isolado com dados sintéticos. Uma cópia V17 do banco público está isolada em MySQL 8.0.46 para o ensaio final antes da publicação autorizada.
+Status: aprovada pelo usuário em 30/10/2026; implementada e publicada no domínio público em 30/10/2026. API e migrações passaram em MySQL 8.4.11 sintético e em cópia isolada da base pública MySQL 8.0.46; V18–V21 foram aplicadas no público e os dados históricos conferidos por hash.
 
 ## Contexto
 

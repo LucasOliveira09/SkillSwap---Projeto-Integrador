@@ -1,7 +1,7 @@
 # Plano: conversas por pessoa, propostas no chat e comentários do anúncio
 
 Data: 30/10/2026
-Estado: implementação concluída e suítes locais aprovadas. Os backups do banco e dos uploads foram validados; uma cópia isolada da base pública (MySQL 8.0.46, V17) foi restaurada para ensaio. Falta iniciar nela a API candidata, verificar preservação e publicar a versão autorizada.
+Estado: implementado, validado e publicado no site público em 30/10/2026. V18–V21 foram aplicadas no MySQL 8.0.46; os dados anteriores foram comparados numa cópia isolada e preservados. Registros e imagens de reversão estão em [backend.md](../docs/backend.md#conversas-canonicas-propostas-no-chat-e-comentarios-30102026).
 
 ## Objetivo confirmado
 
@@ -140,4 +140,6 @@ Definir regra de publicação/moderação e contrato; criar migração/API/teste
 - **Moderação e experiência:** comentários podem ser denunciados e ocultados/reexibidos pela fila de moderação existente; a listagem não mostra comentários ocultos nem respostas sem raiz visível. O cliente carrega páginas seguintes de comentários. No chat iniciado pelo perfil, a pessoa pode escolher um anúncio ativo do interlocutor antes de enviar proposta; validade vencida desativa aceite/recusa e o servidor rejeita o aceite.
 - **Validação local:** `npm run typecheck`, `npm run build`, `npm run test:ci` (121 testes) e `./mvnw.cmd test` (92 testes) passaram; `git diff --check` está limpo. Migrações e fluxo já passaram em MySQL 8.4.11 descartável com dados sintéticos.
 - **Backup pré-publicação:** dump MySQL 8.0 público com checksum e arquivo de uploads conferidos em `/home/ubuntu/backups/skillswap-comunicacao-pre-20261030`; o upload público é uma montagem bind e foi arquivado sem parar ou alterar a API.
-- **Ensaio pendente:** cópia do dump V17 restaurada em MySQL 8.0.46 num container e rede internos separados. Ainda falta iniciar a API candidata nessa cópia, comparar preservação de mensagens/propostas/acordos/avaliações/cursos e validar o frontend em navegador responsivo antes de promover as imagens.
+- **Ensaio da cópia pública:** a API candidata iniciou saudável sobre a restauração MySQL 8.0.46 e aplicou até V21. Os hashes dos campos históricos e as contagens de mensagens (25), propostas (9), acordos (3) e avaliações (1) coincidiram entre a cópia V17 e a cópia migrada.
+- **Publicação:** API `10b2ed5`, web `ce16ef4`; healthchecks e rotas públicas passaram. Chromium conferiu catálogo e anúncio em 390 e 1440 px. A foto ausente do anúncio 18 agora exibe estado alternativo; a referência quebrada no banco ainda retorna 404 e foi preservada para o proprietário corrigir.
+- **Limites:** fluxos autenticados foram validados nos testes isolados, sem usar contas reais para publicar comentários, propor termos ou abrir conversas no domínio público. Pagamentos não são processados. Os backups são cópias operacionais no mesmo VPS, não uma cópia externa.
