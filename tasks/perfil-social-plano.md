@@ -9,7 +9,7 @@ Escopo inicial: auditoria do repositório e planejamento. A Etapa 1 precedeu est
 
 - Frontend Angular 20 standalone, TypeScript estrito, rotas lazy por domínio, HTML/SCSS separados e Angular Material 20.
 - Backend Java 21 com Spring Boot 4.0.8, Maven Wrapper, JPA/Lombok, organizado em `com.skillswap.api.domain` e `infra`.
-- MySQL com Flyway; a versão mais recente do schema do repositório é V17. A auditoria leu entidades e migrações versionadas, sem conectar nem modificar uma instância de banco.
+- MySQL com Flyway; a auditoria inicial registrou V17, e a implementação/publicação atual chegou à V24 em 30/10/2026.
 - Tokens globais existentes: azul `#255188`, verde `#8bc63f`/`#79bb39`, tipografia Poppins e display Angkor, fundos claros e bordas `#e6edf5`. Imagens e fontes locais do projeto legado continuam sendo a referência visual.
 - Componentes reutilizáveis relevantes: `IconeComponent`, `DenunciarComponent`, botões/controles Material e `AnuncioCardComponent` (este último deve ser avaliado para ofertas no perfil antes de reutilizar, para evitar duplicação de comportamento).
 
@@ -83,7 +83,7 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 ### Etapa 2 — Atributos profissionais e métricas reais
 
-**Implementada no código em 30/10/2026 (V24; ainda sem publicação):** disponibilidade fica em `usuarios.disponivel_trabalhos`; seguidores e trabalhos concluídos são contagens consultadas no banco, e a conclusão usa somente acordos com status `CONCLUIDO`. Experiências e certificações têm leitura pública controlada pela visibilidade do perfil e CRUD autenticado do titular, limite de 50 itens por seção e validação de datas e links HTTPS sem credenciais embutidas. O editor oferece estados de carregamento, erro e vazio, além de edição e remoção; o perfil público avisa que os dados são autodeclarados.
+**Publicada em 30/10/2026 (V24):** disponibilidade fica em `usuarios.disponivel_trabalhos`; seguidores e trabalhos concluídos são contagens consultadas no banco, e a conclusão usa somente acordos com status `CONCLUIDO`. Experiências e certificações têm leitura pública controlada pela visibilidade do perfil e CRUD autenticado do titular, limite de 50 itens por seção e validação de datas e links HTTPS sem credenciais embutidas. O editor oferece estados de carregamento, erro e vazio, além de edição e remoção; o perfil público avisa que os dados são autodeclarados.
 
 **Decisões:** o profissional controla se aceita novos trabalhos; trabalhos contam após acordo concluído pelos dois participantes; experiências e certificados são autodeclarados e públicos enquanto o perfil estiver visível, sem selo de verificação. Não publicar arquivos/documentos de identidade.
 
@@ -93,11 +93,11 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 ### Etapa 4 — Feed e interação social
 
-**Implementada no código em 30/10/2026 (V22/V23; ainda sem publicação):** o portfólio existente recebeu curtidas persistidas e comentários paginados, sem criar outro feed. A API inclui contagem de curtidas e estado do usuário em consultas em lote, e oferece leitura pública, escrita autenticada, respostas de uma camada e denúncia/moderação de comentários. O perfil carrega comentários quando o painel é aberto; mostra falhas, repetição, vazio, envio, resposta e login.
+**Publicada em 30/10/2026 (V22/V23):** o portfólio existente recebeu curtidas persistidas e comentários paginados, sem criar outro feed. A API inclui contagem de curtidas e estado do usuário em consultas em lote, e oferece leitura pública, escrita autenticada, respostas de uma camada e denúncia/moderação de comentários. O perfil carrega comentários quando o painel é aberto; mostra falhas, repetição, vazio, envio, resposta e login.
 
 **Limites mantidos:** vídeos continuam fora, pois o armazenamento aceita apenas imagens e não há política de mídia/moderação para vídeo. Não há ranking, lista pública de curtidores, notificações de interação nem edição/remoção individual de comentários nesta fatia.
 
-**Verificação local em 30/10/2026:** suíte Java (97 testes), suíte Angular (131), typecheck e build passaram sem avisos de budget. H2 aplicou V22–V24; o Docker Desktop local está indisponível, então não foi feita a validação MySQL local. A publicação/VPS e o ensaio de migração isolada ainda são pendentes.
+**Verificação em 30/10/2026:** suíte Java (97 testes), suíte Angular (131), typecheck e build passaram sem avisos de budget; auditoria npm de produção reportou zero vulnerabilidades. H2 e um clone isolado de MySQL 8.0.46 aplicaram V22–V24; a API candidata ficou saudável e os dados existentes foram preservados. Chromium 149 abriu o perfil público em 390 e 1440 px sem erros de console/página. A publicação está registrada em [backend.md](../docs/backend.md#perfis-sociais-v22v24-publicação-30-10-2026). Revisão manual com leitor de tela permanece pendente.
 
 ### Etapa 5 — Integração comercial e reputação
 
@@ -114,4 +114,4 @@ Manter ofertas e conversas por anúncio existentes. Exibir avaliações somente 
 
 ## Estado
 
-Etapas 1–4 estão implementadas no código, incluindo experiências/certificações e interações sociais. Validação final local concluída; falta o ensaio de V22–V24 em MySQL isolado, a inspeção visual em Chromium desta UI e a publicação. Acessibilidade manual permanece pendente. Consulte [interacoes-publicacoes-plano.md](interacoes-publicacoes-plano.md) para o contrato das interações e [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md) para a mudança publicada de conversas/propostas.
+Etapas 1–4 estão implementadas e publicadas. O ensaio isolado MySQL, a inspeção Chromium desktop/mobile e a publicação V24 foram concluídos em 30/10/2026. Acessibilidade manual permanece pendente. Consulte [interacoes-publicacoes-plano.md](interacoes-publicacoes-plano.md) para o contrato das interações e [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md) para a mudança publicada de conversas/propostas.

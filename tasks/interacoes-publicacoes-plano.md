@@ -40,10 +40,10 @@ O SkillSwap já persiste publicações de portfólio com até seis fotos, legend
 
 - [x] Angular: `npm run typecheck`, `npm run build` sem avisos de budget, `npm run test:ci` (131 testes).
 - [x] Java 21: `./mvnw.cmd test` (97 testes). H2 aplicou V22–V24; MySQL local indisponível (Docker Desktop parado).
-- [ ] Chromium verifica desktop e móvel sem erro de console/página nem overflow.
+- [x] Chromium 149 verificou perfil público em 390 e 1440 px; sem erros de console ou página e sem overflow visível.
 - [x] Revisão de segurança e diff; atualizar planos e estado sem alegar verificação manual de leitor de tela.
 - [x] Commit da fatia de curtidas e comentários: `2b53907`.
-- [ ] Commit das experiências/certificações, ensaio de migração MySQL isolado, envio ao GitHub e publicação pública após backup, preservando banco, uploads e imagens anteriores.
+- [x] Commit das experiências/certificações (`dcc2850`), ensaio V22–V24 em MySQL 8.0.46 isolado, envio ao GitHub e publicação; backups e tags de rollback preservados.
 
 ## Próximas fatias do perfil social
 

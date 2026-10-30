@@ -146,7 +146,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Implementar telas e testes dos módulos de propostas, acordos, mensagens e avaliações.
 - [x] Filtrar profissionais por média mínima apenas com amostra de três avaliações visíveis; priorizar correspondência de serviço e cidade exata sem usar a nota como ranking.
 - [x] Adotar migrações Flyway versionadas (V1–V14).
-- [ ] Validar MySQL e preparar sincronização antes de eventual promoção pública.
+- [x] Validar MySQL e preparar sincronização antes da promoção pública (registro da promoção atualizada em 30/10/2026 abaixo).
 
 ## Retorno ao layout do primeiro SkillSwap e consistência dos exemplos
 
@@ -166,7 +166,7 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Revalidar por HTTP a prévia Tailscale e o site público (200). Os três containers da prévia e os dois containers SkillSwap públicos estão saudáveis.
 - [x] Consultar somente leitura o MySQL público: sete tabelas e nenhuma `flyway_schema_history`; a migração para o schema Flyway ainda não foi aplicada ao banco ativo.
-- [ ] Aguardar decisão sobre a migração do banco ativo e promoção da API/web. A cópia de backup e o ensaio de baseline em banco isolado estão documentados; nenhuma alteração foi feita nesta inspeção.
+- [x] A decisão e a promoção foram concluídas em 28/10/2026; as publicações posteriores e o schema atual estão no histórico de [backend.md](../docs/backend.md#site-público).
 
 ## Evolução social dos perfis — planejamento (30/10/2026)
 
@@ -179,5 +179,6 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Implementar V22/V23: curtidas persistidas, comentários paginados no portfólio, respostas de uma camada, autenticação de escrita e integração à denúncia/moderação.
 - [x] Implementar V24: CRUD de experiências e certificações autodeclaradas; leitura pública respeita perfil pausado, edição é exclusiva do titular, 50 registros por seção e validação de datas/URLs.
 - [x] Integrar editor responsivo de trajetória ao perfil próprio e experiência/certificações ao perfil público, sem selo de verificação; acertar contagem e paginação de comentários.
-- [x] Rodada final de build sem avisos de budget, typecheck, 131 testes Angular e 97 Java; revisão do diff concluída. Chromium desktop/mobile ainda pendente.
-- [ ] Ensaiar migrações V22–V24 em MySQL descartável, salvar commits, enviar a branch ao GitHub e promover web/API à VPS com backup, preservando banco, uploads, redes e imagens anteriores.
+- [x] Rodada final de build sem avisos de budget, typecheck, 131 testes Angular e 97 Java; revisão do diff concluída.
+- [x] Ensaiar migrações V22–V24 em MySQL 8.0.46 isolado, salvar commits (`2b53907`, `dcc2850`), enviar ao GitHub e promover web/API à VPS com backup, preservando banco, uploads, redes e imagens anteriores.
+- [x] Conferir perfil público em Chromium 149 a 390 e 1440 px sem erros de console/página; acessibilidade manual segue pendente.
