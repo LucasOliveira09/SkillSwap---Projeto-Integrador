@@ -167,3 +167,10 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Revalidar por HTTP a prévia Tailscale e o site público (200). Os três containers da prévia e os dois containers SkillSwap públicos estão saudáveis.
 - [x] Consultar somente leitura o MySQL público: sete tabelas e nenhuma `flyway_schema_history`; a migração para o schema Flyway ainda não foi aplicada ao banco ativo.
 - [ ] Aguardar decisão sobre a migração do banco ativo e promoção da API/web. A cópia de backup e o ensaio de baseline em banco isolado estão documentados; nenhuma alteração foi feita nesta inspeção.
+
+## Evolução social dos perfis — planejamento (30/10/2026)
+
+- [x] Auditar a página pública e editor de perfil, contratos REST, autorização, entidades e migrações existentes sem alterar aplicação ou banco.
+- [x] Registrar proposta incremental, arquivos prováveis, riscos, critérios de aceite e decisões de produto em [perfil-social-plano.md](perfil-social-plano.md).
+- [ ] Revisar as decisões de produto e aprovar a Etapa 1 antes de iniciar alterações na página pública.
+- [ ] Executar Etapa 1 com dados atuais, testes, build, navegador e responsividade; não antecipar etapas sociais ou migrações.

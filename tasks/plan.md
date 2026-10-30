@@ -312,6 +312,10 @@ Concluídos em `b538b48`/`b426df9` e publicados no domínio público: cookie de 
 A revisão final `2baa562` remove duplicações entre conversa carregada por link e páginas subsequentes da lista. São 116 testes Angular aprovados; a web atualizada está pública, com API e MySQL saudáveis e preservados.
 
 
+## Evolução social dos perfis — auditoria e planejamento (30/10/2026)
+
+A auditoria da página pública, editor, contratos REST, permissões, entidades e migrações está registrada em [perfil-social-plano.md](perfil-social-plano.md). A página atual já integra identidade, capa/foto, especialidades, reputação, portfólio fotográfico, ofertas e estados de erro/vazio com dados persistidos. Seguidores, disponibilidade global, experiências/certificações, vídeo, curtidas/comentários e contagem de trabalhos no perfil ainda não possuem contrato implementado. A proposta divide o trabalho em fatias e começa somente pela evolução visual/arquitetural da página com os dados atuais. Nenhuma implementação ou deploy foi iniciado; revisar o plano e decidir as questões de produto antes da Etapa 1.
+
 ## Entrega de mensagens e contexto do anúncio (28/10/2026)
 
 Corrigido e publicado em `1a6e23b`: primeiro contato chega ao chat do anunciante enquanto a proposta está pendente; ambos podem responder sem criar acordo. A origem aparece com ID/título do anúncio, modalidade e cidade; lista e cabeçalho indicam não lidas da API e atualizam periodicamente. Contatos repetidos usam a conversa ativa. V16/V17 recuperam mensagens iniciais e preservam histórico e compatibilidade de rotas por acordo. Passaram 83 testes Java e 117 Angular, tipos, build e auditoria npm de produção. Migração V15→V17 foi conferida com fixture em MySQL 8.4.11; Chromium e API validaram envio, recebimento/contexto, resposta e persistência com duas contas em banco isolado e sem aceite. O público aplicou as migrações, preservou hashes do histórico e passou nos healthchecks e nas verificações anônimas. Contas reais de produção, dispositivos físicos e leitor de tela não foram usados nessa validação. Operação e backups em [backend.md](../docs/backend.md).
