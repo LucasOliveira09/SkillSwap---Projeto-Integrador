@@ -2,6 +2,8 @@
 
 **Estado:** planejamento refinado; as funcionalidades de anúncio parametrizado e negociação descritas aqui ainda não foram implementadas. A limpeza de anúncios demonstrativos já feita na VPS está registrada em `docs/backend.md`.
 
+Em 30/10/2026, a navegação por fragmento foi corrigida localmente nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. A alteração não foi publicada na VPS; veja a situação da produção em `docs/backend.md`.
+
 ## O que encontrei
 
 - O perfil próprio (`/meu-perfil`) não tem seletor de categorias. O campo “Especialidades” é texto livre; categorias pertencem aos anúncios. O perfil público lista os anúncios ativos do profissional e oferece links entre Sobre, Experiência, Portfólio, Serviços e Avaliações.
@@ -77,10 +79,12 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com config
 
 ## Entrega por incrementos
 
-### 0. Corrigir navegação e fechar decisões
+### 0. Navegação corrigida localmente; decisões de produto registradas
 
-- Substituir links de fragmento relativos à raiz por navegação Angular vinculada à rota atual do perfil; habilitar/validar rolagem até o destino e manter `/profissionais/{id}` no endereço.
-- Cobrir todos os atalhos do perfil próprio/público (Sobre, Experiência, Portfólio, Serviços e Avaliações); a lista de busca mantém filtros por query params na rota `/profissionais`.
+- [x] Substituir fragmentos relativos à raiz por `RouterLink` na rota atual do perfil, anúncio e catálogo; habilitar a rolagem Angular e preservar query params onde há paginação.
+- [x] Cobrir todos os atalhos do perfil público (Sobre, Experiência, Portfólio, Serviços e Avaliações), mais comentários/avaliações do anúncio e a chamada do hero do catálogo.
+- [x] Ocultar o CTA de conversa no perfil próprio autenticado, usando `proprioPerfil` devolvido pela API.
+- A correção está apenas na branch local/GitHub e não foi promovida ao site público. A publicação depende da aprovação explícita exigida para produção.
 - A revisão solicitada inclui tanto o anúncio antes de publicar quanto a proposta antes de enviar.
 - Ambos podem iniciar propostas na mesma conversa. A configuração pertence ao anúncio; toda proposta apenas preenche os campos aceitos por essa configuração.
 - Contraproposta responde à última proposta pendente daquele anúncio e a substitui, mantendo a anterior no histórico. Essa regra evita dois totais incompatíveis aguardando aceite ao mesmo tempo.

@@ -58,6 +58,28 @@ describe('PerfilPublicoComponent', () => {
     expect(harness.routeNativeElement?.querySelector('.total-seguidores')?.textContent).toContain('0');
   });
 
+  it('não oferece iniciar conversa quando o perfil público é do próprio usuário', async () => {
+    TestBed.inject(SessaoService).entrar('profissional@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    http.expectOne('/api/perfis/12').flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: 'Elétrica', criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0, disponivelTrabalhos: false, totalSeguidores: 0, trabalhosConcluidos: 0,
+    });
+    http.expectOne('/api/perfis/12/seguidores/me').flush({ seguindo: false, proprioPerfil: true, totalSeguidores: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios')
+      .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes')
+      .flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    flushHistorico();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelector('.acoes-perfil button')).toBeNull();
+    expect(harness.routeNativeElement?.textContent).toContain('Ver serviços disponíveis');
+  });
+
   it('atualiza a curtida do portfólio somente após a confirmação da API', async () => {
     TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
     http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
@@ -233,10 +255,11 @@ describe('PerfilPublicoComponent', () => {
       '[aria-label="Navegação do perfil profissional"]',
     );
     expect(navegacao).not.toBeNull();
-    expect(navegacao?.querySelector('a[href="#secao-sobre"]')).not.toBeNull();
-    expect(navegacao?.querySelector('a[href="#secao-portfolio"]')).not.toBeNull();
-    expect(navegacao?.querySelector('a[href="#secao-servicos"]')).not.toBeNull();
-    expect(navegacao?.querySelector('a[href="#secao-avaliacoes"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="/profissionais/12#secao-sobre"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="/profissionais/12#secao-trajetoria"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="/profissionais/12#secao-portfolio"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="/profissionais/12#secao-servicos"]')).not.toBeNull();
+    expect(navegacao?.querySelector('a[href="/profissionais/12#secao-avaliacoes"]')).not.toBeNull();
     expect(harness.routeNativeElement?.querySelector('#secao-sobre')).not.toBeNull();
     expect(harness.routeNativeElement?.querySelector('#secao-portfolio')).not.toBeNull();
     expect(harness.routeNativeElement?.querySelector('#secao-servicos')).not.toBeNull();

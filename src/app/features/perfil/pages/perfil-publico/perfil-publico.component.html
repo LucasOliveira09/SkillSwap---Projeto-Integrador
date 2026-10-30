@@ -53,12 +53,14 @@
         </div>
 
         <div class="acoes-perfil">
-          @if (sessao.autenticado()) {
-            <button mat-flat-button type="button" (click)="iniciarConversa()" [disabled]="abrindoConversa()">
-              {{ abrindoConversa() ? 'Abrindo conversa...' : 'Conversar' }}
-            </button>
-          } @else {
-            <button mat-flat-button type="button" (click)="iniciarConversa()">Entrar para conversar</button>
+          @if (!seguidores()?.proprioPerfil) {
+            @if (sessao.autenticado()) {
+              <button mat-flat-button type="button" (click)="iniciarConversa()" [disabled]="abrindoConversa()">
+                {{ abrindoConversa() ? 'Abrindo conversa...' : 'Conversar' }}
+              </button>
+            } @else {
+              <button mat-flat-button type="button" (click)="iniciarConversa()">Entrar para conversar</button>
+            }
           }
           @if (sessao.autenticado()) {
             @if (seguidores(); as estadoSeguidores) {
@@ -85,11 +87,13 @@
               Entrar para seguir
             </a>
           }
-          <a mat-flat-button color="primary" href="#secao-servicos">
+          <a mat-flat-button color="primary" [routerLink]="[]" fragment="secao-servicos" queryParamsHandling="preserve">
             Ver serviços disponíveis
           </a>
-          <a mat-button href="#secao-avaliacoes">Ler avaliações</a>
-          <p>Você terá uma conversa privada única com este profissional. O anúncio de origem fica registrado em cada mensagem.</p>
+          <a mat-button [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Ler avaliações</a>
+          @if (!seguidores()?.proprioPerfil) {
+            <p>Você terá uma conversa privada única com este profissional. O anúncio de origem fica registrado em cada mensagem.</p>
+          }
           @if (erroSeguimento()) {
             <p class="erro-seguimento" role="alert">{{ erroSeguimento() }}</p>
           }
@@ -137,17 +141,17 @@
     </header>
 
     <nav class="atalhos-perfil" aria-label="Navegação do perfil profissional">
-      <a href="#secao-sobre">Sobre</a>
-      <a href="#secao-trajetoria">Experiência</a>
-      <a href="#secao-portfolio">
+      <a [routerLink]="[]" fragment="secao-sobre" queryParamsHandling="preserve">Sobre</a>
+      <a [routerLink]="[]" fragment="secao-trajetoria" queryParamsHandling="preserve">Experiência</a>
+      <a [routerLink]="[]" fragment="secao-portfolio" queryParamsHandling="preserve">
         Portfólio
         @if (!estado().erroPublicacoes) { <span>{{ estado().totalPublicacoes }}</span> }
       </a>
-      <a href="#secao-servicos">
+      <a [routerLink]="[]" fragment="secao-servicos" queryParamsHandling="preserve">
         Serviços
         @if (!estado().erroOfertas) { <span>{{ estado().totalOfertas }}</span> }
       </a>
-      <a href="#secao-avaliacoes">
+      <a [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">
         Avaliações
         <span>{{ p.quantidadeAvaliacoes }}</span>
       </a>

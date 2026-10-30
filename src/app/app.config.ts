@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { sessaoInterceptor } from './features/conta/data-access/sessao.interceptor';
 
@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: LOCALE_ID, useValue: 'pt-BR' },
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     provideHttpClient(withInterceptors([sessaoInterceptor])),
   ],
 };

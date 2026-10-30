@@ -64,6 +64,8 @@ describe('Detalhe do Anúncio (estilo Mercado Livre)', () => {
     expect(texto).toContain('Professor Carlos');
     expect(texto).toContain('Ourinhos / SP');
     expect(texto).toContain('120,00');
+    expect(harness.routeNativeElement?.querySelector('a[href="/anuncios/1#secao-comentarios"]')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('a[href="/anuncios/1#secao-avaliacoes"]')).not.toBeNull();
     expect(texto).toContain('Disponibilidade semanal informada');
     expect(texto).toContain('Sábado · Tarde');
     expect(texto).toContain('confirme os horários na conversa');

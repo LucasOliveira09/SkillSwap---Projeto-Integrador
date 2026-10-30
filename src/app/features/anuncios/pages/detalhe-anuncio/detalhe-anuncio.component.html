@@ -35,8 +35,8 @@
       <p class="reputacao-anuncio sem-notas">Este serviço ainda não tem avaliações.</p>
     }
     <nav class="abas-anuncio" aria-label="Detalhes do anúncio">
-      <a href="#secao-comentarios">Comentários</a>
-      <a href="#secao-avaliacoes">Avaliações verificadas</a>
+      <a [routerLink]="[]" fragment="secao-comentarios" queryParamsHandling="preserve">Comentários</a>
+      <a [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Avaliações verificadas</a>
     </nav>
 
     <!-- GRID PRINCIPAL DE DETALHES -->

@@ -22,6 +22,7 @@ describe('Catálogo integrado ao backend', () => {
     http.expectOne((r) => r.url === '/api/anuncios').flush(resposta);
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Nenhum resultado encontrado');
+    expect(harness.routeNativeElement?.querySelector('a[href="/anuncios#lista-anuncios"]')).not.toBeNull();
   });
 
   it('envia filtros por URL e cancela uma busca antiga ainda pendente', async () => {
