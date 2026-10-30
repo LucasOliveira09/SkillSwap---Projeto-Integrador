@@ -105,8 +105,11 @@ public class UsuarioService {
                 : anuncioRepository.resumirOfertasDeProfissionais(ids, StatusAnuncio.ATIVO, categoriaFiltro,
                         modalidadeFiltro, precoMinimo, precoMaximo).stream()
                         .collect(Collectors.groupingBy(ResumoOfertaProfissionalDTO::profissionalId));
+        Map<Long, UsuarioRepository.ResumoSocial> social = ids.isEmpty() ? Map.of()
+                : usuarioRepository.resumirSocial(ids).stream()
+                        .collect(Collectors.toMap(UsuarioRepository.ResumoSocial::getUsuarioId, Function.identity()));
         return profissionais.map(profissional -> ProfissionalBuscaDTO.de(
-                toPerfilDTO(profissional, resumos.get(profissional.getId())),
+                toPerfilDTO(profissional, resumos.get(profissional.getId()), social.get(profissional.getId())),
                 ofertas.getOrDefault(profissional.getId(), List.of())));
     }
 
@@ -165,6 +168,7 @@ public class UsuarioService {
         if (dto.instagramUrl() != null) usuario.setInstagramUrl(dto.instagramUrl().strip());
         if (dto.siteUrl() != null) usuario.setSiteUrl(dto.siteUrl().strip());
         if (dto.perfilPublico() != null) usuario.setPerfilPublico(dto.perfilPublico());
+        if (dto.disponivelTrabalhos() != null) usuario.setDisponivelTrabalhos(dto.disponivelTrabalhos());
     }
 
     private String normalizarFiltro(String valor, int limite) {
@@ -179,16 +183,20 @@ public class UsuarioService {
     public PerfilDTO toPerfilDTO(Usuario u) {
         var resumo = avaliacaoRepository.resumirProfissionais(List.of(u.getId())).stream()
                 .findFirst().orElse(null);
-        return toPerfilDTO(u, resumo);
+        var social = usuarioRepository.resumirSocial(List.of(u.getId())).stream().findFirst().orElse(null);
+        return toPerfilDTO(u, resumo, social);
     }
 
-    private PerfilDTO toPerfilDTO(Usuario u, ResumoAvaliacaoProfissionalDTO resumo) {
+    private PerfilDTO toPerfilDTO(Usuario u, ResumoAvaliacaoProfissionalDTO resumo,
+            UsuarioRepository.ResumoSocial social) {
         return new PerfilDTO(
                 u.getId(), u.getNome(), u.getTituloProfissional(),
                 u.getBio(), u.getCidade(), u.getFotoUrl(),
                 u.getCapaUrl(), u.getLinkedinUrl(), u.getInstagramUrl(), u.getSiteUrl(), u.isPerfilPublico(),
                 u.getEspecialidades(), u.getCriadoEm(),
-                resumo == null ? null : resumo.media(), resumo == null ? 0 : resumo.quantidade()
+                resumo == null ? null : resumo.media(), resumo == null ? 0 : resumo.quantidade(),
+                u.isDisponivelTrabalhos(), social == null ? 0 : social.getTotalSeguidores(),
+                social == null ? 0 : social.getTrabalhosConcluidos()
         );
     }
 }

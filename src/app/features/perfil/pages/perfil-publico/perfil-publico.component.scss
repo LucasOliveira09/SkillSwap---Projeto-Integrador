@@ -169,7 +169,7 @@
 
 .resumo-perfil {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   border-top: 1px solid var(--ss-line);
   background: #fbfcfe;
 }
@@ -183,6 +183,13 @@
 
 .resumo-item + .resumo-item {
   border-left: 1px solid var(--ss-line);
+}
+
+.selo-disponibilidade {
+  margin-top: 10px;
+  color: #176044;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .resumo-valor {

@@ -37,5 +37,7 @@ public record UpdatePerfilDTO(
                 flags = Pattern.Flag.CASE_INSENSITIVE, message = "Informe um site com endereço HTTPS válido")
         String siteUrl,
 
-        Boolean perfilPublico
+        Boolean perfilPublico,
+
+        Boolean disponivelTrabalhos
 ) {}

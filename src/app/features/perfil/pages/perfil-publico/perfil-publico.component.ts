@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -8,9 +8,10 @@ import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.s
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
-import { PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
+import { EstadoSeguindo, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 import { Avaliacao } from '../../../negociacao/models/negociacao.model';
 import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
+import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 interface EstadoPerfil {
   carregando: boolean;
@@ -28,6 +29,7 @@ interface EstadoPerfil {
   totalPaginasPublicacoes: number;
   totalPublicacoes: number;
   avaliacoes: readonly Avaliacao[];
+  seguidores: EstadoSeguindo | null;
 }
 
 const estadoInicial: EstadoPerfil = {
@@ -46,6 +48,7 @@ const estadoInicial: EstadoPerfil = {
   totalPaginasPublicacoes: 0,
   totalPublicacoes: 0,
   avaliacoes: [],
+  seguidores: null,
 };
 
 @Component({
@@ -60,7 +63,11 @@ export class PerfilPublicoComponent {
   private readonly router = inject(Router);
   private readonly perfilApi = inject(PerfilApiService);
   private readonly anunciosApi = inject(AnunciosApiService);
+  protected readonly sessao = inject(SessaoService);
   private readonly atualizacao = new Subject<void>();
+  private readonly estadoSeguindoAtual = signal<EstadoSeguindo | null>(null);
+  protected readonly alterandoSeguimento = signal(false);
+  protected readonly erroSeguimento = signal('');
 
   protected readonly estado = toSignal(
     combineLatest([
@@ -77,6 +84,8 @@ export class PerfilPublicoComponent {
         if (!Number.isSafeInteger(usuarioId) || usuarioId <= 0) {
           return of({ ...estadoInicial, carregando: false, erro: true });
         }
+        this.estadoSeguindoAtual.set(null);
+        this.erroSeguimento.set('');
         const numeroPagina = Number(query.get('portfolioPagina') || 0);
         const pagina = Number.isSafeInteger(numeroPagina) && numeroPagina >= 0 && numeroPagina <= 1_000_000
           ? numeroPagina
@@ -91,8 +100,11 @@ export class PerfilPublicoComponent {
               ofertas: this.anunciosApi.listarDoUsuario(perfil.id, paginaOfertas).pipe(catchError(() => of(null))),
               publicacoes: this.perfilApi.publicacoes(perfil.id, pagina).pipe(catchError(() => of(null))),
               avaliacoes: this.perfilApi.avaliacoes(perfil.id).pipe(catchError(() => of(null))),
+              seguidores: this.sessao.autenticado()
+                ? this.perfilApi.estadoSeguindo(perfil.id).pipe(catchError(() => of(null)))
+                : of(null),
             }).pipe(
-              map(({ ofertas, publicacoes, avaliacoes }) => ({
+              map(({ ofertas, publicacoes, avaliacoes, seguidores }) => ({
                 carregando: false,
                 erro: false,
                 erroOfertas: ofertas === null,
@@ -108,6 +120,7 @@ export class PerfilPublicoComponent {
                 totalPaginasPublicacoes: publicacoes?.totalPaginas ?? 0,
                 totalPublicacoes: publicacoes?.totalItens ?? 0,
                 avaliacoes: avaliacoes ?? [],
+                seguidores,
               })),
             ),
           ),
@@ -123,6 +136,32 @@ export class PerfilPublicoComponent {
   protected readonly ofertas = computed(() => this.estado().ofertas);
   protected readonly publicacoes = computed(() => this.estado().publicacoes);
   protected readonly avaliacoes = computed(() => this.estado().avaliacoes);
+  protected readonly seguidores = computed(() => this.estadoSeguindoAtual() ?? this.estado().seguidores);
+  protected readonly totalSeguidores = computed(() =>
+    this.seguidores()?.totalSeguidores ?? this.perfil()?.totalSeguidores ?? null,
+  );
+
+  protected alternarSeguimento(): void {
+    const perfil = this.perfil();
+    const estado = this.seguidores();
+    if (!perfil || !estado || estado.proprioPerfil || this.alterandoSeguimento()) return;
+
+    this.alterandoSeguimento.set(true);
+    this.erroSeguimento.set('');
+    const requisicao = estado.seguindo
+      ? this.perfilApi.deixarDeSeguir(perfil.id)
+      : this.perfilApi.seguir(perfil.id);
+    requisicao.subscribe({
+      next: (novoEstado) => {
+        this.estadoSeguindoAtual.set(novoEstado);
+        this.alterandoSeguimento.set(false);
+      },
+      error: () => {
+        this.erroSeguimento.set('Não foi possível atualizar o seguimento. Tente novamente.');
+        this.alterandoSeguimento.set(false);
+      },
+    });
+  }
 
   protected tentarNovamente(): void {
     this.atualizacao.next();

@@ -47,14 +47,45 @@
             }
             <span>No SkillSwap desde {{ p.criadoEm | date: 'MMM yyyy' : '' : 'pt-BR' }}</span>
           </div>
+          @if (p.disponivelTrabalhos) {
+            <p class="selo-disponibilidade"><span aria-hidden="true">●</span> Disponível para trabalhos</p>
+          }
         </div>
 
         <div class="acoes-perfil">
+          @if (sessao.autenticado()) {
+            @if (seguidores(); as estadoSeguidores) {
+              @if (!estadoSeguidores.proprioPerfil) {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="botao-seguir"
+                  type="button"
+                  [disabled]="alterandoSeguimento()"
+                  (click)="alternarSeguimento()"
+                >
+                  {{ alterandoSeguimento() ? 'Salvando...' : estadoSeguidores.seguindo ? 'Deixar de seguir' : 'Seguir profissional' }}
+                </button>
+              }
+            }
+          } @else {
+            <a
+              mat-flat-button
+              color="primary"
+              [routerLink]="['/conta']"
+              [queryParams]="{ retorno: '/profissionais/' + p.id }"
+            >
+              Entrar para seguir
+            </a>
+          }
           <a mat-flat-button color="primary" href="#secao-servicos">
             Ver serviços disponíveis
           </a>
           <a mat-button href="#secao-avaliacoes">Ler avaliações</a>
           <p>Abra uma oferta para conferir detalhes e iniciar uma conversa.</p>
+          @if (erroSeguimento()) {
+            <p class="erro-seguimento" role="alert">{{ erroSeguimento() }}</p>
+          }
         </div>
       </div>
 
@@ -74,6 +105,14 @@
               Ainda sem avaliações
             }
           </span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-valor total-seguidores">{{ totalSeguidores() ?? '—' }}</span>
+          <span class="resumo-rotulo">seguidores</span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-valor">{{ p.trabalhosConcluidos }}</span>
+          <span class="resumo-rotulo">trabalhos concluídos</span>
         </div>
         <div class="resumo-item">
           <span class="resumo-valor">

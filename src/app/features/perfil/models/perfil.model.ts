@@ -14,6 +14,15 @@ export interface PerfilProfissional {
   criadoEm: string;
   mediaNotas: number | null;
   quantidadeAvaliacoes: number;
+  disponivelTrabalhos: boolean;
+  totalSeguidores: number;
+  trabalhosConcluidos: number;
+}
+
+export interface EstadoSeguindo {
+  seguindo: boolean;
+  proprioPerfil: boolean;
+  totalSeguidores: number;
 }
 
 export interface ResumoOfertaProfissional {
@@ -52,6 +61,7 @@ export interface AtualizacaoPerfil {
   instagramUrl?: string;
   siteUrl?: string;
   perfilPublico?: boolean;
+  disponivelTrabalhos?: boolean;
 }
 
 export interface PaginaPerfisProfissionais {

@@ -1,7 +1,7 @@
 # Auditoria e plano: perfis profissionais e marketplace social
 
 Data da auditoria: 30/10/2026
-Escopo inicial: auditoria do repositório e planejamento. Em 30/10/2026, a Etapa 1 foi implementada somente no frontend, usando contratos e dados existentes; nenhuma tabela, API, migração ou publicação foi alterada.
+Escopo inicial: auditoria do repositório e planejamento. A Etapa 1 precedeu esta implementação. A atualização de 30/10 acrescenta disponibilidade, métricas derivadas e seguir/deixar de seguir com migração aditiva V18; experiências/certificações e interações nas publicações ainda estão pendentes.
 
 ## Diagnóstico atual
 
@@ -83,13 +83,13 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 ### Etapa 2 — Atributos profissionais e métricas reais
 
-Após a página existente ser revisada, definir contrato de disponibilidade, experiências e certificações, além da semântica de trabalho concluído. Persistir atributos do titular com validação e endpoints autenticados. Calcular contagem somente de acordos com conclusão mútua; não aceitar contador editável pelo usuário. Certificações autodeclaradas não recebem selo “verificada” sem processo e evidência próprios.
+**Parcialmente implementada em 30/10/2026:** disponibilidade fica em `usuarios.disponivel_trabalhos`; seguidores e trabalhos concluídos são contagens consultadas no banco, e a conclusão usa somente acordos com status `CONCLUIDO`. A edição da disponibilidade exige sessão e o perfil público apresenta os valores retornados pelo servidor. Experiências/certificações ainda precisam de CRUD próprio.
 
-**Dependências:** decisão sobre disponibilidade global, campos de experiência, se certificados/documentos/URLs serão públicos e quais estados de acordo contam como trabalho concluído. Migração apenas aditiva.
+**Decisões:** o profissional controla se aceita novos trabalhos; trabalhos contam após acordo concluído pelos dois participantes; experiências e certificados serão autodeclarados e públicos enquanto o perfil estiver visível, sem selo de verificação. Não publicar arquivos/documentos de identidade.
 
 ### Etapa 3 — Seguir e deixar de seguir
 
-Definir relação única `(seguidor, seguido)`, proibir auto-seguir, exigir sessão nas mutações, expor contagens derivadas e decidir visibilidade pública da lista. Cobrir conta pausada e chamadas duplicadas. Não armazenar contagem editável nem expor dados privados do seguidor.
+**Implementada em 30/10/2026, migration V18:** relação única `(seguidor, seguido)`, auto-seguimento proibido, mutações e leitura do estado autenticadas, idempotência, contagem derivada e bloqueio a perfil pausado. A lista de seguidores não é pública nem exposta por endpoint.
 
 ### Etapa 4 — Feed e interação social
 
@@ -104,7 +104,7 @@ Manter ofertas e conversas por anúncio existentes. Exibir avaliações somente 
 1. “Disponível para trabalhos” será uma configuração explícita do profissional ou derivada de anúncios ativos? Recomendação: configuração explícita, independente do calendário de uma oferta.
 2. O que conta como trabalho concluído: acordo com confirmação dos dois participantes (regra atual) ou outro critério?
 3. Quais dados de experiência/certificação serão públicos, e devem ser declarados pelo profissional ou verificados por evidência?
-4. Seguidores e lista de seguidores serão públicos? Recomendação inicial: contagem pública agregada; lista omitida até decisão de privacidade.
+4. **Decidido:** contagem agregada de seguidores é pública; a lista individual não é publicada.
 5. Curtidas/comentários pertencem às publicações de portfólio existentes ou a um novo feed? Recomendação: reutilizar a publicação atual e estender em etapas, preservando vínculo opcional à oferta.
 6. Vídeos são necessários já no MVP social? A stack atual só aceita imagens; especificar orçamento de armazenamento e moderação antes de incluir vídeo.
 

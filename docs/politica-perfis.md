@@ -9,6 +9,7 @@ O perfil começa visível publicamente por compatibilidade com contas existentes
 - ID do perfil e nome de exibição informado pela própria pessoa. O nome não comprova identidade.
 - Título profissional, data de criação da conta, biografia, cidade, foto, capa, especialidades e links externos opcionais quando preenchidos, somente enquanto o perfil estiver visível.
 - Resumo das avaliações recebidas e avaliações não ocultadas, incluindo resposta pública do profissional, somente enquanto o perfil estiver visível.
+- Disponibilidade para novos trabalhos, contagem agregada de seguidores e acordos concluídos, derivados dos registros no banco; a lista de seguidores não é pública.
 - Anúncios ativos e não demonstrativos, publicações de portfólio publicadas e imagens ligadas a esses conteúdos, enquanto o perfil estiver visível.
 
 O perfil não publica e-mail, senha/hash de senha, JWT, mensagens, propostas, acordos, notificações nem histórico de moderação. Não há campo de telefone ou endereço preciso no perfil público.

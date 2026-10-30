@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { appConfig } from '../../../../app.config';
 import { PerfilPublicoComponent } from './perfil-publico.component';
+import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 describe('PerfilPublicoComponent', () => {
   let http: HttpTestingController;
@@ -14,6 +15,42 @@ describe('PerfilPublicoComponent', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('persiste seguir e deixar de seguir com a contagem devolvida pela API', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    http.expectOne('/api/perfis/12').flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: 'Elétrica', criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0, disponivelTrabalhos: true, totalSeguidores: 0, trabalhosConcluidos: 0,
+    });
+    http.expectOne('/api/perfis/12/seguidores/me').flush({ seguindo: false, proprioPerfil: false, totalSeguidores: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios')
+      .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes')
+      .flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Disponível para trabalhos');
+    const seguir = harness.routeNativeElement?.querySelector<HTMLButtonElement>('.botao-seguir');
+    expect(seguir?.textContent).toContain('Seguir');
+    seguir?.click();
+    const gravar = http.expectOne('/api/perfis/12/seguidores/me');
+    expect(gravar.request.method).toBe('PUT');
+    gravar.flush({ seguindo: true, proprioPerfil: false, totalSeguidores: 1 });
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.querySelector('.total-seguidores')?.textContent).toContain('1');
+    expect(harness.routeNativeElement?.querySelector('.botao-seguir')?.textContent).toContain('Deixar de seguir');
+
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.botao-seguir')!.click();
+    const remover = http.expectOne('/api/perfis/12/seguidores/me');
+    expect(remover.request.method).toBe('DELETE');
+    remover.flush({ seguindo: false, proprioPerfil: false, totalSeguidores: 0 });
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.querySelector('.total-seguidores')?.textContent).toContain('0');
+  });
 
   it('mostra dados públicos, reputação com amostra e ofertas ativas', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');

@@ -64,6 +64,71 @@ class PerfilControllerTest {
     }
 
     @Test
+    void perfilPublicoExpoeDisponibilidadeEMetricasReais() throws Exception {
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.disponivelTrabalhos").value(false))
+                .andExpect(jsonPath("$.totalSeguidores").value(0))
+                .andExpect(jsonPath("$.trabalhosConcluidos").value(0));
+
+        mvc.perform(patch("/api/perfil")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"disponivelTrabalhos\":true}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.disponivelTrabalhos").value(true));
+
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.disponivelTrabalhos").value(true));
+    }
+
+    @Test
+    void seguirDeixarDeSeguirEConsultarEstadoSaoPersistidosEAutorizados() throws Exception {
+        var seguidor = usuarios.register(new RegisterDTO("Cliente", "cliente-seguidor@skillswap.invalid", "senha-teste-123"));
+        String tokenSeguidor = jwt.generateToken(seguidor.getEmail());
+        var url = "/api/perfis/" + usuarioId + "/seguidores/me";
+
+        mvc.perform(get(url).header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.seguindo").value(false))
+                .andExpect(jsonPath("$.proprioPerfil").value(false));
+
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url)
+                        .header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.seguindo").value(true))
+                .andExpect(jsonPath("$.totalSeguidores").value(1));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url)
+                        .header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalSeguidores").value(1));
+
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalSeguidores").value(1));
+        mvc.perform(get(url).header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.seguindo").value(true));
+
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(url)
+                        .header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.seguindo").value(false))
+                .andExpect(jsonPath("$.totalSeguidores").value(0));
+        mvc.perform(get("/api/perfis/{id}", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalSeguidores").value(0));
+
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(
+                        "/api/perfis/" + seguidor.getId() + "/seguidores/me")
+                        .header("Authorization", "Bearer " + tokenSeguidor))
+                .andExpect(status().isBadRequest());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void rotasDeAnunciosPropriosExigemAutenticacao() throws Exception {
         mvc.perform(get("/api/anuncios/meus"))
                 .andExpect(status().isUnauthorized());
@@ -96,7 +161,9 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.itens[0].mediaNotas").value(org.hamcrest.Matchers.nullValue()))
                 .andExpect(jsonPath("$.itens[0].quantidadeAvaliacoes").value(0))
                 .andExpect(jsonPath("$.itens[1].mediaNotas").value(org.hamcrest.Matchers.nullValue()))
-                .andExpect(jsonPath("$.itens[1].quantidadeAvaliacoes").value(0));
+                .andExpect(jsonPath("$.itens[1].quantidadeAvaliacoes").value(0))
+                .andExpect(jsonPath("$.itens[0].disponivelTrabalhos").value(false))
+                .andExpect(jsonPath("$.itens[1].totalSeguidores").value(0));
 
         org.junit.jupiter.api.Assertions.assertEquals(5, estatisticas.getPrepareStatementCount(),
                 "a página carrega profissionais, reputação e ofertas com consultas em lote");

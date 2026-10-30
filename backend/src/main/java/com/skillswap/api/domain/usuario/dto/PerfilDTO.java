@@ -17,5 +17,8 @@ public record PerfilDTO(
         String especialidades,
         LocalDateTime criadoEm,
         Double mediaNotas,
-        long quantidadeAvaliacoes
+        long quantidadeAvaliacoes,
+        boolean disponivelTrabalhos,
+        long totalSeguidores,
+        long trabalhosConcluidos
 ) {}

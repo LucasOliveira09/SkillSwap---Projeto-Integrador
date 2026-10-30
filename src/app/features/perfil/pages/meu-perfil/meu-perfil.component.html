@@ -117,6 +117,16 @@
         </mat-checkbox>
       </section>
 
+      <section class="visibilidade-perfil" aria-labelledby="titulo-disponibilidade">
+        <div>
+          <h2 id="titulo-disponibilidade">Disponibilidade para trabalhos</h2>
+          <p>Mostre no seu perfil público se você está aceitando novos serviços ou aulas.</p>
+        </div>
+        <mat-checkbox name="disponivelTrabalhos" [(ngModel)]="dados.disponivelTrabalhos" [disabled]="salvando">
+          Estou disponível para novos trabalhos
+        </mat-checkbox>
+      </section>
+
       <mat-form-field appearance="outline">
         <mat-label>Nome público</mat-label>
         <input

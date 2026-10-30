@@ -52,6 +52,10 @@ public class Usuario {
     @Column(name = "perfil_publico", nullable = false)
     private boolean perfilPublico = true;
 
+    @Builder.Default
+    @Column(name = "disponivel_trabalhos", nullable = false)
+    private boolean disponivelTrabalhos = false;
+
     @Column(length = 500)
     private String especialidades;
 

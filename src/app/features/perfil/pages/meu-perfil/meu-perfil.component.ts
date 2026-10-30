@@ -24,6 +24,7 @@ const formularioVazio: AtualizacaoPerfil = {
   instagramUrl: '',
   siteUrl: '',
   perfilPublico: true,
+  disponivelTrabalhos: false,
 };
 
 @Component({
@@ -125,6 +126,7 @@ export class MeuPerfilComponent {
       instagramUrl: (this.dados.instagramUrl ?? '').trim(),
       siteUrl: (this.dados.siteUrl ?? '').trim(),
       perfilPublico: this.dados.perfilPublico !== false,
+      disponivelTrabalhos: this.dados.disponivelTrabalhos === true,
     };
 
     this.api
@@ -447,6 +449,7 @@ export class MeuPerfilComponent {
       instagramUrl: perfil.instagramUrl ?? '',
       siteUrl: perfil.siteUrl ?? '',
       perfilPublico: perfil.perfilPublico !== false,
+      disponivelTrabalhos: perfil.disponivelTrabalhos === true,
     };
     this.carregarPortfolio(perfil.id);
     this.carregarOfertasPortfolio(perfil.id);

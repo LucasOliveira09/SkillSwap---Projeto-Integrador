@@ -1,7 +1,7 @@
 # Plano: conversas por pessoa, propostas no chat e comentários do anúncio
 
 Data: 30/10/2026
-Estado: requisitos registrados para análise e implementação posterior. Esta mudança não foi implementada nesta entrega.
+Estado: regras de produto aprovadas pelo usuário; implementação ainda não iniciada. Comentários têm leitura pública e escrita autenticada; autor e anunciante podem responder. Propostas permitem até 12 parcelas e trocas sem complemento em dinheiro. O restante do contrato continua conforme as etapas abaixo.
 
 ## Objetivo confirmado
 
@@ -66,7 +66,7 @@ Revisar os nomes do contrato com as convenções REST do projeto antes de fixá-
 
 - A área “Comentários e avaliações” separa perguntas/comentários públicos de avaliações verificadas. Comentários não recebem estrelas nem selo de contratação; avaliações seguem o fluxo atual e continuam disponíveis só após acordo concluído.
 - A média de avaliação do anúncio continua baseada em `notaAnuncio` visível de trabalhos concluídos e não inclui comentários.
-- Comentários exigem autoria autenticada, limite de tamanho, paginação e política de edição/remoção/moderação. Decidir se visitante pode ler, se apenas o profissional pode responder e como denúncias se aplicam antes de expor o feed.
+- Comentários têm leitura pública, autoria autenticada, até 2.000 caracteres, paginação e moderação. Autor e dono do anúncio podem responder. Aplicar denúncia e controles antiabuso existentes.
 - A transição deve preservar o resumo atual de avaliação no anúncio e não criar comentários/avaliações sintéticos.
 
 ## Migração e compatibilidade histórica
@@ -123,8 +123,8 @@ Definir regra de publicação/moderação e contrato; criar migração/API/teste
 1. Conversa única vale também entre contas com papéis distintos (cliente e profissional)? **Recomendação:** sim, chave canônica global por par.
 2. Conversa iniciada de perfil sem anúncio pode começar sem texto e mostrar estado vazio? **Recomendação:** abrir chat existente ou novo vazio; primeiro envio é feito pelo chat.
 3. Quem pode propor: ambos os participantes? **Recomendação:** sim, sempre referenciando oferta ativa; contraproposta é novo registro e conserva versões.
-4. Quais limites para parcelas, duração e validade? **Definir antes de implementar**; não colocar teto arbitrário no código.
-5. Troca pode ter complemento em dinheiro? **Definir antes do DTO**; manter modalidades atuais até a decisão.
-6. Quem pode comentar e quem responde? **Definir política antiabuso/moderação**; distinguir sempre de avaliação verificada.
-7. Comentários serão públicos sem login? **Recomendação:** leitura pública, escrita autenticada e moderável.
+4. **Decidido:** no máximo 12 parcelas; a proposta deve indicar os termos integralmente, sem sugerir processamento ou garantia de pagamento.
+5. **Decidido:** anúncio de troca não aceita complemento em dinheiro.
+6. **Decidido:** comentários públicos, escrita autenticada e respostas do autor ou anunciante, com denúncia/moderação.
+7. **Decidido:** visitantes podem ler comentários; somente pessoas autenticadas podem publicar.
 8. Rollout do banco público dependerá de solicitação e ensaio com cópia/rollback; esta tarefa não concede autorização para deploy.

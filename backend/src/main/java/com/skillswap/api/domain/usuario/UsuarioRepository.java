@@ -9,11 +9,29 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
-import java.util.Optional;
 import jakarta.persistence.LockModeType;
+import java.util.Optional;
 import java.math.BigDecimal;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    interface ResumoSocial {
+        Long getUsuarioId();
+        Long getTotalSeguidores();
+        Long getTrabalhosConcluidos();
+    }
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.id = :id")
+    Optional<Usuario> findByIdForUpdate(@Param("id") Long id);
+
+    @Query("""
+            select u.id as usuarioId,
+                   (select count(s) from Seguidor s where s.seguido.id = u.id) as totalSeguidores,
+                   (select count(a) from Acordo a where a.proposta.anuncio.usuario.id = u.id and a.status = com.skillswap.api.domain.acordo.StatusAcordo.CONCLUIDO) as trabalhosConcluidos
+            from Usuario u where u.id in :ids
+            """)
+    List<ResumoSocial> resumirSocial(@Param("ids") List<Long> ids);
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByFotoUrlAndPerfilPublicoTrue(String fotoUrl);

@@ -51,6 +51,7 @@ describe('MeuPerfilComponent', () => {
     };
     componente.dados.nome = 'Ana Lima';
     componente.dados.tituloProfissional = 'Eletricista autônoma';
+    componente.dados.disponivelTrabalhos = true;
     componente.salvar({ invalid: false, control: { markAllAsTouched: () => undefined } });
 
     const requisicao = http.expectOne('/api/perfil');
@@ -58,6 +59,7 @@ describe('MeuPerfilComponent', () => {
     expect(requisicao.request.body.nome).toBe('Ana Lima');
     expect(requisicao.request.body.tituloProfissional).toBe('Eletricista autônoma');
     expect(requisicao.request.body.perfilPublico).toBeTrue();
+    expect(requisicao.request.body.disponivelTrabalhos).toBeTrue();
     requisicao.flush({
       id: 12,
       nome: 'Ana Lima',

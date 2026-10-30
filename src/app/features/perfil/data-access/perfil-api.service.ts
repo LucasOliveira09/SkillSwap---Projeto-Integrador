@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AtualizacaoPerfil,
+  EstadoSeguindo,
   FiltrosBuscaProfissionais,
   PaginaPerfisProfissionais,
   PerfilProfissional,
@@ -25,6 +26,18 @@ export class PerfilApiService {
 
   publico(id: number | string) {
     return this.http.get<PerfilProfissional>(`/api/perfis/${encodeURIComponent(id)}`);
+  }
+
+  estadoSeguindo(id: number | string) {
+    return this.http.get<EstadoSeguindo>(`/api/perfis/${encodeURIComponent(id)}/seguidores/me`);
+  }
+
+  seguir(id: number | string) {
+    return this.http.put<EstadoSeguindo>(`/api/perfis/${encodeURIComponent(id)}/seguidores/me`, {});
+  }
+
+  deixarDeSeguir(id: number | string) {
+    return this.http.delete<EstadoSeguindo>(`/api/perfis/${encodeURIComponent(id)}/seguidores/me`);
   }
 
   buscarProfissionais(

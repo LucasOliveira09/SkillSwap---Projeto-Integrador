@@ -20,6 +20,9 @@ public record ProfissionalBuscaDTO(
         LocalDateTime criadoEm,
         Double mediaNotas,
         long quantidadeAvaliacoes,
+        boolean disponivelTrabalhos,
+        long totalSeguidores,
+        long trabalhosConcluidos,
         List<ResumoOfertaProfissionalDTO> resumoOfertas
 ) {
     public static ProfissionalBuscaDTO de(PerfilDTO perfil, List<ResumoOfertaProfissionalDTO> ofertas) {
@@ -27,6 +30,7 @@ public record ProfissionalBuscaDTO(
                 perfil.id(), perfil.nome(), perfil.tituloProfissional(), perfil.bio(), perfil.cidade(),
                 perfil.fotoUrl(), perfil.capaUrl(), perfil.linkedinUrl(), perfil.instagramUrl(), perfil.siteUrl(),
                 perfil.perfilPublico(), perfil.especialidades(), perfil.criadoEm(), perfil.mediaNotas(),
-                perfil.quantidadeAvaliacoes(), List.copyOf(ofertas));
+                perfil.quantidadeAvaliacoes(), perfil.disponivelTrabalhos(), perfil.totalSeguidores(),
+                perfil.trabalhosConcluidos(), List.copyOf(ofertas));
     }
 }
