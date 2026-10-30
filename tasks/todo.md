@@ -182,3 +182,10 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 - [x] Rodada final de build sem avisos de budget, typecheck, 131 testes Angular e 97 Java; revisão do diff concluída.
 - [x] Ensaiar migrações V22–V24 em MySQL 8.0.46 isolado, salvar commits (`2b53907`, `dcc2850`), enviar ao GitHub e promover web/API à VPS com backup, preservando banco, uploads, redes e imagens anteriores.
 - [x] Conferir perfil público em Chromium 149 a 390 e 1440 px sem erros de console/página; acessibilidade manual segue pendente.
+
+## Serviços configuráveis e propostas no chat — planejamento (30/10/2026)
+
+- [x] Auditar perfil, categorias, cadastro/edição de anúncios, chat, DTOs e entidade de proposta sem alterar a aplicação ou o banco.
+- [x] Registrar o diagnóstico, contrato REST candidato, modelo de preço parametrizado, incrementos, riscos e critérios em [servicos-configuraveis-e-propostas-plano.md](servicos-configuraveis-e-propostas-plano.md).
+- [ ] Confirmar qual tela/ação reproduz o redirecionamento de categoria e qual revisão o usuário chama de “tela de análise”.
+- [ ] Aprovar as decisões de tipos de serviço e de quem envia a proposta/estimativa. Depois do aceite, implementar por incremento; ainda não modificar nem publicar a aplicação.
