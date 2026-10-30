@@ -187,5 +187,6 @@ O plano completo e a definição de pronto estão em [plan.md](plan.md). Pagamen
 
 - [x] Auditar perfil, categorias, cadastro/edição de anúncios, chat, DTOs e entidade de proposta sem alterar a aplicação ou o banco.
 - [x] Registrar o diagnóstico, contrato REST candidato, modelo de preço parametrizado, incrementos, riscos e critérios em [servicos-configuraveis-e-propostas-plano.md](servicos-configuraveis-e-propostas-plano.md).
-- [ ] Confirmar qual tela/ação reproduz o redirecionamento de categoria e qual revisão o usuário chama de “tela de análise”.
-- [ ] Aprovar as decisões de tipos de serviço e de quem envia a proposta/estimativa. Depois do aceite, implementar por incremento; ainda não modificar nem publicar a aplicação.
+- [x] Reproduzir a navegação de seção do perfil: `href="#secao-servicos"` resolve para a raiz por causa de `<base href="/">` e abre o catálogo.
+- [x] Confirmar que as duas revisões (anúncio e proposta) entram no escopo e que ambos os participantes podem propor na conversa existente.
+- [ ] Definir se a contraproposta substitui a pendente do mesmo anúncio ou se propostas pendentes podem coexistir; depois implementar as fatias aprovadas, sem pagamento integrado.

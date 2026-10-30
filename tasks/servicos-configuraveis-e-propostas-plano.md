@@ -1,12 +1,13 @@
 # Plano: serviços parametrizados e propostas no chat
 
-**Estado:** diagnóstico concluído; plano para revisão do usuário. Nenhum código, dado público ou container foi alterado nesta etapa.
+**Estado:** diagnóstico atualizado com as respostas do usuário; implementação ainda não iniciada. Nenhum código, dado público ou container foi alterado nesta etapa.
 
 ## O que encontrei
 
-- O perfil próprio (`/meu-perfil`) não tem seletor de categorias. O campo “Especialidades” é texto livre; categorias pertencem aos anúncios. O perfil público lista os anúncios ativos do profissional.
+- O perfil próprio (`/meu-perfil`) não tem seletor de categorias. O campo “Especialidades” é texto livre; categorias pertencem aos anúncios. O perfil público lista os anúncios ativos do profissional e oferece links entre Sobre, Experiência, Portfólio, Serviços e Avaliações.
+- O redirecionamento foi reproduzido em Chromium 149: na página `/profissionais/1`, clicar em “Serviços” mudou a URL para `https://skillswap.vizihub.com.br/#secao-servicos`. Os links de seção usam `href="#secao-..."`; com `<base href="/">`, o navegador resolve o fragmento na raiz do site, e o Angular abre o catálogo. Os outros links da mesma navegação usam a mesma forma e podem sofrer o mesmo desvio. Isso explica a navegação do perfil próprio quando aberto publicamente e a dos perfis de outras pessoas.
 - A criação/edição de anúncios usa as três categorias fixas do enum Java `CategoriaAnuncio`: manutenção, aulas e transporte. Não existe tipo de serviço nem configuração de parâmetros, unidades ou cálculo.
-- Editar um anúncio termina em `/anuncios/minhas`, que é uma rota existente. O formulário do perfil, por sua vez, salva por `PATCH /api/perfil` sem navegar. A causa do redirecionamento relatado não está confirmada; é necessário saber qual tela e ação o reproduzem. Uma rota desconhecida cai no catálogo, e algumas telas levam ao login quando a sessão não está pronta.
+- Editar um anúncio termina em `/anuncios/minhas`, que é uma rota existente. O formulário do perfil salva por `PATCH /api/perfil` sem navegar. A falha confirmada ocorre nos atalhos da página pública do perfil; o editor `/meu-perfil` não contém seletor de categoria. A busca de profissionais tem filtros próprios na rota `/profissionais`.
 - No chat (`/mensagens`), “Enviar proposta no chat” já busca anúncios ativos do outro participante e envia para `POST /api/conversas/{id}/propostas`, mas o formulário aparece dentro da conversa, não em um modal. Só há serviço, escopo, valor, pagamento, parcelas, duração e validade; nenhum campo vem da configuração do anúncio e o total não é calculado a partir de unidades.
 - A proposta atual persiste um único valor e os termos gerais. O cartão da proposta no chat não mostra itens calculados nem parâmetros estruturados. Uma proposta enviada é aceita, recusada ou cancelada; ajustes podem ser registrados por outra proposta na mesma conversa.
 - As categorias persistidas são enum/string e os registros já publicados estão no MySQL público V24. A evolução deve ser aditiva, manter anúncios e propostas antigos legíveis e não alterar o fluxo financeiro. Pagamentos continuam fora da plataforma.
@@ -40,7 +41,7 @@ O contrato deve ser fechado antes da implementação, após revisar todas as con
 
 - `GET /api/categorias` e novo recurso paginado `GET /api/tipos-servico?categoria=...` retornam catálogo persistido. Manter os códigos atuais de categorias durante a transição.
 - `POST /api/anuncios` e `PUT /api/anuncios/{id}` recebem tipo e configuração de preço/campos; o servidor valida tamanho, valores, unidades e tipo ativo. Leitura do anúncio retorna essa configuração para criar o modal.
-- `POST /api/conversas/{id}/propostas` continua sendo a criação canônica. Acrescenta a opção escolhida e os valores dos campos; o servidor deriva participante, dono do anúncio, taxa e total. Responde `201 Created` com proposta e itens calculados.
+- `POST /api/conversas/{id}/propostas` continua sendo a criação canônica. Qualquer participante pode criar uma proposta na conversa escolhendo um anúncio ativo de um dos dois participantes; anúncio de terceiros é recusado. O servidor valida o dono do serviço, configuração, unidades e valores, e calcula o total a partir das tarifas configuradas pelo dono do anúncio. Responde `201 Created` com proposta e itens calculados.
 - `GET /api/propostas/{id}` e as mensagens da conversa devolvem snapshot tipado dos parâmetros e itens. Status continuam por `PATCH /api/propostas/{id}`. Nenhum novo chat é criado para o mesmo par.
 - Os modelos podem usar catálogo relacional para categoria/tipo, definições tipadas de campo e preço por anúncio, e snapshot imutável por proposta. O schema final e a estratégia de armazenamento (tabelas/JSON validado) dependem da auditoria de consultas e do suporte MySQL/H2; o Angular nunca envia nem executa uma definição de fórmula.
 
@@ -48,13 +49,14 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos 
 
 ## Entrega por incrementos
 
-### 0. Reproduzir o redirecionamento e fechar decisões
+### 0. Corrigir navegação e fechar as regras restantes
 
-- Identificar tela, URL antes/depois, conta autenticada e ação exata; conferir retorno de sessão e edição de anúncio.
-- Confirmar se “categorias no perfil” significa especialidades do perfil ou categorias dos anúncios mostrados no perfil.
-- Confirmar se “tela de análise” é a revisão antes de publicar o anúncio, a revisão da proposta antes de enviar ou os dois. Este plano inclui os dois pontos de revisão.
+- Substituir links de fragmento relativos à raiz por navegação Angular vinculada à rota atual do perfil; habilitar/validar rolagem até o destino e manter `/profissionais/{id}` no endereço.
+- Cobrir todos os atalhos do perfil próprio/público (Sobre, Experiência, Portfólio, Serviços e Avaliações); a lista de busca mantém filtros por query params na rota `/profissionais`.
+- A revisão solicitada inclui tanto o anúncio antes de publicar quanto a proposta antes de enviar.
 - Aprovar catálogo administrado ou permitir tipos personalizados por qualquer anunciante; recomendação atual: categoria/tipo do catálogo e título livre em “Outro serviço”.
-- Definir se o preço calculado é um orçamento estimado do cliente ou uma proposta formal do profissional. Recomendação atual: o proponente (cliente) solicita com quantidades; o valor calculado é estimado e o profissional pode responder com outra proposta na mesma conversa.
+- Ambos os participantes podem criar propostas na mesma conversa. O dono do anúncio define taxas e campos; o cálculo é feito no servidor e aparece como estimativa quando depende de medidas informadas pelo outro participante.
+- Definir se uma contraproposta substitui a proposta pendente do mesmo anúncio ou pode ficar pendente ao mesmo tempo. Recomendação: manter um fluxo pendente por anúncio na conversa; a nova proposta marca a anterior como substituída, preservando o histórico.
 
 ### 1. Catálogo e configuração de oferta
 
@@ -72,7 +74,8 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos 
 
 ### 3. Modal no chat e revisão legível
 
-- Trocar o formulário embutido por diálogo responsivo com seleção de anúncio, parâmetros dinâmicos, estimativa e resumo itemizado.
+- Trocar o formulário embutido por diálogo responsivo com seleção entre os anúncios ativos dos dois participantes, parâmetros dinâmicos, estimativa e resumo itemizado.
+- Permitir que o cliente preencha os dados de serviço e que o profissional responda ou apresente contraproposta, sem sair da conversa existente.
 - Exibir no histórico o mesmo resumo persistido, com aceite/recusa/cancelamento conforme participação e status.
 - Usar mensagens curtas e concretas; retirar slogans genéricos e repetição de avisos sem função.
 - Confirmar acessibilidade do modal: foco inicial, contenção/restauração de foco, Escape, nomes dos campos e leitura dos erros.
@@ -104,10 +107,12 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com novos 
 | Escopo infinito de campos dinâmicos | Tipos primitivos permitidos, limites e catálogo de unidades; sem código/fórmula livre. |
 | Categorias novas quebrarem enum/cliente antigo | Catálogo REST aditivo e compatibilidade dos códigos antigos; migração em cópia isolada. |
 | Valor estimado ser interpretado como preço garantido | Identificar estimativa, origem e componentes; proposta só se torna acordo após aceite dos dois lados. |
-| Redirecionamento relatado não corresponder ao fluxo auditado | Confirmar URL e passos reais antes de alterar rotas ou sessão. |
+| Corrigir atalhos pode interferir na navegação/rolagem | Manter a rota do perfil, testar teclado e rolagem em todas as seções, desktop e mobile. |
 
-## Pendências para iniciar a implementação
+## Decisões confirmadas e pendência
 
-1. Qual tela você usa quando tenta mudar a categoria: editar o perfil (`/meu-perfil`), editar um anúncio (`/anuncios/{id}/editar`) ou filtrar a lista de profissionais? Se puder, informe o endereço que aparece depois do redirecionamento.
-2. Quando diz “tela de análise”, você se refere à revisão do anúncio antes de publicar, à revisão da proposta no chat ou a ambas?
-3. Para começar, a proposta deve ser um pedido do cliente com total estimado pelos parâmetros, e o profissional responde/corrige por uma nova proposta na mesma conversa? Essa é a recomendação deste plano.
+- A navegação com falha é a troca entre seções do perfil, tanto no perfil consultado quanto no próprio perfil aberto publicamente; o desvio foi reproduzido.
+- A “tela de análise” inclui a revisão do anúncio e a revisão da proposta.
+- Ambos podem enviar propostas dentro da conversa única.
+- Falta definir como contrapropostas tratam a anterior pendente: substituição sequencial (recomendado) ou várias propostas pendentes em paralelo.
+- A recomendação do catálogo continua sendo categorias/tipos controlados e extensíveis, com “Outro serviço” e título livre. Os parâmetros e modelos de cobrança são configurados pelo anunciante.
