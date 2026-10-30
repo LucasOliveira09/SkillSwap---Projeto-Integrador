@@ -1,0 +1,102 @@
+<section class="interacoes-comentarios" aria-label="Comentários da publicação">
+  <div class="interacoes-publicacao" aria-label="Ações da publicação">
+    <button mat-button type="button" class="botao-curtida"
+      [class.curtida-ativa]="resumoCurtida().curtidaPeloUsuario"
+      [attr.aria-pressed]="resumoCurtida().curtidaPeloUsuario"
+      [attr.aria-label]="(resumoCurtida().curtidaPeloUsuario ? 'Remover curtida' : 'Curtir publicação') + ', ' + resumoCurtida().totalCurtidas + ' curtidas'"
+      [disabled]="curtidaEmAndamento()" (click)="alternarCurtida()">
+      <span aria-hidden="true">{{ resumoCurtida().curtidaPeloUsuario ? '♥' : '♡' }}</span>
+      {{ resumoCurtida().totalCurtidas }} {{ resumoCurtida().totalCurtidas === 1 ? 'curtida' : 'curtidas' }}
+    </button>
+    @if (erroCurtida()) { <p class="erro" role="alert">{{ erroCurtida() }}</p> }
+  </div>
+  <button mat-button type="button" class="alternar-comentarios" [attr.aria-expanded]="aberta()"
+    [attr.aria-controls]="'comentarios-publicacao-' + publicacao().id" (click)="alternar()">
+    {{ aberta() ? 'Ocultar comentários' : 'Ver comentários' }}
+    @if (pagina(); as dados) { <span>({{ dados.totalItens }})</span> }
+  </button>
+
+  @if (aberta()) {
+    <div class="painel-comentarios" [id]="'comentarios-publicacao-' + publicacao().id">
+      @if (sessao.autenticado()) {
+        <form class="formulario-comentario" (ngSubmit)="enviar()">
+          @if (respostaA(); as comentarioRaiz) {
+            <div class="respondendo">
+              <span>Respondendo a {{ comentarioRaiz.autorNome }}</span>
+              <button mat-button type="button" (click)="cancelarResposta()">Cancelar</button>
+            </div>
+          }
+          <label class="visualmente-oculto" [for]="'novo-comentario-' + publicacao().id">Escreva um comentário</label>
+          <textarea [id]="'novo-comentario-' + publicacao().id" name="comentario" [(ngModel)]="texto"
+            maxlength="1000" rows="2" placeholder="Escreva um comentário..." required></textarea>
+          <div class="envio-comentario">
+            <span>{{ texto.length }}/1000</span>
+            <button mat-flat-button color="primary" type="submit"
+              [disabled]="!texto.trim() || texto.length > 1000 || enviando()">
+              {{ enviando() ? 'Enviando...' : 'Comentar' }}
+            </button>
+          </div>
+          @if (erroEnvio()) { <p class="erro" role="alert">{{ erroEnvio() }}</p> }
+        </form>
+      } @else {
+        <p class="entrar-comentario">Entre na sua conta para participar da conversa.</p>
+        <button mat-button type="button" (click)="entrarParaComentar()">Entrar para comentar</button>
+      }
+
+      @if (carregando()) {
+        <p class="estado" role="status">Carregando comentários...</p>
+      } @else if (erroLeitura()) {
+        <p class="erro" role="alert">{{ erroLeitura() }}</p>
+        <button mat-button type="button" (click)="carregar(paginaAtual())">Tentar novamente</button>
+      } @else if (pagina(); as dados) {
+        @if (!dados.itens.length) {
+          <p class="estado">Ainda não há comentários nesta publicação.</p>
+        } @else {
+          <ol class="lista-comentarios">
+            @for (comentario of dados.itens; track comentario.id) {
+              <li class="comentario">
+                <div class="cabecalho-comentario">
+                  <strong>{{ comentario.autorNome }}</strong>
+                  <time [attr.datetime]="comentario.criadoEm">{{ comentario.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                </div>
+                <p>{{ comentario.conteudo }}</p>
+                <div class="acoes-comentario">
+                  @if (comentario.podeResponder) {
+                    <button mat-button type="button" (click)="responder(comentario)">Responder</button>
+                  }
+                  @if (comentario.podeDenunciar) {
+                    <app-denunciar [tipoConteudo]="'COMENTARIO_PUBLICACAO'" [recursoId]="comentario.id" />
+                  }
+                </div>
+                @if (comentario.respostas.length) {
+                  <ol class="lista-respostas" aria-label="Respostas">
+                    @for (resposta of comentario.respostas; track resposta.id) {
+                      <li class="resposta-comentario">
+                        <div class="cabecalho-comentario">
+                          <strong>{{ resposta.autorNome }}</strong>
+                          <time [attr.datetime]="resposta.criadoEm">{{ resposta.criadoEm | date: 'd MMM yyyy' : '' : 'pt-BR' }}</time>
+                        </div>
+                        <p>{{ resposta.conteudo }}</p>
+                        @if (resposta.podeDenunciar) {
+                          <app-denunciar [tipoConteudo]="'COMENTARIO_PUBLICACAO'" [recursoId]="resposta.id" />
+                        }
+                      </li>
+                    }
+                  </ol>
+                }
+              </li>
+            }
+          </ol>
+          @if (dados.totalPaginas > 1) {
+            <nav class="paginacao-comentarios" aria-label="Páginas dos comentários">
+              <button mat-button type="button" [disabled]="dados.pagina === 0" (click)="paginaAnterior()">Anteriores</button>
+              <span>Página {{ dados.pagina + 1 }} de {{ dados.totalPaginas }}</span>
+              <button mat-button type="button" [disabled]="dados.pagina + 1 >= dados.totalPaginas"
+                (click)="proximaPagina()">Próximos</button>
+            </nav>
+          }
+        }
+      }
+    </div>
+  }
+</section>

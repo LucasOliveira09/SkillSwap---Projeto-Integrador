@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+.interacoes-publicacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--ss-line);
+  padding-top: 7px;
+}
+
+.botao-curtida {
+  min-height: 38px;
+  color: var(--ss-muted);
+}
+
+.botao-curtida span {
+  margin-right: 5px;
+  color: var(--ss-blue);
+  font-size: 18px;
+}
+
+.botao-curtida.curtida-ativa span {
+  color: #c73b5b;
+}
+
+.alternar-comentarios {
+  min-height: 38px;
+  color: var(--ss-muted);
+}
+
+.painel-comentarios {
+  display: grid;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ss-line);
+}
+
+.formulario-comentario {
+  display: grid;
+  gap: 8px;
+}
+
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  border: 1px solid var(--ss-line);
+  border-radius: 9px;
+  padding: 10px;
+  color: var(--ss-text);
+  background: var(--ss-surface);
+  font: inherit;
+}
+
+textarea:focus-visible {
+  outline: 2px solid var(--ss-blue);
+  outline-offset: 2px;
+}
+
+.envio-comentario,
+.respondendo,
+.paginacao-comentarios,
+.cabecalho-comentario,
+.acoes-comentario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.envio-comentario > span,
+.cabecalho-comentario time,
+.paginacao-comentarios span {
+  color: var(--ss-muted);
+  font-size: 11px;
+}
+
+.lista-comentarios,
+.lista-respostas {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comentario,
+.resposta-comentario {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.comentario > p,
+.resposta-comentario > p {
+  margin: 4px 0;
+  white-space: pre-line;
+}
+
+.lista-respostas {
+  margin: 8px 0 0 12px;
+  border-left: 2px solid var(--ss-line);
+  padding-left: 12px;
+}
+
+.estado,
+.erro,
+.entrar-comentario {
+  margin: 0;
+  font-size: 12px;
+}
+
+.erro {
+  color: var(--ss-danger, #a32637);
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 420px) {
+  .lista-respostas {
+    margin-left: 4px;
+    padding-left: 8px;
+  }
+}

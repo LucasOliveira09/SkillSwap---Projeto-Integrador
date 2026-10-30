@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -69,10 +70,13 @@ public class PerfilController {
     public ResponseEntity<PaginaDTO<PublicacaoPortfolioDTO>> listarPublicacoes(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
-            @RequestParam(defaultValue = "6") @Min(1) @Max(20) int tamanho) {
+            @RequestParam(defaultValue = "6") @Min(1) @Max(20) int tamanho,
+            Authentication authentication) {
         usuarioService.buscarPerfilPublico(id);
         var pageable = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "criadoEm", "id"));
-        return ResponseEntity.ok(PaginaDTO.de(publicacaoPortfolioService.listar(id, pageable)));
+        String email = authentication == null || authentication instanceof AnonymousAuthenticationToken
+                ? null : (String) authentication.getPrincipal();
+        return ResponseEntity.ok(PaginaDTO.de(publicacaoPortfolioService.listar(id, pageable, email)));
     }
 
     @GetMapping("/publicacoes")

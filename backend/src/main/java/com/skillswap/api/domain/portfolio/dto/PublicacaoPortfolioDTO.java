@@ -11,5 +11,7 @@ public record PublicacaoPortfolioDTO(
         String anuncioTitulo,
         String legenda,
         List<String> fotos,
-        LocalDateTime criadoEm
+        LocalDateTime criadoEm,
+        long totalCurtidas,
+        boolean curtidaPeloUsuario
 ) {}

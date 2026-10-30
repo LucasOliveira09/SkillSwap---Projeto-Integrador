@@ -13,6 +13,7 @@ import { Avaliacao } from '../../../negociacao/models/negociacao.model';
 import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { ConversasApiService } from '../../../negociacao/data-access/conversas-api.service';
+import { PublicacaoInteracoesComponent } from '../../ui/publicacao-interacoes/publicacao-interacoes.component';
 
 interface EstadoPerfil {
   carregando: boolean;
@@ -55,7 +56,8 @@ const estadoInicial: EstadoPerfil = {
 @Component({
   selector: 'app-perfil-publico',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, IconeComponent, DenunciarComponent],
+  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, IconeComponent,
+    DenunciarComponent, PublicacaoInteracoesComponent],
   templateUrl: './perfil-publico.component.html',
   styleUrl: './perfil-publico.component.scss',
 })

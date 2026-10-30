@@ -1,4 +1,4 @@
-export type TipoConteudoDenunciado = 'PUBLICACAO' | 'AVALIACAO' | 'COMENTARIO_ANUNCIO';
+export type TipoConteudoDenunciado = 'PUBLICACAO' | 'AVALIACAO' | 'COMENTARIO_ANUNCIO' | 'COMENTARIO_PUBLICACAO';
 export type MotivoDenuncia = 'SPAM' | 'ASSEDIO' | 'FRAUDE' | 'DADOS_PESSOAIS' | 'CONTEUDO_INADEQUADO' | 'OUTRO';
 export type StatusDenuncia = 'ABERTA' | 'OCULTADA' | 'DESCARTADA' | 'REEXIBIDA';
 

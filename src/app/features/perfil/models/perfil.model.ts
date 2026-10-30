@@ -81,6 +81,34 @@ export interface PublicacaoPortfolio {
   legenda: string;
   fotos: readonly string[];
   criadoEm: string;
+  totalCurtidas: number;
+  curtidaPeloUsuario: boolean;
+}
+
+export interface CurtidaPublicacao {
+  publicacaoId: number;
+  totalCurtidas: number;
+  curtidaPeloUsuario: boolean;
+}
+
+export interface ComentarioPublicacao {
+  id: number;
+  publicacaoId: number;
+  respostaAId: number | null;
+  autorNome: string;
+  conteudo: string;
+  criadoEm: string;
+  respostas: readonly ComentarioPublicacao[];
+  podeResponder: boolean;
+  podeDenunciar: boolean;
+}
+
+export interface PaginaComentariosPublicacao {
+  itens: readonly ComentarioPublicacao[];
+  pagina: number;
+  tamanho: number;
+  totalItens: number;
+  totalPaginas: number;
 }
 
 export interface PaginaPublicacoesPortfolio {

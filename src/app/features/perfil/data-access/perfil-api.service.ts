@@ -2,6 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AtualizacaoPerfil,
+  CurtidaPublicacao,
+  ComentarioPublicacao,
+  PaginaComentariosPublicacao,
   EstadoSeguindo,
   FiltrosBuscaProfissionais,
   PaginaPerfisProfissionais,
@@ -119,5 +122,26 @@ export class PerfilApiService {
 
   atualizarLegendaPublicacao(id: number, legenda: string) {
     return this.http.patch<PublicacaoPortfolio>(`/api/publicacoes/${id}`, { legenda });
+  }
+
+  curtirPublicacao(id: number) {
+    return this.http.put<CurtidaPublicacao>(`/api/publicacoes/${id}/curtida`, {});
+  }
+
+  deixarDeCurtirPublicacao(id: number) {
+    return this.http.delete<CurtidaPublicacao>(`/api/publicacoes/${id}/curtida`);
+  }
+
+  comentariosPublicacao(id: number, pagina = 0) {
+    return this.http.get<PaginaComentariosPublicacao>(`/api/publicacoes/${id}/comentarios`, {
+      params: { pagina, tamanho: 10 },
+    });
+  }
+
+  comentarPublicacao(id: number, conteudo: string, respostaAId?: number) {
+    return this.http.post<ComentarioPublicacao>(`/api/publicacoes/${id}/comentarios`, {
+      conteudo,
+      ...(respostaAId ? { respostaAId } : {}),
+    });
   }
 }

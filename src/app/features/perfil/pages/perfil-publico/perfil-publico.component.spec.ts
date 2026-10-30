@@ -52,6 +52,46 @@ describe('PerfilPublicoComponent', () => {
     expect(harness.routeNativeElement?.querySelector('.total-seguidores')?.textContent).toContain('0');
   });
 
+  it('atualiza a curtida do portfólio somente após a confirmação da API', async () => {
+    TestBed.inject(SessaoService).entrar('cliente@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/profissionais/12');
+    http.expectOne('/api/perfis/12').flush({
+      id: 12, nome: 'Ana Profissional', tituloProfissional: null, bio: null, cidade: null,
+      fotoUrl: null, capaUrl: null, especialidades: 'Elétrica', criadoEm: '2026-10-01T10:00:00',
+      mediaNotas: null, quantidadeAvaliacoes: 0, disponivelTrabalhos: false, totalSeguidores: 0, trabalhosConcluidos: 0,
+    });
+    http.expectOne('/api/perfis/12/seguidores/me').flush({ seguindo: false, proprioPerfil: false, totalSeguidores: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/anuncios')
+      .flush({ itens: [], pagina: 0, tamanho: 6, totalItens: 0, totalPaginas: 0 });
+    http.expectOne((request) => request.url === '/api/perfis/12/publicacoes').flush({
+      itens: [{ id: 4, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
+        anuncioTitulo: null, legenda: 'Um trabalho', fotos: ['/api/uploads/4.png'], criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 2, curtidaPeloUsuario: false }],
+      pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
+    });
+    http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
+    harness.detectChanges();
+
+    const botao = harness.routeNativeElement!.querySelector<HTMLButtonElement>('.botao-curtida')!;
+    expect(botao.textContent).toContain('2 curtidas');
+    botao.click();
+    const curtir = http.expectOne('/api/publicacoes/4/curtida');
+    expect(curtir.request.method).toBe('PUT');
+    expect(harness.routeNativeElement!.querySelector('.botao-curtida')?.textContent).toContain('2 curtidas');
+    curtir.flush({ publicacaoId: 4, totalCurtidas: 3, curtidaPeloUsuario: true });
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.botao-curtida')?.textContent).toContain('3 curtidas');
+    expect(harness.routeNativeElement!.querySelector('.botao-curtida')?.getAttribute('aria-pressed')).toBe('true');
+
+    harness.routeNativeElement!.querySelector<HTMLButtonElement>('.botao-curtida')!.click();
+    const remover = http.expectOne('/api/publicacoes/4/curtida');
+    expect(remover.request.method).toBe('DELETE');
+    remover.flush({ publicacaoId: 4, totalCurtidas: 2, curtidaPeloUsuario: false });
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.botao-curtida')?.textContent).toContain('2 curtidas');
+  });
+
   it('mostra dados públicos, reputação com amostra e ofertas ativas', async () => {
     const harness = await RouterTestingHarness.create('/profissionais/12');
     expect(harness.routeNativeElement?.textContent).toContain('Carregando perfil profissional');
@@ -116,6 +156,7 @@ describe('PerfilPublicoComponent', () => {
         legenda: 'Instalação concluída',
         fotos: ['/api/uploads/foto.png'],
         criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 3, curtidaPeloUsuario: false,
       }],
       pagina: 0,
       tamanho: 12,
@@ -257,7 +298,8 @@ describe('PerfilPublicoComponent', () => {
     expect(primeira.request.params.get('pagina')).toBe('0');
     primeira.flush({
       itens: [{ id: 1, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
-        anuncioTitulo: null, legenda: 'Primeira página', fotos: ['/api/uploads/1.png'], criadoEm: '2026-10-02T10:00:00' }],
+        anuncioTitulo: null, legenda: 'Primeira página', fotos: ['/api/uploads/1.png'], criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false }],
       pagina: 0, tamanho: 12, totalItens: 13, totalPaginas: 2,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);
@@ -275,7 +317,8 @@ describe('PerfilPublicoComponent', () => {
     expect(segunda.request.params.get('pagina')).toBe('1');
     segunda.flush({
       itens: [{ id: 13, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
-        anuncioTitulo: null, legenda: 'Décima terceira publicação', fotos: ['/api/uploads/13.png'], criadoEm: '2026-10-14T10:00:00' }],
+        anuncioTitulo: null, legenda: 'Décima terceira publicação', fotos: ['/api/uploads/13.png'], criadoEm: '2026-10-14T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false }],
       pagina: 1, tamanho: 12, totalItens: 13, totalPaginas: 2,
     });
     http.expectOne('/api/usuarios/12/avaliacoes').flush([]);

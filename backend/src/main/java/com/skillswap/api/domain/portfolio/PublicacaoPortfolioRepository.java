@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
 import java.util.Optional;
 
 public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoPortfolio, Long> {
@@ -20,6 +22,10 @@ public interface PublicacaoPortfolioRepository extends JpaRepository<PublicacaoP
 
     @EntityGraph(attributePaths = {"usuario", "anuncio"})
     Optional<PublicacaoPortfolio> findById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from PublicacaoPortfolio p join fetch p.usuario where p.id = :id and p.moderadaOculta = false")
+    Optional<PublicacaoPortfolio> findVisivelPorIdParaAtualizar(@Param("id") Long id);
 
     @Query("select distinct foto from PublicacaoPortfolio p join p.fotos foto")
     java.util.List<String> listarFotosReferenciadas();

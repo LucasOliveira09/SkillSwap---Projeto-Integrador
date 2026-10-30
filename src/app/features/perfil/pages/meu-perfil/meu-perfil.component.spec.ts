@@ -103,6 +103,7 @@ describe('MeuPerfilComponent', () => {
         id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
         anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],
         criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false,
       }],
       pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
     });
@@ -115,6 +116,7 @@ describe('MeuPerfilComponent', () => {
       id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
       anuncioTitulo: null, legenda: 'Instalação concluída', fotos: ['/api/uploads/foto.png'],
       criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false,
     };
     const componente = harness.routeDebugElement!.componentInstance as unknown as {
       iniciarEdicaoPublicacao(item: typeof publicacao): void;
@@ -137,6 +139,7 @@ describe('MeuPerfilComponent', () => {
       id: 9, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
       anuncioTitulo: null, legenda: 'Resultado revisado', fotos: ['/api/uploads/foto.png'],
       criadoEm: '2026-10-02T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false,
     });
     await harness.fixture.whenStable();
     harness.detectChanges();
@@ -306,12 +309,14 @@ describe('MeuPerfilComponent', () => {
       id: 20, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
       anuncioTitulo: null, legenda: '', fotos: ['/api/uploads/primeira.png', '/api/uploads/segunda.jpg'],
       criadoEm: '2026-10-28T10:00:00',
+      totalCurtidas: 0, curtidaPeloUsuario: false,
     });
     http.expectOne((request) => request.urlWithParams === '/api/publicacoes?pagina=0&tamanho=12').flush({
       itens: [{
         id: 20, profissionalId: 12, profissionalNome: 'Ana Profissional', anuncioId: null,
         anuncioTitulo: null, legenda: '', fotos: ['/api/uploads/primeira.png', '/api/uploads/segunda.jpg'],
         criadoEm: '2026-10-28T10:00:00',
+        totalCurtidas: 0, curtidaPeloUsuario: false,
       }],
       pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
     });

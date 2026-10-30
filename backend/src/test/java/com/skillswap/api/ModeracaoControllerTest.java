@@ -108,6 +108,35 @@ class ModeracaoControllerTest {
     }
 
     @Test
+    void denunciaDeComentarioDePublicacaoPodeSerOcultadaEReexibida() throws Exception {
+        var comentario = mvc.perform(post("/api/publicacoes/{id}/comentarios", publicacaoId)
+                        .header("Authorization", "Bearer " + tokenDenunciante)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"Comentário impróprio\"}"))
+                .andExpect(status().isCreated()).andReturn();
+        long comentarioId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(comentario.getResponse().getContentAsString()).get("id").asLong();
+
+        var denuncia = mvc.perform(post("/api/denuncias").header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"tipoConteudo\":\"COMENTARIO_PUBLICACAO\",\"recursoId\":%d,\"motivo\":\"CONTEUDO_INADEQUADO\"}").formatted(comentarioId)))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.tipoConteudo").value("COMENTARIO_PUBLICACAO"))
+                .andReturn();
+        long denunciaId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(denuncia.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(patch("/api/moderacao/denuncias/{id}", denunciaId).header("Authorization", "Bearer " + tokenModerador)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"acao\":\"OCULTAR\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("OCULTADA"));
+        mvc.perform(get("/api/publicacoes/{id}/comentarios", publicacaoId))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(patch("/api/moderacao/denuncias/{id}", denunciaId).header("Authorization", "Bearer " + tokenModerador)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"acao\":\"REEXIBIR\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("REEXIBIDA"));
+        mvc.perform(get("/api/publicacoes/{id}/comentarios", publicacaoId))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
+    }
+
+    @Test
     void autorNaoPodeDenunciarPublicacaoPropria() throws Exception {
         mvc.perform(post("/api/denuncias").header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)

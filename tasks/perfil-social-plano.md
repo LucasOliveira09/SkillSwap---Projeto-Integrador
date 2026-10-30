@@ -93,7 +93,11 @@ Redesenhar a hierarquia da página profissional usando somente dados e recursos 
 
 ### Etapa 4 — Feed e interação social
 
-Separar publicações profissionais do portfólio atual apenas se houver distinção de domínio necessária; primeiro preservar a publicação de portfólio existente. Curtidas e comentários devem ter autorização, limites, prevenção de abuso, denúncia/moderação e consultas paginadas. Planejar imagem primeiro. Vídeo fica bloqueado até decisão sobre upload e operação de mídia.
+**Implementada no código em 30/10/2026 (V22/V23; ainda sem publicação):** o portfólio existente recebeu curtidas persistidas e comentários paginados, sem criar outro feed. A API inclui contagem de curtidas e estado do usuário em consultas em lote, e oferece leitura pública, escrita autenticada, respostas de uma camada e denúncia/moderação de comentários. O perfil carrega comentários quando o painel é aberto; mostra falhas, repetição, vazio, envio, resposta e login.
+
+**Limites mantidos:** vídeos continuam fora, pois o armazenamento aceita apenas imagens e não há política de mídia/moderação para vídeo. Não há ranking, lista pública de curtidores, notificações de interação nem edição/remoção individual de comentários nesta fatia.
+
+**Verificação local:** suíte Java (95 testes), suíte Angular (128), typecheck e build passaram. As migrações V22/V23 passaram em H2; o Docker Desktop local está indisponível, então não foi feita a validação MySQL local. A publicação/VPS e o ensaio de migração isolada ainda são pendentes.
 
 ### Etapa 5 — Integração comercial e reputação
 
@@ -110,4 +114,4 @@ Manter ofertas e conversas por anúncio existentes. Exibir avaliações somente 
 
 ## Estado
 
-Auditoria e proposta incremental registradas. A Etapa 1 foi implementada com os endpoints e dados existentes. `npm run typecheck`, `npm run build` e `npm run test:ci` (117 testes) passaram. Chromium não mostrou erros de página, console ou respostas HTTP com erro nas capturas concluídas; responsividade foi conferida em 320, 390, 768 e 1440 px. As demais etapas continuam pendentes. Para a mudança independente de conversas/propostas solicitada depois, consulte [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md).
+Etapas 1, 3 e 4 estão implementadas no código; disponibilidade e métricas reais da Etapa 2 também estão prontas. Experiências/certificações da Etapa 2 seguem pendentes. Etapa 4 ainda precisa de validação em MySQL real e Chromium com a nova API antes de publicação. Acessibilidade manual permanece pendente. Consulte [interacoes-publicacoes-plano.md](interacoes-publicacoes-plano.md) para contrato e aceite da entrega, e [comunicacao-propostas-plano.md](comunicacao-propostas-plano.md) para a mudança publicada de conversas/propostas.

@@ -25,7 +25,7 @@
         @for (denuncia of denuncias(); track denuncia.id) {
           <article class="denuncia" role="listitem">
             <div class="topo-denuncia">
-              <span>{{ denuncia.tipoConteudo === 'PUBLICACAO' ? 'Publicação de portfólio' : denuncia.tipoConteudo === 'AVALIACAO' ? 'Avaliação' : 'Comentário em anúncio' }}</span>
+              <span>{{ denuncia.tipoConteudo === 'PUBLICACAO' ? 'Publicação de portfólio' : denuncia.tipoConteudo === 'AVALIACAO' ? 'Avaliação' : denuncia.tipoConteudo === 'COMENTARIO_PUBLICACAO' ? 'Comentário em publicação' : 'Comentário em anúncio' }}</span>
               <time [attr.datetime]="denuncia.criadaEm">{{ denuncia.criadaEm | date: 'd MMM yyyy, HH:mm' : '' : 'pt-BR' }}</time>
             </div>
             <p class="trecho">{{ denuncia.trechoConteudo || 'Conteúdo indisponível' }}</p>

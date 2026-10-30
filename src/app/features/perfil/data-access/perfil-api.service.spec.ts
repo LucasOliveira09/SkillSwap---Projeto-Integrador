@@ -186,7 +186,7 @@ describe('PerfilApiService', () => {
     expect(criar.request.method).toBe('POST');
     expect(criar.request.body).toEqual({ legenda: 'Trabalho concluído', fotos });
     criar.flush({ id: 9, profissionalId: 12, profissionalNome: 'Ana', anuncioId: null, anuncioTitulo: null,
-      legenda: 'Trabalho concluído', fotos, criadoEm: '2026-10-02T10:00:00' });
+      legenda: 'Trabalho concluído', fotos, criadoEm: '2026-10-02T10:00:00', totalCurtidas: 0, curtidaPeloUsuario: false });
 
     api.excluirPublicacao(9).subscribe();
     const remover = http.expectOne('/api/publicacoes/9');
@@ -200,5 +200,38 @@ describe('PerfilApiService', () => {
     expect(atualizar.request.method).toBe('PATCH');
     expect(atualizar.request.body).toEqual({ legenda: 'Projeto revisado' });
     atualizar.flush({ id: 9, legenda: 'Projeto revisado', fotos, criadoEm: '2026-10-02T10:00:00' });
+  });
+
+  it('curte e remove curtida por recursos REST idempotentes da publicação', () => {
+    api.curtirPublicacao(9).subscribe((resumo) => {
+      expect(resumo).toEqual({ publicacaoId: 9, totalCurtidas: 1, curtidaPeloUsuario: true });
+    });
+    const curtir = http.expectOne('/api/publicacoes/9/curtida');
+    expect(curtir.request.method).toBe('PUT');
+    curtir.flush({ publicacaoId: 9, totalCurtidas: 1, curtidaPeloUsuario: true });
+
+    api.deixarDeCurtirPublicacao(9).subscribe((resumo) => {
+      expect(resumo.totalCurtidas).toBe(0);
+      expect(resumo.curtidaPeloUsuario).toBeFalse();
+    });
+    const remover = http.expectOne('/api/publicacoes/9/curtida');
+    expect(remover.request.method).toBe('DELETE');
+    remover.flush({ publicacaoId: 9, totalCurtidas: 0, curtidaPeloUsuario: false });
+  });
+
+  it('consulta comentários paginados e envia resposta sem criar uma conversa paralela', () => {
+    api.comentariosPublicacao(9, 1).subscribe((pagina) => expect(pagina.pagina).toBe(1));
+    const leitura = http.expectOne('/api/publicacoes/9/comentarios?pagina=1&tamanho=10');
+    expect(leitura.request.method).toBe('GET');
+    leitura.flush({ itens: [], pagina: 1, tamanho: 10, totalItens: 12, totalPaginas: 2 });
+
+    api.comentarPublicacao(9, 'Obrigado', 5).subscribe((comentario) => {
+      expect(comentario.respostaAId).toBe(5);
+    });
+    const envio = http.expectOne('/api/publicacoes/9/comentarios');
+    expect(envio.request.method).toBe('POST');
+    expect(envio.request.body).toEqual({ conteudo: 'Obrigado', respostaAId: 5 });
+    envio.flush({ id: 10, publicacaoId: 9, respostaAId: 5, autorNome: 'Ana', conteudo: 'Obrigado',
+      criadoEm: '2026-10-30T10:00:00', respostas: [], podeResponder: false, podeDenunciar: false });
   });
 });

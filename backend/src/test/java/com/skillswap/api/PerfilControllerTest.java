@@ -129,6 +129,120 @@ class PerfilControllerTest {
     }
 
     @Test
+    void curtidasDePublicacaoSaoPrivadasPorUsuarioEIdempotentes() throws Exception {
+        var cliente = usuarios.register(new RegisterDTO("Cliente", "cliente-curtida@skillswap.invalid", "senha-teste-123"));
+        String tokenCliente = jwt.generateToken(cliente.getEmail());
+        var foto = new org.springframework.mock.web.MockMultipartFile("file", "foto.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+        var upload = mvc.perform(multipart("/api/uploads").file(foto).header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated()).andReturn();
+        String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(upload.getResponse().getContentAsString()).get("url").asText();
+        var criada = mvc.perform(post("/api/publicacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"legenda\":\"Portfólio\",\"fotos\":[\"%s\"]}").formatted(fotoUrl)))
+                .andExpect(status().isCreated()).andReturn();
+        Long publicacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(criada.getResponse().getContentAsString()).get("id").asLong();
+        String url = "/api/publicacoes/" + publicacaoId + "/curtida";
+
+        mvc.perform(get("/api/perfis/{id}/publicacoes", usuarioId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itens[0].totalCurtidas").value(0))
+                .andExpect(jsonPath("$.itens[0].curtidaPeloUsuario").value(false));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url)
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCurtidas").value(1))
+                .andExpect(jsonPath("$.curtidaPeloUsuario").value(true));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(url)
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalCurtidas").value(1));
+        mvc.perform(get("/api/perfis/{id}/publicacoes", usuarioId).header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.itens[0].curtidaPeloUsuario").value(true));
+        mvc.perform(get("/api/perfis/{id}/publicacoes", usuarioId).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.itens[0].curtidaPeloUsuario").value(false));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(url)
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalCurtidas").value(0));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(url)
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalCurtidas").value(0));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(
+                        "/api/publicacoes/{id}", publicacaoId).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/publicacoes/{id}", publicacaoId)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void comentariosDaPublicacaoSaoPublicosPaginadosEComRespostasAutorizadas() throws Exception {
+        var cliente = usuarios.register(new RegisterDTO("Cliente", "cliente-comentario@skillswap.invalid", "senha-teste-123"));
+        var terceiro = usuarios.register(new RegisterDTO("Terceiro", "terceiro-comentario@skillswap.invalid", "senha-teste-123"));
+        String tokenCliente = jwt.generateToken(cliente.getEmail());
+        String tokenTerceiro = jwt.generateToken(terceiro.getEmail());
+        var foto = new org.springframework.mock.web.MockMultipartFile("file", "foto.png", "image/png",
+                java.util.Base64.getDecoder().decode(
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQU0AAAAASUVORK5CYII="));
+        var upload = mvc.perform(multipart("/api/uploads").file(foto).header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated()).andReturn();
+        String fotoUrl = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(upload.getResponse().getContentAsString()).get("url").asText();
+        var criada = mvc.perform(post("/api/publicacoes").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"legenda\":\"Portfólio\",\"fotos\":[\"%s\"]}").formatted(fotoUrl)))
+                .andExpect(status().isCreated()).andReturn();
+        Long publicacaoId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(criada.getResponse().getContentAsString()).get("id").asLong();
+        String url = "/api/publicacoes/" + publicacaoId + "/comentarios";
+
+        mvc.perform(get(url)).andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"Olá\"}"))
+                .andExpect(status().isUnauthorized());
+        var comentario = mvc.perform(post(url).header("Authorization", "Bearer " + tokenCliente)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"  Trabalho muito bom  \"}"))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.conteudo").value("Trabalho muito bom"))
+                .andExpect(jsonPath("$.autorNome").value("Cliente")).andReturn();
+        Long comentarioId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(comentario.getResponse().getContentAsString()).get("id").asLong();
+
+        mvc.perform(post(url).header("Authorization", "Bearer " + tokenTerceiro)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"conteudo\":\"Resposta indevida\",\"respostaAId\":%d}").formatted(comentarioId)))
+                .andExpect(status().isForbidden());
+        var resposta = mvc.perform(post(url).header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"conteudo\":\"Obrigado!\",\"respostaAId\":%d}").formatted(comentarioId)))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.respostaAId").value(comentarioId)).andReturn();
+        Long respostaId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(resposta.getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(post(url).header("Authorization", "Bearer " + tokenCliente)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(("{\"conteudo\":\"Nível extra\",\"respostaAId\":%d}").formatted(respostaId)))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get(url).param("pagina", "0").param("tamanho", "1"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].respostas[0].conteudo").value("Obrigado!"))
+                .andExpect(jsonPath("$.itens[0].autorEmail").doesNotExist());
+
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + tokenCliente)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+        mvc.perform(get(url))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.itens[0].autorNome").value("Usuário SkillSwap"));
+
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+        mvc.perform(get(url)).andExpect(status().isNotFound());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(
+                        "/api/publicacoes/{id}", publicacaoId).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     void rotasDeAnunciosPropriosExigemAutenticacao() throws Exception {
         mvc.perform(get("/api/anuncios/meus"))
                 .andExpect(status().isUnauthorized());
