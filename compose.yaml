@@ -14,7 +14,7 @@ services:
       AUTH_RATE_LIMIT_REGISTRATION_WINDOW: ${AUTH_RATE_LIMIT_REGISTRATION_WINDOW:-1h}
       SERVER_ADDRESS: 0.0.0.0
       SERVER_FORWARD_HEADERS_STRATEGY: framework
-      SEED_ENABLED: ${SEED_ENABLED:-true}
+      SEED_ENABLED: ${SEED_ENABLED:-false}
       UPLOAD_DIR: /data/uploads
     depends_on:
       mysql: {condition: service_healthy}

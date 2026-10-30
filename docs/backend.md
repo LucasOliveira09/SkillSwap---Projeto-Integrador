@@ -210,7 +210,7 @@ Em outro terminal: `npm ci` e `npm start`. Angular: localhost:4200; API: 127.0.0
 | DB_USER | Padrão skillswap. |
 | DB_URL | Padrão MySQL em 127.0.0.1:3307/skillswap. |
 | PORT / SERVER_ADDRESS | Padrões 8080 / 127.0.0.1; a imagem Docker usa 0.0.0.0 internamente. |
-| SEED_ENABLED | Padrão true; false não insere novos exemplos e não apaga dados existentes. |
+| SEED_ENABLED | Padrão false; true habilita a carga de exemplos. A desativação não apaga dados existentes. |
 | UPLOAD_DIR | Diretório de arquivos enviados; padrão `uploads`. Deve estar em armazenamento persistente. |
 | UPLOAD_USER_QUOTA_BYTES | Quota de armazenamento por conta em bytes; padrão 104857600 (100 MiB), no mínimo 5 MiB. |
 | MODERATOR_EMAILS | E-mails de contas existentes, separados por vírgula, autorizados a consultar a fila e decidir denúncias; vazio por padrão, sem conta administrativa fixa. |
@@ -448,4 +448,4 @@ Tags de rollback preservadas sem remover imagens: `skillswap-api:rollback-pre-dc
 
 A pedido do usuário, 13 anúncios com `exemplo=true` e o anúncio de ID 23 foram inativados na base pública. A operação preservou contas, anúncios como registros, conversas, propostas e demais referências; não houve exclusão física de dados nem de arquivos. A configuração `SEED_ENABLED` da publicação foi desativada e somente a API foi recriada; MySQL, web, proxy, redes e volumes permaneceram ativos. A API ficou saudável. A listagem pública passou de 21 para 7 anúncios ativos, sem exemplos; o perfil demonstrativo não lista anúncios e o ID 23 responde 404. As três categorias da API continuam disponíveis. Outros anúncios sem marca de demonstração não foram classificados como falsos apenas pelo título ou nome do perfil.
 
-Auditoria posterior, apenas de leitura, encontrou seis anúncios ativos sem a marca `exemplo` (IDs 18–22 e 24). O ID 18 tem título de teste e sua imagem vinculada responde 404. Os registros não foram alterados: a classificação/inativação adicional exige aprovação explícita. A carga de exemplos continua versionada em `vitrine-inicial.json`; a configuração da VPS está em `SEED_ENABLED=false`, mas o padrão do projeto ainda permite sementes quando explicitamente habilitadas.
+Auditoria posterior, apenas de leitura, encontrou seis anúncios ativos sem a marca `exemplo` (IDs 18–22 e 24). O ID 18 tem título de teste e sua imagem vinculada responde 404. Os registros não foram alterados: a classificação/inativação adicional exige aprovação explícita. A carga de exemplos continua versionada em `vitrine-inicial.json`; a configuração da VPS está em `SEED_ENABLED=false`. O padrão do projeto também passou a ser `false`; exemplos exigem habilitação explícita.
