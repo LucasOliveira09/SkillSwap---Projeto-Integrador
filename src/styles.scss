@@ -245,14 +245,20 @@ button.botao-anunciar,
   );
 }
 .painel-chat .abrir-proposta { margin: 0 14px 12px; }
-.painel-chat .form-proposta-chat { display: grid; gap: 10px; margin: 0 14px 14px; padding: 16px; border: 1px solid #dce5df; border-radius: 12px; background: #fff; }
-.painel-chat .form-proposta-chat h3 { margin: 0; color: #244237; font-size: 15px; }
-.painel-chat .form-proposta-chat label { display: grid; gap: 5px; color: #344d42; font-size: 12px; font-weight: 600; }
-.painel-chat .form-proposta-chat input, .painel-chat .form-proposta-chat textarea, .painel-chat .form-proposta-chat select { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cbd9d0; border-radius: 7px; background: #fff; color: #243b31; font: inherit; font-weight: 400; }
-.painel-chat .form-proposta-chat input:focus, .painel-chat .form-proposta-chat textarea:focus, .painel-chat .form-proposta-chat select:focus { outline: 2px solid #398f65; outline-offset: 1px; }
-.painel-chat .aviso-troca { margin: 0; padding: 10px; border-radius: 7px; background: #edf5f1; color: #276d50; font-size: 12px; }
-.painel-chat .acoes-proposta-chat { display: flex; justify-content: flex-end; gap: 8px; }
-.painel-chat .form-proposta-chat > small { color: #64786d; font-size: 11px; }
+.proposta-dialog .form-proposta-chat { display: grid; gap: 12px; padding: 8px 20px 20px; }
+.proposta-dialog .form-proposta-chat h2 { margin: 0; padding: 12px 0 0; }
+.proposta-dialog .conteudo-proposta { display: grid; gap: 12px; padding: 4px 0; }
+.proposta-dialog label { display: grid; gap: 5px; color: #344d42; font-size: 13px; font-weight: 600; }
+.proposta-dialog input, .proposta-dialog textarea, .proposta-dialog select { box-sizing: border-box; width: 100%; min-width: 0; padding: 10px; border: 1px solid #cbd9d0; border-radius: 7px; background: #fff; color: #243b31; font: inherit; font-weight: 400; }
+.proposta-dialog input:focus, .proposta-dialog textarea:focus, .proposta-dialog select:focus { outline: 2px solid #398f65; outline-offset: 1px; }
+.proposta-dialog .aviso-troca { margin: 0; padding: 10px; border-radius: 7px; background: #edf5f1; color: #276d50; font-size: 12px; }
+.proposta-dialog .acoes-proposta-chat { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.proposta-dialog .aviso-proposta, .proposta-dialog small { color: #536b61; font-size: 12px; line-height: 1.5; }
+.proposta-dialog .erro-proposta { color: #a12424; }
+.proposta-dialog .resumo-proposta { display: grid; gap: 10px; margin: 0; }
+.proposta-dialog .resumo-proposta div { border-bottom: 1px solid #e1e9e4; padding-bottom: 9px; }
+.proposta-dialog .resumo-proposta dt { color: #536b61; font-size: 12px; }
+.proposta-dialog .resumo-proposta dd { margin: 3px 0 0; overflow-wrap: anywhere; white-space: pre-wrap; }
 .painel-chat .contexto-mensagem { display: block; margin-bottom: 5px; color: #255188; font-size: 10px; text-decoration: underline; }
 .painel-chat .cartao-proposta { display: grid; gap: 7px; margin-top: 8px; padding: 11px; border: 1px solid #b9d5c4; border-radius: 9px; background: #f4faf6; color: #263e32; }
 .painel-chat .cartao-proposta p { margin: 0; white-space: pre-wrap; }

@@ -1,5 +1,5 @@
-import { DOCUMENT, DatePipe } from '@angular/common';
-import { Component, DestroyRef, ElementRef, Injector, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { CurrencyPipe, DOCUMENT, DatePipe } from '@angular/common';
+import { Component, DestroyRef, ElementRef, Injector, TemplateRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,6 +7,7 @@ import { finalize, forkJoin, interval } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
@@ -21,7 +22,7 @@ import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 @Component({
   selector: 'app-caixa-mensagens',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogModule],
   templateUrl: './caixa-mensagens.component.html',
   styleUrl: './caixa-mensagens.component.scss',
 })
@@ -32,6 +33,11 @@ export class CaixaMensagensComponent {
   private readonly api = inject(ConversasApiService);
   private readonly negociacaoApi = inject(NegociacaoApiService);
   private readonly anunciosApi = inject(AnunciosApiService);
+  private readonly dialog = inject(MatDialog);
+  private readonly formularioProposta = viewChild<TemplateRef<unknown>>('formularioProposta');
+  private dialogoProposta: MatDialogRef<unknown> | null = null;
+  private geracaoFormularioProposta = 0;
+  private conversaPropostaId: number | null = null;
   private readonly indicador = inject(IndicadorMensagensService);
   private readonly leituras = new Map<number, number>();
   private atualizandoLista = false;
@@ -60,7 +66,8 @@ export class CaixaMensagensComponent {
   });
   protected readonly erroSincronizacao = signal('');
   protected readonly anuncioContextoInicial = signal<number | null>(null);
-  protected readonly mostrandoProposta = signal(false);
+  protected readonly revisandoProposta = signal(false);
+  protected readonly erroProposta = signal('');
   protected readonly anunciosDoInterlocutor = signal<readonly AnuncioApi[]>([]);
   protected readonly carregandoAnunciosProposta = signal(false);
   protected readonly enviandoProposta = signal(false);
@@ -85,6 +92,7 @@ export class CaixaMensagensComponent {
   private geracaoSelecao = 0;
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.dialogoProposta?.close());
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (!this.carregando()) this.sincronizarRota();
     });
@@ -130,6 +138,7 @@ export class CaixaMensagensComponent {
   }
 
   protected selecionar(acordo: Conversa, atualizarUrl = true): void {
+    if (this.dialogoProposta && this.conversaPropostaId !== acordo.id && !this.enviandoProposta()) this.dialogoProposta.close();
     if (atualizarUrl) {
       void this.router.navigate([], { relativeTo: this.route, queryParams: { conversa: `chat-${acordo.id}`, acordo: null, proposta: null, anuncioId: null }, queryParamsHandling: 'merge' });
       return;
@@ -365,6 +374,12 @@ export class CaixaMensagensComponent {
   }
 
   protected abrirFormularioProposta(conversa: Conversa): void {
+    const template = this.formularioProposta();
+    if (!template || this.dialogoProposta) return;
+    const geracao = ++this.geracaoFormularioProposta;
+    this.conversaPropostaId = conversa.id;
+    this.erroProposta.set('');
+    this.revisandoProposta.set(false);
     this.proposta = {
       anuncioId: this.anuncioContextoInicial() ?? conversa.anuncioId ?? 0, servico: '', escopo: '',
       formaPagamento: 'A_VISTA',
@@ -372,23 +387,31 @@ export class CaixaMensagensComponent {
     };
     this.anunciosDoInterlocutor.set([]);
     this.carregandoAnunciosProposta.set(true);
-    this.mostrandoProposta.set(true);
+    const dialogo = this.dialog.open(template, { panelClass: 'proposta-dialog', width: '620px', maxWidth: 'calc(100vw - 24px)', maxHeight: 'calc(100dvh - 24px)', autoFocus: 'first-heading', restoreFocus: true });
+    this.dialogoProposta = dialogo;
+    dialogo.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.dialogoProposta === dialogo) this.dialogoProposta = null;
+      if (this.geracaoFormularioProposta === geracao) ++this.geracaoFormularioProposta;
+      this.conversaPropostaId = null;
+    });
     this.anunciosApi.listarDoUsuario(conversa.outroParticipanteId, 0, 50).pipe(
-      takeUntilDestroyed(this.destroyRef), finalize(() => this.carregandoAnunciosProposta.set(false)),
+      takeUntilDestroyed(this.destroyRef), finalize(() => { if (geracao === this.geracaoFormularioProposta) this.carregandoAnunciosProposta.set(false); }),
     ).subscribe({
       next: pagina => {
+        if (geracao !== this.geracaoFormularioProposta) return;
         this.anunciosDoInterlocutor.set(pagina.itens);
         if (!pagina.itens.some(anuncio => anuncio.id === this.proposta.anuncioId)) {
           this.proposta.anuncioId = pagina.itens[0]?.id ?? 0;
         }
         this.ajustarFormaPagamentoDaOferta();
       },
-      error: () => this.erro.set('Não foi possível carregar os anúncios disponíveis para a proposta.'),
+      error: () => { if (geracao === this.geracaoFormularioProposta) this.erroProposta.set('Não foi possível carregar os anúncios disponíveis. Feche e tente novamente.'); },
     });
   }
 
   protected ajustarFormaPagamentoDaOferta(): void {
     const anuncio = this.anunciosDoInterlocutor().find(item => item.id === Number(this.proposta.anuncioId));
+    this.proposta.servico = anuncio?.titulo ?? '';
     this.proposta.formaPagamento = anuncio?.modalidade === 'troca' ? 'TROCA' : 'A_VISTA';
     this.proposta.valor = null;
     this.proposta.parcelas = null;
@@ -398,9 +421,26 @@ export class CaixaMensagensComponent {
     return this.anunciosDoInterlocutor().find(item => item.id === Number(this.proposta.anuncioId)) ?? null;
   }
 
+  protected fecharProposta(): void {
+    if (!this.enviandoProposta()) this.dialogoProposta?.close();
+  }
+
+  protected revisarProposta(): void {
+    const troca = this.ofertaDaProposta()?.modalidade === 'troca';
+    if (!this.ofertaDaProposta() || !this.proposta.servico.trim() || !this.proposta.escopo.trim() ||
+      (!troca && (!this.proposta.valor || this.proposta.valor <= 0)) ||
+      (!troca && this.proposta.formaPagamento === 'PARCELADO' &&
+        (!this.proposta.parcelas || !Number.isInteger(this.proposta.parcelas) || this.proposta.parcelas < 2 || this.proposta.parcelas > 12))) {
+      this.erroProposta.set('Preencha o serviço, o escopo e os termos de pagamento válidos.');
+      return;
+    }
+    this.erroProposta.set('');
+    this.revisandoProposta.set(true);
+  }
+
   protected enviarProposta(): void {
     const conversa = this.conversaSelecionada();
-    if (!conversa || !this.proposta.anuncioId || this.enviandoProposta()) return;
+    if (!conversa || conversa.id !== this.conversaPropostaId || !this.proposta.anuncioId || this.enviandoProposta()) return;
     const troca = this.ofertaDaProposta()?.modalidade === 'troca';
     const proposta: NovaPropostaConversa = {
       anuncioId: Number(this.proposta.anuncioId),
@@ -414,21 +454,24 @@ export class CaixaMensagensComponent {
     };
     if (!proposta.servico || !proposta.escopo || (!troca && (!proposta.valor || proposta.valor <= 0)) ||
       (!troca && proposta.formaPagamento === 'PARCELADO' && (!proposta.parcelas || proposta.parcelas < 2 || proposta.parcelas > 12))) {
-      this.erro.set('Preencha o serviço, o escopo e os termos de pagamento válidos.');
+      this.erroProposta.set('Preencha o serviço, o escopo e os termos de pagamento válidos.');
       return;
     }
     this.enviandoProposta.set(true);
+    if (this.dialogoProposta) this.dialogoProposta.disableClose = true;
     this.erro.set('');
     this.api.criarProposta(conversa.id, proposta).pipe(
-      takeUntilDestroyed(this.destroyRef), finalize(() => this.enviandoProposta.set(false)),
+      takeUntilDestroyed(this.destroyRef), finalize(() => { this.enviandoProposta.set(false); if (this.dialogoProposta) this.dialogoProposta.disableClose = false; }),
     ).subscribe({
       next: () => {
-        this.mostrandoProposta.set(false);
-        this.selecionar(conversa, false);
-        this.sucesso.set('Proposta enviada no chat.');
+        this.dialogoProposta?.close();
+        if (this.conversaSelecionada()?.id === conversa.id) {
+          this.selecionar(conversa, false);
+          this.sucesso.set('Proposta enviada no chat.');
+        }
         this.atualizarEntrada();
       },
-      error: () => this.erro.set('Não foi possível enviar a proposta. Confira os termos e tente novamente.'),
+      error: () => this.erroProposta.set('Não foi possível enviar a proposta. Confira os termos e tente novamente.'),
     });
   }
 

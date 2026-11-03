@@ -152,22 +152,32 @@ describe('CaixaMensagensComponent', () => {
     const componente = harness.routeDebugElement!.componentInstance as {
       abrirFormularioProposta(conversa: Conversa): void;
       proposta: { anuncioId: number; servico: string; escopo: string; formaPagamento: string; valor: number; parcelas: number; duracao: string; validadeEm: string };
-      enviarProposta(): void;
     };
     componente.abrirFormularioProposta(conversa);
     http.expectOne('/api/perfis/1/anuncios?pagina=0&tamanho=50').flush({
       itens: [{ id: 4, titulo: 'Aula de francês', modalidade: 'VENDA', categoria: 'AULAS' }],
       pagina: 0, totalPaginas: 1,
     });
+    expect(componente.proposta.servico).toBe('Aula de francês');
     componente.proposta = { anuncioId: 4, servico: 'Aula de francês', escopo: 'Quatro aulas',
       formaPagamento: 'PARCELADO', valor: 320, parcelas: 4, duracao: '1 mês', validadeEm: '2027-01-15' };
     harness.detectChanges();
-    expect(harness.routeNativeElement!.querySelector('.form-proposta-chat')).not.toBeNull();
-    componente.enviarProposta();
+    await harness.fixture.whenStable();
+    TestBed.tick();
+    expect(document.body.querySelector('[role="dialog"] .form-proposta-chat')).not.toBeNull();
+    document.body.querySelector<HTMLButtonElement>('.proposta-dialog button[type="submit"]')!.click();
+    TestBed.tick();
+    expect(document.body.querySelector('[role="dialog"]')?.textContent).toContain('Quatro aulas');
+    document.body.querySelector<HTMLButtonElement>('.proposta-dialog button[type="submit"]')!.click();
     const request = http.expectOne('/api/conversas/7/propostas');
     expect(request.request.body).toEqual({ anuncioId: 4, servico: 'Aula de francês', escopo: 'Quatro aulas',
       formaPagamento: 'PARCELADO', valor: 320, parcelas: 4, duracao: '1 mês', validadeEm: '2027-01-15' });
-    request.flush({ id: 12 });
+    request.flush({ mensagem: 'Falha' }, { status: 400, statusText: 'Bad Request' });
+    TestBed.tick();
+    expect(document.body.querySelector('[role="dialog"]')?.textContent).toContain('Não foi possível enviar a proposta');
+    expect(document.body.querySelector('[role="dialog"]')?.textContent).toContain('Quatro aulas');
+    document.body.querySelector<HTMLButtonElement>('.proposta-dialog button[type="submit"]')!.click();
+    http.expectOne('/api/conversas/7/propostas').flush({ id: 12 });
     http.expectOne('/api/conversas/7/mensagens?pagina=0&tamanho=50').flush({ itens: [], pagina: 0, totalPaginas: 1 });
     http.expectOne('/api/conversas?pagina=0&tamanho=20').flush({ itens: [conversa], pagina: 0, totalPaginas: 1 });
     harness.detectChanges();

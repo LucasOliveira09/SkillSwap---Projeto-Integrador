@@ -146,13 +146,25 @@
               </button>
             </form>
             <p class="nota-chat">Conversa privada entre os participantes. Pagamentos ainda são combinados fora da plataforma.</p>
-            @if (!mostrandoProposta()) {
-              <button mat-stroked-button type="button" class="abrir-proposta" (click)="abrirFormularioProposta(acordo)">
-                Enviar proposta no chat
-              </button>
-            } @else {
-                <form class="form-proposta-chat" (ngSubmit)="enviarProposta()" aria-label="Enviar proposta">
-                  <h3>Proposta comercial</h3>
+            <button mat-stroked-button type="button" class="abrir-proposta" (click)="abrirFormularioProposta(acordo)">
+              Enviar proposta
+            </button>
+            <ng-template #formularioProposta>
+                <form class="form-proposta-chat" (ngSubmit)="revisandoProposta() ? enviarProposta() : revisarProposta()" aria-label="Enviar proposta">
+                  <h2 mat-dialog-title>{{ revisandoProposta() ? 'Revise a proposta' : 'Nova proposta' }}</h2>
+                  <div mat-dialog-content class="conteudo-proposta">
+                  @if (erroProposta()) { <p class="erro-proposta" role="alert">{{ erroProposta() }}</p> }
+                  @if (revisandoProposta()) {
+                    <dl class="resumo-proposta">
+                      <div><dt>Anúncio</dt><dd>{{ ofertaDaProposta()?.titulo }}</dd></div>
+                      <div><dt>Serviço</dt><dd>{{ proposta.servico }}</dd></div>
+                      <div><dt>Escopo e entregas</dt><dd>{{ proposta.escopo }}</dd></div>
+                      <div><dt>Condição combinada</dt><dd>@if (ofertaDaProposta()?.modalidade === 'troca') { Troca sem complemento em dinheiro } @else { {{ proposta.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }} · {{ proposta.formaPagamento === 'PARCELADO' ? proposta.parcelas + ' parcelas' : 'à vista' }} }</dd></div>
+                      @if (proposta.duracao) { <div><dt>Duração prevista</dt><dd>{{ proposta.duracao }}</dd></div> }
+                      @if (proposta.validadeEm) { <div><dt>Válida até</dt><dd>{{ proposta.validadeEm | date: 'dd/MM/yyyy' }}</dd></div> }
+                    </dl>
+                  } @else {
+                  <p class="aviso-proposta">Combine os termos com a outra pessoa. Este anúncio ainda usa proposta com valor informado manualmente.</p>
                   @if (carregandoAnunciosProposta()) {
                     <p role="status">Carregando anúncios ativos...</p>
                   } @else if (!anunciosDoInterlocutor().length) {
@@ -166,7 +178,7 @@
                       </select>
                     </label>
                   }
-                  <label>Serviço<input name="servicoProposta" [(ngModel)]="proposta.servico" maxlength="120" required /></label>
+                  @if (ofertaDaProposta(); as oferta) { <p class="servico-selecionado">Serviço: <strong>{{ oferta.titulo }}</strong></p> }
                   <label>Escopo e entregas<textarea name="escopoProposta" [(ngModel)]="proposta.escopo" maxlength="4000" rows="3" required></textarea></label>
                   @if (ofertaDaProposta()?.modalidade === 'troca') {
                     <p class="aviso-troca">Troca combinada sem complemento em dinheiro.</p>
@@ -184,15 +196,21 @@
                   }
                   <label>Duração prevista<input name="duracaoProposta" [(ngModel)]="proposta.duracao" maxlength="120" placeholder="Ex.: 4 semanas" /></label>
                   <label>Válida até<input name="validadeProposta" type="date" [(ngModel)]="proposta.validadeEm" /></label>
+                  }
+                  </div>
                   <div class="acoes-proposta-chat">
-                    <button mat-button type="button" (click)="mostrandoProposta.set(false)">Cancelar</button>
+                    @if (revisandoProposta()) {
+                      <button mat-button type="button" (click)="revisandoProposta.set(false)" [disabled]="enviandoProposta()">Voltar</button>
+                    } @else {
+                      <button mat-button type="button" (click)="fecharProposta()">Cancelar</button>
+                    }
                     <button mat-flat-button color="primary" type="submit" [disabled]="enviandoProposta() || carregandoAnunciosProposta() || !ofertaDaProposta()">
-                      {{ enviandoProposta() ? 'Enviando...' : 'Enviar proposta' }}
+                      {{ enviandoProposta() ? 'Enviando...' : revisandoProposta() ? 'Confirmar envio' : 'Revisar proposta' }}
                     </button>
                   </div>
                   <small>O SkillSwap registra os termos; pagamentos continuam combinados fora da plataforma.</small>
                 </form>
-            }
+            </ng-template>
           } @else {
             <p class="conversa-encerrada">Esta negociação foi encerrada. O histórico continua disponível para consulta.</p>
           }
