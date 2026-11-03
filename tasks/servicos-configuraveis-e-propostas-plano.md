@@ -6,6 +6,8 @@ Em 02/11/2026 foi iniciada uma rotina isolada de cálculo monetário com `BigDec
 
 O aceite no backend foi ajustado para preservar propostas de outros clientes do mesmo anúncio. A proteção atual considera o par cliente/anúncio; a identificação de versões da mesma negociação e as contrapropostas ainda precisam de implementação. A alteração não foi publicada.
 
+O teste optativo `AceiteMysqlIsoladoTest` passou em MySQL 8.4.11 isolado com Flyway V1–V24: duas requisições simultâneas para a mesma proposta geraram um único aceite, e a proposta de outro cliente permaneceu pendente e pôde ser aceita. Esse teste usa as variáveis `SKILLSWAP_MYSQL_TEST_URL`, `SKILLSWAP_MYSQL_TEST_USER` e `SKILLSWAP_MYSQL_TEST_PASSWORD`; execute-o somente em banco descartável, pois cria dados de teste.
+
 Em 30/10/2026, a navegação por fragmento foi corrigida localmente nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. A alteração não foi publicada na VPS; veja a situação da produção em `docs/backend.md`.
 
 ## O que encontrei
