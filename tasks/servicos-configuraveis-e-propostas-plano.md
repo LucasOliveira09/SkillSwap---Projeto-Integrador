@@ -4,11 +4,11 @@
 
 Em 02/11/2026 foi iniciada uma rotina isolada de cálculo monetário com `BigDecimal`, limite de componentes, mínimo e arredondamento de cada item. Ela ainda não está ligada à API, a anúncios ou a propostas; não muda os fluxos atuais nem deve ser tratada como funcionalidade concluída.
 
-O aceite no backend foi ajustado para preservar propostas de outros clientes do mesmo anúncio. A proteção atual considera o par cliente/anúncio; a identificação de versões da mesma negociação e as contrapropostas ainda precisam de implementação. A alteração não foi publicada.
+O aceite no backend foi ajustado para preservar propostas de outros clientes do mesmo anúncio. A proteção atual considera o par cliente/anúncio; a identificação de versões da mesma negociação e as contrapropostas ainda precisam de implementação. A alteração foi publicada em 02/11/2026.
 
 O teste optativo `AceiteMysqlIsoladoTest` passou em MySQL 8.4.11 isolado com Flyway V1–V24: duas requisições simultâneas para a mesma proposta geraram um único aceite, e a proposta de outro cliente permaneceu pendente e pôde ser aceita. Esse teste usa as variáveis `SKILLSWAP_MYSQL_TEST_URL`, `SKILLSWAP_MYSQL_TEST_USER` e `SKILLSWAP_MYSQL_TEST_PASSWORD`; execute-o somente em banco descartável, pois cria dados de teste.
 
-Em 30/10/2026, a navegação por fragmento foi corrigida localmente nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. A alteração não foi publicada na VPS; veja a situação da produção em `docs/backend.md`.
+Em 30/10/2026, a navegação por fragmento foi corrigida nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. As alterações foram publicadas em 02/11/2026; veja `docs/backend.md`.
 
 ## O que encontrei
 
@@ -90,7 +90,7 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com config
 - [x] Substituir fragmentos relativos à raiz por `RouterLink` na rota atual do perfil, anúncio e catálogo; habilitar a rolagem Angular e preservar query params onde há paginação.
 - [x] Cobrir todos os atalhos do perfil público (Sobre, Experiência, Portfólio, Serviços e Avaliações), mais comentários/avaliações do anúncio e a chamada do hero do catálogo.
 - [x] Ocultar o CTA de conversa no perfil próprio autenticado, usando `proprioPerfil` devolvido pela API.
-- A correção está apenas na branch local/GitHub e não foi promovida ao site público. A publicação depende da aprovação explícita exigida para produção.
+- A correção foi publicada no site público em 02/11/2026.
 - A revisão solicitada inclui tanto o anúncio antes de publicar quanto a proposta antes de enviar.
 - Ambos podem iniciar propostas na mesma conversa. A configuração pertence ao anúncio; toda proposta apenas preenche os campos aceitos por essa configuração.
 - Contraproposta responde à última proposta pendente daquele anúncio e a substitui, mantendo a anterior no histórico. Essa regra evita dois totais incompatíveis aguardando aceite ao mesmo tempo.
