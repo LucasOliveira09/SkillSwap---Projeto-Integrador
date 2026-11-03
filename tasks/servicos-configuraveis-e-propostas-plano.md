@@ -116,7 +116,7 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com config
 
 **Progresso publicado em 02/11/2026:** o formulário legado foi movido para um diálogo com revisão antes do envio, tratamento de erro dentro do diálogo e serviço obtido do título do anúncio escolhido. Os valores continuam informados manualmente no contrato legado; campos configuráveis, cálculo do servidor, seleção dos anúncios de ambos os participantes e contrapropostas permanecem pendentes.
 
-Em 03/11/2026, foi corrigida localmente a perda de rascunho ao fechar o diálogo: os termos ficam em memória por conversa até o envio confirmado ou a saída da página. A mudança ainda não foi publicada.
+Em 03/11/2026, foi corrigida a perda de rascunho ao fechar o diálogo: os termos ficam em memória por conversa até o envio confirmado ou a saída da página. A mudança foi publicada na web `6720b5a`.
 
 - Trocar o formulário embutido por diálogo responsivo. A pessoa seleciona uma oferta ativa de um dos participantes e o modal monta os campos exclusivamente a partir da configuração/versionamento do anúncio.
 - Na primeira proposta, qualquer participante preenche os dados do atendimento e escolhe uma condição permitida. O modal calcula a prévia pela API e exibe a revisão antes do envio.
