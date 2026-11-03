@@ -2,6 +2,8 @@
 
 **Estado:** planejamento refinado; as funcionalidades de anúncio parametrizado e negociação descritas aqui ainda não foram implementadas. A limpeza de anúncios demonstrativos já feita na VPS está registrada em `docs/backend.md`.
 
+Em 02/11/2026 foi iniciada uma rotina isolada de cálculo monetário com `BigDecimal`, limite de componentes, mínimo e arredondamento de cada item. Ela ainda não está ligada à API, a anúncios ou a propostas; não muda os fluxos atuais nem deve ser tratada como funcionalidade concluída.
+
 Em 30/10/2026, a navegação por fragmento foi corrigida localmente nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. A alteração não foi publicada na VPS; veja a situação da produção em `docs/backend.md`.
 
 ## O que encontrei
