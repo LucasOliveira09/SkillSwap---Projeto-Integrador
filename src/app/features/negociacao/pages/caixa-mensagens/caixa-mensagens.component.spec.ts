@@ -151,6 +151,7 @@ describe('CaixaMensagensComponent', () => {
     expect(harness.routeNativeElement!.querySelector('.contexto-anuncio')?.textContent).toContain('Ver anúncio #4');
     const componente = harness.routeDebugElement!.componentInstance as {
       abrirFormularioProposta(conversa: Conversa): void;
+      fecharProposta(): void;
       proposta: { anuncioId: number; servico: string; escopo: string; formaPagamento: string; valor: number; parcelas: number; duracao: string; validadeEm: string };
     };
     componente.abrirFormularioProposta(conversa);
@@ -161,6 +162,17 @@ describe('CaixaMensagensComponent', () => {
     expect(componente.proposta.servico).toBe('Aula de francês');
     componente.proposta = { anuncioId: 4, servico: 'Aula de francês', escopo: 'Quatro aulas',
       formaPagamento: 'PARCELADO', valor: 320, parcelas: 4, duracao: '1 mês', validadeEm: '2027-01-15' };
+    componente.fecharProposta();
+    await harness.fixture.whenStable();
+    TestBed.tick();
+    componente.abrirFormularioProposta(conversa);
+    http.expectOne('/api/perfis/1/anuncios?pagina=0&tamanho=50').flush({
+      itens: [{ id: 4, titulo: 'Aula de francês', modalidade: 'VENDA', categoria: 'AULAS' }],
+      pagina: 0, totalPaginas: 1,
+    });
+    expect(componente.proposta.escopo).toBe('Quatro aulas');
+    expect(componente.proposta.valor).toBe(320);
+    expect(componente.proposta.parcelas).toBe(4);
     harness.detectChanges();
     await harness.fixture.whenStable();
     TestBed.tick();
@@ -182,6 +194,16 @@ describe('CaixaMensagensComponent', () => {
     http.expectOne('/api/conversas?pagina=0&tamanho=20').flush({ itens: [conversa], pagina: 0, totalPaginas: 1 });
     harness.detectChanges();
     expect(harness.routeNativeElement!.textContent).toContain('Proposta enviada no chat.');
+    await harness.fixture.whenStable();
+    TestBed.tick();
+    componente.abrirFormularioProposta(conversa);
+    http.expectOne('/api/perfis/1/anuncios?pagina=0&tamanho=50').flush({
+      itens: [{ id: 4, titulo: 'Aula de francês', modalidade: 'VENDA', categoria: 'AULAS' }],
+      pagina: 0, totalPaginas: 1,
+    });
+    expect(componente.proposta.escopo).toBe('');
+    expect(componente.proposta.valor).toBeNull();
+    componente.fecharProposta();
   });
 
 });

@@ -202,13 +202,14 @@
                     @if (revisandoProposta()) {
                       <button mat-button type="button" (click)="revisandoProposta.set(false)" [disabled]="enviandoProposta()">Voltar</button>
                     } @else {
-                      <button mat-button type="button" (click)="fecharProposta()">Cancelar</button>
+                      <button mat-button type="button" (click)="fecharProposta()">Fechar</button>
                     }
                     <button mat-flat-button color="primary" type="submit" [disabled]="enviandoProposta() || carregandoAnunciosProposta() || !ofertaDaProposta()">
                       {{ enviandoProposta() ? 'Enviando...' : revisandoProposta() ? 'Confirmar envio' : 'Revisar proposta' }}
                     </button>
                   </div>
                   <small>O SkillSwap registra os termos; pagamentos continuam combinados fora da plataforma.</small>
+                  <small>O rascunho fica disponível enquanto esta página estiver aberta.</small>
                 </form>
             </ng-template>
           } @else {

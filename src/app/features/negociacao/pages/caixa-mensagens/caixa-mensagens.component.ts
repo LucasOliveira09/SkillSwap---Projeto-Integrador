@@ -80,11 +80,13 @@ export class CaixaMensagensComponent {
   private readonly injector = inject(Injector);
   private readonly historico = viewChild<ElementRef<HTMLDivElement>>('historico');
   private readonly rascunhos = new Map<number, string>();
+  private readonly rascunhosProposta = new Map<number, NovaPropostaConversa>();
   private sincronizando = false;
   private rolarAoAbrir = true;
   private readonly sessao = inject(SessaoService);
   private readonly acompanharSessao = effect(() => {
     if (!this.sessao.autenticado()) {
+      this.rascunhosProposta.clear();
       const id = this.conversaSelecionada()?.id;
       void this.router.navigate(['/conta'], { queryParams: { retorno: id ? `/mensagens?conversa=chat-${id}` : '/mensagens' } });
     }
@@ -380,7 +382,8 @@ export class CaixaMensagensComponent {
     this.conversaPropostaId = conversa.id;
     this.erroProposta.set('');
     this.revisandoProposta.set(false);
-    this.proposta = {
+    const rascunho = this.rascunhosProposta.get(conversa.id);
+    this.proposta = rascunho ? { ...rascunho } : {
       anuncioId: this.anuncioContextoInicial() ?? conversa.anuncioId ?? 0, servico: '', escopo: '',
       formaPagamento: 'A_VISTA',
       valor: null, parcelas: null, duracao: '', validadeEm: '',
@@ -389,7 +392,9 @@ export class CaixaMensagensComponent {
     this.carregandoAnunciosProposta.set(true);
     const dialogo = this.dialog.open(template, { panelClass: 'proposta-dialog', width: '620px', maxWidth: 'calc(100vw - 24px)', maxHeight: 'calc(100dvh - 24px)', autoFocus: 'first-heading', restoreFocus: true });
     this.dialogoProposta = dialogo;
-    dialogo.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    dialogo.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((resultado: unknown) => {
+      if (resultado === 'enviada') this.rascunhosProposta.delete(conversa.id);
+      else if (this.sessao.autenticado()) this.rascunhosProposta.set(conversa.id, { ...this.proposta });
       if (this.dialogoProposta === dialogo) this.dialogoProposta = null;
       if (this.geracaoFormularioProposta === geracao) ++this.geracaoFormularioProposta;
       this.conversaPropostaId = null;
@@ -400,10 +405,15 @@ export class CaixaMensagensComponent {
       next: pagina => {
         if (geracao !== this.geracaoFormularioProposta) return;
         this.anunciosDoInterlocutor.set(pagina.itens);
-        if (!pagina.itens.some(anuncio => anuncio.id === this.proposta.anuncioId)) {
+        const oferta = pagina.itens.find(anuncio => anuncio.id === this.proposta.anuncioId);
+        if (!oferta) {
           this.proposta.anuncioId = pagina.itens[0]?.id ?? 0;
+          this.ajustarFormaPagamentoDaOferta();
+        } else if (!rascunho || (oferta.modalidade === 'troca') !== (this.proposta.formaPagamento === 'TROCA')) {
+          this.ajustarFormaPagamentoDaOferta();
+        } else {
+          this.proposta.servico = oferta.titulo;
         }
-        this.ajustarFormaPagamentoDaOferta();
       },
       error: () => { if (geracao === this.geracaoFormularioProposta) this.erroProposta.set('Não foi possível carregar os anúncios disponíveis. Feche e tente novamente.'); },
     });
@@ -464,7 +474,7 @@ export class CaixaMensagensComponent {
       takeUntilDestroyed(this.destroyRef), finalize(() => { this.enviandoProposta.set(false); if (this.dialogoProposta) this.dialogoProposta.disableClose = false; }),
     ).subscribe({
       next: () => {
-        this.dialogoProposta?.close();
+        this.dialogoProposta?.close('enviada');
         if (this.conversaSelecionada()?.id === conversa.id) {
           this.selecionar(conversa, false);
           this.sucesso.set('Proposta enviada no chat.');
