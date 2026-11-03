@@ -39,10 +39,8 @@ class AceiteConcorrentePropostaTest {
         String sufixo = UUID.randomUUID().toString();
         var anunciante = usuarios.register(new RegisterDTO("Anunciante concorrente", "anunciante-" + sufixo + "@skillswap.invalid", "senha-teste-123"));
         var clienteUm = usuarios.register(new RegisterDTO("Cliente um", "cliente1-" + sufixo + "@skillswap.invalid", "senha-teste-123"));
-        var clienteDois = usuarios.register(new RegisterDTO("Cliente dois", "cliente2-" + sufixo + "@skillswap.invalid", "senha-teste-123"));
         String tokenAnunciante = jwt.generateToken(anunciante.getEmail());
         String tokenUm = jwt.generateToken(clienteUm.getEmail());
-        String tokenDois = jwt.generateToken(clienteDois.getEmail());
 
         var respostaAnuncio = mvc.perform(post("/api/anuncios")
                         .header("Authorization", "Bearer " + tokenAnunciante)
@@ -56,7 +54,7 @@ class AceiteConcorrentePropostaTest {
         long anuncioId = tools.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(respostaAnuncio.getResponse().getContentAsString()).get("id").asLong();
         long propostaUm = criarProposta(anuncioId, tokenUm);
-        long propostaDois = criarProposta(anuncioId, tokenDois);
+        long propostaDois = propostaUm;
 
         var pronto = new CountDownLatch(2);
         var iniciar = new CountDownLatch(1);

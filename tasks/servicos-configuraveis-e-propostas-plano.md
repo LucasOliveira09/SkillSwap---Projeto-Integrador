@@ -4,6 +4,8 @@
 
 Em 02/11/2026 foi iniciada uma rotina isolada de cálculo monetário com `BigDecimal`, limite de componentes, mínimo e arredondamento de cada item. Ela ainda não está ligada à API, a anúncios ou a propostas; não muda os fluxos atuais nem deve ser tratada como funcionalidade concluída.
 
+O aceite no backend foi ajustado para preservar propostas de outros clientes do mesmo anúncio. A proteção atual considera o par cliente/anúncio; a identificação de versões da mesma negociação e as contrapropostas ainda precisam de implementação. A alteração não foi publicada.
+
 Em 30/10/2026, a navegação por fragmento foi corrigida localmente nos atalhos do perfil, anúncio e catálogo, e o CTA de conversa foi ocultado no perfil próprio autenticado. A alteração não foi publicada na VPS; veja a situação da produção em `docs/backend.md`.
 
 ## O que encontrei

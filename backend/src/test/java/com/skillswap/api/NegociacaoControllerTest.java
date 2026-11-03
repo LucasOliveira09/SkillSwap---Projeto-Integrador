@@ -402,7 +402,7 @@ class NegociacaoControllerTest {
     }
 
     @Test
-    void aceiteRecusaOutrasPropostasPendentesDoMesmoAnuncio() throws Exception {
+    void aceitePreservaNegociacaoDeOutroClienteDoMesmoAnuncio() throws Exception {
         long propostaAceita = criarProposta(proponenteToken);
         var outroCliente = usuarios.register(new RegisterDTO("Carla Cliente", "carla-negociacao@skillswap.invalid", "senha-teste-123"));
         String outroToken = jwt.generateToken(outroCliente.getEmail());
@@ -414,13 +414,13 @@ class NegociacaoControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ACEITA"));
 
         mvc.perform(get("/api/propostas/{id}", propostaConcorrente).header("Authorization", "Bearer " + outroToken))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("RECUSADA"));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("PENDENTE"));
         mvc.perform(patch("/api/propostas/{id}", propostaConcorrente)
                         .header("Authorization", "Bearer " + anuncianteToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACEITA\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ACEITA"));
         mvc.perform(get("/api/acordos").header("Authorization", "Bearer " + anuncianteToken))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(2));
     }
 
     private long criarProposta(String token) throws Exception {

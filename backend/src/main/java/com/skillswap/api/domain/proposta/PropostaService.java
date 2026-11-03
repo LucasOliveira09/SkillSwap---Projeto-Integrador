@@ -194,10 +194,13 @@ public class PropostaService {
             throw new IllegalArgumentException("A validade da proposta expirou; solicite uma nova versão");
 
         List<Proposta> propostasDoAnuncio = propostaRepository.findByAnuncioIdForUpdate(proposta.getAnuncio().getId());
-        boolean outraJaAceita = propostasDoAnuncio.stream()
+        List<Proposta> propostasDoCliente = propostasDoAnuncio.stream()
+                .filter(item -> item.getProponente().getId().equals(proposta.getProponente().getId()))
+                .toList();
+        boolean outraJaAceita = propostasDoCliente.stream()
                 .anyMatch(item -> !item.getId().equals(propostaId) && item.getStatus() == StatusProposta.ACEITA);
         if (outraJaAceita) {
-            throw new IllegalArgumentException("Já existe uma proposta aceita para este anúncio");
+            throw new IllegalArgumentException("Já existe uma proposta aceita para este cliente e anúncio");
         }
 
         proposta.setStatus(StatusProposta.ACEITA);
@@ -212,8 +215,8 @@ public class PropostaService {
                 "Proposta aceita", "Sua proposta para “" + proposta.getAnuncio().getTitulo() + "” foi aceita.",
                 linkConversa(proposta));
 
-        // Recusar outras propostas pendentes do mesmo anúncio
-        propostasDoAnuncio.stream()
+        // A aceitação não interfere nas negociações de outros clientes.
+        propostasDoCliente.stream()
                 .filter(p -> !p.getId().equals(propostaId) && p.getStatus() == StatusProposta.PENDENTE)
                 .forEach(p -> {
                     p.setStatus(StatusProposta.RECUSADA);
