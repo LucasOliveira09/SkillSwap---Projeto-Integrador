@@ -114,7 +114,7 @@ Migrações Flyway futuras devem ser apenas aditivas (V25 em diante), com config
 
 ### 3. Modal no chat e revisão legível
 
-**Progresso local:** o formulário legado foi movido para um diálogo com revisão antes do envio, tratamento de erro dentro do diálogo e serviço obtido do título do anúncio escolhido. Os valores continuam informados manualmente no contrato legado; campos configuráveis, cálculo do servidor, seleção dos anúncios de ambos os participantes e contrapropostas permanecem pendentes. A mudança ainda não foi publicada.
+**Progresso publicado em 02/11/2026:** o formulário legado foi movido para um diálogo com revisão antes do envio, tratamento de erro dentro do diálogo e serviço obtido do título do anúncio escolhido. Os valores continuam informados manualmente no contrato legado; campos configuráveis, cálculo do servidor, seleção dos anúncios de ambos os participantes e contrapropostas permanecem pendentes.
 
 - Trocar o formulário embutido por diálogo responsivo. A pessoa seleciona uma oferta ativa de um dos participantes e o modal monta os campos exclusivamente a partir da configuração/versionamento do anúncio.
 - Na primeira proposta, qualquer participante preenche os dados do atendimento e escolhe uma condição permitida. O modal calcula a prévia pela API e exibe a revisão antes do envio.
