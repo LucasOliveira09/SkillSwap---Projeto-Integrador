@@ -53,10 +53,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             select u from Usuario u
             where u.perfilPublico = true
               and ((u.especialidades is not null and trim(u.especialidades) <> '')
-               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
+               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> '')
+               or exists (select a.id from Anuncio a where a.usuario = u
+                   and a.status = com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO and a.exemplo = false))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
                    or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
-                   or lower(u.especialidades) like lower(concat('%', :busca, '%')))
+                   or lower(u.especialidades) like lower(concat('%', :busca, '%'))
+                   or exists (select a.id from Anuncio a where a.usuario = u
+                       and a.status = com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO and a.exemplo = false
+                       and lower(a.titulo) like lower(concat('%', :busca, '%'))
+                       and (:categoria is null or a.categoria = :categoria)
+                       and (:modalidade is null or a.modalidade = :modalidade)
+                       and (:precoMinimo is null or (a.preco is not null and a.preco >= :precoMinimo))
+                       and (:precoMaximo is null or (a.preco is not null and a.preco <= :precoMaximo))))
               and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
               and (:notaMinima is null or (
                    (select count(av.id) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :amostraMinima
@@ -79,6 +88,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
                 when :busca <> '' and (
                     lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
                     or lower(coalesce(u.especialidades, '')) like lower(concat('%', :busca, '%'))) then 3
+                when :busca <> '' and exists (select a.id from Anuncio a where a.usuario = u
+                    and a.status = com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO and a.exemplo = false
+                    and lower(a.titulo) like lower(concat('%', :busca, '%'))
+                    and (:categoria is null or a.categoria = :categoria)
+                    and (:modalidade is null or a.modalidade = :modalidade)
+                    and (:precoMinimo is null or (a.preco is not null and a.preco >= :precoMinimo))
+                    and (:precoMaximo is null or (a.preco is not null and a.preco <= :precoMaximo))) then 3
                 when :busca <> '' and lower(u.nome) = lower(:busca) then 2
                 when :busca <> '' and lower(u.nome) like lower(concat(:busca, '%')) then 1
                 else 0
@@ -89,10 +105,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             select count(u) from Usuario u
             where u.perfilPublico = true
               and ((u.especialidades is not null and trim(u.especialidades) <> '')
-               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> ''))
+               or (u.tituloProfissional is not null and trim(u.tituloProfissional) <> '')
+               or exists (select a.id from Anuncio a where a.usuario = u
+                   and a.status = com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO and a.exemplo = false))
               and (:busca = '' or lower(u.nome) like lower(concat('%', :busca, '%'))
                    or lower(coalesce(u.tituloProfissional, '')) like lower(concat('%', :busca, '%'))
-                   or lower(u.especialidades) like lower(concat('%', :busca, '%')))
+                   or lower(u.especialidades) like lower(concat('%', :busca, '%'))
+                   or exists (select a.id from Anuncio a where a.usuario = u
+                       and a.status = com.skillswap.api.domain.anuncio.StatusAnuncio.ATIVO and a.exemplo = false
+                       and lower(a.titulo) like lower(concat('%', :busca, '%'))
+                       and (:categoria is null or a.categoria = :categoria)
+                       and (:modalidade is null or a.modalidade = :modalidade)
+                       and (:precoMinimo is null or (a.preco is not null and a.preco >= :precoMinimo))
+                       and (:precoMaximo is null or (a.preco is not null and a.preco <= :precoMaximo))))
               and (:cidade = '' or lower(coalesce(u.cidade, '')) like lower(concat('%', :cidade, '%')))
               and (:notaMinima is null or (
                    (select count(av.id) from Avaliacao av where av.avaliado = u and av.moderadaOculta = false) >= :amostraMinima

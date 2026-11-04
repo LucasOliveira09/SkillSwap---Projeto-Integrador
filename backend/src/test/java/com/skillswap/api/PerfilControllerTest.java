@@ -53,6 +53,53 @@ class PerfilControllerTest {
     }
 
     @Test
+    void encontraAnunciantePublicoPeloTituloDoServicoSemPerfilProfissionalPreenchido() throws Exception {
+        var criado = mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"titulo":"Conserto de bicicletas","descricao":"Ajustes e manutenção",
+                                 "categoria":"MANUTENCAO","cidade":"Florianópolis","modalidade":"VENDA","preco":80}
+                                """))
+                .andExpect(status().isCreated()).andReturn();
+        long anuncioId = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(criado.getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(post("/api/anuncios").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"titulo":"Aulas de música","descricao":"Aulas individuais",
+                                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"VENDA","preco":200}
+                                """))
+                .andExpect(status().isCreated());
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
+                .andExpect(jsonPath("$.itens[0].id").value(usuarioId));
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas").param("categoria", "AULAS"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas").param("precoMinimo", "100"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        var anuncio = anuncios.findById(anuncioId).orElseThrow();
+        anuncio.setExemplo(true);
+        anuncios.saveAndFlush(anuncio);
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        anuncio.setExemplo(false);
+        anuncios.saveAndFlush(anuncio);
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":false}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+        mvc.perform(patch("/api/perfil").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"perfilPublico\":true}"))
+                .andExpect(status().isOk());
+        mvc.perform(patch("/api/anuncios/{id}", anuncioId).header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"INATIVO\"}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/profissionais").param("busca", "bicicletas"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(0));
+    }
+
+    @Test
     void perfilPublicoNaoExpoeEmailNemCredenciais() throws Exception {
         mvc.perform(get("/api/perfis/{id}", usuarioId))
                 .andExpect(status().isOk())
