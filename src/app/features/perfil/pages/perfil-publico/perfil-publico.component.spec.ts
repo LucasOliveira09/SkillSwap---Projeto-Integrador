@@ -77,13 +77,13 @@ describe('PerfilPublicoComponent', () => {
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.textContent).not.toContain('Conversar');
-    expect(harness.routeNativeElement?.textContent).toContain('Compartilhar perfil');
+    expect(harness.routeNativeElement?.querySelector('a[href="/meu-perfil"]')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('button[aria-label="Compartilhar perfil"]')).not.toBeNull();
     expect(harness.routeNativeElement?.textContent).toContain('Ver serviços disponíveis');
 
     const copiar = jasmine.createSpy('writeText').and.rejectWith(new Error('indisponível'));
     spyOnProperty(navigator, 'clipboard', 'get').and.returnValue({ writeText: copiar } as unknown as Clipboard);
-    const compartilhar = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
-      .find((botao) => botao.textContent?.includes('Compartilhar perfil')) as HTMLButtonElement;
+    const compartilhar = harness.routeNativeElement!.querySelector('button[aria-label="Compartilhar perfil"]') as HTMLButtonElement;
     compartilhar.click();
     await harness.fixture.whenStable();
     harness.detectChanges();

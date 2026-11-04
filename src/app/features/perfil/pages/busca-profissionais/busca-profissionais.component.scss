@@ -72,6 +72,14 @@ h3 {
   min-width: 0;
 }
 
+.filtros-adicionais { grid-column: 1 / -1; }
+.filtros-adicionais summary { display: flex; align-items: center; min-height: 44px; color: var(--ss-blue); font-weight: 600; cursor: pointer; }
+.filtros-adicionais summary::before { content: '▸'; margin-right: 8px; }
+.filtros-adicionais[open] summary::before { content: '▾'; }
+.grade-filtros-adicionais { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 12px; padding-top: 8px; }
+.grade-filtros-adicionais > * { min-width: 0; }
+.grade-filtros-adicionais mat-form-field { width: 100%; }
+
 .filtro-nota { display: grid; gap: 6px; color: var(--ss-text); font-size: 13px; font-weight: 600; }
 .filtro-nota select { width: 100%; min-height: 56px; padding: 0 12px; border: 1px solid var(--ss-control-outline); border-radius: 5px; background: var(--ss-surface); color: inherit; font: inherit; }
 .filtro-nota small { color: var(--ss-muted); font-size: 11px; font-weight: 400; line-height: 1.35; }
@@ -122,6 +130,8 @@ h3 {
   height: 72px;
   border-radius: 50%;
 }
+
+.foto-link { display: inline-flex; border-radius: 50%; }
 
 .foto {
   object-fit: cover;
@@ -240,7 +250,7 @@ h3 {
     height: 56px;
   }
 
-  .cartao-profissional > a {
+  .cartao-profissional > .acao-perfil {
     grid-column: 1 / -1;
     width: 100%;
   }

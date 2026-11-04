@@ -36,6 +36,13 @@ form > button {
   font-size: 14px;
 }
 
+@media (max-width: 600px) {
+  .conta { padding-top: 16px; }
+  .logo-acesso { width: 180px; margin: 16px auto; }
+  h1 { font-size: 30px; }
+  form { margin: 16px 0; }
+}
+
 .acoes-topo {
   display: flex;
   flex-wrap: wrap;

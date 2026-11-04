@@ -53,6 +53,9 @@
         </div>
 
         <div class="acoes-perfil">
+          @if (seguidores()?.proprioPerfil) {
+            <a mat-flat-button color="primary" routerLink="/meu-perfil">Editar perfil</a>
+          }
           @if (!seguidores()?.proprioPerfil) {
             @if (sessao.autenticado()) {
               <button mat-flat-button type="button" (click)="iniciarConversa()" [disabled]="abrindoConversa()">
@@ -90,8 +93,10 @@
           <a mat-flat-button color="primary" [routerLink]="[]" fragment="secao-servicos" queryParamsHandling="preserve">
             Ver serviços disponíveis
           </a>
-          <a mat-button [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Ler avaliações</a>
-          <button mat-button type="button" (click)="compartilharPerfil()">Compartilhar perfil</button>
+          <div class="acoes-secundarias">
+            <a mat-button [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Avaliações</a>
+            <button mat-button type="button" aria-label="Compartilhar perfil" (click)="compartilharPerfil()">Compartilhar</button>
+          </div>
           @if (mensagemCompartilhamento()) {
             <p role="status">{{ mensagemCompartilhamento() }}</p>
           }
@@ -100,7 +105,7 @@
             <input id="link-perfil" type="text" size="12" readonly [value]="linkCompartilhamento()" (focus)="$any($event.target).select()" />
           }
           @if (!seguidores()?.proprioPerfil) {
-            <p>Você terá uma conversa privada única com este profissional. O anúncio de origem fica registrado em cada mensagem.</p>
+            <p>Converse com o profissional pelo chat do SkillSwap.</p>
           }
           @if (erroSeguimento()) {
             <p class="erro-seguimento" role="alert">{{ erroSeguimento() }}</p>

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { appConfig } from '../../../../app.config';
 import { BuscaProfissionaisComponent } from './busca-profissionais.component';
@@ -13,6 +14,29 @@ describe('BuscaProfissionaisComponent', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('aplica o preço digitado no campo numérico ao pesquisar', async () => {
+    const harness = await RouterTestingHarness.create('/profissionais');
+    http.expectOne('/api/categorias').flush([]);
+    http.expectOne((request) => request.url === '/api/profissionais').flush({
+      itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0,
+    });
+    harness.detectChanges();
+    const campo = harness.routeNativeElement!.querySelector<HTMLInputElement>('input[name="precoMinimo"]')!;
+    campo.value = '100';
+    campo.dispatchEvent(new Event('input', { bubbles: true }));
+    const campoMaximo = harness.routeNativeElement!.querySelector<HTMLInputElement>('input[name="precoMaximo"]')!;
+    campoMaximo.value = '250';
+    campoMaximo.dispatchEvent(new Event('input', { bubbles: true }));
+    harness.routeNativeElement!.querySelector<HTMLFormElement>('form.filtros')!
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await harness.fixture.whenStable();
+    const busca = http.expectOne((request) => request.url === '/api/profissionais');
+    expect(busca.request.params.get('precoMinimo')).toBe('100');
+    expect(busca.request.params.get('precoMaximo')).toBe('250');
+    busca.flush({ itens: [], pagina: 0, tamanho: 12, totalItens: 0, totalPaginas: 0 });
+    expect(TestBed.inject(Router).url).toContain('precoMinimo=100');
+  });
 
   it('busca por especialidade e cidade e mostra somente dados públicos', async () => {
     const harness = await RouterTestingHarness.create(
@@ -59,6 +83,8 @@ describe('BuscaProfissionaisComponent', () => {
     expect(reputacao?.textContent).toContain('7');
     expect(texto).not.toContain('@');
     expect(harness.routeNativeElement?.querySelector('a[href="/profissionais/12"]')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('.foto-link[href="/profissionais/12"]')?.getAttribute('aria-label'))
+      .toBe('Ver perfil de Ana Profissional');
   });
 
   it('mostra estado vazio quando a API não encontra perfis', async () => {
@@ -128,6 +154,7 @@ describe('BuscaProfissionaisComponent', () => {
       pagina: 0, tamanho: 12, totalItens: 1, totalPaginas: 1,
     });
     harness.detectChanges();
+    expect(harness.routeNativeElement?.querySelector<HTMLDetailsElement>('.filtros-adicionais')?.open).toBeTrue();
 
     expect(harness.routeNativeElement?.textContent).toContain('Manutenção e reparos');
     expect(harness.routeNativeElement?.textContent).toContain('2 ofertas');

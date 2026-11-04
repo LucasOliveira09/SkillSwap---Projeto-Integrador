@@ -38,6 +38,9 @@
       <a [routerLink]="[]" fragment="secao-comentarios" queryParamsHandling="preserve">Comentários</a>
       <a [routerLink]="[]" fragment="secao-avaliacoes" queryParamsHandling="preserve">Avaliações verificadas</a>
     </nav>
+    @if (!a.exemplo) {
+      <a mat-stroked-button class="contato-rapido" [routerLink]="[]" fragment="secao-contato" queryParamsHandling="preserve">Entrar em contato</a>
+    }
 
     <!-- GRID PRINCIPAL DE DETALHES -->
     <div class="detalhe-layout">

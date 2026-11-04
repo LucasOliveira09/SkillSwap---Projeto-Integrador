@@ -39,8 +39,9 @@ export class BuscaProfissionaisComponent {
   protected notaMinima = '';
   protected categoria = '';
   protected modalidade: '' | 'VENDA' | 'TROCA' = '';
-  protected precoMinimo = '';
-  protected precoMaximo = '';
+  protected precoMinimo: string | number | null = '';
+  protected precoMaximo: string | number | null = '';
+  protected filtrosAvancadosAbertos = false;
   protected readonly categorias = toSignal(
     this.anunciosApi.categorias().pipe(catchError(() => of([]))),
     { initialValue: [] },
@@ -59,6 +60,9 @@ export class BuscaProfissionaisComponent {
         this.modalidade = this.normalizarModalidade(parametros.get('modalidade'));
         this.precoMinimo = parametros.get('precoMinimo') ?? '';
         this.precoMaximo = parametros.get('precoMaximo') ?? '';
+        if (this.categoria || this.modalidade || this.precoMinimo || this.precoMaximo || this.notaMinima) {
+          this.filtrosAvancadosAbertos = true;
+        }
         const pagina = this.lerPagina(parametros.get('pagina'));
         const nota = this.notaMinima ? Number(this.notaMinima) : undefined;
         const filtros: FiltrosBuscaProfissionais = {
@@ -89,8 +93,8 @@ export class BuscaProfissionaisComponent {
         notaMinima: this.normalizarNotaMinima(this.notaMinima) || null,
         categoria: this.categoria || null,
         modalidade: this.modalidade || null,
-        precoMinimo: this.precoMinimo.trim() || null,
-        precoMaximo: this.precoMaximo.trim() || null,
+        precoMinimo: this.lerPreco(this.precoMinimo) ?? null,
+        precoMaximo: this.lerPreco(this.precoMaximo) ?? null,
         pagina: null,
       },
     });
@@ -140,8 +144,8 @@ export class BuscaProfissionaisComponent {
     return valor === 'VENDA' || valor === 'TROCA' ? valor : '';
   }
 
-  private lerPreco(valor: string): number | undefined {
-    if (!valor.trim()) return undefined;
+  private lerPreco(valor: string | number | null): number | undefined {
+    if (valor === null || (typeof valor === 'string' && !valor.trim())) return undefined;
     const numero = Number(valor);
     return Number.isFinite(numero) && numero > 0 ? numero : undefined;
   }

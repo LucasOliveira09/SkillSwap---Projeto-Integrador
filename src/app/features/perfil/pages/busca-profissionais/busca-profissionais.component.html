@@ -32,6 +32,9 @@
         placeholder="Ex.: Florianópolis"
       />
     </mat-form-field>
+    <details class="filtros-adicionais" [open]="filtrosAvancadosAbertos" (toggle)="filtrosAvancadosAbertos = $any($event.target).open">
+      <summary>Filtros avançados</summary>
+      <div class="grade-filtros-adicionais">
     <label class="filtro-nota">
       <span>Categoria do serviço</span>
       <select name="categoria" [(ngModel)]="categoria">
@@ -67,6 +70,8 @@
       </select>
       <small>Considera apenas profissionais com pelo menos 3 avaliações verificadas.</small>
     </label>
+      </div>
+    </details>
     <button mat-flat-button color="primary" type="submit">Buscar profissionais</button>
   </form>
 
@@ -81,7 +86,7 @@
   } @else if (estado().pagina; as pagina) {
     <section aria-labelledby="titulo-resultados">
       <div class="linha-resultados">
-        <h2 id="titulo-resultados">{{ pagina.totalItens }} profissional(is) encontrado(s)</h2>
+        <h2 id="titulo-resultados">{{ pagina.totalItens }} {{ pagina.totalItens === 1 ? 'profissional encontrado' : 'profissionais encontrados' }}</h2>
         <a mat-button routerLink="/meu-perfil">Apresentar meu trabalho</a>
       </div>
 
@@ -95,11 +100,13 @@
         <div class="lista-profissionais">
           @for (profissional of pagina.itens; track profissional.id) {
             <article class="cartao-profissional">
-              @if (profissional.fotoUrl) {
-                <img class="foto" [src]="profissional.fotoUrl" [alt]="'Foto de ' + profissional.nome" loading="lazy" />
-              } @else {
-                <div class="foto-placeholder" aria-hidden="true">{{ inicial(profissional.nome) }}</div>
-              }
+              <a class="foto-link" [routerLink]="['/profissionais', profissional.id]" [attr.aria-label]="'Ver perfil de ' + profissional.nome">
+                @if (profissional.fotoUrl) {
+                  <img class="foto" [src]="profissional.fotoUrl" alt="" loading="lazy" />
+                } @else {
+                  <div class="foto-placeholder" aria-hidden="true">{{ inicial(profissional.nome) }}</div>
+                }
+              </a>
 
               <div class="dados-profissional">
                 <h3><a [routerLink]="['/profissionais', profissional.id]">{{ profissional.nome }}</a></h3>
@@ -139,7 +146,7 @@
                 }
               </div>
 
-              <a mat-stroked-button color="primary" [routerLink]="['/profissionais', profissional.id]">
+              <a mat-stroked-button color="primary" class="acao-perfil" [routerLink]="['/profissionais', profissional.id]">
                 Ver perfil
               </a>
             </article>
