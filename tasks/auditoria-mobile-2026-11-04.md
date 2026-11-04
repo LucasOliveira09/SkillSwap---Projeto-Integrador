@@ -34,7 +34,7 @@ Não foram executados testes autenticados em contas reais, upload persistente no
 | # | Prioridade | Evidência e impacto | Ação/estado; esforço e risco |
 | --- | --- | --- | --- |
 | 1 | P1 | Busca por preço numérico gerava `TypeError` e não navegava. | Corrigido; mínimo e máximo verificados no Chromium e no teste Angular. Baixo/baixo. |
-| 2 | P1 | Perfil 8 e anúncio ativo 24 eram públicos, mas busca pelo título do serviço retornava zero porque o perfil não tinha título nem especialidades. | Consulta corrigida localmente; testes H2 cobrem anúncio ativo, filtros, exemplo, inativação e perfil pausado. Médio; MySQL real e desempenho pendentes. |
+| 2 | P1 | Perfil 8 e anúncio ativo 24 eram públicos, mas busca pelo título do serviço retornava zero porque o perfil não tinha título nem especialidades. | Consulta corrigida e publicada; testes H2 e MySQL 8.0 isolado cobrem anúncio ativo, filtros, inativação e perfil pausado. Desempenho em escala pendente. |
 | 3 | P1 | Filtros empurravam o botão de busca para 1097 px em 320 px. | Filtros avançados recolhíveis; botão a 718 px na medição local. Baixo/baixo. |
 | 4 | P1 | Contato do anúncio ficava depois da galeria e descrição, por volta de 1140 px em 320 px. | Atalho para a seção existente a 334 px; preserva rota e não cria conversa extra. Baixo/baixo. |
 | 5 | P1 | O cabeçalho do próprio perfil público não oferecia edição direta. | Link para `/meu-perfil` para o titular; coberto por teste de componente. Baixo/baixo. |
@@ -51,7 +51,7 @@ Não foram executados testes autenticados em contas reais, upload persistente no
 
 ## Backlog executável
 
-**MVP real:** validar com duas contas isoladas foto/capa, edição, publicação com imagem, comentário, seguir, contato e avaliação após acordo; validar a consulta nova em MySQL e revisar plano de índices; classificar a imagem 404 com o proprietário; proteger rascunhos de formulários em falhas e navegação.
+**MVP real:** validar com duas contas isoladas foto/capa, edição, publicação com imagem, comentário, seguir, contato e avaliação após acordo; revisar desempenho e plano de índices da busca em MySQL; classificar a imagem 404 com o proprietário; proteger rascunhos de formulários em falhas e navegação.
 
 As legendas do resumo de perfil, que chegavam a 9 px, foram aumentadas para 11 px. A leitura de textos pequenos e o contraste do restante do sistema ainda exigem auditoria específica.
 
@@ -64,7 +64,7 @@ As legendas do resumo de perfil, que chegavam a 9 px, foram aumentadas para 11 p
 1. Abrir o catálogo no celular e localizar um serviço real.
 2. Abrir o anúncio 24 e usar o atalho de contato ou o link do anunciante para chegar ao perfil público 8; o atalho pede login antes de iniciar uma conversa.
 3. Mostrar as informações e as seções efetivamente preenchidas, sem interpretar ausência de conteúdo como falha ou apresentar dados fictícios.
-4. Usar busca de profissionais e filtros; a melhoria da consulta e da interface está apenas na branch local até aprovação para publicar.
+4. Usar busca de profissionais e filtros; a melhoria da consulta e da interface foi publicada após autorização.
 5. Mostrar chat, proposta e edição de conta apenas com uma conta autorizada e previamente verificada. O valor de proposta atual é manual; não apresentar cálculo parametrizado ou pagamentos como disponíveis.
 
 ## Verificações executadas
@@ -74,4 +74,8 @@ As legendas do resumo de perfil, que chegavam a 9 px, foram aumentadas para 11 p
 - `npm run build`: aprovado sem avisos de budget.
 - `backend/mvnw.cmd test`, JDK 21: 101 testes, zero falhas e um teste MySQL optativo ignorado por falta de banco isolado.
 - Chromium: 40 capturas antes e 40 depois; atalhos de perfil e contato preservaram a rota e encontraram o destino; preço mínimo e máximo geraram os parâmetros corretos sem erro de console.
-- Lint e E2E automatizado não estão configurados no `package.json`. A busca por título de anúncio não foi validada em MySQL nesta execução: o motor Docker local não iniciou. Não inferir que H2 comprova o plano de execução ou a compatibilidade de produção.
+- Lint e E2E automatizado não estão configurados no `package.json`. O motor Docker local não iniciou; posteriormente, a API candidata foi testada em MySQL 8.0 isolado na VPS, sem acesso ao banco público. A busca, os filtros, o perfil pausado e o anúncio inativo foram verificados com dados sintéticos; o plano de execução em escala permanece pendente.
+
+## Publicação autorizada
+
+Após autorização explícita, os commits foram integrados à `main` e a versão `aec5e00` foi publicada em 04/11/2026. A busca pública por “Beach Tennis” passou a retornar o perfil 8; API, web e MySQL ficaram saudáveis. A publicação e a reversão estão descritas em `docs/backend.md`. As capturas de produção de 320 e 390 px estão em `C:\Temp\skillswap-mobile-20261104\publicado\`. As limitações de testes autenticados, acessibilidade e dispositivos reais continuam válidas.
