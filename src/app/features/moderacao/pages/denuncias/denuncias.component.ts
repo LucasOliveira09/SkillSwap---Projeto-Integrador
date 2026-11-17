@@ -1,17 +1,13 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
 import { Denuncia, HistoricoAvaliacao, StatusDenuncia } from '../../models/moderacao.model';
 import { AcaoContestacaoAvaliacao, ContestacaoAvaliacao, StatusContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
 import { ModeracaoApiService } from '../../data-access/moderacao-api.service';
 
 @Component({
+  standalone: false,
   selector: 'app-denuncias',
-  standalone: true,
-  imports: [DatePipe, MatButtonModule, RouterLink],
   templateUrl: './denuncias.component.html',
   styleUrl: './denuncias.component.scss',
 })

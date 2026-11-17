@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -23,7 +24,7 @@ describe('HistoricoProfissionalEditorComponent', () => {
     ]));
     api.excluirExperiencia.and.returnValue(of(void 0));
     api.excluirCertificacao.and.returnValue(of(void 0));
-    TestBed.configureTestingModule({ imports: [HistoricoProfissionalEditorComponent], providers: [
+    TestBed.configureTestingModule({ declarations: [HistoricoProfissionalEditorComponent], imports: [SharedModule], providers: [
       { provide: PerfilApiService, useValue: api },
     ] });
     fixture = TestBed.createComponent(HistoricoProfissionalEditorComponent);

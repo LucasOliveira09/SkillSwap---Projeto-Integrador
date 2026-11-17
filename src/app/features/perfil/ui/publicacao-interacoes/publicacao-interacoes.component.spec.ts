@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { appConfig } from '../../../../app.config';
@@ -8,7 +9,7 @@ describe('PublicacaoInteracoesComponent', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [...appConfig.providers, provideHttpClientTesting()] });
+    TestBed.configureTestingModule({ declarations: [PublicacaoInteracoesComponent], imports: [SharedModule], providers: [...appConfig.providers, provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
 

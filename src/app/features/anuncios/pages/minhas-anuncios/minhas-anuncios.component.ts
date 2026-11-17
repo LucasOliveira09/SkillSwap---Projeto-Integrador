@@ -1,17 +1,14 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 @Component({
+  standalone: false,
   selector: 'app-minhas-anuncios',
-  standalone: true,
-  imports: [CurrencyPipe, DatePipe, RouterLink, MatButtonModule],
   templateUrl: './minhas-anuncios.component.html',
   styleUrl: './minhas-anuncios.component.scss',
 })

@@ -1,11 +1,6 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, of, Subject } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
@@ -21,9 +16,8 @@ interface EstadoBusca {
 const estadoCarregando: EstadoBusca = { carregando: true, erro: false, pagina: null };
 
 @Component({
+  standalone: false,
   selector: 'app-busca-profissionais',
-  standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './busca-profissionais.component.html',
   styleUrl: './busca-profissionais.component.scss',
 })

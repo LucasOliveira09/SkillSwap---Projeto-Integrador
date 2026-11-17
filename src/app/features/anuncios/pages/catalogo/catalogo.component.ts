@@ -1,14 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
 import { BehaviorSubject, catchError, combineLatest, map, of, startWith, switchMap } from 'rxjs';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
 import { DIAS_SEMANA, DiaSemana, PERIODOS_DIA, PeriodoDia } from '../../models/anuncio.model';
-import { AnuncioCardComponent } from '../../ui/anuncio-card/anuncio-card.component';
-import { ColecaoVisualComponent } from '../../ui/colecao-visual/colecao-visual.component';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { CartaoAnuncio } from '../../ui/vitrine.model';
 
 const paginaVazia: PaginaAnuncios = {
@@ -21,15 +17,8 @@ const paginaVazia: PaginaAnuncios = {
 const carregando = { carregando: true, erro: false, dados: paginaVazia };
 
 @Component({
+  standalone: false,
   selector: 'app-catalogo',
-  standalone: true,
-  imports: [
-    RouterLink,
-    MatButtonModule,
-    AnuncioCardComponent,
-    ColecaoVisualComponent,
-    IconeComponent,
-  ],
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.scss',
 })

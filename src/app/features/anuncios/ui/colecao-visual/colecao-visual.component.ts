@@ -1,12 +1,9 @@
 import { Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { ItemColecao } from '../vitrine.model';
 
 @Component({
+  standalone: false,
   selector: 'app-colecao-visual',
-  standalone: true,
-  imports: [RouterLink, IconeComponent],
   templateUrl: './colecao-visual.component.html',
   styleUrl: './colecao-visual.component.scss',
 })

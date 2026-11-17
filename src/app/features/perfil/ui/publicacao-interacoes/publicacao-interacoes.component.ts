@@ -1,18 +1,13 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { finalize } from 'rxjs';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
-import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { ComentarioPublicacao, CurtidaPublicacao, PaginaComentariosPublicacao, PublicacaoPortfolio } from '../../models/perfil.model';
 
 @Component({
+  standalone: false,
   selector: 'app-publicacao-interacoes',
-  standalone: true,
-  imports: [DatePipe, FormsModule, MatButtonModule, DenunciarComponent],
   templateUrl: './publicacao-interacoes.component.html',
   styleUrl: './publicacao-interacoes.component.scss',
 })

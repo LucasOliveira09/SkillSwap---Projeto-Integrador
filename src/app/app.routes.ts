@@ -1,65 +1,43 @@
-import { Routes } from '@angular/router';
-import { sessaoGuard } from './features/conta/data-access/sessao.guard';
+import { Routes, UrlMatcher, UrlSegment } from '@angular/router';
 
+/**
+ * Monta um módulo na raiz quando a URL começa por um dos prefixos, sem consumir segmentos.
+ * Assim módulos com mais de um endereço de topo (ex.: /mensagens e /acordos/:id)
+ * continuam carregados sob demanda e definem as rotas completas em seu próprio routing.
+ */
+export function prefixos(...nomes: string[]): UrlMatcher {
+  return (segmentos: UrlSegment[]) =>
+    segmentos.length > 0 && nomes.includes(segmentos[0].path) ? { consumed: [] } : null;
+}
+
+/** Rotas raiz. Cada área funcional é um NgModule carregado sob demanda (lazy loading). */
 export const routes: Routes = [
   {
     path: 'conta',
-    title: 'Minha conta | SkillSwap',
-    loadComponent: () =>
-      import('./features/conta/pages/conta.component').then((m) => m.ContaComponent),
+    loadChildren: () => import('./features/conta/conta.module').then((m) => m.ContaModule),
   },
   {
-    path: 'meu-perfil',
-    title: 'Editar perfil profissional | SkillSwap',
-    loadComponent: () =>
-      import('./features/perfil/pages/meu-perfil/meu-perfil.component').then(
-        (m) => m.MeuPerfilComponent,
-      ),
+    path: 'painel',
+    loadChildren: () => import('./features/painel/painel.module').then((m) => m.PainelModule),
   },
   {
-    path: 'profissionais',
-    title: 'Encontrar profissionais | SkillSwap',
-    loadComponent: () =>
-      import('./features/perfil/pages/busca-profissionais/busca-profissionais.component').then(
-        (m) => m.BuscaProfissionaisComponent,
-      ),
+    matcher: prefixos('meu-perfil', 'profissionais'),
+    loadChildren: () => import('./features/perfil/perfil.module').then((m) => m.PerfilModule),
   },
   {
-    path: 'mensagens',
-    canActivate: [sessaoGuard],
-    title: 'Mensagens | SkillSwap',
-    loadComponent: () =>
-      import('./features/negociacao/pages/caixa-mensagens/caixa-mensagens.component').then(
-        (m) => m.CaixaMensagensComponent,
-      ),
+    matcher: prefixos('mensagens', 'acordos'),
+    loadChildren: () =>
+      import('./features/negociacao/negociacao.module').then((m) => m.NegociacaoModule),
   },
   {
-    path: 'acordos/:id',
-    title: 'Conversa do acordo | SkillSwap',
-    loadComponent: () =>
-      import('./features/negociacao/pages/acordo-detalhe/acordo-detalhe.component').then(
-        (m) => m.AcordoDetalheComponent,
-      ),
-  },
-  {
-    path: 'moderacao/denuncias',
-    title: 'Moderação de conteúdo | SkillSwap',
-    loadComponent: () =>
-      import('./features/moderacao/pages/denuncias/denuncias.component').then((m) => m.DenunciasComponent),
-  },
-  {
-    path: 'profissionais/:id',
-    title: 'Perfil profissional | SkillSwap',
-    loadComponent: () =>
-      import('./features/perfil/pages/perfil-publico/perfil-publico.component').then(
-        (m) => m.PerfilPublicoComponent,
-      ),
+    path: 'moderacao',
+    loadChildren: () =>
+      import('./features/moderacao/moderacao.module').then((m) => m.ModeracaoModule),
   },
   { path: '', pathMatch: 'full', redirectTo: 'anuncios' },
   {
     path: 'anuncios',
-    loadChildren: () =>
-      import('./features/anuncios/anuncios.routes').then((m) => m.ANUNCIOS_ROUTES),
+    loadChildren: () => import('./features/anuncios/anuncios.module').then((m) => m.AnunciosModule),
   },
   { path: '**', redirectTo: 'anuncios' },
 ];

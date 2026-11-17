@@ -1,10 +1,8 @@
 import { Component, signal } from '@angular/core';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 
 @Component({
+  standalone: false,
   selector: 'app-banner-destaques',
-  standalone: true,
-  imports: [IconeComponent],
   templateUrl: './banner-destaques.component.html',
   styleUrl: './banner-destaques.component.scss',
 })

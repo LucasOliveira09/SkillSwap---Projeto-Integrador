@@ -1,0 +1,22 @@
+.painel { width: min(1080px, calc(100% - 32px)); margin: 32px auto 72px; color: var(--ss-text); }
+.cabecalho { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 20px 0 28px; }
+.cabecalho h1 { margin: 4px 0; font-size: clamp(28px, 4vw, 38px); }
+.cabecalho p:not(.sobretitulo) { margin: 8px 0 0; color: var(--ss-muted); }
+.sobretitulo { margin: 0; color: var(--ss-blue); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.atalhos { display: flex; flex-wrap: wrap; gap: 8px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin: 0 0 24px; padding: 0; list-style: none; }
+.kpi { height: 100%; }
+.rotulo { margin: 0; color: var(--ss-muted); font-size: 13px; font-weight: 600; }
+.valor { margin: 6px 0 2px; color: var(--ss-blue); font-size: 34px; font-weight: 800; line-height: 1.1; }
+.detalhe { margin: 0; color: var(--ss-muted); font-size: 12px; }
+.fluxo ol { margin: 8px 0 0; padding-left: 20px; line-height: 1.7; }
+.plataforma { margin-top: 36px; }
+.plataforma h2 { display: flex; align-items: center; gap: 10px; }
+.selo { border-radius: 999px; padding: 3px 9px; color: #fff; background: var(--ss-blue); font-size: 11px; letter-spacing: .06em; }
+.distribuicoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.linha { display: flex; justify-content: space-between; margin: 12px 0 4px; font-size: 13px; }
+.feedback { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: 8px; padding: 12px 16px; color: #982a2a; background: #fff0ef; }
+@media (max-width: 680px) {
+  .cabecalho { align-items: stretch; flex-direction: column; }
+  .atalhos > * { flex: 1 1 auto; }
+}

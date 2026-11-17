@@ -1,0 +1,95 @@
+<section class="painel" aria-labelledby="titulo-painel">
+  <header class="cabecalho">
+    <div>
+      <p class="sobretitulo">Dashboard operacional</p>
+      <h1 id="titulo-painel">Meu painel</h1>
+      <p>Indicadores calculados a partir dos seus anúncios, propostas, acordos e avaliações.</p>
+    </div>
+    <div class="atalhos">
+      <a mat-flat-button routerLink="/anuncios/novo">Criar anúncio</a>
+      <a mat-stroked-button routerLink="/mensagens">Abrir negociações</a>
+    </div>
+  </header>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Carregando indicadores" />
+  } @else if (erro()) {
+    <div class="feedback erro" role="alert">
+      <span>Não foi possível carregar os indicadores.</span>
+      <button mat-button type="button" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else {
+    <ul class="kpis" aria-label="Indicadores da conta">
+      @for (kpi of indicadores(); track kpi.rotulo) {
+        <li>
+          <mat-card appearance="outlined" class="kpi">
+            <mat-card-content>
+              <p class="rotulo">{{ kpi.rotulo }}</p>
+              <p class="valor">{{ kpi.valor }}</p>
+              <p class="detalhe">{{ kpi.detalhe }}</p>
+            </mat-card-content>
+            @if (kpi.link) {
+              <mat-card-actions>
+                <a mat-button [routerLink]="kpi.link">Ver detalhes</a>
+              </mat-card-actions>
+            }
+          </mat-card>
+        </li>
+      }
+    </ul>
+
+    <mat-card appearance="outlined" class="fluxo">
+      <mat-card-header>
+        <mat-card-title>Fluxo principal</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ol>
+          <li>Publique um serviço ou aula em <a routerLink="/anuncios/novo">Criar anúncio</a>.</li>
+          <li>Interessados enviam uma proposta (venda ou troca) pela conversa do anúncio.</li>
+          <li>Aceite a proposta para gerar o acordo; os dois confirmam a conclusão.</li>
+          <li>Após a conclusão, cada parte registra a avaliação verificada.</li>
+        </ol>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (plataforma(); as p) {
+    <section class="plataforma" aria-labelledby="titulo-plataforma">
+      <h2 id="titulo-plataforma">Plataforma <span class="selo">ADMIN</span></h2>
+      <ul class="kpis" aria-label="Indicadores da plataforma">
+        <li><mat-card appearance="outlined" class="kpi"><mat-card-content>
+          <p class="rotulo">Usuários</p><p class="valor">{{ p.usuarios }}</p>
+        </mat-card-content></mat-card></li>
+        <li><mat-card appearance="outlined" class="kpi"><mat-card-content>
+          <p class="rotulo">Anúncios ativos</p><p class="valor">{{ p.anunciosAtivos }}</p>
+        </mat-card-content></mat-card></li>
+        <li><mat-card appearance="outlined" class="kpi"><mat-card-content>
+          <p class="rotulo">Conclusão de acordos</p>
+          <p class="valor">{{ p.taxaConclusaoAcordos === null ? '—' : numero(p.taxaConclusaoAcordos) + '%' }}</p>
+          <p class="detalhe">dos acordos encerrados</p>
+        </mat-card-content></mat-card></li>
+        <li><mat-card appearance="outlined" class="kpi"><mat-card-content>
+          <p class="rotulo">Média das avaliações</p>
+          <p class="valor">{{ p.mediaAvaliacoes === null ? '—' : numero(p.mediaAvaliacoes) }}</p>
+        </mat-card-content></mat-card></li>
+      </ul>
+      <div class="distribuicoes">
+        @for (grupo of distribuicoes(); track grupo.titulo) {
+          <mat-card appearance="outlined">
+            <mat-card-header><mat-card-title>{{ grupo.titulo }}</mat-card-title></mat-card-header>
+            <mat-card-content>
+              @for (linha of grupo.linhas; track linha.rotulo) {
+                <div class="linha">
+                  <span>{{ linha.rotulo }}</span><strong>{{ linha.total }}</strong>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="linha.percentual" [attr.aria-label]="linha.rotulo" />
+              } @empty {
+                <p class="detalhe">Sem registros.</p>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </section>
+  }
+</section>

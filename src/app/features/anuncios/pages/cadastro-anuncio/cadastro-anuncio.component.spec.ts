@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -11,7 +12,7 @@ describe('Cadastro persistente', () => {
   let http: HttpTestingController;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CadastroAnuncioComponent],
+      declarations: [CadastroAnuncioComponent], imports: [SharedModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),

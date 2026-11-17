@@ -1,12 +1,7 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, finalize, switchMap } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { ContestacaoAvaliacao } from '../../../avaliacao/models/contestacao.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
@@ -15,9 +10,8 @@ import { NegociacaoApiService } from '../../data-access/negociacao-api.service';
 import { Acordo, Avaliacao, EventoAcordo, Mensagem, TipoEventoAcordo } from '../../models/negociacao.model';
 
 @Component({
+  standalone: false,
   selector: 'app-acordo-detalhe',
-  standalone: true,
-  imports: [FormsModule, DatePipe, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './acordo-detalhe.component.html',
   styleUrl: './acordo-detalhe.component.scss',
 })

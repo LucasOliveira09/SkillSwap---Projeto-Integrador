@@ -1,9 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
@@ -11,8 +7,6 @@ import { AnuncioApi } from '../../models/anuncio-api.model';
 import { DiaSemana, PeriodoDia } from '../../models/anuncio.model';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { ConversasApiService } from '../../../negociacao/data-access/conversas-api.service';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
-import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { AvaliacaoAnuncioApi, ComentarioAnuncioApi } from '../../models/anuncio-api.model';
 
 interface EstadoDetalhe {
@@ -28,19 +22,8 @@ const estadoInicial: EstadoDetalhe = {
 };
 
 @Component({
+  standalone: false,
   selector: 'app-detalhe-anuncio',
-  standalone: true,
-  imports: [
-    RouterLink,
-    CurrencyPipe,
-    DatePipe,
-    DecimalPipe,
-    FormsModule,
-    MatButtonModule,
-    MatCardModule,
-    IconeComponent,
-    DenunciarComponent,
-  ],
   templateUrl: './detalhe-anuncio.component.html',
   styleUrl: './detalhe-anuncio.component.scss',
 })

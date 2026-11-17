@@ -1,19 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, combineLatest, forkJoin, map, of, startWith, Subject, switchMap } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
 import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.service';
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { CertificacaoProfissional, EstadoSeguindo, ExperienciaProfissional, PerfilProfissional, PublicacaoPortfolio } from '../../models/perfil.model';
 import { Avaliacao } from '../../../negociacao/models/negociacao.model';
-import { DenunciarComponent } from '../../../moderacao/ui/denunciar/denunciar.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { ConversasApiService } from '../../../negociacao/data-access/conversas-api.service';
-import { PublicacaoInteracoesComponent } from '../../ui/publicacao-interacoes/publicacao-interacoes.component';
 
 interface EstadoPerfil {
   carregando: boolean;
@@ -60,10 +55,8 @@ const estadoInicial: EstadoPerfil = {
 };
 
 @Component({
+  standalone: false,
   selector: 'app-perfil-publico',
-  standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, IconeComponent,
-    DenunciarComponent, PublicacaoInteracoesComponent],
   templateUrl: './perfil-publico.component.html',
   styleUrl: './perfil-publico.component.scss',
 })

@@ -1,16 +1,6 @@
 import { Component, Injector, effect, inject, signal } from '@angular/core';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { IconeComponent } from './shared/ui/icone/icone.component';
 import { SessaoService } from './features/conta/data-access/sessao.service';
 import { ModeracaoApiService } from './features/moderacao/data-access/moderacao-api.service';
 import { catchError, filter, map, of } from 'rxjs';
@@ -18,16 +8,8 @@ import { IndicadorMensagensService } from './features/negociacao/data-access/ind
 import { PerfilApiService } from './features/perfil/data-access/perfil-api.service';
 
 @Component({
+  standalone: false,
   selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    MatButtonModule,
-    MatSidenavModule,
-    IconeComponent,
-  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

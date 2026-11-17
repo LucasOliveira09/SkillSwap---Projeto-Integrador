@@ -32,6 +32,7 @@
         >Explorar catálogo</a
       >
       <a mat-button routerLink="/profissionais" (click)="menu.close()">Encontrar profissionais</a>
+      <a mat-button routerLink="/painel" (click)="menu.close()" routerLinkActive="ativo">Meu painel</a>
       <a mat-button routerLink="/mensagens" (click)="menu.close()">Mensagens @if (mensagens.total(); as total) { <span class="contador-mensagens">{{ total }}</span> }</a>
       <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo" (click)="menu.close()"
         >Criar anúncio</a
@@ -86,6 +87,9 @@
         </form>
         <div class="acoes-cabecalho">
           <a mat-flat-button class="botao-anunciar" routerLink="/anuncios/novo">Anunciar</a>
+          @if (sessao.autenticado()) {
+            <a mat-button routerLink="/painel">Painel</a>
+          }
           @if (moderador()) {
             <a mat-button routerLink="/moderacao/denuncias">Moderação</a>
           }

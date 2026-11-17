@@ -1,8 +1,9 @@
 import {
   ApplicationConfig,
+  EnvironmentProviders,
   LOCALE_ID,
+  Provider,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -14,12 +15,20 @@ import { routes } from './app.routes';
 
 registerLocaleData(localePt);
 
+/** Providers globais registrados pelo AppModule: erros globais, locale pt-BR e HttpClient com sessão. */
+export const appProviders: (Provider | EnvironmentProviders)[] = [
+  provideBrowserGlobalErrorListeners(),
+  { provide: LOCALE_ID, useValue: 'pt-BR' },
+  provideHttpClient(withInterceptors([sessaoInterceptor])),
+];
+
+/**
+ * Mesmos providers com o roteador, para testes que montam páginas fora do AppModule.
+ * A aplicação usa AppModule/AppRoutingModule (main.ts).
+ */
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    ...appProviders,
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
-    provideHttpClient(withInterceptors([sessaoInterceptor])),
   ],
 };

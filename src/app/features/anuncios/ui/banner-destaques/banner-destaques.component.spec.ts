@@ -1,10 +1,11 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { TestBed } from '@angular/core/testing';
 import { BannerDestaquesComponent } from './banner-destaques.component';
 
 describe('BannerDestaquesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BannerDestaquesComponent],
+      declarations: [BannerDestaquesComponent], imports: [SharedModule],
     }).compileComponents();
   });
 

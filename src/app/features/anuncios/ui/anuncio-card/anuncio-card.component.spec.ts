@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { registerLocaleData } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import localePt from '@angular/common/locales/pt';
@@ -10,7 +11,7 @@ registerLocaleData(localePt);
 describe('AnuncioCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AnuncioCardComponent],
+      declarations: [AnuncioCardComponent], imports: [SharedModule],
       providers: [provideRouter([])],
     }).compileComponents();
   });

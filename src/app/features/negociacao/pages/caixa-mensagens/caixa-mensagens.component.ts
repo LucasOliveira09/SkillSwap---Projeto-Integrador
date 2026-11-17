@@ -1,13 +1,9 @@
-import { CurrencyPipe, DOCUMENT, DatePipe } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, ElementRef, Injector, TemplateRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, forkJoin, interval } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { PerfilApiService } from '../../../perfil/data-access/perfil-api.service';
 import { PerfilProfissional } from '../../../perfil/models/perfil.model';
@@ -20,9 +16,8 @@ import { AnunciosApiService } from '../../../anuncios/data-access/anuncios-api.s
 import { AnuncioApi } from '../../../anuncios/models/anuncio-api.model';
 
 @Component({
+  standalone: false,
   selector: 'app-caixa-mensagens',
-  standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogModule],
   templateUrl: './caixa-mensagens.component.html',
   styleUrl: './caixa-mensagens.component.scss',
 })

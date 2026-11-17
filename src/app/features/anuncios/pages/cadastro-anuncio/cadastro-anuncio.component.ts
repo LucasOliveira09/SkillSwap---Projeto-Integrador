@@ -1,35 +1,17 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
-import { CurrencyPipe } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { DadosAnuncio, DIAS_SEMANA, DiaSemana, PERIODOS_DIA, PeriodoDia } from '../../models/anuncio.model';
 import { CategoriaApi } from '../../models/anuncio-api.model';
 import { validarAnuncio } from '../../models/anuncio.validation';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 
 @Component({
+  standalone: false,
   selector: 'app-cadastro-anuncio',
-  standalone: true,
-  imports: [
-    FormsModule,
-    RouterLink,
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    CurrencyPipe,
-    IconeComponent,
-  ],
   templateUrl: './cadastro-anuncio.component.html',
   styleUrl: './cadastro-anuncio.component.scss',
 })

@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -50,7 +51,7 @@ describe('DenunciasComponent', () => {
     api.historicoAvaliacao.and.returnValue(of(historico));
 
     await TestBed.configureTestingModule({
-      imports: [DenunciasComponent],
+      declarations: [DenunciasComponent], imports: [SharedModule],
       providers: [provideRouter([]), { provide: ModeracaoApiService, useValue: api }],
     }).compileComponents();
 

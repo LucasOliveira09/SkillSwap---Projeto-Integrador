@@ -1,3 +1,4 @@
+import { SharedModule } from './shared/shared.module';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { provideRouter, Router } from '@angular/router';
@@ -14,7 +15,7 @@ describe('App', () => {
     autenticado.set(false);
     credencial.set(null);
     await TestBed.configureTestingModule({
-      imports: [App],
+      declarations: [App], imports: [SharedModule],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -30,16 +31,17 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('oferece navegação identificada entre catálogo, profissionais, mensagens e cadastro', () => {
+  it('oferece navegação identificada entre catálogo, profissionais, painel, mensagens e cadastro', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const links = compiled.querySelectorAll('nav a');
-    expect(links.length).toBe(4);
+    expect(links.length).toBe(5);
     expect(links[0].getAttribute('href')).toBe('/anuncios');
     expect(links[1].getAttribute('href')).toBe('/profissionais');
-    expect(links[2].getAttribute('href')).toBe('/mensagens');
-    expect(links[3].getAttribute('href')).toBe('/anuncios/novo');
+    expect(links[2].getAttribute('href')).toBe('/painel');
+    expect(links[3].getAttribute('href')).toBe('/mensagens');
+    expect(links[4].getAttribute('href')).toBe('/anuncios/novo');
   });
 
   it('ordena o campo de busca antes do botão de envio', () => {

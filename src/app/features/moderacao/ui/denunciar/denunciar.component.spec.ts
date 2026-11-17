@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -10,7 +11,7 @@ describe('DenunciarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DenunciarComponent],
+      imports: [SharedModule],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     http = TestBed.inject(HttpTestingController);

@@ -1,15 +1,13 @@
 import { Component, input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { SessaoService } from '../../../conta/data-access/sessao.service';
 import { ModeracaoApiService } from '../../data-access/moderacao-api.service';
 import { MotivoDenuncia, TipoConteudoDenunciado } from '../../models/moderacao.model';
 
 @Component({
+  standalone: false,
   selector: 'app-denunciar',
-  standalone: true,
-  imports: [FormsModule, RouterLink],
   templateUrl: './denunciar.component.html',
   styleUrl: './denunciar.component.scss',
 })

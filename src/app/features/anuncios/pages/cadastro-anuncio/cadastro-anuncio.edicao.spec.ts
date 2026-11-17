@@ -1,3 +1,4 @@
+import { SharedModule } from '../../../../shared/shared.module';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
@@ -16,7 +17,7 @@ describe('Edição de anúncio', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CadastroAnuncioComponent],
+      declarations: [CadastroAnuncioComponent], imports: [SharedModule],
       providers: [
         provideRouter([{ path: 'anuncios/minhas', component: PaginaDeGestaoTesteComponent }]),
         provideHttpClient(), provideHttpClientTesting(),

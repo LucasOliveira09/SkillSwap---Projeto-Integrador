@@ -1,3 +1,4 @@
+import { SharedModule } from './shared/shared.module';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -9,7 +10,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 describe('Navegação do SkillSwap', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+      declarations: [App], imports: [SharedModule], providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
     }),
   );
   afterEach(() => TestBed.inject(HttpTestingController).verify());

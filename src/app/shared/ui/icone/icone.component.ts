@@ -20,8 +20,8 @@ const CAMINHOS = {
 } as const;
 
 @Component({
+  standalone: false,
   selector: 'app-icone',
-  standalone: true,
   templateUrl: './icone.component.html',
   styleUrl: './icone.component.scss',
 })

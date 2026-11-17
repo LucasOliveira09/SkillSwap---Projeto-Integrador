@@ -1,9 +1,7 @@
-import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
-import { FormsModule, NgForm } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { NgForm } from '@angular/forms';
 import { PerfilApiService } from '../../data-access/perfil-api.service';
 import { CertificacaoProfissional, ExperienciaProfissional } from '../../models/perfil.model';
 
@@ -18,9 +16,8 @@ const certificacaoVazia: CertificacaoForm = {
 };
 
 @Component({
+  standalone: false,
   selector: 'app-historico-profissional-editor',
-  standalone: true,
-  imports: [FormsModule, DatePipe, MatButtonModule],
   templateUrl: './historico-profissional-editor.component.html',
   styleUrl: './historico-profissional-editor.component.scss',
 })

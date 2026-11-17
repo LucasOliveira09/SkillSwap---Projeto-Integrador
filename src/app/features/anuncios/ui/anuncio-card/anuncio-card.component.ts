@@ -1,14 +1,9 @@
 import { Component, computed, input, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { IconeComponent } from '../../../../shared/ui/icone/icone.component';
 import { CartaoAnuncio } from '../vitrine.model';
 
 @Component({
+  standalone: false,
   selector: 'app-anuncio-card',
-  standalone: true,
-  imports: [CurrencyPipe, MatCardModule, IconeComponent, RouterLink],
   templateUrl: './anuncio-card.component.html',
   styleUrl: './anuncio-card.component.scss',
 })

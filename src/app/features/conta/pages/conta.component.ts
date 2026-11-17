@@ -1,12 +1,8 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { NgForm } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessaoService } from '../data-access/sessao.service';
 import { NegociacaoApiService } from '../../negociacao/data-access/negociacao-api.service';
@@ -34,16 +30,8 @@ export function destinoPosLogin(destino: string | null): string {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-conta',
-  standalone: true,
-  imports: [
-    FormsModule,
-    RouterLink,
-    DatePipe,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-  ],
   templateUrl: './conta.component.html',
   styleUrl: './conta.component.scss',
 })
