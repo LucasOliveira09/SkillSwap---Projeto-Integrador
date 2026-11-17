@@ -17,4 +17,6 @@ public interface ComentarioAnuncioRepository extends JpaRepository<ComentarioAnu
     Optional<ComentarioAnuncio> findByIdAndAnuncioIdAndModeradaOcultaFalse(Long id, Long anuncioId);
 
     Optional<ComentarioAnuncio> findByIdAndModeradaOcultaFalse(Long id);
+
+    boolean existsByRespostaAId(Long respostaAId);
 }

@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,6 +31,18 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final LimitadorTentativasAuth limitadorTentativasAuth;
     private final ObjectMapper objectMapper;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    private static final String JSON_401 = "{\"codigo\":\"NAO_AUTENTICADO\","
+            + "\"mensagem\":\"Autenticação necessária: informe credenciais válidas (HTTP Basic ou Bearer).\",\"campos\":{}}";
+    private static final String JSON_403 = "{\"codigo\":\"ACESSO_NEGADO\","
+            + "\"mensagem\":\"Seu perfil de acesso não permite esta operação.\",\"campos\":{}}";
+
+    private final AuthenticationEntryPoint naoAutenticado = (req, res, ex) -> {
+        res.setStatus(401);
+        res.setContentType("application/json;charset=UTF-8");
+        res.getWriter().write(JSON_401);
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,17 +51,23 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(e -> e
-                .authenticationEntryPoint((req,res,ex) -> {
-                    res.setStatus(401); res.setContentType("application/json");
-                    res.getWriter().write("{\"codigo\":\"NAO_AUTENTICADO\",\"mensagem\":\"Autenticacao necessaria.\",\"campos\":{}}");
-                })
+                .authenticationEntryPoint(naoAutenticado)
                 .accessDeniedHandler((req,res,ex) -> {
-                    res.setStatus(403); res.setContentType("application/json");
-                    res.getWriter().write("{\"codigo\":\"ACESSO_NEGADO\",\"mensagem\":\"Acesso negado.\",\"campos\":{}}");
+                    res.setStatus(403);
+                    res.setContentType("application/json;charset=UTF-8");
+                    res.getWriter().write(JSON_403);
                 }))
+            // HTTP Basic para clientes de API (Postman); o Angular usa Bearer JWT.
+            .httpBasic(b -> b.authenticationEntryPoint(naoAutenticado))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                // Operações restritas ao perfil ADMIN (equipe de moderação).
+                .requestMatchers(HttpMethod.GET, "/api/moderacao/acesso").authenticated()
+                .requestMatchers("/api/moderacao/**").hasRole(PerfisAcesso.ADMIN)
+                .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole(PerfisAcesso.ADMIN)
+                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/*").hasRole(PerfisAcesso.ADMIN)
+                .requestMatchers(HttpMethod.GET, "/api/painel/plataforma").hasRole(PerfisAcesso.ADMIN)
                 .requestMatchers("/api/sessoes/atual").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/usuarios", "/api/sessoes").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/vitrine").permitAll()
@@ -90,6 +110,18 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Mantém o e-mail como principal também no HTTP Basic, igual ao filtro JWT,
+     * para que os controllers obtenham o usuário autenticado da mesma forma.
+     */
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder) {
+        var provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setForcePrincipalAsString(true);
+        return provider;
     }
 
     @Bean

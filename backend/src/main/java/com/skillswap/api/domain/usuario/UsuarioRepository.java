@@ -34,6 +34,51 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<ResumoSocial> resumirSocial(@Param("ids") List<Long> ids);
     Optional<Usuario> findByEmail(String email);
     boolean existsByEmail(String email);
+
+    /** Consulta derivada: listagem administrativa com busca por nome ou e-mail. */
+    Page<Usuario> findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(String nome, String email, Pageable pageable);
+
+    /**
+     * Conta os registros de negócio que impedem excluir a conta sem perder histórico
+     * (anúncios, negociações, mensagens, avaliações, publicações, comentários, denúncias e arquivos).
+     */
+    @Query(value = """
+            select (select count(*) from anuncios where usuario_id = :id)
+                 + (select count(*) from propostas where proponente_id = :id)
+                 + (select count(*) from mensagens where remetente_id = :id)
+                 + (select count(*) from avaliacoes where avaliador_id = :id or avaliado_id = :id)
+                 + (select count(*) from publicacoes_portfolio where usuario_id = :id)
+                 + (select count(*) from comentarios_anuncio where autor_id = :id)
+                 + (select count(*) from comentarios_publicacao where autor_id = :id)
+                 + (select count(*) from curtidas_publicacao where usuario_id = :id)
+                 + (select count(*) from conversas where participante_menor_id = :id or participante_maior_id = :id)
+                 + (select count(*) from denuncias where autor_id = :id)
+                 + (select count(*) from contestacoes_avaliacao where contestador_id = :id)
+                 + (select count(*) from historico_avaliacao where editor_id = :id)
+                 + (select count(*) from eventos_acordo where ator_id = :id)
+                 + (select count(*) from uploads_usuario where usuario_id = :id)
+            """, nativeQuery = true)
+    long contarVinculosDeNegocio(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "delete from sessoes_persistentes where usuario_id = :id", nativeQuery = true)
+    void removerSessoes(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "delete from notificacoes where destinatario_id = :id", nativeQuery = true)
+    void removerNotificacoes(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "delete from usuario_seguidores where seguidor_id = :id or seguido_id = :id", nativeQuery = true)
+    void removerSeguidores(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "delete from experiencias_profissionais where usuario_id = :id", nativeQuery = true)
+    void removerExperiencias(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "delete from certificacoes_profissionais where usuario_id = :id", nativeQuery = true)
+    void removerCertificacoes(@Param("id") Long id);
     boolean existsByFotoUrlAndPerfilPublicoTrue(String fotoUrl);
     boolean existsByCapaUrlAndPerfilPublicoTrue(String capaUrl);
 

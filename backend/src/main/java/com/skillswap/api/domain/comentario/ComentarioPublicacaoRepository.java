@@ -23,5 +23,7 @@ public interface ComentarioPublicacaoRepository extends JpaRepository<Comentario
     @EntityGraph(attributePaths = {"autor", "respostaA", "publicacao", "publicacao.usuario"})
     Optional<ComentarioPublicacao> findByIdAndModeradaOcultaFalse(Long id);
 
+    boolean existsByRespostaAId(Long respostaAId);
+
     Optional<ComentarioPublicacao> findById(Long id);
 }

@@ -5,6 +5,7 @@ import com.skillswap.api.domain.anuncio.AnuncioRepository;
 import com.skillswap.api.domain.anuncio.StatusAnuncio;
 import com.skillswap.api.domain.usuario.Usuario;
 import com.skillswap.api.domain.usuario.UsuarioService;
+import com.skillswap.api.infra.exception.ConflitoException;
 import com.skillswap.api.infra.exception.NaoAutorizadoException;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,32 @@ public class ComentarioAnuncioService {
         var comentario = comentarios.saveAndFlush(ComentarioAnuncio.builder()
                 .anuncio(anuncio).autor(autor).respostaA(respostaA).conteudo(dto.conteudo().strip()).build());
         return toDto(comentario, autor.getId(), anuncio.getUsuario().getId());
+    }
+
+    @Transactional
+    public ComentarioAnuncioDTO editar(Long anuncioId, Long comentarioId, EditarComentarioDTO dto, String email) {
+        Anuncio anuncio = anuncioPublico(anuncioId);
+        ComentarioAnuncio comentario = comentarioDoAutor(anuncioId, comentarioId, email);
+        comentario.setConteudo(dto.conteudo().strip());
+        return toDto(comentarios.saveAndFlush(comentario), comentario.getAutor().getId(), anuncio.getUsuario().getId());
+    }
+
+    /** Regra: comentário com respostas não pode ser excluído, para não deixar respostas órfãs (409). */
+    @Transactional
+    public void excluir(Long anuncioId, Long comentarioId, String email) {
+        anuncioPublico(anuncioId);
+        ComentarioAnuncio comentario = comentarioDoAutor(anuncioId, comentarioId, email);
+        if (comentarios.existsByRespostaAId(comentario.getId()))
+            throw new ConflitoException("Este comentário já tem respostas e não pode ser excluído; edite o texto.");
+        comentarios.delete(comentario);
+    }
+
+    private ComentarioAnuncio comentarioDoAutor(Long anuncioId, Long comentarioId, String email) {
+        ComentarioAnuncio comentario = comentarios.findByIdAndAnuncioIdAndModeradaOcultaFalse(comentarioId, anuncioId)
+                .orElseThrow(() -> new NaoEncontradoException("Comentário não encontrado"));
+        if (!comentario.getAutor().getEmail().equalsIgnoreCase(email))
+            throw new NaoAutorizadoException("Somente o autor pode alterar o comentário");
+        return comentario;
     }
 
     private Anuncio anuncioPublico(Long id) {

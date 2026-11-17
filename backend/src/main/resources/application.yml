@@ -59,3 +59,9 @@ skillswap:
     emails: ${MODERATOR_EMAILS:}
   seed:
     enabled: ${SEED_ENABLED:false}
+  # Contas de teste para Postman/avaliação (HTTP Basic). Desligado por padrão.
+  demo:
+    enabled: ${DEMO_USERS_ENABLED:false}
+    admin-email: ${DEMO_ADMIN_EMAIL:admin@skillswap.dev}
+    admin-password: ${DEMO_ADMIN_PASSWORD:Admin@Teste2026}
+    user-password: ${DEMO_USER_PASSWORD:Usuario@Teste2026}

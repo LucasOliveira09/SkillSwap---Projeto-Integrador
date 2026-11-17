@@ -57,6 +57,34 @@ public class ComentarioPublicacaoService {
         return paraDTO(salvo, autor.getId(), publicacao.getUsuario().getId(), java.util.List.of());
     }
 
+    @Transactional
+    public ComentarioPublicacaoDTO editar(Long publicacaoId, Long comentarioId, EditarComentarioDTO dto, String email) {
+        PublicacaoPortfolio publicacao = publicacaoPublica(publicacaoId);
+        ComentarioPublicacao comentario = comentarioDoAutor(publicacaoId, comentarioId, email);
+        comentario.setConteudo(dto.conteudo().strip());
+        return paraDTO(comentarios.saveAndFlush(comentario), comentario.getAutor().getId(),
+                publicacao.getUsuario().getId(), java.util.List.of());
+    }
+
+    /** Regra: comentário com respostas não pode ser excluído (409). */
+    @Transactional
+    public void excluir(Long publicacaoId, Long comentarioId, String email) {
+        publicacaoPublica(publicacaoId);
+        ComentarioPublicacao comentario = comentarioDoAutor(publicacaoId, comentarioId, email);
+        if (comentarios.existsByRespostaAId(comentario.getId()))
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Este comentário já tem respostas e não pode ser excluído; edite o texto.");
+        comentarios.delete(comentario);
+    }
+
+    private ComentarioPublicacao comentarioDoAutor(Long publicacaoId, Long comentarioId, String email) {
+        ComentarioPublicacao comentario = comentarios.findByIdAndPublicacaoIdAndModeradaOcultaFalse(comentarioId, publicacaoId)
+                .orElseThrow(() -> new NaoEncontradoException("Comentário não encontrado"));
+        if (!comentario.getAutor().getEmail().equalsIgnoreCase(email))
+            throw new NaoAutorizadoException("Somente o autor pode alterar o comentário");
+        return comentario;
+    }
+
     private PublicacaoPortfolio publicacaoPublica(Long id) {
         PublicacaoPortfolio publicacao = publicacoes.findByIdAndModeradaOcultaFalse(id)
                 .filter(p -> p.getUsuario().isPerfilPublico())

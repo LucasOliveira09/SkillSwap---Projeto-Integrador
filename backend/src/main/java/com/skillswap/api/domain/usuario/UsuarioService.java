@@ -11,6 +11,7 @@ import com.skillswap.api.domain.usuario.dto.PerfilDTO;
 import com.skillswap.api.domain.usuario.dto.ProfissionalBuscaDTO;
 import com.skillswap.api.domain.usuario.dto.RegisterDTO;
 import com.skillswap.api.domain.usuario.dto.UpdatePerfilDTO;
+import com.skillswap.api.infra.exception.ConflitoException;
 import com.skillswap.api.infra.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +40,7 @@ public class UsuarioService {
         if (dto.senha().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72)
             throw new IllegalArgumentException("Senha deve ter no máximo 72 bytes.");
         if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new ConflitoException("Já existe uma conta com este e-mail.");
         }
         var usuario = Usuario.builder()
                 .nome(dto.nome())
@@ -156,6 +157,37 @@ public class UsuarioService {
         }
         aplicarAtualizacao(usuario, dto);
         return usuarioRepository.save(usuario);
+    }
+
+    /** Listagem administrativa (perfil ADMIN), com filtro opcional por nome ou e-mail. */
+    @Transactional(readOnly = true)
+    public Page<PerfilDTO> listar(String busca, Pageable pageable) {
+        String termo = normalizarFiltro(busca, 100);
+        return usuarioRepository.findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(termo, termo, pageable)
+                .map(this::toPerfilDTO);
+    }
+
+    /**
+     * Regra de negócio: uma conta só pode ser excluída se não tiver histórico de negócio.
+     * Com anúncios, negociações, avaliações ou conteúdo publicado, a exclusão apagaria registros
+     * de outras pessoas; nesse caso responde 409 e orienta pausar o perfil.
+     */
+    @Transactional
+    public void excluir(Long id, String emailAdministrador) {
+        Usuario usuario = findById(id);
+        if (usuario.getEmail().equalsIgnoreCase(emailAdministrador))
+            throw new ConflitoException("Não é possível excluir a própria conta de administrador.");
+        long vinculos = usuarioRepository.contarVinculosDeNegocio(id);
+        if (vinculos > 0)
+            throw new ConflitoException("A conta possui " + vinculos
+                    + " registro(s) de negócio vinculados (anúncios, negociações, avaliações ou conteúdo). "
+                    + "Pause o perfil em vez de excluir.");
+        usuarioRepository.removerSessoes(id);
+        usuarioRepository.removerNotificacoes(id);
+        usuarioRepository.removerSeguidores(id);
+        usuarioRepository.removerExperiencias(id);
+        usuarioRepository.removerCertificacoes(id);
+        usuarioRepository.delete(usuario);
     }
 
     private void aplicarAtualizacao(Usuario usuario, UpdatePerfilDTO dto) {

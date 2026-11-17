@@ -33,13 +33,10 @@ public class ModeracaoService {
     private final ComentarioPublicacaoRepository comentarioPublicacaoRepository;
     private final UsuarioService usuarioService;
 
-    @Value("${skillswap.moderacao.emails:}")
-    private String emailsModeradores;
+    private final com.skillswap.api.infra.security.PerfisAcesso perfisAcesso;
 
     public boolean podeModerar(String email) {
-        return Arrays.stream(emailsModeradores.split(","))
-                .map(String::strip)
-                .anyMatch(configurado -> !configurado.isEmpty() && configurado.equalsIgnoreCase(email));
+        return perfisAcesso.administrador(email);
     }
 
     @Transactional

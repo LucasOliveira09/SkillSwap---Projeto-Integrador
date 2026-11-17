@@ -46,4 +46,22 @@ public class ComentarioAnuncioController {
         return ResponseEntity.created(URI.create("/api/anuncios/" + anuncioId + "/comentarios/" + comentario.id()))
                 .body(comentario);
     }
+
+    @PutMapping("/{comentarioId}")
+    public ResponseEntity<ComentarioAnuncioDTO> editar(
+            @PathVariable @Positive Long anuncioId,
+            @PathVariable @Positive Long comentarioId,
+            @RequestBody @Valid EditarComentarioDTO dto,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.editar(anuncioId, comentarioId, dto, (String) authentication.getPrincipal()));
+    }
+
+    @DeleteMapping("/{comentarioId}")
+    public ResponseEntity<Void> excluir(
+            @PathVariable @Positive Long anuncioId,
+            @PathVariable @Positive Long comentarioId,
+            Authentication authentication) {
+        service.excluir(anuncioId, comentarioId, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
 }
