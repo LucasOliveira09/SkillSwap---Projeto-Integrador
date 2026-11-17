@@ -75,7 +75,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    ResponseEntity<Erro> banco(Exception ex) { return resposta(503,"INDISPONIVEL","Não foi possível acessar os dados."); }
+    ResponseEntity<Erro> banco(DataAccessException ex) {
+        org.slf4j.LoggerFactory.getLogger(getClass()).warn("Falha de acesso a dados: {}",
+                ex.getMostSpecificCause().getClass().getSimpleName());
+        return resposta(503,"INDISPONIVEL","Não foi possível acessar os dados.");
+    }
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<Erro> inesperado(Exception ex) {

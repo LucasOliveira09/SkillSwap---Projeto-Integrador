@@ -44,7 +44,7 @@ public class AvaliacaoService {
         Acordo acordo = acordoService.findById(acordoId);
 
         if (acordo.getStatus() != StatusAcordo.CONCLUIDO) {
-            throw new IllegalArgumentException("Acordo não está concluído");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Acordo não está concluído");
         }
 
         Usuario avaliador = usuarioService.findByEmail(emailUsuario);
@@ -70,7 +70,7 @@ public class AvaliacaoService {
 
         // Sem duplicação
         if (avaliacaoRepository.existsByAcordoIdAndAvaliadorId(acordoId, avaliador.getId())) {
-            throw new IllegalArgumentException("Você já avaliou este acordo");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Você já avaliou este acordo");
         }
 
         var avaliacao = Avaliacao.builder()

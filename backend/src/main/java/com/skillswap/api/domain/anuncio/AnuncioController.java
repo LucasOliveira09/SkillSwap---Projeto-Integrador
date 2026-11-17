@@ -95,10 +95,11 @@ public class AnuncioController {
         return ResponseEntity.ok(anuncioService.toResponseDTO(anuncio));
     }
 
+    /** Exclui definitivamente (204) ou 409 quando há negociações; para apenas pausar, usar PATCH {status: INATIVO}. */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> inativar(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<Void> excluir(@PathVariable Long id, Authentication authentication) {
         String email = (String) authentication.getPrincipal();
-        anuncioService.inativar(id, email);
+        anuncioService.excluir(id, email);
         return ResponseEntity.noContent().build();
     }
 }

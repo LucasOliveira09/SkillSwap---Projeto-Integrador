@@ -90,6 +90,52 @@ class SegurancaBasicEPainelTest {
     }
 
     @Test
+    void atualizarAnuncioMantendoAMesmaDisponibilidadeNaoViolaChaveUnica() throws Exception {
+        String corpo = """
+                {"titulo":"%s","descricao":"Aulas para iniciantes com repertório popular.",
+                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"VENDA","preco":80.00,
+                 "disponibilidades":[{"diaSemana":"SABADO","periodo":"MANHA"}]}
+                """;
+        var criado = mvc.perform(post("/api/anuncios").with(httpBasic("profissional@skillswap.dev", "Usuario@Teste2026"))
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo.formatted("Aulas de violão")))
+                .andExpect(status().isCreated()).andReturn();
+        long id = tools.jackson.databind.json.JsonMapper.builder().build()
+                .readTree(criado.getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/anuncios/{id}", id)
+                        .with(httpBasic("profissional@skillswap.dev", "Usuario@Teste2026"))
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo.formatted("Aulas de violão e canto")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Aulas de violão e canto"))
+                .andExpect(jsonPath("$.disponibilidades.length()").value(1));
+    }
+
+    @Test
+    void anuncioComNegociacaoNaoPodeSerExcluidoESemNegociacaoE() throws Exception {
+        String corpo = """
+                {"titulo":"%s","descricao":"Aulas para iniciantes com repertório popular.",
+                 "categoria":"AULAS","cidade":"Florianópolis","modalidade":"VENDA","preco":80.00}
+                """;
+        var prof = httpBasic("profissional@skillswap.dev", "Usuario@Teste2026");
+        var json = tools.jackson.databind.json.JsonMapper.builder().build();
+        long comConversa = json.readTree(mvc.perform(post("/api/anuncios").with(prof)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo.formatted("Aulas de violão")))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString()).get("id").asLong();
+        long semConversa = json.readTree(mvc.perform(post("/api/anuncios").with(prof)
+                        .contentType(MediaType.APPLICATION_JSON).content(corpo.formatted("Aulas de canto")))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(post("/api/anuncios/{id}/conversas", comConversa).with(httpBasic(USUARIO, "Usuario@Teste2026"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"conteudo\":\"Tem horário no sábado?\"}"))
+                .andExpect(status().isCreated());
+
+        mvc.perform(delete("/api/anuncios/{id}", comConversa).with(prof))
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.codigo").value("CONFLITO"));
+        mvc.perform(delete("/api/anuncios/{id}", semConversa).with(httpBasic(USUARIO, "Usuario@Teste2026")))
+                .andExpect(status().isForbidden());
+        mvc.perform(delete("/api/anuncios/{id}", semConversa).with(prof)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/anuncios/meus/{id}", semConversa).with(prof)).andExpect(status().isNotFound());
+    }
+
+    @Test
     void validacaoDevolveMensagemPorCampo() throws Exception {
         mvc.perform(post("/api/usuarios").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nome\":\"\",\"email\":\"invalido\",\"senha\":\"123\"}"))

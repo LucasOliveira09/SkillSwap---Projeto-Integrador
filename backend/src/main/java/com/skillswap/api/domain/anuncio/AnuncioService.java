@@ -124,16 +124,27 @@ public class AnuncioService {
         if (dto.imagem() != null) {
             anuncio.setImagem(dto.imagem().isBlank() ? null : dto.imagem().strip());
         }
+        // Remove os períodos antigos antes de inserir os novos: a chave única (anúncio, dia, período)
+        // falharia se o Hibernate inserisse um período mantido antes de apagar o anterior.
+        anuncio.getDisponibilidades().clear();
+        anuncioRepository.flush();
         substituirDisponibilidades(anuncio, dto.disponibilidades());
         return anuncioRepository.save(anuncio);
     }
 
+    /**
+     * Regra de negócio: o anúncio só é excluído definitivamente se não tiver negociações,
+     * conversas, publicações ou comentários vinculados. Caso contrário responde 409 e
+     * orienta pausar o anúncio (status INATIVO), preservando o histórico das outras pessoas.
+     */
     @Transactional
-    public void inativar(Long id, String emailUsuario) {
+    public void excluir(Long id, String emailUsuario) {
         var anuncio = buscarMeu(id, emailUsuario);
-        checkOwner(anuncio, emailUsuario);
-        anuncio.setStatus(StatusAnuncio.INATIVO);
-        anuncioRepository.save(anuncio);
+        long vinculos = anuncioRepository.contarVinculos(anuncio.getId());
+        if (vinculos > 0)
+            throw new com.skillswap.api.infra.exception.ConflitoException("O anúncio possui " + vinculos
+                    + " negociação(ões), conversa(s) ou comentário(s) vinculados e não pode ser excluído. Pause o anúncio.");
+        anuncioRepository.delete(anuncio);
     }
 
     private void checkOwner(Anuncio anuncio, String emailUsuario) {

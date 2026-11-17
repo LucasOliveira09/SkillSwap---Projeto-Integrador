@@ -15,6 +15,16 @@ import java.util.Optional;
 
 public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
+    /** Registros que impedem a exclusão definitiva do anúncio (negociações, conversas, portfólio e comentários). */
+    @Query(value = """
+            select (select count(*) from propostas where anuncio_id = :id)
+                 + (select count(*) from conversas where anuncio_contexto_id = :id)
+                 + (select count(*) from mensagens where anuncio_contexto_id = :id)
+                 + (select count(*) from publicacoes_portfolio where anuncio_id = :id)
+                 + (select count(*) from comentarios_anuncio where anuncio_id = :id)
+            """, nativeQuery = true)
+    long contarVinculos(@Param("id") Long id);
+
     @EntityGraph(attributePaths = {"usuario"})
     Page<Anuncio> findByStatus(StatusAnuncio status, Pageable pageable);
 

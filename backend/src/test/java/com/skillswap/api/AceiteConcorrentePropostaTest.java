@@ -66,7 +66,7 @@ class AceiteConcorrentePropostaTest {
 
             int statusUm = aceiteUm.get(10, TimeUnit.SECONDS);
             int statusDois = aceiteDois.get(10, TimeUnit.SECONDS);
-            assertTrue((statusUm == 200 && statusDois == 400) || (statusUm == 400 && statusDois == 200),
+            assertTrue((statusUm == 200 && statusDois == 409) || (statusUm == 409 && statusDois == 200),
                     "Exatamente uma proposta deve ser aceita");
         }
 

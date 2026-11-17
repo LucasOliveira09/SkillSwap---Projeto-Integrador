@@ -263,7 +263,7 @@ class NegociacaoControllerTest {
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nota\":5,\"notaAnuncio\":4}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
         mvc.perform(patch("/api/acordos/{id}", acordoId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONCLUIDO\"}"))
@@ -375,7 +375,7 @@ class NegociacaoControllerTest {
         mvc.perform(patch("/api/propostas/{id}", propostaId)
                         .header("Authorization", "Bearer " + proponenteToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test

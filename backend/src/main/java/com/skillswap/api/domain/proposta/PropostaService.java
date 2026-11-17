@@ -60,7 +60,7 @@ public class PropostaService {
         validarTermos(dto, anuncio.getModalidade());
         boolean jaProposto = propostaRepository.existsByAnuncioIdAndProponenteIdAndStatusIn(
                 anuncio.getId(), proponente.getId(), Set.of(StatusProposta.PENDENTE, StatusProposta.ACEITA));
-        if (jaProposto) throw new IllegalArgumentException("Você já possui uma proposta ativa para este anúncio");
+        if (jaProposto) throw new com.skillswap.api.infra.exception.ConflitoException("Você já possui uma proposta ativa para este anúncio");
 
         var proposta = propostaRepository.save(Proposta.builder()
                 .conversa(conversa).anuncio(anuncio).proponente(proponente)
@@ -117,7 +117,7 @@ public class PropostaService {
         boolean jaProposto = propostaRepository.existsByAnuncioIdAndProponenteIdAndStatusIn(
                 anuncioId, proponente.getId(), Set.of(StatusProposta.PENDENTE, StatusProposta.ACEITA));
         if (jaProposto) {
-            throw new IllegalArgumentException("Você já possui uma proposta ativa para este anúncio");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Você já possui uma proposta ativa para este anúncio");
         }
 
         var conversa = conversaService.obterOuCriar(anuncio.getUsuario(), proponente).conversa();
@@ -188,7 +188,7 @@ public class PropostaService {
         checkAnuncioOwner(proposta, emailUsuario);
 
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
-            throw new IllegalArgumentException("Proposta não está pendente");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Proposta não está pendente");
         }
         if (proposta.getValidadeEm() != null && proposta.getValidadeEm().isBefore(LocalDate.now(ZONA_PRODUTO)))
             throw new IllegalArgumentException("A validade da proposta expirou; solicite uma nova versão");
@@ -200,7 +200,7 @@ public class PropostaService {
         boolean outraJaAceita = propostasDoCliente.stream()
                 .anyMatch(item -> !item.getId().equals(propostaId) && item.getStatus() == StatusProposta.ACEITA);
         if (outraJaAceita) {
-            throw new IllegalArgumentException("Já existe uma proposta aceita para este cliente e anúncio");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Já existe uma proposta aceita para este cliente e anúncio");
         }
 
         proposta.setStatus(StatusProposta.ACEITA);
@@ -235,7 +235,7 @@ public class PropostaService {
         checkAnuncioOwner(proposta, emailUsuario);
 
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
-            throw new IllegalArgumentException("Proposta não está pendente");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Proposta não está pendente");
         }
 
         proposta.setStatus(StatusProposta.RECUSADA);
@@ -252,7 +252,7 @@ public class PropostaService {
             throw new NaoAutorizadoException("Você não enviou esta proposta");
         }
         if (proposta.getStatus() != StatusProposta.PENDENTE) {
-            throw new IllegalArgumentException("Somente propostas pendentes podem ser canceladas");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Somente propostas pendentes podem ser canceladas");
         }
         proposta.setStatus(StatusProposta.CANCELADA);
         notificacaoService.criar(proposta.getAnuncio().getUsuario(), TipoNotificacao.PROPOSTA_RESPONDIDA,

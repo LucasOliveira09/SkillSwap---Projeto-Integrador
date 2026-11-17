@@ -142,8 +142,9 @@ class IntegracaoAnuncioTest {
         long id = com.fasterxml.jackson.databind.json.JsonMapper.builder().build()
                 .readTree(criado.getResponse().getContentAsString()).get("id").asLong();
 
-        mvc.perform(delete("/api/anuncios/{id}", id).header("Authorization", "Bearer " + token))
-                .andExpect(status().isNoContent());
+        mvc.perform(patch("/api/anuncios/{id}", id).header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content("{\"status\":\"INATIVO\"}"))
+                .andExpect(status().isOk());
         mvc.perform(get("/api/anuncios/meus").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalItens").value(1))
                 .andExpect(jsonPath("$.itens[0].status").value("INATIVO"));

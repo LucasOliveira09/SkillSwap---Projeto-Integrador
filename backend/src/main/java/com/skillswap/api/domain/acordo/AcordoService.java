@@ -66,7 +66,7 @@ public class AcordoService {
                 .orElseThrow(() -> new NaoEncontradoException("Acordo não encontrado"));
         checkParticipant(acordo, emailUsuario);
         if (acordo.getStatus() != StatusAcordo.EM_ANDAMENTO) {
-            throw new IllegalArgumentException("Acordo não está em andamento");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Acordo não está em andamento");
         }
         Long anuncianteId = acordo.getProposta().getAnuncio().getUsuario().getId();
         Usuario ator = usuarioService.findByEmail(emailUsuario);
@@ -108,7 +108,7 @@ public class AcordoService {
                 .orElseThrow(() -> new NaoEncontradoException("Acordo não encontrado"));
         checkParticipant(acordo, emailUsuario);
         if (acordo.getStatus() != StatusAcordo.EM_ANDAMENTO) {
-            throw new IllegalArgumentException("Acordo não está em andamento");
+            throw new com.skillswap.api.infra.exception.ConflitoException("Acordo não está em andamento");
         }
         acordo.setStatus(StatusAcordo.CANCELADO);
         Usuario atual = usuarioService.findByEmail(emailUsuario);
