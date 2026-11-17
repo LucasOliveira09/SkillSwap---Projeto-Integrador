@@ -1,6 +1,6 @@
 # ADR-001: Base Angular standalone com Angular Material
 
-Status: aceita para esta inicialização, conforme pedido do usuário em 19/10/2026.
+Status: substituída pela [ADR-009](009-ngmodules-e-http-basic-entrega-final.md) em 17/11/2026 quanto à organização standalone. Aceita originalmente em 19/10/2026, conforme pedido do usuário.
 
 ## Contexto
 

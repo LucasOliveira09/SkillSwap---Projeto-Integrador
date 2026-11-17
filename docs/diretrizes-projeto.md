@@ -37,7 +37,7 @@ Fonte: **Angular Arquitetura**, páginas 3 e 5 a 18; adaptação standalone no *
 - Organizar telas e serviços por domínio funcional, com responsabilidades claras.
 - Separar template HTML, estilos e comportamento TypeScript dos componentes.
 - Planejar rotas para as telas e carregamento sob demanda nas funcionalidades em que fizer sentido.
-- O modelo didático principal usa NgModules, módulo raiz, módulos de funcionalidade e rotas internas. Nesta aplicação, o usuário escolheu standalone; a [ADR-001](decisions/001-angular-standalone.md) registra como preservar a organização por domínio e adaptar os imports.
+- O modelo didático principal usa NgModules, módulo raiz, módulos de funcionalidade e rotas internas. Desde a entrega final (17/11/2026) a aplicação segue esse modelo com `standalone: false`; ver [ADR-009](decisions/009-ngmodules-e-http-basic-entrega-final.md). A [ADR-001](decisions/001-angular-standalone.md) registra a fase standalone anterior.
 - Em NgModules, declarar cada componente não standalone em um único módulo. Importar e exportar os recursos necessários no escopo consumidor.
 - Em standalone, importar as dependências do template no próprio componente e preservar esse modelo; não colocar o componente em `declarations`.
 - Na implementação da navegação interna, verificar os mecanismos do Angular Router na documentação da versão adotada; os esquemas visuais dos slides não substituem a configuração real.

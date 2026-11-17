@@ -31,7 +31,7 @@ Base da própria origem: `/api`. O proxy de desenvolvimento e o Nginx encaminham
 | POST | `/anuncios` | Exige Bearer JWT; 201 com Location após persistir. |
 | PUT | `/anuncios/{id}` | Exige proprietário autenticado e entrada completa. |
 | PATCH | `/anuncios/{id}` | Exige proprietário autenticado; recebe `{ "status": "ATIVO" }` ou `{ "status": "INATIVO" }` e devolve a representação atualizada. |
-| DELETE | `/anuncios/{id}` | Exige proprietário; inativa e devolve 204. Exemplos não podem ser alterados. |
+| DELETE | `/anuncios/{id}` | Exige proprietário; exclui e devolve 204 quando não há negociações, conversas, publicações ou comentários vinculados; caso contrário, 409 (pausar com PATCH). Exemplos não podem ser alterados. |
 | GET | `/perfis/{id}` | Campos públicos do perfil; sem e-mail ou outros campos de autenticação. |
 | GET | `/perfis/{id}/anuncios?pagina=0&tamanho=6` | Página limitada às ofertas ativas não demonstrativas do profissional. |
 | GET | `/perfis/{id}/publicacoes?pagina=0&tamanho=12` | Publicações públicas de portfólio, com até 20 itens por página e fotos em ordem. |
