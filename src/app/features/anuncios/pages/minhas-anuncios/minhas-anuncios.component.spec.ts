@@ -41,4 +41,30 @@ describe('Meus anúncios', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Pausado');
     expect(harness.routeNativeElement?.textContent).toContain('Anúncio pausado.');
   });
+
+  it('explica quando o anúncio com negociações não pode ser excluído', async () => {
+    TestBed.inject(SessaoService).entrar('ana@teste.invalid', 'senha').subscribe();
+    http.expectOne('/api/sessoes').flush({ token: 'token-de-teste' });
+    const harness = await RouterTestingHarness.create('/anuncios/minhas');
+    const item = {
+      id: 18, titulo: 'Aula de canto', descricao: 'Para iniciantes', categoria: 'aulas',
+      categoriaRotulo: 'Aulas e instrução', cidade: 'Florianópolis', modalidade: 'venda',
+      preco: 90, unidade: '/hora', habilidadeDesejada: '', status: 'ATIVO', usuarioId: 12,
+      criadoEm: '2026-10-20T12:00:00', imagem: null, autor: 'Ana', avatar: null,
+      estrelas: null, exemplo: false, mediaAvaliacoesAnuncio: null, quantidadeAvaliacoesAnuncio: 0,
+    };
+    http.expectOne('/api/anuncios/meus?pagina=0&tamanho=20').flush({
+      itens: [item], pagina: 0, tamanho: 20, totalItens: 1, totalPaginas: 1,
+    });
+    harness.detectChanges();
+    spyOn(window, 'confirm').and.returnValue(true);
+
+    (harness.routeNativeElement?.querySelector('button.excluir') as HTMLButtonElement).click();
+    const exclusao = http.expectOne('/api/anuncios/18');
+    expect(exclusao.request.method).toBe('DELETE');
+    exclusao.flush({ codigo: 'CONFLITO', mensagem: 'O anúncio possui 1 negociação(ões). Pause o anúncio.', campos: {} },
+      { status: 409, statusText: 'Conflict' });
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Pause o anúncio.');
+  });
 });

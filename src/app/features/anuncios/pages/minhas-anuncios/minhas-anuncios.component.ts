@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { AnunciosApiService } from '../../data-access/anuncios-api.service';
 import { AnuncioApi, PaginaAnuncios } from '../../models/anuncio-api.model';
@@ -62,6 +63,27 @@ export class MinhasAnunciosComponent {
         this.sucesso.set(status === 'ATIVO' ? 'Anúncio reativado.' : 'Anúncio pausado.');
       },
       error: () => this.erro.set('Não foi possível alterar o anúncio. Tente novamente.'),
+    });
+  }
+
+  protected excluir(anuncio: AnuncioApi): void {
+    if (this.alterandoId() !== null) return;
+    if (!window.confirm(`Excluir definitivamente "${anuncio.titulo}"? Esta ação não pode ser desfeita.`)) return;
+    this.alterandoId.set(anuncio.id);
+    this.erro.set('');
+    this.sucesso.set('');
+    this.api.excluir(anuncio.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.alterandoId.set(null)),
+    ).subscribe({
+      next: () => {
+        this.sucesso.set('Anúncio excluído.');
+        this.carregar(this.pagina()?.pagina ?? 0);
+      },
+      error: (erro: unknown) => this.erro.set(
+        erro instanceof HttpErrorResponse && erro.status === 409 && erro.error?.mensagem
+          ? erro.error.mensagem
+          : 'Não foi possível excluir o anúncio. Tente novamente.'),
     });
   }
 

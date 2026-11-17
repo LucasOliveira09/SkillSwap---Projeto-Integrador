@@ -51,6 +51,9 @@
                 @if (alterandoId() === anuncio.id) { Atualizando... }
                 @else { {{ anuncio.status === 'ATIVO' ? 'Pausar anúncio' : 'Reativar anúncio' }} }
               </button>
+              <button mat-button type="button" class="excluir" [disabled]="alterandoId() !== null" (click)="excluir(anuncio)">
+                Excluir anúncio
+              </button>
             </div>
           </div>
         </article>

@@ -112,6 +112,11 @@ export class AnunciosApiService {
       .pipe(map((anuncio) => this.converter(anuncio)));
   }
 
+  /** Exclusão definitiva; a API responde 409 se o anúncio já tiver negociações ou comentários. */
+  excluir(id: number) {
+    return this.http.delete<void>(`${environment.apiUrl}/anuncios/${id}`);
+  }
+
   uploadImagem(arquivo: File) {
     const formData = new FormData();
     formData.append('file', arquivo);
