@@ -10,7 +10,7 @@ Legenda: ✅ atendido · ⏳ pendente.
 | --- | --- | --- |
 | Partir do projeto de e-commerce e adaptar ao domínio do PI | ✅ | Domínio SkillSwap em `backend/src/main/java/com/skillswap/api/domain/` (ver [ADR-004](decisions/004-integra-backend-github.md)) |
 | ≥ 5 entidades JPA relacionadas e coerentes com o domínio | ✅ | `Usuario`, `Anuncio`, `Conversa`, `Proposta`, `Acordo`, `Avaliacao`, `Mensagem`, `ComentarioAnuncio`, `PublicacaoPortfolio`, `ExperienciaProfissional`, `Denuncia` e outras |
-| Persistência em MySQL | ✅ | `application.yml`, migrações Flyway V1–V24 em `backend/src/main/resources/db/migration` |
+| Persistência em MySQL | ✅ | `application.yml`, migrações Flyway V1–V25 em `backend/src/main/resources/db/migration` |
 | Diagrama de classes ou ER | ⏳ | A incluir em `docs/` (fora do escopo desta etapa, a pedido do grupo) |
 | CRUD completo de todas as entidades de domínio | ✅ | [documentacao-api.md](documentacao-api.md#endpoints-por-recurso). Exclusões respeitam o domínio: anúncio só sem negociações (senão é pausado); proposta por cancelamento; acordo por cancelamento; mensagens imutáveis; usuário só sem histórico |
 | Métodos HTTP e códigos corretos | ✅ | 201 + `Location` na criação, 204 em exclusões, PATCH para mudança de estado |

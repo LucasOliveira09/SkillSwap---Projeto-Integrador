@@ -164,6 +164,7 @@ describe('CaixaMensagensComponent', () => {
       formaPagamento: 'PARCELADO', valor: 320, parcelas: 4, duracao: '1 mês', validadeEm: '2027-01-15' };
     componente.fecharProposta();
     await harness.fixture.whenStable();
+    await new Promise(resolve => setTimeout(resolve, 250));
     TestBed.tick();
     componente.abrirFormularioProposta(conversa);
     http.expectOne('/api/perfis/1/anuncios?pagina=0&tamanho=50').flush({
@@ -195,6 +196,7 @@ describe('CaixaMensagensComponent', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement!.textContent).toContain('Proposta enviada no chat.');
     await harness.fixture.whenStable();
+    await new Promise(resolve => setTimeout(resolve, 250));
     TestBed.tick();
     componente.abrirFormularioProposta(conversa);
     http.expectOne('/api/perfis/1/anuncios?pagina=0&tamanho=50').flush({

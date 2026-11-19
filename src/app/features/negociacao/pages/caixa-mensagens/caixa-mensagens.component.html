@@ -159,7 +159,7 @@
                       <div><dt>Anúncio</dt><dd>{{ ofertaDaProposta()?.titulo }}</dd></div>
                       <div><dt>Serviço</dt><dd>{{ proposta.servico }}</dd></div>
                       <div><dt>Escopo e entregas</dt><dd>{{ proposta.escopo }}</dd></div>
-                      <div><dt>Condição combinada</dt><dd>@if (ofertaDaProposta()?.modalidade === 'troca') { Troca sem complemento em dinheiro } @else { {{ proposta.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }} · {{ proposta.formaPagamento === 'PARCELADO' ? proposta.parcelas + ' parcelas' : 'à vista' }} }</dd></div>
+                      <div><dt>Condição combinada</dt><dd>@if (ofertaDaProposta()?.modalidade === 'troca') { Troca sem complemento em dinheiro } @else { {{ proposta.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }} · {{ condicaoCobranca(proposta.formaPagamento, proposta.parcelas) }} }</dd></div>
                       @if (proposta.duracao) { <div><dt>Duração prevista</dt><dd>{{ proposta.duracao }}</dd></div> }
                       @if (proposta.validadeEm) { <div><dt>Válida até</dt><dd>{{ proposta.validadeEm | date: 'dd/MM/yyyy' }}</dd></div> }
                     </dl>
@@ -187,9 +187,12 @@
                       <select name="formaPagamento" [(ngModel)]="proposta.formaPagamento">
                         <option value="A_VISTA">À vista</option>
                         <option value="PARCELADO">Parcelado</option>
+                        <option value="POR_HORA">Por hora</option>
+                        <option value="POR_DIA">Por dia trabalhado</option>
+                        <option value="ASSINATURA">Assinatura mensal</option>
                       </select>
                     </label>
-                    <label>Valor (R$)<input name="valorProposta" type="number" min="0.01" step="0.01" [(ngModel)]="proposta.valor" required /></label>
+                    <label>{{ rotuloValor() }}<input name="valorProposta" type="number" min="0.01" step="0.01" [(ngModel)]="proposta.valor" required /></label>
                     @if (proposta.formaPagamento === 'PARCELADO') {
                       <label>Parcelas (2 a 12)<input name="parcelasProposta" type="number" min="2" max="12" step="1" [(ngModel)]="proposta.parcelas" required /></label>
                     }

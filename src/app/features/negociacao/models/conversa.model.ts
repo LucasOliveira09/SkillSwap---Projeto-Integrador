@@ -50,7 +50,7 @@ export interface Conversa {
   atualizadaEm: string;
 }
 
-export type FormaPagamentoProposta = 'A_VISTA' | 'PARCELADO' | 'TROCA';
+export type FormaPagamentoProposta = 'A_VISTA' | 'PARCELADO' | 'POR_HORA' | 'POR_DIA' | 'ASSINATURA' | 'TROCA';
 
 export interface NovaPropostaConversa {
   anuncioId: number;

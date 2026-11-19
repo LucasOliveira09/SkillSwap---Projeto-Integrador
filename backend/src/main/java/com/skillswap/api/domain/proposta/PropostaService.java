@@ -71,7 +71,13 @@ public class PropostaService {
         String resumo = "Proposta enviada: " + proposta.getServico() + " — " +
                 (proposta.getFormaPagamento() == FormaPagamentoProposta.TROCA ? "troca sem complemento em dinheiro"
                         : "R$ " + proposta.getValor().toPlainString() +
-                        (proposta.getFormaPagamento() == FormaPagamentoProposta.PARCELADO ? " em " + proposta.getParcelas() + " parcelas" : " à vista"));
+                        switch (proposta.getFormaPagamento()) {
+                            case PARCELADO -> " em " + proposta.getParcelas() + " parcelas";
+                            case POR_HORA -> " por hora";
+                            case POR_DIA -> " por dia trabalhado";
+                            case ASSINATURA -> " por mês (assinatura)";
+                            default -> " à vista";
+                        });
         mensagens.save(Mensagem.builder().conversa(conversa).anuncioContexto(anuncio)
                 .proposta(proposta).remetente(proponente).conteudo(resumo).build());
         notificacaoService.criar(destinatario, TipoNotificacao.PROPOSTA_RECEBIDA, "Nova proposta",
@@ -90,8 +96,8 @@ public class PropostaService {
             throw new IllegalArgumentException("A forma de pagamento por troca só vale para anúncios de troca");
         } else if (dto.valor() == null || dto.valor().signum() <= 0) {
             throw new IllegalArgumentException("Informe um valor maior que zero");
-        } else if (dto.formaPagamento() == FormaPagamentoProposta.A_VISTA && dto.parcelas() != null) {
-            throw new IllegalArgumentException("Pagamento à vista não deve informar parcelas");
+        } else if (dto.formaPagamento() != FormaPagamentoProposta.PARCELADO && dto.parcelas() != null) {
+            throw new IllegalArgumentException("Esta forma de cobrança não deve informar parcelas");
         } else if (dto.formaPagamento() == FormaPagamentoProposta.PARCELADO &&
                 (dto.parcelas() == null || dto.parcelas() < 2 || dto.parcelas() > 12)) {
             throw new IllegalArgumentException("O parcelamento deve ter entre 2 e 12 parcelas");

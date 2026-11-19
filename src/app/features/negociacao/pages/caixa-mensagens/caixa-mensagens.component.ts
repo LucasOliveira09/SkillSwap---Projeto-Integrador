@@ -506,9 +506,33 @@ export class CaixaMensagensComponent {
   protected termosPagamento(proposta: PropostaMensagem): string {
     if (proposta.formaPagamento === 'TROCA') return 'Troca sem complemento em dinheiro';
     const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(proposta.valor ?? 0);
-    return proposta.formaPagamento === 'PARCELADO'
-      ? `${valor} em ${proposta.parcelas} parcelas`
-      : `${valor} à vista`;
+    switch (proposta.formaPagamento) {
+      case 'PARCELADO': return `${valor} em ${proposta.parcelas} parcelas`;
+      case 'POR_HORA': return `${valor} por hora`;
+      case 'POR_DIA': return `${valor} por dia trabalhado`;
+      case 'ASSINATURA': return `${valor} por mês (assinatura)`;
+      default: return `${valor} à vista`;
+    }
+  }
+
+  protected condicaoCobranca(forma: string | null | undefined, parcelas: number | null | undefined): string {
+    switch (forma) {
+      case 'PARCELADO': return `${parcelas} parcelas`;
+      case 'POR_HORA': return 'por hora';
+      case 'POR_DIA': return 'por dia trabalhado';
+      case 'ASSINATURA': return 'por mês (assinatura)';
+      default: return 'à vista';
+    }
+  }
+
+  protected rotuloValor(): string {
+    switch (this.proposta.formaPagamento) {
+      case 'PARCELADO': return 'Valor total (R$)';
+      case 'POR_HORA': return 'Valor por hora (R$)';
+      case 'POR_DIA': return 'Valor por dia trabalhado (R$)';
+      case 'ASSINATURA': return 'Valor mensal (R$)';
+      default: return 'Valor (R$)';
+    }
   }
 
   protected interlocutor(acordo: Conversa): string {

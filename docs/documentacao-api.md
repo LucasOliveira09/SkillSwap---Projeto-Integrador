@@ -86,7 +86,7 @@ Legenda: 🔓 público · 🔑 autenticado (USER) · 🛡️ ADMIN.
 | GET | `/api/conversas`, `/api/conversas/{id}` | 🔑 participante | Conversas e resumo de não lidas (`/resumo`) |
 | GET / POST | `/api/conversas/{id}/mensagens` | 🔑 participante | Mensagens (imutáveis, para preservar o histórico) |
 | PATCH | `/api/conversas/{id}/leitura` | 🔑 participante | Marca leitura (204) |
-| POST | `/api/conversas/{id}/propostas` | 🔑 | Proposta à vista, parcelada (2–12) ou por troca, com validade |
+| POST | `/api/conversas/{id}/propostas` | 🔑 | Proposta à vista, parcelada (2–12), por hora, por dia, assinatura mensal ou por troca, com validade |
 | GET | `/api/propostas?direcao=ENVIADAS\|RECEBIDAS`, `/api/propostas/{id}` | 🔑 | Consulta |
 | PATCH | `/api/propostas/{id}` | 🔑 proponente | `{"status":"CANCELADA"}` retira proposta pendente |
 | PATCH | `/api/propostas/{id}/aceitar` · `/recusar` | 🔑 anunciante | Aceite gera o acordo; 409 se não estiver pendente |
@@ -133,7 +133,7 @@ Legenda: 🔓 público · 🔑 autenticado (USER) · 🛡️ ADMIN.
 | Anúncio de venda exige preço maior que zero; de troca exige habilidade desejada | `AnuncioService` + Bean Validation | 400 |
 | Ninguém negocia o próprio anúncio | `PropostaService`, `ConversaService` | 400 |
 | Uma proposta ativa por cliente e anúncio | `PropostaService` | 409 |
-| Parcelado: 2 a 12 parcelas; à vista sem parcelas; troca só em anúncio de troca; validade não pode estar no passado | `PropostaService` | 400 |
+| Parcelado: 2 a 12 parcelas; demais formas de cobrança sem parcelas; troca só em anúncio de troca; validade não pode estar no passado | `PropostaService` | 400 |
 | Somente o anunciante aceita ou recusa, e só propostas pendentes; aceite concorrente gera um único acordo (bloqueio pessimista) | `PropostaService` | 403 / 409 |
 | Conclusão do acordo exige confirmação das duas partes | `AcordoService` | 409 se não estiver em andamento |
 | Avaliação somente após a conclusão, uma por participante, nota 1–5 | `AvaliacaoService` | 409 / 400 |
