@@ -12,10 +12,11 @@ Projeto Integrador do grupo **Saptura** — Engenharia de Software, 4º termo.
 
 | Nome completo | ID acadêmico |
 | --- | --- |
-| _a preencher_ | _a preencher_ |
-| _a preencher_ | _a preencher_ |
-| _a preencher_ | _a preencher_ |
-| _a preencher_ | _a preencher_ |
+| Lucas Leite de Oliveira | 272826 |
+| Otávio César de Oliveira | 274090 |
+| Gabriel Muniz Gonçalves de Oliveira | 272995 |
+| Guilherme Ribeiro de Oliveira | 272917 |
+| Luiz Felipe Borges | 273825 |
 
 ## Descrição
 

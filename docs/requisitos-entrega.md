@@ -27,7 +27,7 @@ Legenda: ✅ atendido · ⏳ pendente.
 | Funcionalidade específica do PI | ✅ | Negociação: conversa → proposta → aceite (acordo) → conclusão mútua → avaliação verificada (pasta 06) |
 | Coleção Postman com respostas salvas, exportada em JSON, com variáveis | ✅ | `postman/projeto-integrador.postman_collection.json` (83 requisições, 83 respostas, variáveis com valores) |
 | Somente credenciais de teste | ✅ | Contas `@skillswap.dev` com senhas exclusivas de teste |
-| README com nome, descrição, objetivo, tecnologias, execução e integrantes | ⏳ | [README](../README.md) — falta preencher nomes completos e IDs acadêmicos dos integrantes |
+| README com nome, descrição, objetivo, tecnologias, execução e integrantes | ✅ | [README](../README.md) |
 | Documentação dos endpoints | ✅ | [documentacao-api.md](documentacao-api.md) |
 
 ## Enunciado 2 — Entrega final do Projeto Integrador (Angular + publicação)
