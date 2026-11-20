@@ -85,6 +85,32 @@ public class ContestacaoAvaliacaoService {
         return paraDTO(contestacao);
     }
 
+    /** Regra: o profissional só altera ou retira a contestação enquanto ela aguarda a moderação. */
+    @Transactional
+    public ContestacaoAvaliacaoDTO editar(Long avaliacaoId, Long contestacaoId, CriarContestacaoAvaliacaoDTO dto, String email) {
+        var contestacao = contestacaoAbertaDoAutor(avaliacaoId, contestacaoId, email);
+        contestacao.setJustificativa(dto.justificativa().strip());
+        return paraDTO(contestacaoRepository.save(contestacao));
+    }
+
+    @Transactional
+    public void excluir(Long avaliacaoId, Long contestacaoId, String email) {
+        contestacaoRepository.delete(contestacaoAbertaDoAutor(avaliacaoId, contestacaoId, email));
+    }
+
+    private ContestacaoAvaliacao contestacaoAbertaDoAutor(Long avaliacaoId, Long contestacaoId, String email) {
+        var profissional = usuarioService.findByEmail(email);
+        var contestacao = contestacaoRepository.findByIdAndAvaliacaoId(contestacaoId, avaliacaoId)
+                .orElseThrow(() -> new NaoEncontradoException("Contestação não encontrada"));
+        if (!contestacao.getContestador().getId().equals(profissional.getId())) {
+            throw new NaoAutorizadoException("Somente o profissional que contestou pode alterar esta contestação.");
+        }
+        if (contestacao.getStatus() != StatusContestacaoAvaliacao.ABERTA) {
+            throw new ConflitoException("Esta contestação já foi analisada e não pode ser alterada.");
+        }
+        return contestacao;
+    }
+
     @Transactional(readOnly = true)
     public PaginaDTO<ContestacaoAvaliacaoDTO> listar(
             StatusContestacaoAvaliacao status, int pagina, int tamanho, String email) {

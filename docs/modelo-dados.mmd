@@ -1,0 +1,178 @@
+classDiagram
+    direction TB
+
+    class Usuario {
+        Long id
+        String nome
+        String email
+        String senha
+        String tituloProfissional
+        String cidade
+        String especialidades
+        boolean perfilPublico
+        boolean disponivelTrabalhos
+        LocalDateTime criadoEm
+    }
+    class Anuncio {
+        Long id
+        String titulo
+        String descricao
+        CategoriaAnuncio categoria
+        String cidade
+        ModalidadeAnuncio modalidade
+        BigDecimal preco
+        String habilidadeDesejada
+        StatusAnuncio status
+        LocalDateTime criadoEm
+    }
+    class DisponibilidadeAnuncio {
+        Long id
+        DiaSemana diaSemana
+        PeriodoDia periodo
+    }
+    class Conversa {
+        Long id
+        LocalDateTime criadoEm
+        LocalDateTime ultimaAtividadeEm
+    }
+    class Mensagem {
+        Long id
+        String conteudo
+        LocalDateTime enviadoEm
+    }
+    class Proposta {
+        Long id
+        String servico
+        String escopo
+        FormaPagamentoProposta formaPagamento
+        BigDecimal valor
+        Integer parcelas
+        String duracao
+        LocalDate validadeEm
+        StatusProposta status
+        LocalDateTime criadoEm
+    }
+    class Acordo {
+        Long id
+        StatusAcordo status
+        Boolean conclusaoConfirmadaAnunciante
+        Boolean conclusaoConfirmadaProponente
+        LocalDateTime criadoEm
+        LocalDateTime concluidoEm
+    }
+    class EventoAcordo {
+        Long id
+        TipoEventoAcordo tipo
+        LocalDateTime criadoEm
+    }
+    class Avaliacao {
+        Long id
+        int nota
+        Integer notaAnuncio
+        String depoimento
+        String respostaProfissional
+        boolean moderadaOculta
+        boolean edicaoRealizada
+        LocalDateTime criadoEm
+    }
+    class AvaliacaoHistorico {
+        Long id
+        int notaAnterior
+        Integer notaAnuncioAnterior
+        String depoimentoAnterior
+        LocalDateTime registradaEm
+    }
+    class ContestacaoAvaliacao {
+        Long id
+        String justificativa
+        StatusContestacaoAvaliacao status
+        String decisao
+        LocalDateTime criadaEm
+    }
+    class ComentarioAnuncio {
+        Long id
+        String conteudo
+        boolean moderadaOculta
+        LocalDateTime criadoEm
+    }
+    class PublicacaoPortfolio {
+        Long id
+        String legenda
+        List~String~ fotos
+        boolean moderadaOculta
+        LocalDateTime criadoEm
+    }
+    class ComentarioPublicacao {
+        Long id
+        String conteudo
+        boolean moderadaOculta
+        LocalDateTime criadoEm
+    }
+    class CurtidaPublicacao {
+        Long id
+        LocalDateTime criadoEm
+    }
+    class ExperienciaProfissional {
+        Long id
+        String cargo
+        String organizacao
+        LocalDate dataInicio
+        LocalDate dataFim
+    }
+    class CertificacaoProfissional {
+        Long id
+        String nome
+        String emissor
+        LocalDate dataEmissao
+        LocalDate dataValidade
+    }
+    class Seguidor {
+        SeguidorId id
+        LocalDateTime criadoEm
+    }
+    class Denuncia {
+        Long id
+        TipoConteudoDenunciado tipoConteudo
+        Long recursoId
+        MotivoDenuncia motivo
+        String descricao
+        StatusDenuncia status
+        LocalDateTime criadaEm
+    }
+    class Notificacao {
+        Long id
+        TipoNotificacao tipo
+        String titulo
+        String mensagem
+        LocalDateTime lidaEm
+        LocalDateTime criadaEm
+    }
+
+    Usuario "1" --> "0..*" Anuncio : publica
+    Anuncio "1" *-- "0..*" DisponibilidadeAnuncio : disponibilidades
+    Usuario "2" <-- "0..*" Conversa : participantes
+    Anuncio "0..1" <-- "0..*" Conversa : contexto
+    Conversa "1" *-- "0..*" Mensagem : mensagens
+    Usuario "1" <-- "0..*" Mensagem : remetente
+    Conversa "0..1" <-- "0..*" Proposta : negociada em
+    Anuncio "1" <-- "0..*" Proposta : sobre
+    Usuario "1" <-- "0..*" Proposta : proponente
+    Proposta "0..1" <-- "0..*" Mensagem : cartão da proposta
+    Proposta "1" <-- "0..1" Acordo : aceita gera
+    Acordo "0..1" <-- "0..*" Mensagem : mensagens do acordo
+    Acordo "1" *-- "0..*" EventoAcordo : linha do tempo
+    Acordo "1" <-- "0..1" Avaliacao : avaliado em
+    Usuario "1" <-- "0..*" Avaliacao : avaliador / avaliado
+    Avaliacao "1" *-- "0..1" AvaliacaoHistorico : edição
+    Avaliacao "1" <-- "0..1" ContestacaoAvaliacao : contestada por
+    Anuncio "1" *-- "0..*" ComentarioAnuncio : comentários
+    ComentarioAnuncio "0..1" <-- "0..*" ComentarioAnuncio : resposta a
+    Usuario "1" --> "0..*" PublicacaoPortfolio : portfólio
+    PublicacaoPortfolio "0..*" --> "0..1" Anuncio : vinculada a
+    PublicacaoPortfolio "1" *-- "0..*" ComentarioPublicacao : comentários
+    PublicacaoPortfolio "1" *-- "0..*" CurtidaPublicacao : curtidas
+    Usuario "1" *-- "0..*" ExperienciaProfissional : experiências
+    Usuario "1" *-- "0..*" CertificacaoProfissional : certificações
+    Usuario "1" <-- "0..*" Seguidor : seguidor / seguido
+    Usuario "1" <-- "0..*" Denuncia : autor
+    Usuario "1" <-- "0..*" Notificacao : destinatário

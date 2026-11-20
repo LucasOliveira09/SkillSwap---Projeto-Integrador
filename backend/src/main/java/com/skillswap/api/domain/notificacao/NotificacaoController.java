@@ -28,11 +28,22 @@ public class NotificacaoController {
         return ResponseEntity.ok(PaginaDTO.de(service.listar((String) authentication.getPrincipal(), pageable)));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<NotificacaoDTO> buscar(@PathVariable @Min(1) Long id, Authentication authentication) {
+        return ResponseEntity.ok(service.buscar(id, (String) authentication.getPrincipal()));
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<NotificacaoDTO> atualizarLeitura(
             @PathVariable @Min(1) Long id,
             @RequestBody @Valid AtualizarLeituraNotificacaoDTO dto,
             Authentication authentication) {
         return ResponseEntity.ok(service.atualizarLeitura(id, dto.lida(), (String) authentication.getPrincipal()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable @Min(1) Long id, Authentication authentication) {
+        service.excluir(id, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
     }
 }

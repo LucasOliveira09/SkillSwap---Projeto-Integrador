@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b6a7f0e2-4c1d-4f6e-9b8a-5c3d2e1f0a9b",
     "name": "SkillSwap - Projeto Integrador (API REST)",
-    "description": "Coleção da API REST do SkillSwap (Spring Boot + MySQL).\nCada requisição tem a resposta real salva (Save Response), obtida em 2026-11-17.\nAutenticação: HTTP Basic com as contas de teste criadas por DEMO_USERS_ENABLED=true\n(ADMIN: {{adminEmail}}; USER: {{profissionalEmail}} e {{clienteEmail}}). Senhas exclusivas de teste.\nExecute as pastas em ordem: os scripts de teste guardam os IDs criados nas variáveis da coleção.\nPara repetir, gere um novo {{novoUsuarioEmail}} (ex.: aluno.2@skillswap.dev).",
+    "description": "Coleção da API REST do SkillSwap (Spring Boot + MySQL).\nCada requisição tem a resposta real salva (Save Response), obtida em 2026-11-20.\nAutenticação: HTTP Basic com as contas de teste criadas por DEMO_USERS_ENABLED=true\n(ADMIN: {{adminEmail}}; USER: {{profissionalEmail}} e {{clienteEmail}}). Senhas exclusivas de teste.\nExecute as pastas em ordem: os scripts de teste guardam os IDs criados nas variáveis da coleção.\nPara repetir, gere um novo {{novoUsuarioEmail}} (ex.: aluno.2@skillswap.dev).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -225,7 +225,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 4,\n  \"nome\": \"Carlos Cliente\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": \"Florianópolis\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-17T23:17:07.59699\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
+              "body": "{\n  \"id\": 3,\n  \"nome\": \"Carlos Cliente\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": \"Florianópolis\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-20T17:04:08.907078\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
             }
           ]
         },
@@ -401,7 +401,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Exemplos ilustrativos\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": null,\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:06.712236\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 2,\n      \"nome\": \"Administrador SkillSwap\",\n      \"tituloProfissional\": \"Equipe de moderação\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.408957\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 3,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.503434\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 4,\n      \"nome\": \"Carlos Cliente\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.59699\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 4,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Administrador SkillSwap\",\n      \"tituloProfissional\": \"Equipe de moderação\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.542754\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 2,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.69561\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 3,\n      \"nome\": \"Carlos Cliente\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.907078\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 3,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -563,7 +563,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjbGllbnRlQHNraWxsc3dhcC5kZXYiLCJpYXQiOjE3OTQ5NTc0MzIsImV4cCI6MTc5NDk1ODMzMn0.IYMq8my1FyY4pVLHpQDineQk1kjfvcMWAuXQiJnUt1vLFETd2PVqoSQBrf2KLAkSLfv4R-ZAxr6hrSSCYPbiCA\",\n  \"tipo\": \"Bearer\"\n}"
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjbGllbnRlQHNraWxsc3dhcC5kZXYiLCJpYXQiOjE3OTUxOTQyNTEsImV4cCI6MTc5NTE5NTE1MX0.8aGQOY_Mm-l-7u9yp63jEGGaHal8gaNNZjzTgH6aCPDBpCzwW_jLwpA0PtzWsW3nvc91SZMnc364jCP1oiJFXA\",\n  \"tipo\": \"Bearer\"\n}"
             }
           ]
         }
@@ -649,11 +649,11 @@
                 },
                 {
                   "key": "Location",
-                  "value": "/api/usuarios/5"
+                  "value": "/api/usuarios/4"
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbHVuby4xNzk0OTU3NDMwODA0QHNraWxsc3dhcC5kZXYiLCJpYXQiOjE3OTQ5NTc0MzIsImV4cCI6MTc5NDk1ODMzMn0.1BuSBWNWJPSoaNqGt_pgYEhi0dUv4yhiwMJ-nJ-C2HQssUXEUWb9VvyvAfU054PIx0r1ADqto8AGgF8GNXpAvA\",\n  \"tipo\": \"Bearer\"\n}"
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbHVuby4xNzk1MTk0MjQ5ODgxQHNraWxsc3dhcC5kZXYiLCJpYXQiOjE3OTUxOTQyNTEsImV4cCI6MTc5NTE5NTE1MX0.o6-IDJJEhz8lW3dSD2sUIEwzr58CzyXerPx1jVArLDzcm2b6NV8eIVw49OiIzp4awTRAsE49jm5eNqNwg1ik2w\",\n  \"tipo\": \"Bearer\"\n}"
             }
           ],
           "event": [
@@ -752,7 +752,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 5,\n  \"nome\": \"Aluno de Teste\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": null,\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-17T23:17:12.484268\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
+              "body": "{\n  \"id\": 4,\n  \"nome\": \"Aluno de Teste\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": null,\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-20T17:04:11.277944\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
             }
           ]
         },
@@ -857,7 +857,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 5,\n      \"nome\": \"Aluno de Teste\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": null,\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:12.484268\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 10,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 4,\n      \"nome\": \"Aluno de Teste\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": null,\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:11.277944\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 10,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -912,7 +912,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 5,\n  \"nome\": \"Aluno de Teste\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": null,\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-17T23:17:12.484268\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
+              "body": "{\n  \"id\": 4,\n  \"nome\": \"Aluno de Teste\",\n  \"tituloProfissional\": null,\n  \"bio\": null,\n  \"cidade\": null,\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-20T17:04:11.277944\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
             }
           ]
         },
@@ -1019,7 +1019,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 5,\n  \"nome\": \"Aluno de Teste Atualizado\",\n  \"tituloProfissional\": null,\n  \"bio\": \"Estudante de música.\",\n  \"cidade\": \"São José\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-17T23:17:12.484268\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
+              "body": "{\n  \"id\": 4,\n  \"nome\": \"Aluno de Teste Atualizado\",\n  \"tituloProfissional\": null,\n  \"bio\": \"Estudante de música.\",\n  \"cidade\": \"São José\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": null,\n  \"criadoEm\": \"2026-11-20T17:04:11.277944\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": false,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
             }
           ]
         },
@@ -1617,11 +1617,11 @@
                 },
                 {
                   "key": "Location",
-                  "value": "/api/anuncios/14"
+                  "value": "/api/anuncios/1"
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 14,\n  \"titulo\": \"Aulas de violão para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 80,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 3,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-17T23:17:13.544018085\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
+              "body": "{\n  \"id\": 1,\n  \"titulo\": \"Aulas de violão para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 80,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:12.292197218\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
             }
           ]
         },
@@ -1737,11 +1737,11 @@
                 },
                 {
                   "key": "Location",
-                  "value": "/api/anuncios/15"
+                  "value": "/api/anuncios/2"
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 15,\n  \"titulo\": \"Conserto de bicicletas\",\n  \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n  \"categoria\": \"MANUTENCAO\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"TROCA\",\n  \"preco\": null,\n  \"habilidadeDesejada\": \"Aulas de inglês\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 3,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-17T23:17:13.702214416\",\n  \"categoriaRotulo\": \"Manutenção e reparos\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": []\n}"
+              "body": "{\n  \"id\": 2,\n  \"titulo\": \"Conserto de bicicletas\",\n  \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n  \"categoria\": \"MANUTENCAO\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"TROCA\",\n  \"preco\": null,\n  \"habilidadeDesejada\": \"Aulas de inglês\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:12.463586079\",\n  \"categoriaRotulo\": \"Manutenção e reparos\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": []\n}"
             }
           ]
         },
@@ -1814,7 +1814,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 15,\n      \"titulo\": \"Conserto de bicicletas\",\n      \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"TROCA\",\n      \"preco\": null,\n      \"habilidadeDesejada\": \"Aulas de inglês\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.702214\",\n      \"categoriaRotulo\": \"Manutenção e reparos\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 14,\n      \"titulo\": \"Aulas de violão para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 80,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    },\n    {\n      \"id\": 1,\n      \"titulo\": \"Aula de Futebol\",\n      \"descricao\": \"Ter/Qui · 18h–19h\\nTurma reduzida\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Madrid / ES\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 100,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-19T00:00:00\",\n      \"categoriaRotulo\": \"Esportes\",\n      \"imagem\": \"images/legado/aula-futebol.jpg\",\n      \"unidade\": \"/mês\",\n      \"autor\": \"Vini Jr.\",\n      \"avatar\": \"images/legado/perfil-vini.png\",\n      \"estrelas\": 5,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 2,\n      \"titulo\": \"Aula de Jiu-jitsu\",\n      \"descricao\": \"Seg/Sex · 14h–16h\\nAula individual\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Guarulhos / SP\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 80,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-18T23:59:00\",\n      \"categoriaRotulo\": \"Esportes\",\n      \"imagem\": \"images/legado/aula-jiu-jitsu.jpg\",\n      \"unidade\": \"/VIP\",\n      \"autor\": \"Charles Oliveira\",\n      \"avatar\": \"images/legado/perfil-charles.jpg\",\n      \"estrelas\": 5,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 3,\n      \"titulo\": \"Faxina Completa\",\n      \"descricao\": \"Limpeza de janelas\\nLimpeza de carpetes\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Fartura / PR\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 210,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-18T23:58:00\",\n      \"categoriaRotulo\": \"Limpeza\",\n      \"imagem\": \"images/legado/faxina.jpg\",\n      \"unidade\": \"/dia\",\n      \"autor\": \"Lucas Leite\",\n      \"avatar\": \"images/legado/avatar-lucas.jpg\",\n      \"estrelas\": 3,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 15,\n  \"totalPaginas\": 3\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 2,\n      \"titulo\": \"Conserto de bicicletas\",\n      \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"TROCA\",\n      \"preco\": null,\n      \"habilidadeDesejada\": \"Aulas de inglês\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.463586\",\n      \"categoriaRotulo\": \"Manutenção e reparos\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 1,\n      \"titulo\": \"Aulas de violão para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 80,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 2,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -1869,7 +1869,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 14,\n  \"titulo\": \"Aulas de violão para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 80,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 3,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
+              "body": "{\n  \"id\": 1,\n  \"titulo\": \"Aulas de violão para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 80,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
             }
           ]
         },
@@ -2031,7 +2031,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 14,\n  \"titulo\": \"Aulas de violão e canto para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 95,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 3,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
+              "body": "{\n  \"id\": 1,\n  \"titulo\": \"Aulas de violão e canto para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 95,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
             }
           ]
         },
@@ -2455,7 +2455,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 15,\n  \"titulo\": \"Conserto de bicicletas\",\n  \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n  \"categoria\": \"MANUTENCAO\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"TROCA\",\n  \"preco\": null,\n  \"habilidadeDesejada\": \"Aulas de inglês\",\n  \"status\": \"INATIVO\",\n  \"usuarioId\": 3,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-17T23:17:13.702214\",\n  \"categoriaRotulo\": \"Manutenção e reparos\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": []\n}"
+              "body": "{\n  \"id\": 2,\n  \"titulo\": \"Conserto de bicicletas\",\n  \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n  \"categoria\": \"MANUTENCAO\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"TROCA\",\n  \"preco\": null,\n  \"habilidadeDesejada\": \"Aulas de inglês\",\n  \"status\": \"INATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:12.463586\",\n  \"categoriaRotulo\": \"Manutenção e reparos\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": []\n}"
             }
           ]
         },
@@ -2554,7 +2554,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 15,\n      \"titulo\": \"Conserto de bicicletas\",\n      \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"TROCA\",\n      \"preco\": null,\n      \"habilidadeDesejada\": \"Aulas de inglês\",\n      \"status\": \"INATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.702214\",\n      \"categoriaRotulo\": \"Manutenção e reparos\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 14,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 2,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 2,\n      \"titulo\": \"Conserto de bicicletas\",\n      \"descricao\": \"Revisão de freios, câmbio e troca de câmara.\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"TROCA\",\n      \"preco\": null,\n      \"habilidadeDesejada\": \"Aulas de inglês\",\n      \"status\": \"INATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.463586\",\n      \"categoriaRotulo\": \"Manutenção e reparos\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 1,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 2,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -2785,7 +2785,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 14,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -2882,7 +2882,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 14,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    },\n    {\n      \"id\": 1,\n      \"titulo\": \"Aula de Futebol\",\n      \"descricao\": \"Ter/Qui · 18h–19h\\nTurma reduzida\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Madrid / ES\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 100,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-19T00:00:00\",\n      \"categoriaRotulo\": \"Esportes\",\n      \"imagem\": \"images/legado/aula-futebol.jpg\",\n      \"unidade\": \"/mês\",\n      \"autor\": \"Vini Jr.\",\n      \"avatar\": \"images/legado/perfil-vini.png\",\n      \"estrelas\": 5,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 2,\n      \"titulo\": \"Aula de Jiu-jitsu\",\n      \"descricao\": \"Seg/Sex · 14h–16h\\nAula individual\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Guarulhos / SP\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 80,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-18T23:59:00\",\n      \"categoriaRotulo\": \"Esportes\",\n      \"imagem\": \"images/legado/aula-jiu-jitsu.jpg\",\n      \"unidade\": \"/VIP\",\n      \"autor\": \"Charles Oliveira\",\n      \"avatar\": \"images/legado/perfil-charles.jpg\",\n      \"estrelas\": 5,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 4,\n      \"titulo\": \"Capinador Terreno\",\n      \"descricao\": \"Limpeza de terrenos\\nManutenção de jardins\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Ribeirão do Sul / SP\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 100,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-18T23:57:00\",\n      \"categoriaRotulo\": \"Serviço\",\n      \"imagem\": \"images/legado/capinador.gif\",\n      \"unidade\": \"/dia\",\n      \"autor\": \"Emerson Vinicius\",\n      \"avatar\": \"images/legado/avatar-emerson.jpg\",\n      \"estrelas\": 1,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    },\n    {\n      \"id\": 6,\n      \"titulo\": \"Eletricista residencial\",\n      \"descricao\": \"Troca de tomadas e instalação de luminárias\\nAtendimento com horário combinado\",\n      \"categoria\": \"MANUTENCAO\",\n      \"cidade\": \"Florianópolis / SC\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 120,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 1,\n      \"usuarioNome\": \"Exemplos ilustrativos\",\n      \"criadoEm\": \"2026-10-18T23:55:00\",\n      \"categoriaRotulo\": \"Elétrica\",\n      \"imagem\": \"images/legado/servico-eletricista.webp\",\n      \"unidade\": \"/hora\",\n      \"autor\": \"Perfil ilustrativo\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": true,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": []\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 6,\n  \"totalPaginas\": 2\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -2971,7 +2971,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 14,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 3,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-17T23:17:13.544018\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"titulo\": \"Aulas de violão e canto para iniciantes\",\n      \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n      \"categoria\": \"AULAS\",\n      \"cidade\": \"Florianópolis\",\n      \"modalidade\": \"VENDA\",\n      \"preco\": 95,\n      \"habilidadeDesejada\": \"\",\n      \"status\": \"ATIVO\",\n      \"usuarioId\": 2,\n      \"usuarioNome\": \"Paula Profissional\",\n      \"criadoEm\": \"2026-11-20T17:04:12.292197\",\n      \"categoriaRotulo\": \"Aulas e instrução\",\n      \"imagem\": null,\n      \"unidade\": \"\",\n      \"autor\": \"Paula Profissional\",\n      \"avatar\": null,\n      \"estrelas\": null,\n      \"exemplo\": false,\n      \"mediaAvaliacoesAnuncio\": null,\n      \"quantidadeAvaliacoesAnuncio\": 0,\n      \"disponibilidades\": [\n        {\n          \"diaSemana\": \"SABADO\",\n          \"periodo\": \"MANHA\"\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -3060,7 +3060,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 3,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.503434\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0,\n      \"resumoOfertas\": [\n        {\n          \"profissionalId\": 3,\n          \"categoria\": \"AULAS\",\n          \"modalidade\": \"VENDA\",\n          \"quantidade\": 1,\n          \"precoMinimo\": 95,\n          \"precoMaximo\": 95\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 12,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 2,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.69561\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0,\n      \"resumoOfertas\": [\n        {\n          \"profissionalId\": 2,\n          \"categoria\": \"AULAS\",\n          \"modalidade\": \"VENDA\",\n          \"quantidade\": 1,\n          \"precoMinimo\": 95,\n          \"precoMaximo\": 95\n        }\n      ]\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 12,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -3165,7 +3165,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 2,\n      \"nome\": \"Administrador SkillSwap\",\n      \"tituloProfissional\": \"Equipe de moderação\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.408957\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 3,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.503434\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 4,\n      \"nome\": \"Carlos Cliente\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-17T23:17:07.59699\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 10,\n  \"totalItens\": 3,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Administrador SkillSwap\",\n      \"tituloProfissional\": \"Equipe de moderação\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.542754\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 2,\n      \"nome\": \"Paula Profissional\",\n      \"tituloProfissional\": \"Professora de violão\",\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.69561\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    },\n    {\n      \"id\": 3,\n      \"nome\": \"Carlos Cliente\",\n      \"tituloProfissional\": null,\n      \"bio\": null,\n      \"cidade\": \"Florianópolis\",\n      \"fotoUrl\": null,\n      \"capaUrl\": null,\n      \"linkedinUrl\": null,\n      \"instagramUrl\": null,\n      \"siteUrl\": null,\n      \"perfilPublico\": true,\n      \"especialidades\": null,\n      \"criadoEm\": \"2026-11-20T17:04:08.907078\",\n      \"mediaNotas\": null,\n      \"quantidadeAvaliacoes\": 0,\n      \"disponivelTrabalhos\": false,\n      \"totalSeguidores\": 0,\n      \"trabalhosConcluidos\": 0\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 10,\n  \"totalItens\": 3,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -3348,7 +3348,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 3,\n  \"nome\": \"Paula Profissional\",\n  \"tituloProfissional\": \"Professora de violão\",\n  \"bio\": \"Dou aulas há 8 anos.\",\n  \"cidade\": \"Florianópolis\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": \"Violão, canto\",\n  \"criadoEm\": \"2026-11-17T23:17:07.503434\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": true,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
+              "body": "{\n  \"id\": 2,\n  \"nome\": \"Paula Profissional\",\n  \"tituloProfissional\": \"Professora de violão\",\n  \"bio\": \"Dou aulas há 8 anos.\",\n  \"cidade\": \"Florianópolis\",\n  \"fotoUrl\": null,\n  \"capaUrl\": null,\n  \"linkedinUrl\": null,\n  \"instagramUrl\": null,\n  \"siteUrl\": null,\n  \"perfilPublico\": true,\n  \"especialidades\": \"Violão, canto\",\n  \"criadoEm\": \"2026-11-20T17:04:08.69561\",\n  \"mediaNotas\": null,\n  \"quantidadeAvaliacoes\": 0,\n  \"disponivelTrabalhos\": true,\n  \"totalSeguidores\": 0,\n  \"trabalhosConcluidos\": 0\n}"
             }
           ]
         },
@@ -4263,7 +4263,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"outroParticipanteId\": 3,\n  \"outroParticipanteNome\": \"Paula Profissional\",\n  \"outroFotoUrl\": null,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncioImagem\": null,\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"status\": null,\n  \"acordoId\": null,\n  \"acordoStatus\": null,\n  \"podeEnviar\": true,\n  \"ultimaMensagem\": {\n    \"id\": 1,\n    \"conversaId\": 1,\n    \"propostaId\": null,\n    \"acordoId\": null,\n    \"anuncioId\": 14,\n    \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n    \"cidade\": \"Florianópolis\",\n    \"modalidade\": \"VENDA\",\n    \"preco\": 95,\n    \"remetenteId\": 4,\n    \"remetenteNome\": \"Carlos Cliente\",\n    \"conteudo\": \"Olá! Você tem horário no sábado de manhã?\",\n    \"enviadoEm\": \"2026-11-17T23:17:16.436007302\",\n    \"proposta\": null\n  },\n  \"naoLidas\": 0,\n  \"criadoEm\": \"2026-11-17T23:17:16.418577271\",\n  \"atualizadaEm\": \"2026-11-17T23:17:16.436007302\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"outroParticipanteId\": 2,\n  \"outroParticipanteNome\": \"Paula Profissional\",\n  \"outroFotoUrl\": null,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncioImagem\": null,\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"status\": null,\n  \"acordoId\": null,\n  \"acordoStatus\": null,\n  \"podeEnviar\": true,\n  \"ultimaMensagem\": {\n    \"id\": 1,\n    \"conversaId\": 1,\n    \"propostaId\": null,\n    \"acordoId\": null,\n    \"anuncioId\": 1,\n    \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n    \"cidade\": \"Florianópolis\",\n    \"modalidade\": \"VENDA\",\n    \"preco\": 95,\n    \"remetenteId\": 3,\n    \"remetenteNome\": \"Carlos Cliente\",\n    \"conteudo\": \"Olá! Você tem horário no sábado de manhã?\",\n    \"enviadoEm\": \"2026-11-20T17:04:14.966580731\",\n    \"proposta\": null\n  },\n  \"naoLidas\": 0,\n  \"criadoEm\": \"2026-11-20T17:04:14.949999029\",\n  \"atualizadaEm\": \"2026-11-20T17:04:14.966580731\"\n}"
             }
           ]
         },
@@ -4376,7 +4376,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 2,\n  \"conversaId\": 1,\n  \"propostaId\": null,\n  \"acordoId\": null,\n  \"anuncioId\": null,\n  \"anuncioTitulo\": null,\n  \"cidade\": null,\n  \"modalidade\": null,\n  \"preco\": null,\n  \"remetenteId\": 3,\n  \"remetenteNome\": \"Paula Profissional\",\n  \"conteudo\": \"Tenho sim, às 9h. Pode enviar a proposta.\",\n  \"enviadoEm\": \"2026-11-17T23:17:16.613835602\",\n  \"proposta\": null\n}"
+              "body": "{\n  \"id\": 2,\n  \"conversaId\": 1,\n  \"propostaId\": null,\n  \"acordoId\": null,\n  \"anuncioId\": null,\n  \"anuncioTitulo\": null,\n  \"cidade\": null,\n  \"modalidade\": null,\n  \"preco\": null,\n  \"remetenteId\": 2,\n  \"remetenteNome\": \"Paula Profissional\",\n  \"conteudo\": \"Tenho sim, às 9h. Pode enviar a proposta.\",\n  \"enviadoEm\": \"2026-11-20T17:04:15.136251657\",\n  \"proposta\": null\n}"
             }
           ]
         },
@@ -4500,7 +4500,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"proponenteId\": 4,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de violão\",\n  \"status\": \"PENDENTE\",\n  \"criadoEm\": \"2026-11-17T23:17:16.790889136\",\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 320,\n  \"parcelas\": 4,\n  \"duracao\": \"1 mês\",\n  \"validadeEm\": \"2027-01-31\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de violão\",\n  \"status\": \"PENDENTE\",\n  \"criadoEm\": \"2026-11-20T17:04:15.285700651\",\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 320,\n  \"parcelas\": 4,\n  \"duracao\": \"1 mês\",\n  \"validadeEm\": \"2027-01-31\"\n}"
             }
           ]
         },
@@ -4714,7 +4714,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"anuncioId\": 14,\n      \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n      \"proponenteId\": 4,\n      \"proponenteNome\": \"Carlos Cliente\",\n      \"mensagemInicial\": \"Aulas de violão\",\n      \"status\": \"PENDENTE\",\n      \"criadoEm\": \"2026-11-17T23:17:16.790889\",\n      \"servico\": \"Aulas de violão\",\n      \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n      \"formaPagamento\": \"PARCELADO\",\n      \"valor\": 320,\n      \"parcelas\": 4,\n      \"duracao\": \"1 mês\",\n      \"validadeEm\": \"2027-01-31\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"anuncioId\": 1,\n      \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n      \"proponenteId\": 3,\n      \"proponenteNome\": \"Carlos Cliente\",\n      \"mensagemInicial\": \"Aulas de violão\",\n      \"status\": \"PENDENTE\",\n      \"criadoEm\": \"2026-11-20T17:04:15.285701\",\n      \"servico\": \"Aulas de violão\",\n      \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n      \"formaPagamento\": \"PARCELADO\",\n      \"valor\": 320,\n      \"parcelas\": 4,\n      \"duracao\": \"1 mês\",\n      \"validadeEm\": \"2027-01-31\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -4876,7 +4876,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"proponenteId\": 4,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de violão\",\n  \"status\": \"ACEITA\",\n  \"criadoEm\": \"2026-11-17T23:17:16.790889\",\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 320,\n  \"parcelas\": 4,\n  \"duracao\": \"1 mês\",\n  \"validadeEm\": \"2027-01-31\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de violão\",\n  \"status\": \"ACEITA\",\n  \"criadoEm\": \"2026-11-20T17:04:15.285701\",\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas de 1 hora aos sábados.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 320,\n  \"parcelas\": 4,\n  \"duracao\": \"1 mês\",\n  \"validadeEm\": \"2027-01-31\"\n}"
             }
           ]
         },
@@ -5036,7 +5036,7 @@
                 }
               ],
               "cookie": [],
-              "body": "[\n  {\n    \"id\": 1,\n    \"propostaId\": 1,\n    \"anuncioId\": 14,\n    \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n    \"anuncianteId\": 3,\n    \"anuncianteNome\": \"Paula Profissional\",\n    \"proponenteId\": 4,\n    \"proponenteNome\": \"Carlos Cliente\",\n    \"status\": \"EM_ANDAMENTO\",\n    \"criadoEm\": \"2026-11-17T23:17:17.316155\",\n    \"concluidoEm\": null,\n    \"conclusaoConfirmadaAnunciante\": false,\n    \"conclusaoConfirmadaProponente\": false\n  }\n]"
+              "body": "[\n  {\n    \"id\": 1,\n    \"propostaId\": 1,\n    \"anuncioId\": 1,\n    \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n    \"anuncianteId\": 2,\n    \"anuncianteNome\": \"Paula Profissional\",\n    \"proponenteId\": 3,\n    \"proponenteNome\": \"Carlos Cliente\",\n    \"status\": \"EM_ANDAMENTO\",\n    \"criadoEm\": \"2026-11-20T17:04:15.735729\",\n    \"concluidoEm\": null,\n    \"conclusaoConfirmadaAnunciante\": false,\n    \"conclusaoConfirmadaProponente\": false\n  }\n]"
             }
           ],
           "event": [
@@ -5237,7 +5237,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 3,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 4,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"EM_ANDAMENTO\",\n  \"criadoEm\": \"2026-11-17T23:17:17.316155\",\n  \"concluidoEm\": null,\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": false\n}"
+              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 2,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"EM_ANDAMENTO\",\n  \"criadoEm\": \"2026-11-20T17:04:15.735729\",\n  \"concluidoEm\": null,\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": false\n}"
             }
           ]
         },
@@ -5318,7 +5318,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 3,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 4,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"CONCLUIDO\",\n  \"criadoEm\": \"2026-11-17T23:17:17.316155\",\n  \"concluidoEm\": \"2026-11-17T23:17:17.934686047\",\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": true\n}"
+              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 2,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"CONCLUIDO\",\n  \"criadoEm\": \"2026-11-20T17:04:15.735729\",\n  \"concluidoEm\": \"2026-11-20T17:04:16.329280826\",\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": true\n}"
             }
           ]
         },
@@ -5551,7 +5551,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"acordoId\": 1,\n  \"avaliadorId\": 4,\n  \"avaliadorNome\": \"Carlos Cliente\",\n  \"avaliadoId\": 3,\n  \"avaliadoNome\": \"Paula Profissional\",\n  \"nota\": 5,\n  \"notaAnuncio\": 5,\n  \"depoimento\": \"Aulas muito bem explicadas e pontuais.\",\n  \"criadoEm\": \"2026-11-17T23:17:18.171333777\",\n  \"respostaProfissional\": null,\n  \"respondidaEm\": null,\n  \"edicaoRealizada\": false,\n  \"editadaEm\": null\n}"
+              "body": "{\n  \"id\": 1,\n  \"acordoId\": 1,\n  \"avaliadorId\": 3,\n  \"avaliadorNome\": \"Carlos Cliente\",\n  \"avaliadoId\": 2,\n  \"avaliadoNome\": \"Paula Profissional\",\n  \"nota\": 5,\n  \"notaAnuncio\": 5,\n  \"depoimento\": \"Aulas muito bem explicadas e pontuais.\",\n  \"criadoEm\": \"2026-11-20T17:04:16.548137931\",\n  \"respostaProfissional\": null,\n  \"respondidaEm\": null,\n  \"edicaoRealizada\": false,\n  \"editadaEm\": null\n}"
             }
           ]
         },
@@ -5739,7 +5739,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 14,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 3,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 4,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"CONCLUIDO\",\n  \"criadoEm\": \"2026-11-17T23:17:17.316155\",\n  \"concluidoEm\": \"2026-11-17T23:17:17.934686\",\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": true\n}"
+              "body": "{\n  \"id\": 1,\n  \"propostaId\": 1,\n  \"anuncioId\": 1,\n  \"anuncioTitulo\": \"Aulas de violão e canto para iniciantes\",\n  \"anuncianteId\": 2,\n  \"anuncianteNome\": \"Paula Profissional\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"status\": \"CONCLUIDO\",\n  \"criadoEm\": \"2026-11-20T17:04:15.735729\",\n  \"concluidoEm\": \"2026-11-20T17:04:16.329281\",\n  \"conclusaoConfirmadaAnunciante\": true,\n  \"conclusaoConfirmadaProponente\": true\n}"
             }
           ]
         },
@@ -5796,7 +5796,7 @@
                 }
               ],
               "cookie": [],
-              "body": "[\n  {\n    \"id\": 1,\n    \"avaliadorNome\": \"Carlos Cliente\",\n    \"nota\": 5,\n    \"notaAnuncio\": 5,\n    \"depoimento\": \"Aulas muito bem explicadas e pontuais.\",\n    \"criadoEm\": \"2026-11-17T23:17:18.171334\",\n    \"respostaProfissional\": null\n  }\n]"
+              "body": "[\n  {\n    \"id\": 1,\n    \"avaliadorNome\": \"Carlos Cliente\",\n    \"nota\": 5,\n    \"notaAnuncio\": 5,\n    \"depoimento\": \"Aulas muito bem explicadas e pontuais.\",\n    \"criadoEm\": \"2026-11-20T17:04:16.548138\",\n    \"respostaProfissional\": null\n  }\n]"
             }
           ]
         },
@@ -6079,11 +6079,11 @@
                 },
                 {
                   "key": "Location",
-                  "value": "/api/anuncios/14/comentarios/1"
+                  "value": "/api/anuncios/1/comentarios/1"
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 14,\n  \"respostaAId\": null,\n  \"autorNome\": \"Carlos Cliente\",\n  \"conteudo\": \"As aulas incluem material?\",\n  \"criadoEm\": \"2026-11-17T23:17:18.753184899\",\n  \"podeResponder\": true,\n  \"podeDenunciar\": false\n}"
+              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 1,\n  \"respostaAId\": null,\n  \"autorNome\": \"Carlos Cliente\",\n  \"conteudo\": \"As aulas incluem material?\",\n  \"criadoEm\": \"2026-11-20T17:04:17.131745306\",\n  \"podeResponder\": true,\n  \"podeDenunciar\": false\n}"
             }
           ]
         },
@@ -6140,7 +6140,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"anuncioId\": 14,\n      \"respostaAId\": null,\n      \"autorNome\": \"Carlos Cliente\",\n      \"conteudo\": \"As aulas incluem material?\",\n      \"criadoEm\": \"2026-11-17T23:17:19\",\n      \"podeResponder\": false,\n      \"podeDenunciar\": false\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 30,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"anuncioId\": 1,\n      \"respostaAId\": null,\n      \"autorNome\": \"Carlos Cliente\",\n      \"conteudo\": \"As aulas incluem material?\",\n      \"criadoEm\": \"2026-11-20T17:04:17\",\n      \"podeResponder\": false,\n      \"podeDenunciar\": false\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 30,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -6251,7 +6251,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 14,\n  \"respostaAId\": null,\n  \"autorNome\": \"Carlos Cliente\",\n  \"conteudo\": \"As aulas incluem material de apoio?\",\n  \"criadoEm\": \"2026-11-17T23:17:19\",\n  \"podeResponder\": true,\n  \"podeDenunciar\": false\n}"
+              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 1,\n  \"respostaAId\": null,\n  \"autorNome\": \"Carlos Cliente\",\n  \"conteudo\": \"As aulas incluem material de apoio?\",\n  \"criadoEm\": \"2026-11-20T17:04:17\",\n  \"podeResponder\": true,\n  \"podeDenunciar\": false\n}"
             }
           ]
         },
@@ -6482,11 +6482,11 @@
                 },
                 {
                   "key": "Location",
-                  "value": "/api/anuncios/14/comentarios/2"
+                  "value": "/api/anuncios/1/comentarios/2"
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 2,\n  \"anuncioId\": 14,\n  \"respostaAId\": 1,\n  \"autorNome\": \"Paula Profissional\",\n  \"conteudo\": \"Sim, envio apostilas em PDF.\",\n  \"criadoEm\": \"2026-11-17T23:17:19.159791702\",\n  \"podeResponder\": false,\n  \"podeDenunciar\": false\n}"
+              "body": "{\n  \"id\": 2,\n  \"anuncioId\": 1,\n  \"respostaAId\": 1,\n  \"autorNome\": \"Paula Profissional\",\n  \"conteudo\": \"Sim, envio apostilas em PDF.\",\n  \"criadoEm\": \"2026-11-20T17:04:17.545085229\",\n  \"podeResponder\": false,\n  \"podeDenunciar\": false\n}"
             }
           ]
         },
@@ -6968,7 +6968,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"usuarios\": 4,\n  \"anunciosAtivos\": 1,\n  \"propostasPorStatus\": {\n    \"ACEITA\": 1\n  },\n  \"acordosPorStatus\": {\n    \"CONCLUIDO\": 1\n  },\n  \"taxaConclusaoAcordos\": 100,\n  \"mediaAvaliacoes\": 5,\n  \"anunciosAtivosPorCategoria\": {\n    \"AULAS\": 1\n  }\n}"
+              "body": "{\n  \"usuarios\": 3,\n  \"anunciosAtivos\": 1,\n  \"propostasPorStatus\": {\n    \"ACEITA\": 1\n  },\n  \"acordosPorStatus\": {\n    \"CONCLUIDO\": 1\n  },\n  \"taxaConclusaoAcordos\": 100,\n  \"mediaAvaliacoes\": 5,\n  \"anunciosAtivosPorCategoria\": {\n    \"AULAS\": 1\n  }\n}"
             }
           ]
         },
@@ -7172,7 +7172,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"SPAM\",\n  \"descricao\": \"Teste de moderação\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-17T23:17:20.174643415\",\n  \"analisadaEm\": null,\n  \"analisadaPor\": null,\n  \"autorId\": 3,\n  \"autorNome\": \"Paula Profissional\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"SPAM\",\n  \"descricao\": \"Teste de moderação\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:18.494405521\",\n  \"analisadaEm\": null,\n  \"analisadaPor\": null,\n  \"autorId\": 2,\n  \"autorNome\": \"Paula Profissional\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
             }
           ]
         },
@@ -7459,7 +7459,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n      \"recursoId\": 1,\n      \"motivo\": \"SPAM\",\n      \"descricao\": \"Teste de moderação\",\n      \"status\": \"ABERTA\",\n      \"criadaEm\": \"2026-11-17T23:17:20.174643\",\n      \"analisadaEm\": null,\n      \"analisadaPor\": null,\n      \"autorId\": 3,\n      \"autorNome\": \"Paula Profissional\",\n      \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n      \"recursoId\": 1,\n      \"motivo\": \"SPAM\",\n      \"descricao\": \"Teste de moderação\",\n      \"status\": \"ABERTA\",\n      \"criadaEm\": \"2026-11-20T17:04:18.494406\",\n      \"analisadaEm\": null,\n      \"analisadaPor\": null,\n      \"autorId\": 2,\n      \"autorNome\": \"Paula Profissional\",\n      \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
             }
           ]
         },
@@ -7568,7 +7568,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 1,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"SPAM\",\n  \"descricao\": \"Teste de moderação\",\n  \"status\": \"DESCARTADA\",\n  \"criadaEm\": \"2026-11-17T23:17:20.174643\",\n  \"analisadaEm\": \"2026-11-17T23:17:20.661403192\",\n  \"analisadaPor\": \"admin@skillswap.dev\",\n  \"autorId\": 3,\n  \"autorNome\": \"Paula Profissional\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"SPAM\",\n  \"descricao\": \"Teste de moderação\",\n  \"status\": \"DESCARTADA\",\n  \"criadaEm\": \"2026-11-20T17:04:18.494406\",\n  \"analisadaEm\": \"2026-11-20T17:04:18.908475691\",\n  \"analisadaPor\": \"admin@skillswap.dev\",\n  \"autorId\": 2,\n  \"autorNome\": \"Paula Profissional\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
             }
           ]
         },
@@ -7682,6 +7682,3678 @@
           ]
         }
       ]
+    },
+    {
+      "name": "10 - CRUD completo: editar e excluir proposta, mensagem, conversa, avaliação, contestação, denúncia e notificação",
+      "item": [
+        {
+          "name": "Criar anúncio para nova negociação → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('anuncio2Id', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/anuncios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "anuncios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Aulas de canto para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 90,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/anuncios",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "anuncios"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"titulo\": \"Aulas de canto para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 90,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/anuncios/3"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 3,\n  \"titulo\": \"Aulas de canto para iniciantes\",\n  \"descricao\": \"Aulas presenciais de violão popular, com repertório escolhido pelo aluno. Duração de 1 hora.\",\n  \"categoria\": \"AULAS\",\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"preco\": 90,\n  \"habilidadeDesejada\": \"\",\n  \"status\": \"ATIVO\",\n  \"usuarioId\": 2,\n  \"usuarioNome\": \"Paula Profissional\",\n  \"criadoEm\": \"2026-11-20T17:04:19.114268765\",\n  \"categoriaRotulo\": \"Aulas e instrução\",\n  \"imagem\": null,\n  \"unidade\": \"\",\n  \"autor\": \"Paula Profissional\",\n  \"avatar\": null,\n  \"estrelas\": null,\n  \"exemplo\": false,\n  \"mediaAvaliacoesAnuncio\": null,\n  \"quantidadeAvaliacoesAnuncio\": 0,\n  \"disponibilidades\": [\n    {\n      \"diaSemana\": \"SABADO\",\n      \"periodo\": \"MANHA\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Enviar proposta à vista → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('propostaPendenteId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "propostas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Duas aulas de 1 hora.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 180\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/propostas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "propostas"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Duas aulas de 1 hora.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 180\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/propostas/2"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"anuncioId\": 3,\n  \"anuncioTitulo\": \"Aulas de canto para iniciantes\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de canto\",\n  \"status\": \"PENDENTE\",\n  \"criadoEm\": \"2026-11-20T17:04:19.24736298\",\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Duas aulas de 1 hora.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 180,\n  \"parcelas\": null,\n  \"duracao\": null,\n  \"validadeEm\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar proposta por id → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"anuncioId\": 3,\n  \"anuncioTitulo\": \"Aulas de canto para iniciantes\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de canto\",\n  \"status\": \"PENDENTE\",\n  \"criadoEm\": \"2026-11-20T17:04:19.247363\",\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Duas aulas de 1 hora.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 180,\n  \"parcelas\": null,\n  \"duracao\": null,\n  \"validadeEm\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar termos da proposta pendente → 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Três aulas de 1 hora.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 270,\n  \"parcelas\": 3,\n  \"duracao\": \"3 semanas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Três aulas de 1 hora.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 270,\n  \"parcelas\": 3,\n  \"duracao\": \"3 semanas\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"anuncioId\": 3,\n  \"anuncioTitulo\": \"Aulas de canto para iniciantes\",\n  \"proponenteId\": 3,\n  \"proponenteNome\": \"Carlos Cliente\",\n  \"mensagemInicial\": \"Aulas de canto\",\n  \"status\": \"PENDENTE\",\n  \"criadoEm\": \"2026-11-20T17:04:19.247363\",\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Três aulas de 1 hora.\",\n  \"formaPagamento\": \"PARCELADO\",\n  \"valor\": 270,\n  \"parcelas\": 3,\n  \"duracao\": \"3 semanas\",\n  \"validadeEm\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar proposta de outra pessoa → 403",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Uma aula.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Uma aula.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 50\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"ACESSO_NEGADO\",\n  \"mensagem\": \"Somente quem enviou a proposta pode editá-la\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar com parcelas em pagamento à vista → 400",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Uma aula.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 50,\n  \"parcelas\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"anuncioId\": {{anuncio2Id}},\n  \"servico\": \"Aulas de canto\",\n  \"escopo\": \"Uma aula.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 50,\n  \"parcelas\": 2\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"DADOS_INVALIDOS\",\n  \"mensagem\": \"Esta forma de cobrança não deve informar parcelas\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar proposta já aceita → 409",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anuncioId\": {{anuncioId}},\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"anuncioId\": {{anuncioId}},\n  \"servico\": \"Aulas de violão\",\n  \"escopo\": \"Quatro aulas.\",\n  \"formaPagamento\": \"A_VISTA\",\n  \"valor\": 300\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"CONFLITO\",\n  \"mensagem\": \"Somente propostas pendentes podem ser editadas\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir proposta aceita (virou acordo) → 409",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaId}}"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"CONFLITO\",\n  \"mensagem\": \"Proposta aceita gerou um acordo e não pode ser excluída; cancele o acordo se for o caso\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir proposta pendente → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Consultar proposta excluída → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "propostas",
+                "{{propostaPendenteId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/propostas/{{propostaPendenteId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "propostas",
+                    "{{propostaPendenteId}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"NAO_ENCONTRADO\",\n  \"mensagem\": \"Proposta não encontrada\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Enviar mensagem → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('mensagemId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "mensagens"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conteudo\": \"Podemos começar no próximo sábado?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "mensagens"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conteudo\": \"Podemos começar no próximo sábado?\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/conversas/1/mensagens/6"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 6,\n  \"conversaId\": 1,\n  \"propostaId\": null,\n  \"acordoId\": null,\n  \"anuncioId\": null,\n  \"anuncioTitulo\": null,\n  \"cidade\": null,\n  \"modalidade\": null,\n  \"preco\": null,\n  \"remetenteId\": 3,\n  \"remetenteNome\": \"Carlos Cliente\",\n  \"conteudo\": \"Podemos começar no próximo sábado?\",\n  \"enviadoEm\": \"2026-11-20T17:04:20.214494065\",\n  \"proposta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar mensagem por id → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "mensagens",
+                "{{mensagemId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "mensagens",
+                    "{{mensagemId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 6,\n  \"conversaId\": 1,\n  \"propostaId\": null,\n  \"acordoId\": null,\n  \"anuncioId\": null,\n  \"anuncioTitulo\": null,\n  \"cidade\": null,\n  \"modalidade\": null,\n  \"preco\": null,\n  \"remetenteId\": 3,\n  \"remetenteNome\": \"Carlos Cliente\",\n  \"conteudo\": \"Podemos começar no próximo sábado?\",\n  \"enviadoEm\": \"2026-11-20T17:04:20.214494\",\n  \"proposta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar a própria mensagem → 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "mensagens",
+                "{{mensagemId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conteudo\": \"Podemos começar no sábado, dia 28?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "mensagens",
+                    "{{mensagemId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conteudo\": \"Podemos começar no sábado, dia 28?\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 6,\n  \"conversaId\": 1,\n  \"propostaId\": null,\n  \"acordoId\": null,\n  \"anuncioId\": null,\n  \"anuncioTitulo\": null,\n  \"cidade\": null,\n  \"modalidade\": null,\n  \"preco\": null,\n  \"remetenteId\": 3,\n  \"remetenteNome\": \"Carlos Cliente\",\n  \"conteudo\": \"Podemos começar no sábado, dia 28?\",\n  \"enviadoEm\": \"2026-11-20T17:04:20.214494\",\n  \"proposta\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar mensagem de outra pessoa → 403",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "mensagens",
+                "{{mensagemId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conteudo\": \"Alterado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "mensagens",
+                    "{{mensagemId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conteudo\": \"Alterado\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"ACESSO_NEGADO\",\n  \"mensagem\": \"Somente quem enviou a mensagem pode alterá-la\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir a própria mensagem → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}",
+                "mensagens",
+                "{{mensagemId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}",
+                    "mensagens",
+                    "{{mensagemId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Excluir conversa com propostas → 409",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaId}}"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"CONFLITO\",\n  \"mensagem\": \"Esta conversa tem propostas e faz parte do histórico da negociação; não pode ser excluída\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Abrir conversa sem proposta (ADMIN com o profissional) → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('conversaSemPropostaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/anuncios/{{anuncio2Id}}/conversas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "anuncios",
+                "{{anuncio2Id}}",
+                "conversas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conteudo\": \"Olá! Tem horário à noite?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/anuncios/{{anuncio2Id}}/conversas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "anuncios",
+                    "{{anuncio2Id}}",
+                    "conversas"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conteudo\": \"Olá! Tem horário à noite?\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/conversas/2"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"outroParticipanteId\": 2,\n  \"outroParticipanteNome\": \"Paula Profissional\",\n  \"outroFotoUrl\": null,\n  \"anuncioId\": 3,\n  \"anuncioTitulo\": \"Aulas de canto para iniciantes\",\n  \"anuncioImagem\": null,\n  \"cidade\": \"Florianópolis\",\n  \"modalidade\": \"VENDA\",\n  \"status\": null,\n  \"acordoId\": null,\n  \"acordoStatus\": null,\n  \"podeEnviar\": true,\n  \"ultimaMensagem\": {\n    \"id\": 7,\n    \"conversaId\": 2,\n    \"propostaId\": null,\n    \"acordoId\": null,\n    \"anuncioId\": 3,\n    \"anuncioTitulo\": \"Aulas de canto para iniciantes\",\n    \"cidade\": \"Florianópolis\",\n    \"modalidade\": \"VENDA\",\n    \"preco\": 90,\n    \"remetenteId\": 1,\n    \"remetenteNome\": \"Administrador SkillSwap\",\n    \"conteudo\": \"Olá! Tem horário à noite?\",\n    \"enviadoEm\": \"2026-11-20T17:04:20.891001512\",\n    \"proposta\": null\n  },\n  \"naoLidas\": 0,\n  \"criadoEm\": \"2026-11-20T17:04:20.879770257\",\n  \"atualizadaEm\": \"2026-11-20T17:04:20.891001512\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir conversa sem propostas → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaSemPropostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaSemPropostaId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaSemPropostaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaSemPropostaId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Consultar conversa excluída → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversas/{{conversaSemPropostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversas",
+                "{{conversaSemPropostaId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/conversas/{{conversaSemPropostaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "conversas",
+                    "{{conversaSemPropostaId}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"NAO_ENCONTRADO\",\n  \"mensagem\": \"Conversa não encontrada\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Profissional contesta a avaliação → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('contestacaoId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "avaliacoes",
+                "{{avaliacaoId}}",
+                "contestacoes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"justificativa\": \"A avaliação menciona um horário que não foi combinado.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "avaliacoes",
+                    "{{avaliacaoId}}",
+                    "contestacoes"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"justificativa\": \"A avaliação menciona um horário que não foi combinado.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/avaliacoes/1/contestacoes/1"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"avaliacaoId\": 1,\n  \"acordoId\": 1,\n  \"contestadorId\": 2,\n  \"contestadorNome\": \"Paula Profissional\",\n  \"avaliadorNome\": \"Carlos Cliente\",\n  \"avaliadoNome\": \"Paula Profissional\",\n  \"nota\": 5,\n  \"notaAnuncio\": 5,\n  \"trechoAvaliacao\": \"Aulas muito bem explicadas e pontuais.\",\n  \"justificativa\": \"A avaliação menciona um horário que não foi combinado.\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:21.234302639\",\n  \"decisao\": null,\n  \"analisadaEm\": null,\n  \"analisadaPor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar contestação → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "avaliacoes",
+                "{{avaliacaoId}}",
+                "contestacoes",
+                "{{contestacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "avaliacoes",
+                    "{{avaliacaoId}}",
+                    "contestacoes",
+                    "{{contestacaoId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"avaliacaoId\": 1,\n  \"acordoId\": 1,\n  \"contestadorId\": 2,\n  \"contestadorNome\": \"Paula Profissional\",\n  \"avaliadorNome\": \"Carlos Cliente\",\n  \"avaliadoNome\": \"Paula Profissional\",\n  \"nota\": 5,\n  \"notaAnuncio\": 5,\n  \"trechoAvaliacao\": \"Aulas muito bem explicadas e pontuais.\",\n  \"justificativa\": \"A avaliação menciona um horário que não foi combinado.\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:21.234303\",\n  \"decisao\": null,\n  \"analisadaEm\": null,\n  \"analisadaPor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar contestação aberta → 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "avaliacoes",
+                "{{avaliacaoId}}",
+                "contestacoes",
+                "{{contestacaoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"justificativa\": \"Revisei: a avaliação cita um horário que não foi combinado no acordo.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "avaliacoes",
+                    "{{avaliacaoId}}",
+                    "contestacoes",
+                    "{{contestacaoId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"justificativa\": \"Revisei: a avaliação cita um horário que não foi combinado no acordo.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"avaliacaoId\": 1,\n  \"acordoId\": 1,\n  \"contestadorId\": 2,\n  \"contestadorNome\": \"Paula Profissional\",\n  \"avaliadorNome\": \"Carlos Cliente\",\n  \"avaliadoNome\": \"Paula Profissional\",\n  \"nota\": 5,\n  \"notaAnuncio\": 5,\n  \"trechoAvaliacao\": \"Aulas muito bem explicadas e pontuais.\",\n  \"justificativa\": \"Revisei: a avaliação cita um horário que não foi combinado no acordo.\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:21.234303\",\n  \"decisao\": null,\n  \"analisadaEm\": null,\n  \"analisadaPor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir avaliação contestada → 409",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "acordos",
+                "{{acordoId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "acordos",
+                    "{{acordoId}}",
+                    "avaliacoes",
+                    "{{avaliacaoId}}"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"CONFLITO\",\n  \"mensagem\": \"Uma avaliação denunciada ou contestada não pode ser excluída.\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Retirar contestação → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "avaliacoes",
+                "{{avaliacaoId}}",
+                "contestacoes",
+                "{{contestacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "avaliacoes",
+                    "{{avaliacaoId}}",
+                    "contestacoes",
+                    "{{contestacaoId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Excluir avaliação de outra pessoa → 403",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "acordos",
+                "{{acordoId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "acordos",
+                    "{{acordoId}}",
+                    "avaliacoes",
+                    "{{avaliacaoId}}"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"ACESSO_NEGADO\",\n  \"mensagem\": \"Somente o cliente que escreveu a avaliação pode excluí-la.\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir a própria avaliação → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "acordos",
+                "{{acordoId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "acordos",
+                    "{{acordoId}}",
+                    "avaliacoes",
+                    "{{avaliacaoId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Consultar avaliação excluída → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "acordos",
+                "{{acordoId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "acordos",
+                    "{{acordoId}}",
+                    "avaliacoes",
+                    "{{avaliacaoId}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"NAO_ENCONTRADO\",\n  \"mensagem\": \"Avaliação não encontrada\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar comentário por id → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/anuncios/{{anuncioId}}/comentarios/{{comentarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "anuncios",
+                "{{anuncioId}}",
+                "comentarios",
+                "{{comentarioId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "noauth"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/anuncios/{{anuncioId}}/comentarios/{{comentarioId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "anuncios",
+                    "{{anuncioId}}",
+                    "comentarios",
+                    "{{comentarioId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"anuncioId\": 1,\n  \"respostaAId\": null,\n  \"autorNome\": \"Carlos Cliente\",\n  \"conteudo\": \"As aulas incluem material de apoio?\",\n  \"criadoEm\": \"2026-11-20T17:04:17\",\n  \"podeResponder\": false,\n  \"podeDenunciar\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Listar minhas denúncias → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 1,\n      \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n      \"recursoId\": 1,\n      \"motivo\": \"SPAM\",\n      \"descricao\": \"Teste de moderação\",\n      \"status\": \"DESCARTADA\",\n      \"criadaEm\": \"2026-11-20T17:04:18.494406\",\n      \"analisadaEm\": \"2026-11-20T17:04:18.908476\",\n      \"analisadaPor\": \"admin@skillswap.dev\",\n      \"autorId\": 2,\n      \"autorNome\": \"Paula Profissional\",\n      \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 20,\n  \"totalItens\": 1,\n  \"totalPaginas\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar denúncia já analisada → 409",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias/{{denunciaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias",
+                "{{denunciaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"OUTRO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias/{{denunciaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias",
+                    "{{denunciaId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"motivo\": \"OUTRO\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"CONFLITO\",\n  \"mensagem\": \"A denúncia já foi analisada pela moderação e não pode ser alterada.\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Denunciar comentário (ADMIN como usuário) → 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('denuncia2Id', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": {{comentarioId}},\n  \"motivo\": \"SPAM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": {{comentarioId}},\n  \"motivo\": \"SPAM\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Location",
+                  "value": "/api/denuncias/2"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"SPAM\",\n  \"descricao\": null,\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:22.36968124\",\n  \"analisadaEm\": null,\n  \"analisadaPor\": null,\n  \"autorId\": 1,\n  \"autorNome\": \"Administrador SkillSwap\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar denúncia aberta → 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias",
+                "{{denuncia2Id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"CONTEUDO_INADEQUADO\",\n  \"descricao\": \"Revisão do motivo antes da análise.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias",
+                    "{{denuncia2Id}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"motivo\": \"CONTEUDO_INADEQUADO\",\n  \"descricao\": \"Revisão do motivo antes da análise.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"tipoConteudo\": \"COMENTARIO_ANUNCIO\",\n  \"recursoId\": 1,\n  \"motivo\": \"CONTEUDO_INADEQUADO\",\n  \"descricao\": \"Revisão do motivo antes da análise.\",\n  \"status\": \"ABERTA\",\n  \"criadaEm\": \"2026-11-20T17:04:22.369681\",\n  \"analisadaEm\": null,\n  \"analisadaPor\": null,\n  \"autorId\": 1,\n  \"autorNome\": \"Administrador SkillSwap\",\n  \"trechoConteudo\": \"As aulas incluem material de apoio?\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Editar denúncia de outra pessoa → 403",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias",
+                "{{denuncia2Id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"OUTRO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias",
+                    "{{denuncia2Id}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"motivo\": \"OUTRO\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"ACESSO_NEGADO\",\n  \"mensagem\": \"Somente quem fez a denúncia pode alterá-la.\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Retirar denúncia aberta → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "denuncias",
+                "{{denuncia2Id}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{adminEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{adminSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/denuncias/{{denuncia2Id}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "denuncias",
+                    "{{denuncia2Id}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Listar minhas notificações → 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('notificacaoId', pm.response.json().itens[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notificacoes?pagina=0&tamanho=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes"
+              ],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "0"
+                },
+                {
+                  "key": "tamanho",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificacoes?pagina=0&tamanho=5",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificacoes"
+                  ],
+                  "query": [
+                    {
+                      "key": "pagina",
+                      "value": "0"
+                    },
+                    {
+                      "key": "tamanho",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"itens\": [\n    {\n      \"id\": 10,\n      \"tipo\": \"NOVA_MENSAGEM\",\n      \"titulo\": \"Nova mensagem\",\n      \"mensagem\": \"Administrador SkillSwap enviou uma mensagem sobre “Aulas de canto para iniciantes”.\",\n      \"recursoUrl\": \"/mensagens?conversa=chat-2\",\n      \"lida\": false,\n      \"criadaEm\": \"2026-11-20T17:04:20.892962\"\n    },\n    {\n      \"id\": 9,\n      \"tipo\": \"NOVA_MENSAGEM\",\n      \"titulo\": \"Nova mensagem\",\n      \"mensagem\": \"Carlos Cliente enviou uma mensagem sobre a conversa.\",\n      \"recursoUrl\": \"/mensagens?conversa=chat-1\",\n      \"lida\": false,\n      \"criadaEm\": \"2026-11-20T17:04:20.216958\"\n    },\n    {\n      \"id\": 8,\n      \"tipo\": \"PROPOSTA_RECEBIDA\",\n      \"titulo\": \"Proposta atualizada\",\n      \"mensagem\": \"Carlos Cliente alterou a proposta para “Aulas de canto para iniciantes”.\",\n      \"recursoUrl\": \"/mensagens?conversa=chat-1\",\n      \"lida\": false,\n      \"criadaEm\": \"2026-11-20T17:04:19.465943\"\n    },\n    {\n      \"id\": 7,\n      \"tipo\": \"PROPOSTA_RECEBIDA\",\n      \"titulo\": \"Nova proposta\",\n      \"mensagem\": \"Carlos Cliente enviou uma proposta para “Aulas de canto para iniciantes”.\",\n      \"recursoUrl\": \"/mensagens?conversa=chat-1\",\n      \"lida\": false,\n      \"criadaEm\": \"2026-11-20T17:04:19.250668\"\n    },\n    {\n      \"id\": 6,\n      \"tipo\": \"ACORDO_ATUALIZADO\",\n      \"titulo\": \"Acordo concluído\",\n      \"mensagem\": \"As duas pessoas confirmaram a conclusão de “Aulas de violão e canto para iniciantes”. Avaliações liberadas.\",\n      \"recursoUrl\": \"/acordos/1\",\n      \"lida\": false,\n      \"criadaEm\": \"2026-11-20T17:04:16.332954\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamanho\": 5,\n  \"totalItens\": 7,\n  \"totalPaginas\": 2\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar notificação por id → 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes",
+                "{{notificacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificacoes",
+                    "{{notificacaoId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 10,\n  \"tipo\": \"NOVA_MENSAGEM\",\n  \"titulo\": \"Nova mensagem\",\n  \"mensagem\": \"Administrador SkillSwap enviou uma mensagem sobre “Aulas de canto para iniciantes”.\",\n  \"recursoUrl\": \"/mensagens?conversa=chat-2\",\n  \"lida\": false,\n  \"criadaEm\": \"2026-11-20T17:04:20.892962\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Marcar notificação como lida → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes",
+                "{{notificacaoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lida\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificacoes",
+                    "{{notificacaoId}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"lida\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 10,\n  \"tipo\": \"NOVA_MENSAGEM\",\n  \"titulo\": \"Nova mensagem\",\n  \"mensagem\": \"Administrador SkillSwap enviou uma mensagem sobre “Aulas de canto para iniciantes”.\",\n  \"recursoUrl\": \"/mensagens?conversa=chat-2\",\n  \"lida\": true,\n  \"criadaEm\": \"2026-11-20T17:04:20.892962\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir notificação de outra pessoa → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{clienteEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{clienteSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes",
+                "{{notificacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{clienteEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{clienteSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificacoes",
+                    "{{notificacaoId}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"codigo\": \"NAO_ENCONTRADO\",\n  \"mensagem\": \"Notificação não encontrada\",\n  \"campos\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Excluir notificação → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{profissionalEmail}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{profissionalSenha}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes",
+                "{{notificacaoId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "{{profissionalEmail}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "{{profissionalSenha}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificacoes/{{notificacaoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificacoes",
+                    "{{notificacaoId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [
@@ -7722,7 +11394,7 @@
     },
     {
       "key": "novoUsuarioEmail",
-      "value": "aluno.1794957430804@skillswap.dev",
+      "value": "aluno.1795194249881@skillswap.dev",
       "type": "string"
     },
     {
@@ -7732,22 +11404,22 @@
     },
     {
       "key": "clienteId",
-      "value": "4",
+      "value": "3",
       "type": "string"
     },
     {
       "key": "novoUsuarioId",
-      "value": "5",
+      "value": "4",
       "type": "string"
     },
     {
       "key": "anuncioId",
-      "value": "14",
+      "value": "1",
       "type": "string"
     },
     {
       "key": "anuncioTrocaId",
-      "value": "15",
+      "value": "2",
       "type": "string"
     },
     {
@@ -7793,6 +11465,41 @@
     {
       "key": "denunciaId",
       "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "anuncio2Id",
+      "value": "3",
+      "type": "string"
+    },
+    {
+      "key": "propostaPendenteId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "mensagemId",
+      "value": "6",
+      "type": "string"
+    },
+    {
+      "key": "conversaSemPropostaId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "contestacaoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "denuncia2Id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "notificacaoId",
+      "value": "10",
       "type": "string"
     }
   ]

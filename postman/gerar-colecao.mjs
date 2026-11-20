@@ -65,7 +65,8 @@ async function req(pasta, nome, { metodo = 'GET', url, auth = null, corpo, esper
   for (const [variavel, caminho] of Object.entries(captura)) {
     const valor = caminho.split('.').reduce((o, p) => (o == null ? o : o[p]), json);
     if (valor !== undefined && valor !== null) vars[variavel] = valor;
-    scripts.push(`pm.collectionVariables.set('${variavel}', pm.response.json().${caminho});`);
+    const acesso = caminho.split('.').map((p) => (/^\d+$/.test(p) ? `[${p}]` : `.${p}`)).join('');
+    scripts.push(`pm.collectionVariables.set('${variavel}', pm.response.json()${acesso});`);
   }
   const request = {
     method: metodo,
@@ -316,6 +317,93 @@ await req(O, 'Descartar denúncia (ADMIN) → 200', { metodo: 'PATCH', url: '/ap
   auth: ADM, esperado: 200, corpo: { acao: 'DESCARTAR' } });
 await req(O, 'Decidir denúncia já analisada → 409', { metodo: 'PATCH', url: '/api/moderacao/denuncias/{{denunciaId}}',
   auth: ADM, esperado: 409, corpo: { acao: 'DESCARTAR' } });
+
+// ---------------------------------------------------------------- 10. Edição e exclusão na negociação
+const X = '10 - CRUD completo: editar e excluir proposta, mensagem, conversa, avaliação, contestação, denúncia e notificação';
+await req(X, 'Criar anúncio para nova negociação → 201', { metodo: 'POST', url: '/api/anuncios', auth: PROF, esperado: 201,
+  corpo: { ...anuncioBase, titulo: 'Aulas de canto para iniciantes', preco: 90.0 }, captura: { anuncio2Id: 'id' } });
+await req(X, 'Enviar proposta à vista → 201', { metodo: 'POST', url: '/api/conversas/{{conversaId}}/propostas', auth: CLI,
+  esperado: 201, captura: { propostaPendenteId: 'id' }, corpo: { anuncioId: '{{anuncio2Id}}', servico: 'Aulas de canto',
+    escopo: 'Duas aulas de 1 hora.', formaPagamento: 'A_VISTA', valor: 180.0 } });
+await req(X, 'Consultar proposta por id → 200', { url: '/api/propostas/{{propostaPendenteId}}', auth: CLI, esperado: 200 });
+await req(X, 'Editar termos da proposta pendente → 200', { metodo: 'PUT', url: '/api/propostas/{{propostaPendenteId}}',
+  auth: CLI, esperado: 200, corpo: { anuncioId: '{{anuncio2Id}}', servico: 'Aulas de canto', escopo: 'Três aulas de 1 hora.',
+    formaPagamento: 'PARCELADO', valor: 270.0, parcelas: 3, duracao: '3 semanas' } });
+await req(X, 'Editar proposta de outra pessoa → 403', { metodo: 'PUT', url: '/api/propostas/{{propostaPendenteId}}',
+  auth: PROF, esperado: 403, corpo: { anuncioId: '{{anuncio2Id}}', servico: 'Aulas de canto', escopo: 'Uma aula.',
+    formaPagamento: 'A_VISTA', valor: 50.0 } });
+await req(X, 'Editar com parcelas em pagamento à vista → 400', { metodo: 'PUT', url: '/api/propostas/{{propostaPendenteId}}',
+  auth: CLI, esperado: 400, corpo: { anuncioId: '{{anuncio2Id}}', servico: 'Aulas de canto', escopo: 'Uma aula.',
+    formaPagamento: 'A_VISTA', valor: 50.0, parcelas: 2 } });
+await req(X, 'Editar proposta já aceita → 409', { metodo: 'PUT', url: '/api/propostas/{{propostaId}}', auth: CLI,
+  esperado: 409, corpo: { anuncioId: '{{anuncioId}}', servico: 'Aulas de violão', escopo: 'Quatro aulas.',
+    formaPagamento: 'A_VISTA', valor: 300.0 } });
+await req(X, 'Excluir proposta aceita (virou acordo) → 409', { metodo: 'DELETE', url: '/api/propostas/{{propostaId}}',
+  auth: CLI, esperado: 409 });
+await req(X, 'Excluir proposta pendente → 204', { metodo: 'DELETE', url: '/api/propostas/{{propostaPendenteId}}',
+  auth: CLI, esperado: 204 });
+await req(X, 'Consultar proposta excluída → 404', { url: '/api/propostas/{{propostaPendenteId}}', auth: CLI, esperado: 404 });
+
+await req(X, 'Enviar mensagem → 201', { metodo: 'POST', url: '/api/conversas/{{conversaId}}/mensagens', auth: CLI,
+  esperado: 201, corpo: { conteudo: 'Podemos começar no próximo sábado?' }, captura: { mensagemId: 'id' } });
+await req(X, 'Consultar mensagem por id → 200', { url: '/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}', auth: PROF,
+  esperado: 200 });
+await req(X, 'Editar a própria mensagem → 200', { metodo: 'PUT', url: '/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}',
+  auth: CLI, esperado: 200, corpo: { conteudo: 'Podemos começar no sábado, dia 28?' } });
+await req(X, 'Editar mensagem de outra pessoa → 403', { metodo: 'PUT',
+  url: '/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}', auth: PROF, esperado: 403, corpo: { conteudo: 'Alterado' } });
+await req(X, 'Excluir a própria mensagem → 204', { metodo: 'DELETE',
+  url: '/api/conversas/{{conversaId}}/mensagens/{{mensagemId}}', auth: CLI, esperado: 204 });
+await req(X, 'Excluir conversa com propostas → 409', { metodo: 'DELETE', url: '/api/conversas/{{conversaId}}', auth: CLI,
+  esperado: 409 });
+await req(X, 'Abrir conversa sem proposta (ADMIN com o profissional) → 201', { metodo: 'POST',
+  url: '/api/anuncios/{{anuncio2Id}}/conversas', auth: ADM, esperado: 201, corpo: { conteudo: 'Olá! Tem horário à noite?' },
+  captura: { conversaSemPropostaId: 'id' } });
+await req(X, 'Excluir conversa sem propostas → 204', { metodo: 'DELETE', url: '/api/conversas/{{conversaSemPropostaId}}',
+  auth: ADM, esperado: 204 });
+await req(X, 'Consultar conversa excluída → 404', { url: '/api/conversas/{{conversaSemPropostaId}}', auth: ADM, esperado: 404 });
+
+await req(X, 'Profissional contesta a avaliação → 201', { metodo: 'POST', url: '/api/avaliacoes/{{avaliacaoId}}/contestacoes',
+  auth: PROF, esperado: 201, corpo: { justificativa: 'A avaliação menciona um horário que não foi combinado.' },
+  captura: { contestacaoId: 'id' } });
+await req(X, 'Consultar contestação → 200', { url: '/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}',
+  auth: PROF, esperado: 200 });
+await req(X, 'Editar contestação aberta → 200', { metodo: 'PUT',
+  url: '/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}', auth: PROF, esperado: 200,
+  corpo: { justificativa: 'Revisei: a avaliação cita um horário que não foi combinado no acordo.' } });
+await req(X, 'Excluir avaliação contestada → 409', { metodo: 'DELETE', url: '/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}',
+  auth: CLI, esperado: 409 });
+await req(X, 'Retirar contestação → 204', { metodo: 'DELETE',
+  url: '/api/avaliacoes/{{avaliacaoId}}/contestacoes/{{contestacaoId}}', auth: PROF, esperado: 204 });
+await req(X, 'Excluir avaliação de outra pessoa → 403', { metodo: 'DELETE',
+  url: '/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}', auth: PROF, esperado: 403 });
+await req(X, 'Excluir a própria avaliação → 204', { metodo: 'DELETE', url: '/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}',
+  auth: CLI, esperado: 204 });
+await req(X, 'Consultar avaliação excluída → 404', { url: '/api/acordos/{{acordoId}}/avaliacoes/{{avaliacaoId}}', auth: CLI,
+  esperado: 404 });
+
+await req(X, 'Consultar comentário por id → 200', { url: '/api/anuncios/{{anuncioId}}/comentarios/{{comentarioId}}', esperado: 200 });
+await req(X, 'Listar minhas denúncias → 200', { url: '/api/denuncias', auth: PROF, esperado: 200 });
+await req(X, 'Editar denúncia já analisada → 409', { metodo: 'PUT', url: '/api/denuncias/{{denunciaId}}', auth: PROF,
+  esperado: 409, corpo: { motivo: 'OUTRO' } });
+await req(X, 'Denunciar comentário (ADMIN como usuário) → 201', { metodo: 'POST', url: '/api/denuncias', auth: ADM,
+  esperado: 201, corpo: { tipoConteudo: 'COMENTARIO_ANUNCIO', recursoId: '{{comentarioId}}', motivo: 'SPAM' },
+  captura: { denuncia2Id: 'id' } });
+await req(X, 'Editar denúncia aberta → 200', { metodo: 'PUT', url: '/api/denuncias/{{denuncia2Id}}', auth: ADM, esperado: 200,
+  corpo: { motivo: 'CONTEUDO_INADEQUADO', descricao: 'Revisão do motivo antes da análise.' } });
+await req(X, 'Editar denúncia de outra pessoa → 403', { metodo: 'PUT', url: '/api/denuncias/{{denuncia2Id}}', auth: CLI,
+  esperado: 403, corpo: { motivo: 'OUTRO' } });
+await req(X, 'Retirar denúncia aberta → 204', { metodo: 'DELETE', url: '/api/denuncias/{{denuncia2Id}}', auth: ADM, esperado: 204 });
+
+await req(X, 'Listar minhas notificações → 200', { url: '/api/notificacoes?pagina=0&tamanho=5', auth: PROF, esperado: 200,
+  captura: { notificacaoId: 'itens.0.id' } });
+await req(X, 'Consultar notificação por id → 200', { url: '/api/notificacoes/{{notificacaoId}}', auth: PROF, esperado: 200 });
+await req(X, 'Marcar notificação como lida → 200', { metodo: 'PATCH', url: '/api/notificacoes/{{notificacaoId}}', auth: PROF,
+  esperado: 200, corpo: { lida: true } });
+await req(X, 'Excluir notificação de outra pessoa → 404', { metodo: 'DELETE', url: '/api/notificacoes/{{notificacaoId}}',
+  auth: CLI, esperado: 404 });
+await req(X, 'Excluir notificação → 204', { metodo: 'DELETE', url: '/api/notificacoes/{{notificacaoId}}', auth: PROF,
+  esperado: 204 });
 
 // ---------------------------------------------------------------- Coleção
 const variaveisFinais = Object.entries(vars).map(([key, value]) => ({ key, value: String(value), type: 'string' }));

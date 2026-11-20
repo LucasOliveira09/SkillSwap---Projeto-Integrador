@@ -6,6 +6,7 @@ Projeto Integrador do grupo **Saptura** — Engenharia de Software, 4º termo.
 - Aplicação publicada: **https://skillswap.vizihub.com.br**
 - Documentação da API: [docs/documentacao-api.md](docs/documentacao-api.md)
 - Coleção Postman (com variáveis e respostas salvas): [postman/projeto-integrador.postman_collection.json](postman/projeto-integrador.postman_collection.json)
+- Diagrama de classes (modelo de dados): [docs/modelo-dados.md](docs/modelo-dados.md)
 - Conferência dos requisitos da entrega: [docs/requisitos-entrega.md](docs/requisitos-entrega.md)
 
 ## Integrantes
@@ -68,7 +69,8 @@ São senhas exclusivas de teste. No site publicado as senhas são definidas no s
 │       └── infra/               # segurança (HTTP Basic/JWT, perfis) e exceções (@RestControllerAdvice)
 ├── src/app/                     # Angular: AppModule, AppRoutingModule, SharedModule e módulos de funcionalidade
 ├── docs/
-│   ├── documentacao-api.md      # endpoints, segurança, erros, regras e consultas
+│   ├── modelo-dados.md / .png   # diagrama de classes das entidades JPA
+│   ├── documentacao-api.md      # endpoints, CRUD por entidade, segurança, erros, regras e consultas
 │   ├── requisitos-entrega.md    # requisito → onde está implementado
 │   └── decisions/               # decisões de arquitetura (ADRs)
 ├── postman/
@@ -119,7 +121,7 @@ Configuração manual: copie `.env.example` para `.env` e defina `DB_PASSWORD`, 
 
 | Comando | O que verifica |
 | --- | --- |
-| `cd backend; ./mvnw test` | 108 testes de integração (MockMvc + H2): CRUD, regras, 400/401/403/404/409, painel |
+| `cd backend; ./mvnw test` | 115 testes de integração (MockMvc + H2): CRUD de todas as entidades, regras, 400/401/403/404/409, painel |
 | `npm run test:ci` | Testes Jasmine/Karma do Angular em ChromeHeadless |
 | `npm run typecheck` / `npm run build` | Tipos e build de produção (`dist/skillswap/browser`) |
 
@@ -133,7 +135,7 @@ node postman/gerar-colecao.mjs http://127.0.0.1:8080 postman/projeto-integrador.
 
 ## Documentação complementar
 
-- [Documentação da API](docs/documentacao-api.md) e [requisitos da entrega](docs/requisitos-entrega.md)
+- [Documentação da API](docs/documentacao-api.md), [diagrama de classes](docs/modelo-dados.md) e [requisitos da entrega](docs/requisitos-entrega.md)
 - [Backend, operação e publicação](docs/backend.md)
 - [Escopo do MVP](docs/escopo-mvp.md), [política de perfis](docs/politica-perfis.md) e [política de avaliações](docs/politica-avaliacoes.md)
 - [Decisões de arquitetura](docs/decisions/), em especial a [ADR-009](docs/decisions/009-ngmodules-e-http-basic-entrega-final.md)

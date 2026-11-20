@@ -21,6 +21,8 @@ public class ConversaController {
     public record CriarConversa(@NotNull @Positive Long destinatarioId, @Positive Long anuncioId) {}
     public record Leitura(@NotNull @Min(1) Long ultimaMensagemId) {}
     public record Resumo(long naoLidas) {}
+    public record EditarMensagem(@NotBlank(message = "Conteúdo é obrigatório")
+            @Size(max = 2000, message = "Conteúdo deve ter no máximo 2000 caracteres") String conteudo) {}
 
     @PostMapping("/conversas")
     public ResponseEntity<ConversaDTO> criar(@RequestBody @Valid CriarConversa dto, Authentication auth) {
@@ -64,6 +66,21 @@ public class ConversaController {
     @GetMapping("/conversas/{id}/mensagens/{mensagemId}")
     public MensagemConversaDTO mensagem(@PathVariable Long id, @PathVariable Long mensagemId, Authentication auth) {
         return service.buscarMensagem(id, mensagemId, (String) auth.getPrincipal());
+    }
+    @PutMapping("/conversas/{id}/mensagens/{mensagemId}")
+    public MensagemConversaDTO editarMensagem(@PathVariable Long id, @PathVariable Long mensagemId,
+            @RequestBody @Valid EditarMensagem dto, Authentication auth) {
+        return service.editarMensagem(id, mensagemId, dto.conteudo(), (String) auth.getPrincipal());
+    }
+    @DeleteMapping("/conversas/{id}/mensagens/{mensagemId}")
+    public ResponseEntity<Void> excluirMensagem(@PathVariable Long id, @PathVariable Long mensagemId, Authentication auth) {
+        service.excluirMensagem(id, mensagemId, (String) auth.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/conversas/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id, Authentication auth) {
+        service.excluir(id, (String) auth.getPrincipal());
+        return ResponseEntity.noContent().build();
     }
     @PatchMapping("/conversas/{id}/leitura")
     public ResponseEntity<Void> ler(@PathVariable Long id, @RequestBody @Valid Leitura dto, Authentication auth) {

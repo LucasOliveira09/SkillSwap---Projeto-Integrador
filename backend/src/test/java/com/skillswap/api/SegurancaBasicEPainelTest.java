@@ -18,7 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** HTTP Basic com perfis USER/ADMIN, dashboard e regras de exclusão de usuário. */
+// Banco H2 próprio: as contas de demonstração são gravadas na inicialização e não podem vazar para outros testes.
 @SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:skillswap-demo;MODE=MySQL;DB_CLOSE_DELAY=-1",
         "skillswap.seed.enabled=false",
         "skillswap.demo.enabled=true",
         "skillswap.demo.admin-password=Admin@Teste2026",

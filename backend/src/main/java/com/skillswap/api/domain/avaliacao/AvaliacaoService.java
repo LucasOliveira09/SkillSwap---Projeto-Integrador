@@ -174,6 +174,31 @@ public class AvaliacaoService {
         return toResponseDTO(avaliacaoRepository.save(avaliacao));
     }
 
+    /**
+     * Regra: só o cliente que escreveu exclui a avaliação, e não depois de respondida, denunciada,
+     * contestada ou ocultada pela moderação (o conteúdo já está em análise ou foi respondido).
+     */
+    @Transactional
+    public void excluir(Long acordoId, Long avaliacaoId, String emailUsuario) {
+        Avaliacao avaliacao = avaliacaoRepository.findByIdAndAcordoIdForUpdate(avaliacaoId, acordoId)
+                .orElseThrow(() -> new NaoEncontradoException("Avaliação não encontrada"));
+        if (!avaliacao.getAvaliador().getEmail().equalsIgnoreCase(emailUsuario)) {
+            throw new NaoAutorizadoException("Somente o cliente que escreveu a avaliação pode excluí-la.");
+        }
+        if (avaliacao.getRespostaProfissional() != null) {
+            throw new ConflitoException("Uma avaliação respondida pelo profissional não pode ser excluída.");
+        }
+        if (denunciaRepository.existsByTipoConteudoAndRecursoId(TipoConteudoDenunciado.AVALIACAO, avaliacaoId)
+                || contestacaoRepository.existsByAvaliacaoId(avaliacaoId)) {
+            throw new ConflitoException("Uma avaliação denunciada ou contestada não pode ser excluída.");
+        }
+        if (avaliacao.isModeradaOculta()) {
+            throw new ConflitoException("Uma avaliação ocultada pela moderação não pode ser excluída.");
+        }
+        historicoRepository.findByAvaliacaoId(avaliacaoId).ifPresent(historicoRepository::delete);
+        avaliacaoRepository.delete(avaliacao);
+    }
+
     @Transactional(readOnly = true)
     public AvaliacaoHistoricoDTO historicoParaModeracao(Long avaliacaoId, String email) {
         if (!moderacaoService.podeModerar(email)) {

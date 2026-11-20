@@ -21,4 +21,7 @@ public interface DenunciaRepository extends JpaRepository<Denuncia, Long> {
 
     @EntityGraph(attributePaths = "autor")
     Page<Denuncia> findByStatusOrderByCriadaEmAscIdAsc(StatusDenuncia status, Pageable pageable);
+
+    @EntityGraph(attributePaths = "autor")
+    Page<Denuncia> findByAutorIdOrderByCriadaEmDescIdDesc(Long autorId, Pageable pageable);
 }

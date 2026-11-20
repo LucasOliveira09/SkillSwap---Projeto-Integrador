@@ -28,6 +28,11 @@ public class CertificacaoProfissionalController {
         return service.listarProprias((String) auth.getPrincipal());
     }
 
+    @GetMapping("/api/certificacoes/{id}")
+    public CertificacaoProfissionalDTO buscar(@PathVariable @Positive Long id, Authentication auth) {
+        return service.buscar(id, (String) auth.getPrincipal());
+    }
+
     @PostMapping("/api/certificacoes")
     public ResponseEntity<CertificacaoProfissionalDTO> criar(@RequestBody @Valid AtualizarCertificacaoProfissionalDTO dto, Authentication auth) {
         var criado = service.criar((String) auth.getPrincipal(), dto);

@@ -35,6 +35,14 @@ public class ComentarioAnuncioController {
         return ResponseEntity.ok(PaginaDTO.de(resultado));
     }
 
+    @GetMapping("/{comentarioId}")
+    public ResponseEntity<ComentarioAnuncioDTO> buscar(@PathVariable @Positive Long anuncioId,
+            @PathVariable @Positive Long comentarioId, Authentication authentication) {
+        String email = authentication == null || authentication instanceof AnonymousAuthenticationToken
+                ? null : (String) authentication.getPrincipal();
+        return ResponseEntity.ok(service.buscar(anuncioId, comentarioId, email));
+    }
+
     @PostMapping
     public ResponseEntity<ComentarioAnuncioDTO> criar(
             @PathVariable @Positive Long anuncioId,

@@ -1,6 +1,6 @@
 # Conferência dos requisitos da entrega
 
-Mapa de cada requisito dos dois enunciados da entrega final para o local onde foi atendido. Atualizado em 17/11/2026.
+Mapa de cada requisito dos dois enunciados da entrega final para o local onde foi atendido. Atualizado em 20/11/2026.
 
 Legenda: ✅ atendido · ⏳ pendente.
 
@@ -11,8 +11,8 @@ Legenda: ✅ atendido · ⏳ pendente.
 | Partir do projeto de e-commerce e adaptar ao domínio do PI | ✅ | Domínio SkillSwap em `backend/src/main/java/com/skillswap/api/domain/` (ver [ADR-004](decisions/004-integra-backend-github.md)) |
 | ≥ 5 entidades JPA relacionadas e coerentes com o domínio | ✅ | `Usuario`, `Anuncio`, `Conversa`, `Proposta`, `Acordo`, `Avaliacao`, `Mensagem`, `ComentarioAnuncio`, `PublicacaoPortfolio`, `ExperienciaProfissional`, `Denuncia` e outras |
 | Persistência em MySQL | ✅ | `application.yml`, migrações Flyway V1–V25 em `backend/src/main/resources/db/migration` |
-| Diagrama de classes ou ER | ⏳ | A incluir em `docs/` (fora do escopo desta etapa, a pedido do grupo) |
-| CRUD completo de todas as entidades de domínio | ✅ | [documentacao-api.md](documentacao-api.md#endpoints-por-recurso). Exclusões respeitam o domínio: anúncio só sem negociações (senão é pausado); proposta por cancelamento; acordo por cancelamento; mensagens imutáveis; usuário só sem histórico |
+| Diagrama de classes ou ER | ✅ | [modelo-dados.md](modelo-dados.md) e [modelo-dados.png](modelo-dados.png) (fonte Mermaid em `modelo-dados.mmd`) |
+| CRUD completo de todas as entidades de domínio | ✅ | [Tabela de CRUD por entidade](documentacao-api.md#crud-por-entidade): criação, consulta individual e listagem, atualização e exclusão. Onde o domínio limita a operação, ela existe com regra e 409 (ex.: proposta aceita, conversa com proposta, avaliação contestada); o acordo nasce do aceite e é encerrado por cancelamento lógico. Testes em `CrudCompletoEntidadesTest` |
 | Métodos HTTP e códigos corretos | ✅ | 201 + `Location` na criação, 204 em exclusões, PATCH para mudança de estado |
 | Arquitetura Entity → Repository → Service → Controller; controllers sem repositories | ✅ | Pacotes por domínio; controllers dependem apenas de services |
 | ≥ 2 regras de negócio no Service | ✅ | [Regras de negócio](documentacao-api.md#regras-de-negócio-camada-service) (11 regras) |
@@ -25,7 +25,7 @@ Legenda: ✅ atendido · ⏳ pendente.
 | Operação restrita a um perfil | ✅ | `GET/DELETE /api/usuarios`, `/api/moderacao/**`, `/api/painel/plataforma` exigem `ADMIN` |
 | Diferença entre 401 e 403 | ✅ | Pasta 01 da coleção; teste `SegurancaBasicEPainelTest` |
 | Funcionalidade específica do PI | ✅ | Negociação: conversa → proposta → aceite (acordo) → conclusão mútua → avaliação verificada (pasta 06) |
-| Coleção Postman com respostas salvas, exportada em JSON, com variáveis | ✅ | `postman/projeto-integrador.postman_collection.json` (83 requisições, 83 respostas, variáveis com valores) |
+| Coleção Postman com respostas salvas, exportada em JSON, com variáveis | ✅ | `postman/projeto-integrador.postman_collection.json` (122 requisições, todas com resposta salva, variáveis com valores) |
 | Somente credenciais de teste | ✅ | Contas `@skillswap.dev` com senhas exclusivas de teste |
 | README com nome, descrição, objetivo, tecnologias, execução e integrantes | ✅ | [README](../README.md) |
 | Documentação dos endpoints | ✅ | [documentacao-api.md](documentacao-api.md) |
@@ -42,5 +42,5 @@ Legenda: ✅ atendido · ⏳ pendente.
 | Dashboard com ≥ 3 KPIs calculados dos dados | ✅ | `/painel`: 5 KPIs da conta (anúncios ativos, propostas pendentes, acordos em andamento, taxa de aceitação, nota média) e, para ADMIN, KPIs da plataforma |
 | Fluxo principal de ponta a ponta pela interface | ✅ | Cadastro → anúncio → conversa → proposta → aceite → conclusão → avaliação (ver README) |
 | Repositório Git versionado e atualizado | ✅ | Este repositório |
-| Aplicação publicada em nuvem, com instruções de acesso | ⏳ | https://skillswap.vizihub.com.br — publicar esta versão e informar as contas de teste no AVA |
-| Diagrama de classes | ⏳ | A incluir |
+| Aplicação publicada em nuvem, com instruções de acesso | ✅ | https://skillswap.vizihub.com.br — contas de teste com senhas próprias do servidor, informadas na entrega do AVA |
+| Diagrama de classes | ✅ | [modelo-dados.md](modelo-dados.md) |

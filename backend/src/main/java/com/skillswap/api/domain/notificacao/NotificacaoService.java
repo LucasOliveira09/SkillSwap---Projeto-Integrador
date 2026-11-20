@@ -44,6 +44,20 @@ public class NotificacaoService {
         return paraDto(notificacao);
     }
 
+    @Transactional(readOnly = true)
+    public NotificacaoDTO buscar(Long id, String emailUsuario) {
+        Usuario usuario = usuarioService.findByEmail(emailUsuario);
+        return paraDto(repository.findByIdAndDestinatarioId(id, usuario.getId())
+                .orElseThrow(() -> new NaoEncontradoException("Notificação não encontrada")));
+    }
+
+    @Transactional
+    public void excluir(Long id, String emailUsuario) {
+        Usuario usuario = usuarioService.findByEmail(emailUsuario);
+        repository.delete(repository.findByIdAndDestinatarioId(id, usuario.getId())
+                .orElseThrow(() -> new NaoEncontradoException("Notificação não encontrada")));
+    }
+
     private NotificacaoDTO paraDto(Notificacao notificacao) {
         return new NotificacaoDTO(notificacao.getId(), notificacao.getTipo(), notificacao.getTitulo(),
                 notificacao.getMensagem(), notificacao.getRecursoUrl(), notificacao.getLidaEm() != null,

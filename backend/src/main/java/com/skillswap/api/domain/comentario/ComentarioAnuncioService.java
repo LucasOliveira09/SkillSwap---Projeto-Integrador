@@ -50,6 +50,15 @@ public class ComentarioAnuncioService {
         return toDto(comentario, autor.getId(), anuncio.getUsuario().getId());
     }
 
+    @Transactional(readOnly = true)
+    public ComentarioAnuncioDTO buscar(Long anuncioId, Long comentarioId, String email) {
+        Anuncio anuncio = anuncioPublico(anuncioId);
+        Long usuarioId = email == null ? null : usuarios.findByEmail(email).getId();
+        return comentarios.findByIdAndAnuncioIdAndModeradaOcultaFalse(comentarioId, anuncioId)
+                .map(comentario -> toDto(comentario, usuarioId, anuncio.getUsuario().getId()))
+                .orElseThrow(() -> new NaoEncontradoException("Comentário não encontrado"));
+    }
+
     @Transactional
     public ComentarioAnuncioDTO editar(Long anuncioId, Long comentarioId, EditarComentarioDTO dto, String email) {
         Anuncio anuncio = anuncioPublico(anuncioId);

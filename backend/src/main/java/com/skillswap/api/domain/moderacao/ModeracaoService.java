@@ -84,6 +84,39 @@ public class ModeracaoService {
                 .map(this::paraDTO));
     }
 
+    @Transactional(readOnly = true)
+    public PaginaDTO<DenunciaDTO> listarMinhas(int pagina, int tamanho, String email) {
+        var autor = usuarioService.findByEmail(email);
+        return PaginaDTO.de(denunciaRepository.findByAutorIdOrderByCriadaEmDescIdDesc(autor.getId(),
+                PageRequest.of(pagina, tamanho)).map(this::paraDTO));
+    }
+
+    /** Regra: o autor só altera ou retira a denúncia enquanto ela está aberta (antes da análise). */
+    @Transactional
+    public DenunciaDTO editar(Long id, com.skillswap.api.domain.moderacao.dto.EditarDenunciaDTO dto, String email) {
+        var denuncia = denunciaAbertaDoAutor(id, email);
+        denuncia.setMotivo(dto.motivo());
+        denuncia.setDescricao(dto.descricao() == null || dto.descricao().isBlank() ? null : dto.descricao().strip());
+        return paraDTO(denunciaRepository.save(denuncia));
+    }
+
+    @Transactional
+    public void excluir(Long id, String email) {
+        denunciaRepository.delete(denunciaAbertaDoAutor(id, email));
+    }
+
+    private Denuncia denunciaAbertaDoAutor(Long id, String email) {
+        var denuncia = denunciaRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NaoEncontradoException("Denúncia não encontrada"));
+        if (!denuncia.getAutor().getEmail().equalsIgnoreCase(email)) {
+            throw new NaoAutorizadoException("Somente quem fez a denúncia pode alterá-la.");
+        }
+        if (denuncia.getStatus() != StatusDenuncia.ABERTA) {
+            throw new ConflitoException("A denúncia já foi analisada pela moderação e não pode ser alterada.");
+        }
+        return denuncia;
+    }
+
     @Transactional
     public DenunciaDTO decidir(Long id, DecisaoModeracaoDTO dto, String email) {
         exigirModerador(email);

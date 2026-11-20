@@ -89,6 +89,11 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
     @Query(value = "UPDATE mensagens SET proposta_id = (SELECT a.proposta_id FROM acordos a WHERE a.id = mensagens.acordo_id), conversa_id = (SELECT p.conversa_id FROM acordos a JOIN propostas p ON p.id = a.proposta_id WHERE a.id = mensagens.acordo_id), anuncio_contexto_id = (SELECT p.anuncio_id FROM acordos a JOIN propostas p ON p.id = a.proposta_id WHERE a.id = mensagens.acordo_id) WHERE acordo_id IS NOT NULL AND (proposta_id IS NULL OR conversa_id IS NULL)", nativeQuery = true)
     int reconciliarAcordosLegados();
 
+    /** Remove as mensagens da proposta entidade por entidade, mantendo o contexto de persistência coerente. */
+    void deleteByPropostaId(Long propostaId);
+
+    void deleteByConversaId(Long conversaId);
+
     @Modifying
     @Query("update Mensagem m set m.acordo = :acordo where m.proposta.id = :propostaId and m.acordo is null")
     void associarAcordo(@Param("propostaId") Long propostaId, @Param("acordo") Acordo acordo);

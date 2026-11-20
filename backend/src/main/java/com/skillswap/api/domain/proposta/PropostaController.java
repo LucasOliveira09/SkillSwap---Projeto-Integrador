@@ -84,6 +84,21 @@ public class PropostaController {
         return ResponseEntity.ok(propostaService.listarRecebidas(email));
     }
 
+    @PutMapping("/propostas/{id}")
+    public ResponseEntity<PropostaResponseDTO> editar(
+            @PathVariable Long id,
+            @RequestBody @Valid PropostaConversaRequestDTO dto,
+            Authentication authentication) {
+        var proposta = propostaService.editar(id, dto, (String) authentication.getPrincipal());
+        return ResponseEntity.ok(propostaService.toResponseDTO(proposta));
+    }
+
+    @DeleteMapping("/propostas/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id, Authentication authentication) {
+        propostaService.excluir(id, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/propostas/{id}/aceitar")
     public ResponseEntity<PropostaResponseDTO> aceitar(
             @PathVariable Long id,

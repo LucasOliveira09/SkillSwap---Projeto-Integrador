@@ -54,6 +54,13 @@ public class AvaliacaoController {
                 acordoId, avaliacaoId, dto, (String) authentication.getPrincipal()));
     }
 
+    @DeleteMapping("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}")
+    public ResponseEntity<Void> excluir(@PathVariable Long acordoId, @PathVariable Long avaliacaoId,
+            Authentication authentication) {
+        avaliacaoService.excluir(acordoId, avaliacaoId, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/api/acordos/{acordoId}/avaliacoes/{avaliacaoId}/resposta")
     public ResponseEntity<AvaliacaoResponseDTO> responder(
             @PathVariable Long acordoId, @PathVariable Long avaliacaoId,

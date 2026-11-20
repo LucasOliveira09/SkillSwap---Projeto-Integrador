@@ -68,16 +68,7 @@ public class PropostaService {
                 .escopo(dto.escopo().strip()).formaPagamento(dto.formaPagamento())
                 .valor(dto.valor()).parcelas(dto.parcelas()).duracao(normalizar(dto.duracao()))
                 .validadeEm(dto.validadeEm()).build());
-        String resumo = "Proposta enviada: " + proposta.getServico() + " — " +
-                (proposta.getFormaPagamento() == FormaPagamentoProposta.TROCA ? "troca sem complemento em dinheiro"
-                        : "R$ " + proposta.getValor().toPlainString() +
-                        switch (proposta.getFormaPagamento()) {
-                            case PARCELADO -> " em " + proposta.getParcelas() + " parcelas";
-                            case POR_HORA -> " por hora";
-                            case POR_DIA -> " por dia trabalhado";
-                            case ASSINATURA -> " por mês (assinatura)";
-                            default -> " à vista";
-                        });
+        String resumo = "Proposta enviada: " + resumoTermos(proposta);
         mensagens.save(Mensagem.builder().conversa(conversa).anuncioContexto(anuncio)
                 .proposta(proposta).remetente(proponente).conteudo(resumo).build());
         notificacaoService.criar(destinatario, TipoNotificacao.PROPOSTA_RECEBIDA, "Nova proposta",
@@ -102,6 +93,78 @@ public class PropostaService {
                 (dto.parcelas() == null || dto.parcelas() < 2 || dto.parcelas() > 12)) {
             throw new IllegalArgumentException("O parcelamento deve ter entre 2 e 12 parcelas");
         }
+    }
+
+    private String resumoTermos(Proposta proposta) {
+        return proposta.getServico() + " — " +
+                (proposta.getFormaPagamento() == FormaPagamentoProposta.TROCA ? "troca sem complemento em dinheiro"
+                        : "R$ " + proposta.getValor().toPlainString() +
+                        switch (proposta.getFormaPagamento()) {
+                            case PARCELADO -> " em " + proposta.getParcelas() + " parcelas";
+                            case POR_HORA -> " por hora";
+                            case POR_DIA -> " por dia trabalhado";
+                            case ASSINATURA -> " por mês (assinatura)";
+                            default -> " à vista";
+                        });
+    }
+
+    /** Regra: só quem enviou edita, e só enquanto a proposta está pendente; o anúncio não muda. */
+    @Transactional
+    public Proposta editar(Long propostaId, PropostaConversaRequestDTO dto, String emailUsuario) {
+        Proposta proposta = findPorIdComAnuncioBloqueado(propostaId);
+        if (!proposta.getProponente().getEmail().equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Somente quem enviou a proposta pode editá-la");
+        }
+        if (proposta.getStatus() != StatusProposta.PENDENTE) {
+            throw new com.skillswap.api.infra.exception.ConflitoException("Somente propostas pendentes podem ser editadas");
+        }
+        if (proposta.getConversa() == null || proposta.getFormaPagamento() == null) {
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Esta proposta não tem termos editáveis; cancele-a e envie uma nova pelo chat");
+        }
+        if (!proposta.getAnuncio().getId().equals(dto.anuncioId())) {
+            throw new IllegalArgumentException("O anúncio de uma proposta não pode ser alterado; envie uma nova proposta");
+        }
+        validarTermos(dto, proposta.getAnuncio().getModalidade());
+        proposta.setServico(dto.servico().strip());
+        proposta.setMensagemInicial(dto.servico().strip());
+        proposta.setEscopo(dto.escopo().strip());
+        proposta.setFormaPagamento(dto.formaPagamento());
+        proposta.setValor(dto.valor());
+        proposta.setParcelas(dto.parcelas());
+        proposta.setDuracao(normalizar(dto.duracao()));
+        proposta.setValidadeEm(dto.validadeEm());
+        proposta = propostaRepository.save(proposta);
+        mensagens.save(Mensagem.builder().conversa(proposta.getConversa()).anuncioContexto(proposta.getAnuncio())
+                .proposta(proposta).remetente(proposta.getProponente())
+                .conteudo("Proposta atualizada: " + resumoTermos(proposta)).build());
+        notificacaoService.criar(proposta.getAnuncio().getUsuario(), TipoNotificacao.PROPOSTA_RECEBIDA,
+                "Proposta atualizada", proposta.getProponente().getNome() + " alterou a proposta para “"
+                        + proposta.getAnuncio().getTitulo() + "”.", linkConversa(proposta));
+        return proposta;
+    }
+
+    /**
+     * Regra: quem enviou pode excluir a proposta pendente ou cancelada. Proposta aceita gerou um acordo e
+     * proposta recusada faz parte do histórico do anunciante; as duas respondem 409.
+     */
+    @Transactional
+    public void excluir(Long propostaId, String emailUsuario) {
+        Proposta proposta = findPorIdComAnuncioBloqueado(propostaId);
+        if (!proposta.getProponente().getEmail().equals(emailUsuario)) {
+            throw new NaoAutorizadoException("Somente quem enviou a proposta pode excluí-la");
+        }
+        if (proposta.getStatus() == StatusProposta.ACEITA) {
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Proposta aceita gerou um acordo e não pode ser excluída; cancele o acordo se for o caso");
+        }
+        if (proposta.getStatus() == StatusProposta.RECUSADA) {
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Proposta recusada faz parte do histórico do anunciante e não pode ser excluída");
+        }
+        mensagens.deleteByPropostaId(propostaId);
+        propostaRepository.delete(proposta);
+        propostaRepository.flush();
     }
 
     private String normalizar(String valor) {

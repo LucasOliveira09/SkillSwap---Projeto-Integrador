@@ -46,6 +46,21 @@ public class ContestacaoAvaliacaoController {
                 avaliacaoId, contestacaoId, (String) authentication.getPrincipal()));
     }
 
+    @PutMapping("/api/avaliacoes/{avaliacaoId}/contestacoes/{contestacaoId}")
+    public ResponseEntity<ContestacaoAvaliacaoDTO> editar(
+            @PathVariable Long avaliacaoId, @PathVariable Long contestacaoId,
+            @RequestBody @Valid CriarContestacaoAvaliacaoDTO dto, Authentication authentication) {
+        return ResponseEntity.ok(contestacaoService.editar(
+                avaliacaoId, contestacaoId, dto, (String) authentication.getPrincipal()));
+    }
+
+    @DeleteMapping("/api/avaliacoes/{avaliacaoId}/contestacoes/{contestacaoId}")
+    public ResponseEntity<Void> excluir(
+            @PathVariable Long avaliacaoId, @PathVariable Long contestacaoId, Authentication authentication) {
+        contestacaoService.excluir(avaliacaoId, contestacaoId, (String) authentication.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/api/moderacao/contestacoes")
     public ResponseEntity<PaginaDTO<ContestacaoAvaliacaoDTO>> listar(
             @RequestParam(defaultValue = "ABERTA") StatusContestacaoAvaliacao status,

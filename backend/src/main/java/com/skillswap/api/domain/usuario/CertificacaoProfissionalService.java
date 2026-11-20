@@ -51,6 +51,13 @@ public class CertificacaoProfissionalService {
         return CertificacaoProfissionalDTO.de(certificacoes.save(certificacao));
     }
 
+    @Transactional(readOnly = true)
+    public CertificacaoProfissionalDTO buscar(Long id, String email) {
+        var usuario = usuarios.findByEmail(email).orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
+        return CertificacaoProfissionalDTO.de(certificacoes.findByIdAndUsuarioId(id, usuario.getId())
+                .orElseThrow(() -> new NaoEncontradoException("Certificação não encontrada")));
+    }
+
     @Transactional
     public void excluir(Long id, String email) {
         var usuario = usuarios.findByEmail(email).orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));

@@ -51,6 +51,8 @@ public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
     List<Proposta> findByConversaIsNull();
 
+    boolean existsByConversaId(Long conversaId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {"anuncio", "anuncio.usuario", "proponente"})
     @Query("select p from Proposta p where p.conversa.id = :conversaId")

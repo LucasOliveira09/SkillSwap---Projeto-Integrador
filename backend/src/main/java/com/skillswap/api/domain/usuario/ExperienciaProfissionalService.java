@@ -49,6 +49,13 @@ public class ExperienciaProfissionalService {
         return ExperienciaProfissionalDTO.de(experiencias.save(experiencia));
     }
 
+    @Transactional(readOnly = true)
+    public ExperienciaProfissionalDTO buscar(Long id, String email) {
+        var usuario = usuarios.findByEmail(email).orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
+        return ExperienciaProfissionalDTO.de(experiencias.findByIdAndUsuarioId(id, usuario.getId())
+                .orElseThrow(() -> new NaoEncontradoException("Experiência não encontrada")));
+    }
+
     @Transactional
     public void excluir(Long id, String email) {
         var usuario = usuarios.findByEmail(email).orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));

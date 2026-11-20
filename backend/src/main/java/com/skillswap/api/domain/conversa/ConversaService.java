@@ -173,6 +173,47 @@ public class ConversaService {
                 .orElseThrow(() -> new NaoEncontradoException("Mensagem não encontrada"));
     }
 
+    /** Regra: só o autor altera a própria mensagem, e mensagens de proposta/acordo são histórico imutável. */
+    @Transactional
+    public MensagemConversaDTO editarMensagem(Long conversaId, Long mensagemId, String conteudo, String email) {
+        var usuario = usuarios.findByEmail(email);
+        participante(conversaId, usuario, true);
+        var mensagem = mensagemDoAutor(conversaId, mensagemId, usuario);
+        mensagem.setConteudo(conteudo.strip());
+        return MensagemConversaDTO.de(mensagens.saveAndFlush(mensagem));
+    }
+
+    @Transactional
+    public void excluirMensagem(Long conversaId, Long mensagemId, String email) {
+        var usuario = usuarios.findByEmail(email);
+        participante(conversaId, usuario, true);
+        mensagens.delete(mensagemDoAutor(conversaId, mensagemId, usuario));
+    }
+
+    /** Regra: conversa que já tem proposta faz parte do histórico da negociação e não pode ser excluída. */
+    @Transactional
+    public void excluir(Long id, String email) {
+        var conversa = participante(id, usuarios.findByEmail(email), true);
+        if (propostas.existsByConversaId(id)) {
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Esta conversa tem propostas e faz parte do histórico da negociação; não pode ser excluída");
+        }
+        mensagens.deleteByConversaId(id);
+        conversas.delete(conversa);
+        conversas.flush();
+    }
+
+    private Mensagem mensagemDoAutor(Long conversaId, Long mensagemId, Usuario usuario) {
+        var mensagem = mensagens.findByIdAndConversaId(mensagemId, conversaId)
+                .orElseThrow(() -> new NaoEncontradoException("Mensagem não encontrada"));
+        if (!mensagem.getRemetente().getId().equals(usuario.getId()))
+            throw new NaoAutorizadoException("Somente quem enviou a mensagem pode alterá-la");
+        if (mensagem.getProposta() != null || mensagem.getAcordo() != null)
+            throw new com.skillswap.api.infra.exception.ConflitoException(
+                    "Mensagens de proposta e de acordo fazem parte do histórico da negociação e não podem ser alteradas");
+        return mensagem;
+    }
+
     private Conversa participante(Long id, Usuario usuario, boolean bloquear) {
         var conversa = (bloquear ? conversas.findByIdForUpdate(id) : conversas.findById(id))
                 .orElseThrow(() -> new NaoEncontradoException("Conversa não encontrada"));

@@ -30,6 +30,26 @@ public class ModeracaoController {
         return ResponseEntity.ok(moderacaoService.buscar(id, (String) auth.getPrincipal()));
     }
 
+    @GetMapping("/api/denuncias")
+    public ResponseEntity<PaginaDTO<DenunciaDTO>> listarMinhas(
+            @RequestParam(defaultValue = "0") @Min(0) @Max(1_000_000) int pagina,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(50) int tamanho,
+            Authentication auth) {
+        return ResponseEntity.ok(moderacaoService.listarMinhas(pagina, tamanho, (String) auth.getPrincipal()));
+    }
+
+    @PutMapping("/api/denuncias/{id}")
+    public ResponseEntity<DenunciaDTO> editar(@PathVariable Long id,
+            @RequestBody @Valid com.skillswap.api.domain.moderacao.dto.EditarDenunciaDTO dto, Authentication auth) {
+        return ResponseEntity.ok(moderacaoService.editar(id, dto, (String) auth.getPrincipal()));
+    }
+
+    @DeleteMapping("/api/denuncias/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id, Authentication auth) {
+        moderacaoService.excluir(id, (String) auth.getPrincipal());
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/api/moderacao/acesso")
     public ResponseEntity<Boolean> acesso(Authentication auth) {
         return ResponseEntity.ok(moderacaoService.podeModerar((String) auth.getPrincipal()));

@@ -36,6 +36,17 @@ public class ComentarioPublicacaoService {
                 respostas.getOrDefault(raiz.getId(), java.util.List.of())));
     }
 
+    @Transactional(readOnly = true)
+    public ComentarioPublicacaoDTO buscar(Long publicacaoId, Long comentarioId, String email) {
+        PublicacaoPortfolio publicacao = publicacaoPublica(publicacaoId);
+        Long usuarioId = email == null ? null : usuarios.findByEmail(email).getId();
+        ComentarioPublicacao comentario = comentarios.findByIdAndPublicacaoIdAndModeradaOcultaFalse(comentarioId, publicacaoId)
+                .orElseThrow(() -> new NaoEncontradoException("Comentário não encontrado"));
+        var respostas = comentarios.findByRespostaAIdInAndModeradaOcultaFalseOrderByCriadoEmAscIdAsc(
+                java.util.List.of(comentario.getId()));
+        return paraDTO(comentario, usuarioId, publicacao.getUsuario().getId(), respostas);
+    }
+
     @Transactional
     public ComentarioPublicacaoDTO criar(Long publicacaoId, ComentarioPublicacaoRequestDTO dto, String email) {
         if (email == null) throw new NaoAutorizadoException("Entre na sua conta para comentar");
